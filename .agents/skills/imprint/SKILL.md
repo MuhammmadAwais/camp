@@ -153,9 +153,9 @@ developer knowing about]
 
 The registry is not just a record. It is the consistency enforcer for every future session.
 
-At the start of any session that involves UI work, Claude reads ui-registry.md before writing any component. When building a new card, it checks how existing cards were built. When building a new button, it checks what button patterns already exist. When building a new status badge, it matches the exact classes already in use.
+At the start of any session that involves UI work, the agent reads ui-registry.md before writing any component. When building a new card, it checks how existing cards were built. When building a new button, it checks what button patterns already exist. When building a new status badge, it matches the exact classes already in use.
 
-The registry grows as the project grows. The more components are imprinted, the more consistent every new component becomes — because Claude always has a precise reference for what already exists.
+The registry grows as the project grows. The more components are imprinted, the more consistent every new component becomes — because the agent always has a precise reference for what already exists.
 
 ---
 

@@ -167,7 +167,7 @@ Read `memory.md` first. Then check for these specific context files if they exis
 - `.github/copilot-instructions.md` — GitHub Copilot
 - `.cursorrules`, `.cursor/rules/` — Cursor
 - `.windsurfrules` — Windsurf
-- `AGENTS.md` — Codex
+- `AGENTS.md` — Antigravity / Agentic IDEs
 - `.clinerules` — Cline
 - `context.md` — generic fallback
 
@@ -177,7 +177,7 @@ When restoring, never repeat or surface raw secrets from any source. If a secret
 
 ### Step 3 — Confirm what was restored
 
-Do not start building. Do not assume the developer wants to continue immediately. Summarise what was restored so the developer can verify Claude understood correctly.
+Do not start building. Do not assume the developer wants to continue immediately. Summarise what was restored so the developer can verify the agent understood correctly.
 
 ```
 Memory restored. Here is where we are:

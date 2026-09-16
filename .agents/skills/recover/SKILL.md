@@ -71,7 +71,7 @@ The session is polluted. More prompting will not help — it will compound the d
 **Signs:**
 
 - The code runs but produces fundamentally wrong behaviour
-- Claude has been confidently building something that misunderstands a core requirement, library API, or architectural pattern
+- The AI agent has been confidently building something that misunderstands a core requirement, library API, or architectural pattern
 - The problem is not a bug in the implementation — the implementation itself is wrong
 - Fixing individual pieces will not help because the approach is incorrect
 
