@@ -174,3 +174,25 @@ Last updated: 2026-09-25
 
 **Pattern notes:**
 Smooth, continuous infinite marquee of 8 automotive manufacturer logos (`public/car-company-logos/`) on warm Autumn Editorial surface with horizontal gradient edge masks. Pauses on hover.
+
+---
+
+### `WhatIsAutoNexa`
+
+File: `components/marketing/WhatIsAutoNexa.tsx`  
+Last updated: 2026-09-25
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Deep obsidian `bg-[#120F0D]` with tactile dark marble layer (`public/textures/dark-marble.webp` at `opacity-15 mix-blend-luminosity`) |
+| Border           | `border-b border-white/10` (divider), `border border-white/15 hover:border-white/30` (cards) |
+| Border radius    | Chamfered geometry `[clip-path:polygon(0_0,calc(100%-28px)_0,100%_28px,100%_100%,28px_100%,0_calc(100%-28px))]` |
+| Text — primary   | `font-headline text-5xl sm:text-7xl font-extrabold text-secondary` (`01.`), `text-white font-bold` |
+| Text — secondary | `font-body text-lg sm:text-2xl text-white/70 leading-relaxed` with `underline decoration-secondary decoration-2` and `underline decoration-primary decoration-2` |
+| Spacing          | `py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto` |
+| Hover state      | Image zoom `group-hover:scale-105`, tags `hover:border-secondary/50`, buttons `hover:bg-primary` |
+| Shadow           | `shadow-[0_12px_40px_rgba(0,0,0,0.6)]` (cards), `shadow-[0_8px_32px_rgba(0,0,0,0.5)]` (glass banners) |
+| Accent usage     | `text-secondary` (`01.` numeral & pumpkin underlines), `bg-secondary` & `bg-primary` solid geometric corner triangles |
+
+**Pattern notes:**
+Editorial narrative and dual showcase cards with tactile dark marble backdrop. Features bold pumpkin `01.` index, interactive Canadian compliance tags, multi-weight lead paragraph with brand red/pumpkin keyword underlines, and non-standard chamfered geometric action cards.

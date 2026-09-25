@@ -25,7 +25,7 @@ Update this file after every completed feature. Any AI agent reading this should
 - [x] 06-A Navbar (`Navbar.tsx` with logo, navigation links, and portal action buttons)
 - [x] 06-B Hero Section (`HeroSection.tsx` with Epilogue display title, instant appraisal card)
 - [x] 06-B.1 Micro-Section: As-Seen-On Media Ticker (`brands-logo` ribbon)
-- [ ] 06-C What is AutoNexa (`WhatIsAutoNexa.tsx` narrative value proposition & statistics)
+- [x] 06-C What is AutoNexa (`WhatIsAutoNexa.tsx` narrative value proposition & geometric showcase cards)
 - [ ] 06-D Discover Inventory & Makes (`DiscoverSection.tsx` with brand logos & car showcase cards)
 - [ ] 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow)
 - [ ] 06-F Key Features & Guarantees (`FeaturesSection.tsx` with sealed bid & compliance cards)
