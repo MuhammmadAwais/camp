@@ -7,8 +7,8 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Current Status
 
 **Phase:** 2 — AutoNexa Landing Page & Public Funnel
-**Last completed:** 06-A Navbar & 06-B Hero Section (with As-Seen-On Ticker)
-**Next:** 06-C What is AutoNexa (`WhatIsAutoNexa.tsx`)
+**Last completed:** 06-D Discover Inventory & Makes (`DiscoverSection.tsx` with concave notch product cards & docked action buttons)
+**Next:** 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow)
 
 ---
 

@@ -206,15 +206,22 @@ Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | Oat editorial canvas `bg-surface` (`#FDF9F3`) with tactile stone texture (`public/textures/stone-background-1400.jpg` at `opacity-[0.05]`) |
-| Border           | `border-border-card` (container), `border-primary/40` (geometric cards) |
-| Border radius    | Sharp chamfers `[clip-path:polygon(0_0,calc(100%-24px)_0,100%_24px,100%_100%,24px_100%,0_calc(100%-24px))]` (comparison cards), `[clip-path:polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,8px_100%,0_calc(100%-8px))]` (badge & CTAs) |
-| Text — primary   | `font-headline text-3xl sm:text-4xl font-bold tracking-tight text-on-surface` |
-| Text — secondary | `font-body text-sm sm:text-base text-on-surface-variant` |
-| Spacing          | `py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto` |
-| Hover state      | Cards `hover:border-primary`, vehicle image `group-hover:scale-105` |
-| Shadow           | Crisp matte shadows `shadow-[0_8px_30px_rgba(32,27,17,0.06)]` (no artificial color glows) |
-| Accent usage     | `bg-primary` & `bg-secondary` solid corner triangles, Phosphor `Lightning` & `CheckCircle` icons |
+| Background       | Section canvas: `bg-surface` (`#FDF9F3`); Inventory cards: `bg-white`; Photo canvas: `bg-surface-container/60` |
+| Border           | Floating category tabs: `border-b-2 border-primary` (active indicator); Horizontal dividers: `border-t border-border-card/50` & `border-t border-border-card/60`; No harsh card perimeter borders |
+| Border radius    | Inventory card: `rounded-tl-[32px] rounded-tr-[32px] rounded-bl-[32px] rounded-br-none`; Photo container: `rounded-[24px]`; Docked notch: `rounded-tl-[26px]`; Action button: `rounded-[18px]`; Watchlist button: `rounded-full` |
+| Text — primary   | Headline: `font-headline text-3xl sm:text-4xl font-bold tracking-tight text-on-surface`; Vehicle title: `font-headline text-lg sm:text-[19px] font-bold text-on-surface leading-snug`; Wholesale price: `font-headline text-xl sm:text-2xl font-black text-on-surface` |
+| Text — secondary | Category tabs: `font-body text-xs sm:text-sm`; Description: `font-body text-xs text-on-surface-variant`; Specs: `font-body text-xs text-on-surface font-semibold`; Dealer: `text-[11px] font-medium text-on-surface-variant`; Retail price: `line-through text-xs font-body text-on-surface-variant/60` |
+| Spacing          | Grid container: `max-w-[1080px] mx-auto gap-8`; Card padding: `p-4 sm:p-5`; Specs row: `space-y-1.5` |
+| Hover state      | Card: `hover:shadow-[-6px_8px_32px_rgba(32,27,17,0.08),0_-4px_16px_rgba(32,27,17,0.05)]`; Image: `group-hover:scale-105`; Title: `group-hover:text-primary`; Docked button: `hover:bg-primary hover:text-white group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5`; Heart: `hover:scale-115` |
+| Shadow           | Card shadow layer: `shadow-[0_8px_30px_rgba(32,27,17,0.06)]` with polygon clip-path completely excising the bottom-right 85×85px corner (zero shadow bleed); Docked button: `shadow-[0_4px_14px_rgba(32,27,17,0.12)]`; Heart icon: `drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]` |
+| Accent usage     | `bg-primary text-white` (action button hover & "New" badge), `bg-secondary text-white` ("Popular" badge), `bg-emerald-600 text-white` ("Trending" badge), `text-emerald-700 bg-emerald-50 border-emerald-200` (discount pill), `text-[#E63946]` (heart fill) |
 
 **Pattern notes:**
-Features a top comparison micro-section ("Looking to sell your car?") displaying the white Jeep Renegade (`public/plain-cars-images/image_38.webp`) framed by 3 matte offer badges without covering vehicle headlights/grille. Includes two sharp geometric chamfered comparison cards with solid corner triangles, aerospace corner crosshairs, and a chamfered "FASTEST OPTION" badge powered by Phosphor icons. Flows into the live inventory showcase.
+- **Portrait Aspect Ratio (Height > Width):** Constrained grid to `max-w-[1080px]` with expanded `h-60 sm:h-64` photo canvas, achieving a slender 1:1.6 portrait proportion identical to the reference card.
+- **Standalone Heart Icon:** Rendered directly in its authentic heart silhouette (`w-6 h-6`) on the top-right of the photo canvas with a crisp drop shadow (`drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]`), eliminating circular white container badges.
+- **Zero Bottom-Right Shadow Bleed:** The card's box-shadow is rendered via an absolute clipped layer (`clip-path: polygon(...)`) that physically excises the bottom-right 85×85px corner, completely eliminating shadow lines around the notch.
+- **Decluttered Multi-Line Specs:** Separated inline specs (`km • Transmission • Fuel`) and Dealer Location onto two dedicated, stacked lines (`space-y-1.5`), eliminating horizontal collision in portrait card widths.
+- **Active Concave SVG Fillets (`fill-surface`):** The top and left fillet curves are filled with `fill-surface` (`#FFF8F2`), actively carving smooth concave arcs into the white card from both the right wall and bottom wall into the notch.
+- **Docked Action Element:** `w-[52px] h-[52px] rounded-[18px]` floating squircle button nestled inside the notch with `ArrowUpRight` Phosphor icon.
+- **Elevated Watchlist Heart:** Floating circular white button (`w-9 h-9 rounded-full bg-white/95 shadow-sm`) anchored in the top-right corner of the vehicle photo canvas opposite the status badge.
+- **Sealed Bid Invariant Compliance:** Real live bids remain confidential; inventory cards present the pre-inspected *Wholesale Reserve Est.* alongside retail market values and verified discount spreads (`10% OFF`), with Carfax & dealer licensing attributes.
