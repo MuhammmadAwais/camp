@@ -15,8 +15,8 @@ Do not read all 9 context files on every task. Read strictly what your current t
    - `context/architecture.md` — Folder boundaries, data flow patterns, BFF proxy structure.
 
 2. **When Building or Styling UI:**
-   - `context/ui-tokens.md` — Exact Tailwind v4 `@theme` tokens (Light Porcelain vs Dark Obsidian).
-   - `context/ui-rules.md` — Font Trinity (`Plus Jakarta Sans`, `Inter`, `JetBrains Mono`), layout grids, countdown rules.
+   - `context/ui-tokens.md` — Exact Tailwind v4 `@theme` tokens (Autumn Editorial for AutoNexa Landing & Porcelain/Obsidian for Portals).
+   - `context/ui-rules.md` — Typography Trinity (`Epilogue`, `Plus Jakarta Sans`, `JetBrains Mono`), 12-col grids, tonal stepping.
    - `context/ui-registry.md` — Existing components to reuse before creating new ones.
 
 3. **When Writing Logic, Forms, State, or API Calls:**

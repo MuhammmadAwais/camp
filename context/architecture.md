@@ -1,4 +1,4 @@
-# Architecture: Car Auction Marketplace Platform (CAMP)
+# Architecture: AutoNexa Platform (CAMP)
 
 ## Stack
 

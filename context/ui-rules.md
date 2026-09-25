@@ -1,117 +1,93 @@
-# UI Rules: Car Auction Marketplace Platform (CAMP)
+# UI Rules: AutoNexa & CAMP Platform
 
-Concise, strict rules for building the CAMP user interface. This platform marries institutional FinTech data density with high-stakes automotive auction telemetry. These rules prevent layout drift and ensure the dual-mode architecture (Seller Light Mode vs. Dealer Dark Mode) remains perfectly consistent.
+Strict, production-grade rules for building user interfaces across AutoNexa.
+This system merges two distinct visual experiences:
+1. **The Public Marketing Experience (AutoNexa Landing Page):** Governed by the **Autumn Editorial** design language ([DESIGN (3).md](file:///c:/Users/Prime/OneDrive/Documents/Office/Office%20Projects/camp/DESIGN%20%283%29.md)) — tactile warmth, editorial restraint, warm ivory canvas, and curated typography.
+2. **The High-Velocity Auction Portals (Seller / Dealer):** FinTech data density, dual-mode (Porcelain / Obsidian), and sealed-bid telemetry.
 
 ---
 
-## The Font Trinity
+## 1. The Typographic Hierarchy
 
-Always import and apply our three specific font engines via `next/font/google` in the root layout. Never use generic system fallbacks as primary fonts.
+Always configure and apply three specific font engines via `next/font/google` in the root layout:
 
-1. **Plus Jakarta Sans (`--font-display`):** Headings, Display text, Vehicle Titles.
-2. **Inter (`--font-body`):** Paragraphs, Forms, Legal Text, Disclosures.
-3. **JetBrains Mono (`--font-mono`):** Real-time data, Currency (CAD), Countdowns, VINs, Bid Counts.
+1. **Epilogue (`font-headline` / `--font-headline`):**  
+   - Purpose: Display headlines, hero titles, section titles, card headers.  
+   - Characteristics: Editorial, literary impact, tight letter-spacing (`-0.02em` on large scales).
+2. **Plus Jakarta Sans (`font-body` / `--font-body`):**  
+   - Purpose: Body copy, feature narratives, button labels, navigation links, form fields.  
+   - Characteristics: Friendly geometry, open counters, zero eye fatigue over warm ivory backgrounds.
+3. **JetBrains Mono (`font-mono` / `--font-mono`):**  
+   - Purpose: **Real-time telemetry only.** 24h countdown tickers (`23:59:42`), 17-character VINs, CAD Currency (`$42,850`), Bid Counts.  
+   - Characteristics: Tabular numbers prevent layout jitter when digits update.
 
 ```typescript
-import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from 'next/font/google';
+import { Epilogue, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 
-const display = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-display' });
-const body = Inter({ subsets: ['latin'], variable: '--font-body' });
-const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
+const headline = Epilogue({ subsets: ['latin'], variable: '--font-headline', weight: ['600', '700'] });
+const body = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-body', weight: ['400', '500', '600', '700'] });
+const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono', weight: ['400', '600', '700'] });
 ```
 
-Apply these variables to the `<html>` or `<body>` tag. Standard text defaults to `font-body`.
+---
+
+## 2. Layout, Grid & Spacing Rules
+
+The AutoNexa landing page employs a responsive 12-column grid with generous editorial breathing room:
+
+- **Desktop (>= 1024px):** 12-column grid. Max-width `max-w-7xl` (1280px) or `max-w-6xl` (1152px) centered. Outer margins `px-8` to `px-12` (48px). Column gutters `gap-6` (24px).
+- **Tablet (768px - 1023px):** 8-column grid. Outer margins `px-6` to `px-8` (32px). Column gutters `gap-5` (20px).
+- **Mobile (< 768px):** 4-column compact flow. Outer margins `px-4` to `px-5` (20px). Column gutters `gap-4` (16px).
+- **Section Pacing:** Major sections use generous vertical cushions: `py-16 md:py-24 lg:py-28`. Never compress sections into cramped blocks.
 
 ---
 
-## Layout & Grid System
+## 3. Elevation & Tonal Stepping
 
-The UI adapts drastically based on the user's role and device:
+Depth is achieved primarily through **tonal stepping** and **warm ambient shadows**, not harsh desaturated black drop-shadows:
 
-- **Desktop (Dealers / >=1280px):** 12-column grid. Max-width expands to 1680px to accommodate side-by-side auction monitoring and wide data tables.
-- **Tablet (768px - 1279px):** 8-column grid. Uses sliding contextual drawers for active bids/inspections.
-- **Mobile (Sellers / <=767px):** 4-column compact flow. Edge-to-edge photo reels. Sticky bottom action bars for immediate listing actions.
-- **Section Gaps:** Use `gap-6` (24px) for related modules, `gap-8` (32px) for major page sections.
-
----
-
-## Surface Enclosures (Cards)
-
-Never use diffuse consumer drop-shadows. Depth is established through 1px hairlines and background contrasts.
-
-### Light Mode (Sellers):
-- **Background:** `bg-surface-light`
-- **Border:** `border border-border-hairline`
-- **Border Radius:** `rounded-md` (8px)
-- **Padding:** `p-4` or `p-6`
-
-### Dark Mode (Dealers):
-- **Background:** `bg-surface-dark`
-- **Border:** `border border-border-dark`
-- **Border Radius:** `rounded-md` (8px)
-- **Padding:** `p-4` or `p-6`
+- **Base Canvas:** `bg-surface` (`#FFF8F2`). Eliminates harsh monitor glare.
+- **Card Surfaces:** `bg-surface-container-lowest` (`#FFFFFF`) with 1px border `border-border-card` (`#EADDCB`).
+- **Paced Contrast Shifts:** Alternate sections shift to `bg-surface-container` (`#F8ECDB`) or `bg-surface-container-low` (`#FEF2E1`) to delineate content boundaries without jarring lines.
+- **Warm Ambient Shadows:** Cards and floating modules utilize `--shadow-ambient-card` (`0 4px 20px -2px rgba(56, 20, 24, 0.05)`) and `--shadow-ambient-warm` (`0 16px 32px -4px rgba(56, 20, 24, 0.08)`).
 
 ---
 
-## Interactive Elements
+## 4. Components & Interactive Elements
 
 ### Buttons
-All buttons use strict geometric rounding (`rounded-sm` / 4px) and monospaced text to feel like precision instruments.
+All buttons maintain crisp, deliberate geometry (`rounded-sm` / 8px) and semi-bold typography (`font-body font-semibold`):
 
-- **Primary:** `bg-brand-primary text-white rounded-sm px-4 py-2 font-mono text-sm font-bold` (Dark mode uses `bg-brand-electric`).
-- **Urgent / Buyout:** `bg-brand-crimson text-white hover:bg-brand-neon-crimson`.
-- **Bid Increment Chips:** `border border-border-hairline bg-transparent font-mono rounded-sm hover:border-brand-primary`.
+- **Primary Button (Action / Submit):**  
+  `bg-primary text-white hover:bg-primary-hover rounded-sm px-6 py-3 font-body font-semibold transition-all shadow-sm active:scale-[0.99]`
+- **Secondary Button (Outlined / Exploratory):**  
+  `border-1.5 border-primary text-primary hover:bg-primary/5 rounded-sm px-6 py-3 font-body font-semibold transition-all`
+- **Accent Button (High-Energy Valuation CTA):**  
+  `bg-secondary text-on-surface hover:bg-secondary/90 rounded-sm px-6 py-3 font-body font-semibold transition-all shadow-sm`
 
-### CAD Financial Inputs
-- Must use `font-mono`.
-- Absolute positioned prefix: `CAD $` in `text-text-muted`.
-- Focus state must be a sharp 1px ring without pixel shifting: `focus:outline-none focus:ring-1 focus:ring-brand-primary` (Light) or `focus:ring-brand-electric` (Dark).
+### Chips & Pill Badges
+- **Shape:** Full capsule (`rounded-full`).
+- **Padding:** `px-3.5 py-1`.
+- **Style:** Subtle amber or terracotta tint with high-contrast text:  
+  `bg-secondary/15 text-secondary text-xs font-body font-bold uppercase tracking-wider`
 
----
+### Cards
+- **Container:** `bg-surface-container-lowest border border-border-card rounded-lg p-6 md:p-8 shadow-ambient-card`
+- **Headers:** Set in `font-headline font-bold text-on-surface`.
+- **Micro-copy:** Set in `font-body text-sm text-on-surface-variant`.
 
-## Telemetry & Timers (CRITICAL)
-
-All live data (countdown timers, bid counts, odometer readings) MUST use `font-mono`. If you use proportional fonts (like Inter), the UI will jitter horizontally every second.
-
-### The 24h Countdown Clock
-- **Standard State:** Enclosed in a small structural track: `bg-track-light` (Light) or `bg-track-dark` (Dark), `rounded-sm px-2 py-1`.
-- **Urgency State (Sub-15 minutes):**
-  - Text shifts to `text-brand-crimson` (Light) or `text-brand-neon-crimson` (Dark).
-  - The parent auction card emits the Urgency Glow: `shadow-[0_0_16px_0_rgba(230,57,70,0.25)] ring-1 ring-brand-crimson`.
-
-### Sealed Bid Counter
-- Must only display the count of bids (e.g., `14 BIDS`), never the CAD amount during an active auction.
-- **Formatting:** `font-mono text-sm font-bold`.
+### Input Fields (e.g. Instant VIN Valuation)
+- Filled container style with `bg-surface-container-lowest border border-outline-variant/40 rounded-sm px-4 py-3.5 text-on-surface`.
+- Focus state: `focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary`.
+- VIN format: Always set in `font-mono tracking-widest uppercase`.
 
 ---
 
-## Regulatory Compliance Badges
+## 5. Do Nots (Strict Guardrails)
 
-Used to verify dealer provincial licenses. Must look like official stamps.
-
-- **Base classes:** `rounded-sm px-2 py-0.5 font-mono text-xs font-bold uppercase border`
-- **OMVIC:** `border-badge-omvic text-badge-omvic`
-- **AMVIC:** `border-badge-amvic text-badge-amvic`
-- **VSA:** `border-badge-vsa text-badge-vsa`
-
----
-
-## Empty States & Fallbacks
-
-Keep empty states stark and structural.
-
-- **Background:** `bg-canvas-light` or `bg-canvas-dark`.
-- **Text:** `text-text-muted` or `text-text-dark-muted`.
-- **Iconography:** Monoline SVG, strictly geometric (no playful illustrations).
-- **CTA:** Include one clear Primary action button if applicable (e.g., "Add First Listing").
-
----
-
-## Do Nots (Hard Constraints)
-
-- **NEVER** use Tailwind's built-in color classes (`bg-blue-500`, `text-gray-600`). Use project tokens mapped in `@theme` only.
-- **NEVER** define colors in inline styles or JS logic.
-- **NEVER** stack more than two levels of border radius (e.g., a `rounded-sm` button inside a `rounded-md` card is the max depth).
-- **NEVER** use soft pill shapes (`rounded-full`) for structural layout elements; reserve `rounded-full` strictly for status dots and profile avatars.
-- **NEVER** display live bid CAD amounts in the UI while an auction is `ACTIVE`.
-- **NEVER** use proportional fonts (`font-body` or `font-display`) for numbers that change in real-time.
+- **NEVER** use Tailwind's default color classes (e.g., `bg-blue-600`, `text-gray-500`, `bg-neutral-100`). Always use defined tokens (`bg-primary`, `bg-surface`, `text-on-surface-variant`).
+- **NEVER** use harsh drop shadows with black tinting (`rgba(0,0,0,0.2)`). Use warm ambient shadows tinted with burgundy-umber (`rgba(56, 20, 24, 0.08)`).
+- **NEVER** hardcode hex values in JSX or component style attributes.
+- **NEVER** use proportional fonts for countdown tickers, VIN characters, or currency cents — always use `font-mono`.
+- **NEVER** display live bid CAD amounts while an auction is `ACTIVE` (Sealed Bid Invariant).
+- **NEVER** clutter editorial sections with harsh divider lines; rely on tonal stepping (`bg-surface` to `bg-surface-container`).

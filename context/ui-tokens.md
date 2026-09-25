@@ -1,148 +1,159 @@
-# UI Tokens: Car Auction Marketplace Platform (CAMP)
+# UI Tokens: AutoNexa & CAMP Platform
 
-Design tokens engineered for a high-velocity Canadian wholesale vehicle exchange. 
-Use these exact values throughout the codebase. Never hardcode hex values or use raw Tailwind color classes (e.g., `bg-blue-500`) in components.
+Design tokens engineered for the AutoNexa Canadian wholesale vehicle marketplace.
+These tokens unite two core domains:
+1. **The Public Marketing & Landing Experience (AutoNexa):** Powered by the **Autumn Editorial** design system specified in [DESIGN (3).md](file:///c:/Users/Prime/OneDrive/Documents/Office/Office%20Projects/camp/DESIGN%20%283%29.md) — rich terracotta wine, honey amber, warm oat canvas, and editorial typography.
+2. **The High-Velocity Auction Portals (Seller / Dealer):** Institutional FinTech density, dual-mode (Porcelain Light vs. Obsidian Dark), and monospaced auction telemetry.
+
+Never hardcode hex values or use raw Tailwind color classes (e.g. `bg-blue-500`) in components. Use these exact token classes throughout the codebase.
 
 ---
 
 ## How to Use (Tailwind CSS v4)
 
-All design tokens are defined using the `@theme` directive in `app/globals.css`. 
-Tailwind v4 automatically generates utility classes from these variables:
-- `--color-brand-primary` → `bg-brand-primary`, `text-brand-primary`, `border-brand-primary`
-- `--font-mono` → `font-mono`
-
-```tsx
-// Correct — uses generated utility classes
-className="bg-surface-light text-text-main border-border-hairline font-mono"
-
-// Never — hardcoded hex values or generic Tailwind classes
-className="bg-[#FAFBFC] text-gray-800 font-sans"
-```
+All design tokens are declared in `@theme` in `app/globals.css`.
+Tailwind v4 automatically generates utility classes from these tokens:
+- `--color-primary` → `bg-primary`, `text-primary`, `border-primary`
+- `--color-secondary` → `bg-secondary`, `text-secondary`, `border-secondary`
+- `--color-surface` → `bg-surface`, `text-on-surface`
+- `--font-headline` → `font-headline` (Epilogue)
+- `--font-body` → `font-body` (Plus Jakarta Sans)
+- `--font-mono` → `font-mono` (JetBrains Mono)
 
 ---
 
-## globals.css — Complete Token Definition
+## globals.css — Complete `@theme` Definition
 
 ```css
 @import "tailwindcss";
 
 @theme {
-  /* Fonts */
-  --font-display: "Plus Jakarta Sans", sans-serif;
-  --font-body: "Inter", sans-serif;
+  /* ========================================================
+     TYPOGRAPHY FONTS
+     ======================================================== */
+  --font-headline: "Epilogue", serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
+  /* ========================================================
+     AUTUMN EDITORIAL PALETTE (AutoNexa Landing & Marketing)
+     ======================================================== */
   /* Surfaces & Canvas */
-  --color-canvas-light: #FAFBFC; /* Porcelain: Light mode seller app */
-  --color-canvas-dark: #080C14;  /* Obsidian: Dark mode dealer trading floor */
+  --color-surface: #FFF8F2;
+  --color-surface-dim: #E4D8C8;
+  --color-surface-bright: #FFF8F2;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-container-low: #FEF2E1;
+  --color-surface-container: #F8ECDB;
+  --color-surface-container-high: #F3E7D6;
+  --color-surface-container-highest: #EDE1D0;
+  --color-surface-variant: #EDE1D0;
+  --color-background: #FFF8F2;
+
+  /* On-Surfaces (Text & Content) */
+  --color-on-surface: #201B11;          /* Espresso plum / Deep dark contrast */
+  --color-on-surface-variant: #554242;  /* Muted descriptive taupe */
+  --color-on-background: #201B11;
+  --color-inverse-surface: #363024;
+  --color-inverse-on-surface: #FBEFDE;
+
+  /* Primary Brand (Terracotta / Burgundy Wine) */
+  --color-primary: #8C383E;             /* Authoritative wine (Pantone 2350 U) */
+  --color-primary-hover: #752B30;       /* Deeper plum-wine for button hover */
+  --color-primary-container: #8C383E;
+  --color-on-primary: #FFFFFF;
+  --color-on-primary-container: #FFB5B6;
+  --color-inverse-primary: #FFB3B4;
+  --color-primary-fixed: #FFDADA;
+  --color-primary-fixed-dim: #FFB3B4;
+  --color-on-primary-fixed: #40000B;
+  --color-on-primary-fixed-variant: #7B2B32;
+
+  /* Secondary Accent (Warm Honey Amber) */
+  --color-secondary: #E59344;           /* Warm honey amber (Pantone P 14-8 U) */
+  --color-secondary-container: #FEA857;
+  --color-on-secondary: #FFFFFF;
+  --color-on-secondary-container: #723E00;
+  --color-secondary-fixed: #FFDCC1;
+  --color-secondary-fixed-dim: #FFB778;
+  --color-on-secondary-fixed: #2E1500;
+  --color-on-secondary-fixed-variant: #6C3A00;
+
+  /* Tertiary Tone (Toasted Almond) */
+  --color-tertiary: #DDA77B;            /* Muted toasted almond */
+  --color-tertiary-container: #734A26;
+  --color-on-tertiary: #FFFFFF;
+  --color-on-tertiary-container: #F4BC8F;
+  --color-tertiary-fixed: #FFDCC2;
+  --color-tertiary-fixed-dim: #F3BB8E;
+  --color-on-tertiary-fixed: #2E1500;
+  --color-on-tertiary-fixed-variant: #643E1B;
+
+  /* Borders & Outlines */
+  --color-outline: #887272;
+  --color-outline-variant: #DAC0C0;
+  --color-border-card: #EADDCB;
+  --color-border-ghost: rgba(140, 56, 62, 0.12);
+
+  /* Status & Feedback */
+  --color-success: #4D6846;             /* Earthy sage */
+  --color-warning: #E59344;             /* Honey amber */
+  --color-error: #BA1A1A;               /* Crimson berry */
+  --color-on-error: #FFFFFF;
+  --color-error-container: #FFDAD6;
+  --color-on-error-container: #93000A;
+
+  /* ========================================================
+     AUCTION PORTAL TELEMETRY TOKENS (Wholesale Floor)
+     ======================================================== */
+  --color-canvas-light: #FAFBFC;        /* Porcelain: Seller app */
+  --color-canvas-dark: #080C14;         /* Obsidian: Dealer terminal */
   --color-surface-light: #FFFFFF;
   --color-surface-dark: #111827;
-  --color-track-light: #F1F5F9;  /* Icy Silver: Utility tracks & containers */
-  --color-track-dark: #1E293B;   /* Carbon Slate */
+  --color-track-light: #F1F5F9;
+  --color-track-dark: #1E293B;
 
-  /* Borders */
-  --color-border-hairline: #E2E8F0;
-  --color-border-dark: #1E293B;
-
-  /* Core Brand Colors */
-  --color-brand-primary: #0B2545;       /* Deep Cobalt Navy: Institutional authority */
-  --color-brand-electric: #3B82F6;      /* Electric Cobalt: Dark mode focus/accent */
-  --color-brand-crimson: #E63946;       /* Canadian Crimson: Sub-15m countdown urgency */
+  --color-brand-primary: #0B2545;       /* Deep Cobalt Navy */
+  --color-brand-electric: #3B82F6;      /* Electric Cobalt */
+  --color-brand-crimson: #E63946;       /* Urgent countdown / Canadian Crimson */
   --color-brand-neon-crimson: #FF4D4D;  /* Dark mode urgency pulse */
-  --color-brand-mint: #10B981;          /* Confirmation, Success, Verification */
-
-  /* Text & Typography */
-  --color-text-main: #0F172A;
-  --color-text-muted: #64748B;
-  --color-text-dark-main: #F8FAFC;
-  --color-text-dark-muted: #94A3B8;
 
   /* Canadian Regulatory Badges */
-  --color-badge-omvic: #3B82F6; /* Ontario */
-  --color-badge-amvic: #64748B; /* Alberta */
-  --color-badge-vsa: #10B981;   /* British Columbia */
+  --color-badge-omvic: #3B82F6;        /* Ontario */
+  --color-badge-amvic: #64748B;        /* Alberta */
+  --color-badge-vsa: #10B981;          /* British Columbia */
 
-  /* Border Radius (Strict Level 1 Soft) */
-  --radius-xs: 2px;
-  --radius-sm: 4px;   /* Interactive controls, fields, chips */
-  --radius-md: 8px;   /* Auction lane cards, containers */
-  --radius-lg: 12px;  /* Modals, drawers */
-  --radius-full: 9999px; /* Status rings, pulse dots */
+  /* ========================================================
+     BORDER RADII
+     ======================================================== */
+  --radius-xs: 0.25rem;                 /* 4px: Chips, badge tags */
+  --radius-sm: 0.5rem;                  /* 8px: Standard inputs, buttons */
+  --radius-md: 0.75rem;                 /* 12px: Interactive controls */
+  --radius-lg: 1rem;                    /* 16px: Content cards */
+  --radius-xl: 1.5rem;                  /* 24px: Hero containers & modals */
+  --radius-full: 9999px;                /* Pills, avatar circles */
+
+  /* ========================================================
+     ELEVATION & SHADOWS
+     ======================================================== */
+  --shadow-ambient-warm: 0 16px 32px -4px rgba(56, 20, 24, 0.08);
+  --shadow-ambient-card: 0 4px 20px -2px rgba(56, 20, 24, 0.05);
 }
 ```
 
 ---
 
-## Color & Surface Usage Guide
+## Semantic Token Mapping for Landing Page Components
 
-The platform uses a strict **Dual-Mode Architecture**:
-- **Light Mode (Seller Portal):** Porcelain canvas (`#FAFBFC`) with white cards and Deep Cobalt Navy accents.
-- **Dark Mode (Dealer Terminal):** Obsidian canvas (`#080C14`) with carbon slate cards and Electric Cobalt luminous accents.
-
-| Element | Light Mode Token | Dark Mode Token |
+| Element | CSS Classes | Description |
 | :--- | :--- | :--- |
-| Page Canvas | `bg-canvas-light` | `bg-canvas-dark` |
-| Cards & Modules | `bg-surface-light` | `bg-surface-dark` |
-| Inputs & Utility Tracks | `bg-track-light` | `bg-track-dark` |
-| Primary Action Button | `bg-brand-primary text-white` | `bg-brand-electric text-white` |
-| Urgent Action (Buyout) | `bg-brand-crimson text-white` | `bg-brand-neon-crimson text-white` |
-| 1px Grid Borders | `border-border-hairline` | `border-border-dark` |
-| Primary Text | `text-text-main` | `text-text-dark-main` |
-| Muted/Secondary Text | `text-text-muted` | `text-text-dark-muted` |
-
----
-
-## Typography Hierarchy
-
-We use three highly specialized fonts to separate brand stature, narrative density, and live telemetry data.
-
-| Font Engine | Tailwind Class | Usage Rules |
-| :--- | :--- | :--- |
-| Plus Jakarta Sans | `font-display` | Primary headings, Vehicle Year/Make/Model, Dealer Lane Headers. Conveys trust and precision. |
-| Inter | `font-body` | Condition reports, legal disclaimers, forms, checklists. Used for all high-density textual reading. |
-| JetBrains Mono | `font-mono` | **CRITICAL: Real-time data only.** 24h countdown tickers (`23:59:42`), 17-character VINs, CAD Currency (`$42,850`), Bid Counts. Prevents layout jitter when digits change. |
-
----
-
-## Component Elevation (Shadows & Glows)
-
-Never use diffuse consumer drop shadows. Depth is established through 1px hairlines and calibrated luminosity.
-
-| Tier | Light Mode | Dark Mode | Usage |
-| :--- | :--- | :--- | :--- |
-| Layer 1 | None (Use `border-border-hairline`) | None (Use `border-border-dark`) | Standard Auction Cards |
-| Layer 2 (Hover) | `shadow-[0_4px_16px_-2px_rgba(11,37,69,0.08)] ring-1 ring-brand-primary` | `shadow-[0_4px_20px_-2px_rgba(0,0,0,0.8)] ring-1 ring-brand-electric` | Active/Hovered Auction Lanes |
-| Urgency Glow | `shadow-[0_0_16px_0_rgba(230,57,70,0.25)] ring-1 ring-brand-crimson` | `shadow-[0_0_16px_0_rgba(255,77,77,0.25)] ring-1 ring-brand-neon-crimson` | Sub-15m Final Countdown Window |
-
----
-
-## Core Component Specifications
-
-### 1. Primary Bidding Triggers & Buttons
-- **Shape:** `rounded-sm` (4px).
-- **Typography:** `font-mono text-sm font-bold`.
-- **Quick-Bid Chips:** Transparent background, 1px solid hairline border, hover shifts to solid primary brand color.
-
-### 2. Live 24h Countdown Clock
-- **Container:** `bg-track-light` (light) or `bg-track-dark` (dark), `rounded-sm`, `px-2 py-1`.
-- **Readout:** Fixed-width `font-mono`.
-- **Urgency State:** When the countdown hits `< 15:00`, the foreground text shifts to `text-brand-crimson` (light) or `text-brand-neon-crimson` (dark) and triggers the Urgency Glow (Layer 2).
-
-### 3. Sealed Bid Telemetry Bar
-- **CRITICAL INVARIANT:** This is a sealed-bid auction. The telemetry bar must **NEVER** display "Current High Bid" or "Live Spread Ladders".
-- **Seller View:** Displays Time Remaining and Total Bids Placed (e.g., `14 BIDS`).
-- **Dealer View:** Displays Time Remaining, Total Bids Placed, and Your Current Bid (if placed).
-
-### 4. Regulatory Compliance Badges
-Used to verify dealer licenses and reassure private sellers.
-- **Shape:** `rounded-sm`, `px-2 py-0.5`.
-- **Typography:** `font-mono text-xs font-semibold`.
-- **OMVIC (Ontario):** `border border-badge-omvic text-badge-omvic`
-- **AMVIC (Alberta):** `border border-badge-amvic text-badge-amvic`
-- **VSA (BC):** `border border-badge-vsa text-badge-vsa`
-
-### 5. CAD Currency Inputs
-- **Prefix:** Permanent `CAD $` locked in `font-mono text-sm text-text-muted` positioned absolute left.
-- **Field:** `font-mono` to allow instant manual audit against physical records.
-- **Focus:** Sharp `ring-1 ring-brand-electric` (no outline/pixel jump).
+| **Page Background** | `bg-surface text-on-surface` | Soft, warm ivory canvas (`#FFF8F2`) eliminating glare |
+| **Elevated Card** | `bg-surface-container-lowest border border-border-card shadow-ambient-card rounded-lg` | Crisp ivory card on warm canvas |
+| **Layered Container** | `bg-surface-container rounded-xl` | Paced section shift or sunken container (`#F8ECDB`) |
+| **Primary Button** | `bg-primary text-white hover:bg-primary-hover rounded-sm font-body font-semibold px-6 py-3 transition-colors` | Terracotta wine pill/button |
+| **Secondary Button** | `border-1.5 border-primary text-primary hover:bg-primary/5 rounded-sm font-body font-semibold px-6 py-3 transition-colors` | Outlined wine button |
+| **Accent / Conversion CTA** | `bg-secondary text-on-surface hover:bg-secondary/90 rounded-sm font-body font-semibold px-6 py-3 transition-colors` | Warm honey amber high-energy CTA |
+| **Section Eyebrow** | `font-body text-xs font-bold tracking-widest uppercase text-secondary` | Honey amber section tag |
+| **Display Headline** | `font-headline font-bold text-on-surface tracking-tight` | Epilogue editorial headline |
+| **Body Text** | `font-body text-on-surface-variant leading-relaxed` | Plus Jakarta Sans readable text |
+| **Live Telemetry / VIN** | `font-mono text-primary font-semibold tracking-wide` | Monospaced jitter-free readout |

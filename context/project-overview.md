@@ -2,7 +2,7 @@
 
 # **About the Project**
 
-Car Auction Marketplace Platform (CAMP) is a Canadian reverse-auction vehicle marketplace connecting KYC-verified private car owners with licensed, subscribed automotive dealerships. Private sellers list their vehicles through a mobile-first appraisal workflow featuring automated VIN decoding, client-compressed photo uploads, and an interactive damage schematic. Once approved by administrators, listings enter a rigid 24-hour sealed-bid auction window where regional dealerships place blind, upward-revisable bids.
+**AutoNexa** (operating internally as Car Auction Marketplace Platform / CAMP) is a Canadian reverse-auction vehicle marketplace connecting KYC-verified private car owners with licensed, subscribed automotive dealerships. Private sellers list their vehicles through a mobile-first appraisal workflow featuring automated VIN decoding, client-compressed photo uploads, and an interactive damage schematic. Once approved by administrators, listings enter a rigid 24-hour sealed-bid auction window where regional dealerships place blind, upward-revisable bids.
 
 &nbsp;
 
