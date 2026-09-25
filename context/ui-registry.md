@@ -76,18 +76,18 @@ Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | `bg-surface/95 backdrop-blur-md` (scrolled) / `bg-surface/80` (top) |
-| Border           | `border-b border-border-card` |
+| Background       | `bg-transparent` (top, floating directly over hero image) / `bg-[#201B11]/90 backdrop-blur-md` (scrolled) |
+| Border           | None (top) / `border-b border-white/10` (scrolled) |
 | Border radius    | `rounded-sm` (buttons), `rounded-full` (national badge) |
-| Text — primary   | `font-body text-sm font-medium text-on-surface-variant hover:text-primary` |
-| Text — secondary | `text-on-surface-variant text-xs` |
-| Spacing          | `h-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` |
-| Hover state      | `after:w-full after:bg-primary` animated underline transition |
-| Shadow           | `shadow-[0_4px_20px_-4px_rgba(56,20,24,0.06)]` |
-| Accent usage     | `text-secondary`, `bg-secondary/10` |
+| Text — primary   | `font-body text-sm font-medium text-white/90 hover:text-white` |
+| Text — secondary | `text-white/80 text-xs` |
+| Spacing          | `fixed top-0 left-0 right-0 z-50 py-5 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` |
+| Hover state      | Active indicator `border-b-2 border-secondary` |
+| Shadow           | `shadow-lg` when scrolled |
+| Accent usage     | `text-secondary`, `bg-primary hover:bg-primary-hover text-white` |
 
 **Pattern notes:**
-Sticky desktop/mobile responsive header with smooth scroll backdrop blur and dual CTA hierarchy (Outlined Dealer Sign In vs. Solid Terracotta Valuation Offer).
+Floating transparent header positioned directly on top of the hero image starry sky without any solid background blocks. Transitions to subtle glassmorphic backdrop on scroll.
 
 ---
 
@@ -98,36 +98,79 @@ Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | `bg-surface` with ambient warm radial gradients (`bg-secondary/10`, `bg-primary/5`) |
-| Border           | `border border-border-card` (telemetry cards) |
-| Border radius    | `rounded-2xl` (showcase card), `rounded-lg` (value cards), `rounded-full` (pills) |
-| Text — primary   | `font-headline text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-on-surface` |
-| Text — secondary | `font-body text-base sm:text-lg text-on-surface-variant` |
-| Spacing          | `pt-8 sm:pt-14 pb-0`, `grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12` |
-| Hover state      | `hover:-translate-y-1 duration-300` on telemetry card |
-| Shadow           | `--shadow-ambient-warm` |
-| Accent usage     | `text-primary underline decoration-secondary/40 decoration-wavy` |
+| Background       | Raw `public/hero-bg.jfif` full-bleed cover (zero filters, zero texture overlays) with subtle bottom-edge fade to surface |
+| Border           | `border border-white/20` (tickers and badges) |
+| Border radius    | `rounded-2xl` (widget container), `rounded-full` (pills and tickers) |
+| Text — primary   | `font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]` |
+| Text — secondary | `font-body text-lg sm:text-xl text-white/95 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]` |
+| Spacing          | `pt-28 sm:pt-36 lg:pt-40 pb-16 px-4 sm:px-6 lg:px-8` |
+| Hover state      | Interactive transitions on valuation triggers |
+| Shadow           | Deep drop shadows on headline for legibility over raw photographic twilight |
+| Accent usage     | `italic font-serif text-secondary underline decoration-secondary/60 underline-offset-8` |
 
 **Pattern notes:**
-Editorial high-conversion hero layout. Incorporates real Canadian trust pillars, embedded `VinAppraisalInput`, real-time simulated 24h countdown clock, and connects directly to `MediaTicker`.
+Clean, unfiltered hero section. Background image extends continuously under the floating transparent navbar from the top of the viewport. Features keyword emphasis on *"Best"*, live 24h auction countdown pill, embedded `MarketValuationWidget`, and connects directly to `BrandCarousel`.
 
 ---
 
-### `MediaTicker`
+### `MarketValuationWidget`
 
-File: `components/marketing/MediaTicker.tsx`  
+File: `components/marketing/MarketValuationWidget.tsx`  
 Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | `bg-surface-container/70` |
-| Border           | `border-y border-border-card/80` |
-| Border radius    | None (full-width continuous ribbon) |
-| Text — primary   | `font-body text-xs font-bold uppercase tracking-widest text-on-surface-variant` |
-| Spacing          | `py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 gap-6` |
-| Hover state      | `grayscale hover:grayscale-0 contrast-125 opacity-75 hover:opacity-100 hover:scale-105` |
-| Shadow           | None |
-| Accent usage     | `bg-secondary` dot indicator |
+| Background       | `bg-surface-container-lowest/95 backdrop-blur-md` |
+| Border           | `border border-border-card` |
+| Border radius    | `rounded-2xl` (container), `rounded-xl` (inputs), `rounded-lg` (tabs) |
+| Text — primary   | `font-body text-sm font-medium text-on-surface` |
+| Text — secondary | `text-on-surface-variant text-xs` |
+| Spacing          | `p-4 sm:p-6 lg:p-7 gap-3` |
+| Interactive state| Focus ring `focus:border-primary focus:ring-1 focus:ring-primary`, active tabs `bg-primary text-white` |
+| Shadow           | `shadow-[0_12px_40px_-6px_rgba(56,20,24,0.12)]` |
+| Accent usage     | `bg-primary hover:bg-primary-hover text-white` CTA button, `text-secondary` icons |
 
 **Pattern notes:**
-Full-width media credibility bar displaying real Canadian press logos (`Globe and Mail`, `Toronto Star`, `Auto Remarketing`, `Yahoo`, `News Radio 680`).
+High-conversion Canadian appraisal search tool inspired by AutoTrader and freight portals. Includes vehicle category tabs (`Cars & SUVs`, `Trucks`, `Electric`, `Luxury`), dual Make/Model/VIN + Postal Code inputs, and embedded `BodyTypeSelector`.
+
+---
+
+### `BodyTypeSelector`
+
+File: `components/marketing/BodyTypeSelector.tsx`  
+Last updated: 2026-09-25
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | `bg-surface-container-lowest/80` (default) / `bg-surface-container-lowest` (active) |
+| Border           | `border border-border-card` (default) / `border-2 border-primary` (active) |
+| Border radius    | `rounded-xl` |
+| Text — primary   | `font-body text-[11px] font-semibold tracking-tight text-on-surface` (active: `text-primary`) |
+| Spacing          | `grid grid-cols-4 sm:grid-cols-8 gap-2.5 p-2` |
+| Hover state      | `hover:border-primary/40 group-hover:scale-105` on car image |
+| Shadow           | `shadow-xs` (default) / `shadow-sm` (active) |
+| Accent usage     | `text-primary` label and primary border on selected item |
+
+**Pattern notes:**
+8-vehicle body type cutout selector (`SUVs`, `Trucks`, `Sedans`, `Coupes`, `Minivans`, `Hatchbacks`, `Convertibles`, `Station Wagons`) using assets from `public/plain-cars-images/`.
+
+---
+
+### `BrandCarousel`
+
+File: `components/marketing/BrandCarousel.tsx`  
+Last updated: 2026-09-25
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | `bg-surface` with subtle stone texture (`public/textures/stone-background-1400.jpg`) |
+| Border           | `border-y border-border-card` |
+| Border radius    | None (full-width continuous carousel) |
+| Text — primary   | `font-body text-xs font-bold uppercase tracking-widest text-on-surface-variant` |
+| Spacing          | `py-8 w-full gap-12 sm:gap-20` |
+| Hover state      | `grayscale hover:grayscale-0 opacity-70 hover:opacity-100 hover:scale-105` |
+| Shadow           | None |
+| Accent usage     | Gradient edge masks via `.mask-radial-fade` |
+
+**Pattern notes:**
+Smooth, continuous infinite marquee of 8 automotive manufacturer logos (`public/car-company-logos/`) on warm Autumn Editorial surface with horizontal gradient edge masks. Pauses on hover.

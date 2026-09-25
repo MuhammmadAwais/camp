@@ -3,8 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
-import { Menu, X, ShieldCheck, ArrowRight } from "lucide-react";
+import { Menu, X, ShieldCheck } from "lucide-react";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -12,110 +11,89 @@ export function Navbar() {
 
   React.useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 25);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = [
-    { label: "About", href: "#about" },
-    { label: "Discover", href: "#discover" },
+    { label: "Home", href: "/" },
+    { label: "About Us", href: "#about" },
+    { label: "Explore Auctions", href: "#explore" },
     { label: "How It Works", href: "#how-it-works" },
-    { label: "Features", href: "#features" },
-    { label: "FAQs", href: "#faqs" },
+    { label: "Valuation", href: "#valuation" },
   ];
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
         scrolled
-          ? "bg-surface/95 backdrop-blur-md border-b border-border-card shadow-[0_4px_20px_-4px_rgba(56,20,24,0.06)]"
-          : "bg-surface/80 backdrop-blur-sm border-b border-border-card/40"
+          ? "bg-[#201B11]/90 backdrop-blur-md border-b border-white/10 py-3 shadow-lg"
+          : "bg-transparent py-5"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative h-11 w-40 sm:w-44 transition-transform group-hover:scale-[1.02]">
+        <div className="flex items-center justify-between">
+          {/* Brand Logo & Canada Indicator */}
+          <div className="flex items-center gap-3">
+            <Link href="/" className="relative block h-10 w-36 sm:w-44 transition-transform hover:scale-[1.02]">
               <Image
                 src="/logo.png"
-                alt="AutoNexa Logo"
+                alt="AutoNexa"
                 fill
                 priority
-                className="object-contain object-left"
+                className="object-contain object-left drop-shadow"
               />
-            </div>
-            <span className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-mono font-semibold text-secondary tracking-wider uppercase">
-              <ShieldCheck className="w-3.5 h-3.5 text-secondary" />
-              Canada
-            </span>
-          </Link>
+            </Link>
+         
+          </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
+          <nav className="hidden md:flex items-center gap-8">
+            {navLinks.map((link, idx) => (
               <a
                 key={link.label}
                 href={link.href}
-                className="font-body text-sm font-medium text-on-surface-variant hover:text-primary transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-primary hover:after:w-full after:transition-all"
+                className={`font-body text-sm font-medium transition-colors pb-0.5 ${
+                  idx === 0
+                    ? "text-white border-b-2 border-secondary font-semibold"
+                    : "text-white/80 hover:text-white"
+                }`}
               >
                 {link.label}
               </a>
             ))}
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden sm:flex items-center gap-3.5">
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={() => {
-                const el = document.getElementById("vin-appraisal");
-                el?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="text-xs tracking-wide"
+          {/* Actions */}
+          <div className="hidden sm:flex items-center gap-3">
+            <a
+              href="#valuation"
+              className="text-xs font-semibold uppercase tracking-wider text-white hover:text-white hover:bg-white/10 px-4 py-2 rounded-sm border border-white/30 backdrop-blur-sm transition-all"
             >
               Dealer Sign In
-            </Button>
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => {
-                const el = document.getElementById("vin-appraisal");
-                el?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="group text-xs tracking-wide"
+            </a>
+            <a
+              href="#valuation"
+              className="text-xs font-semibold uppercase tracking-wider text-white bg-primary hover:bg-primary-hover px-4.5 py-2 rounded-sm shadow-md transition-all active:scale-[0.98]"
             >
-              <span>Get Free Offer</span>
-              <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
-            </Button>
+              Get Free Offer
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex sm:hidden items-center gap-2">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => {
-                const el = document.getElementById("vin-appraisal");
-                el?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="text-xs px-3"
-            >
-              Get Offer
-            </Button>
+          <div className="flex md:hidden items-center">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-sm text-on-surface hover:bg-surface-container transition-colors"
+              className="p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? (
-                <X className="w-6 h-6 text-on-surface" />
+                <X className="w-6 h-6 text-white" />
               ) : (
-                <Menu className="w-6 h-6 text-on-surface" />
+                <Menu className="w-6 h-6 text-white" />
               )}
             </button>
           </div>
@@ -124,40 +102,34 @@ export function Navbar() {
 
       {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div className="sm:hidden border-b border-border-card bg-surface-container-lowest px-4 pt-3 pb-6 space-y-3 shadow-ambient-warm animate-in fade-in slide-in-from-top-2 duration-200">
-          <nav className="flex flex-col gap-1">
+        <div className="md:hidden mt-3 mx-4 rounded-xl bg-[#201B11]/95 backdrop-blur-xl border border-white/15 p-5 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
+          <nav className="flex flex-col gap-1.5">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2.5 rounded-sm font-body text-base font-medium text-on-surface hover:bg-surface-container hover:text-primary transition-colors"
+                className="px-3 py-2.5 rounded-sm font-body text-sm font-medium text-white/90 hover:bg-white/10 transition-colors"
               >
                 {link.label}
               </a>
             ))}
           </nav>
-          <div className="pt-3 border-t border-border-card/60 flex flex-col gap-2.5">
-            <Button
-              variant="secondary"
-              size="md"
-              className="w-full justify-center"
+          <div className="pt-3 mt-2 border-t border-white/10 flex flex-col gap-2">
+            <a
+              href="#valuation"
               onClick={() => setMobileMenuOpen(false)}
+              className="block w-full text-center py-2.5 rounded-sm border border-white/30 text-white font-semibold text-xs uppercase"
             >
               Dealer Sign In
-            </Button>
-            <Button
-              variant="primary"
-              size="md"
-              className="w-full justify-center"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                const el = document.getElementById("vin-appraisal");
-                el?.scrollIntoView({ behavior: "smooth" });
-              }}
+            </a>
+            <a
+              href="#valuation"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block w-full text-center py-2.5 rounded-sm bg-primary text-white font-semibold text-xs uppercase shadow-sm"
             >
-              Get Instant Cash Offer
-            </Button>
+              Get Free Offer
+            </a>
           </div>
         </div>
       )}

@@ -2,22 +2,16 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { Badge } from "@/components/ui/Badge";
-import { VinAppraisalInput } from "@/components/marketing/VinAppraisalInput";
-import { MediaTicker } from "@/components/marketing/MediaTicker";
-import {
-  ShieldCheck,
-  Clock,
-  TrendingUp,
-  Award,
-  CheckCircle,
-  EyeOff,
-} from "lucide-react";
+import { MarketValuationWidget } from "@/components/marketing/MarketValuationWidget";
+import { BrandCarousel } from "@/components/marketing/BrandCarousel";
+import { TrendingUp, Clock, CheckCircle } from "lucide-react";
 
 export function HeroSection() {
   const [seconds, setSeconds] = React.useState(52702); // 14h 38m 22s
+  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
+    setMounted(true);
     const timer = setInterval(() => {
       setSeconds((prev) => (prev > 0 ? prev - 1 : 86400));
     }, 1000);
@@ -32,180 +26,75 @@ export function HeroSection() {
   };
 
   return (
-    <div className="relative w-full overflow-hidden bg-surface pt-8 sm:pt-14 pb-0">
-      {/* Subtle Warm Editorial Ambient Glow */}
-      <div className="absolute top-0 right-1/4 -z-10 w-96 h-96 rounded-full bg-secondary/10 blur-3xl pointer-events-none" />
-      <div className="absolute top-1/3 left-10 -z-10 w-80 h-80 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+    <div className="relative w-full bg-surface text-on-surface overflow-hidden">
+      {/* Hero Visual Section */}
+      <section className="relative min-h-[95vh] flex flex-col justify-between pt-28 sm:pt-36 lg:pt-40 pb-16 px-4 sm:px-6 lg:px-8">
+        {/* Crisp Raw Background Image (Zero Filters, Zero Texture Overlays) */}
+        <div
+          className="absolute inset-0 z-0 overflow-hidden pointer-events-none"
+          suppressHydrationWarning
+        >
+          <Image
+            src="/hero-bg.jfif"
+            alt="AutoNexa Luxury Fleet at Twilight"
+            fill
+            priority
+            unoptimized
+            className="object-cover object-top sm:object-center"
+          />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          {/* Left Column: Core Value Proposition & Valuation Card */}
-          <div className="lg:col-span-7 flex flex-col gap-6">
-            {/* National Trust Pill */}
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="gap-2 px-3 py-1">
-                <span className="text-sm">🍁</span>
-                <span>Canada&apos;s 100% Sealed-Bid Vehicle Exchange</span>
-              </Badge>
-            </div>
+          {/* Gentle bottom-edge transition into the warm ivory page canvas */}
+          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-surface via-surface/60 to-transparent pointer-events-none" />
+        </div>
 
-            {/* Display Headline in Epilogue */}
-            <h1 className="font-headline text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-on-surface leading-[1.12]">
-              Wholesale Dealer Bidding.{" "}
-              <span className="text-primary underline decoration-secondary/40 decoration-wavy underline-offset-8">
-                24 Hours.
-              </span>{" "}
-              Maximum Net Payout.
-            </h1>
+        {/* Content Container (Layered on top of background) */}
+        <div className="relative z-10 max-w-6xl mx-auto flex flex-col items-center text-center my-auto">
+         
 
-            {/* Body Copy in Plus Jakarta Sans */}
-            <p className="font-body text-base sm:text-lg text-on-surface-variant max-w-2xl leading-relaxed">
-              Eliminate lowball dealership trade-in appraisals and risky private
-              message flakes. Private Canadian sellers receive upward-revisable,
-              binding sealed bids directly from licensed automotive dealerships
-              across Ontario, Alberta, BC, and Quebec.
-            </p>
+          {/* Main Headline (Epilogue) with Italic Keyword Emphasis */}
+          <h1 className="font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)] leading-[1.12] max-w-4xl">
+            The{" "}
+            <span className="italic font-serif text-secondary underline decoration-secondary/60 underline-offset-8">
+              Best
+            </span>{" "}
+            Way To Sell Your Car.
+          </h1>
 
-            {/* Instant VIN Appraisal Tool */}
-            <div className="mt-2">
-              <VinAppraisalInput />
-            </div>
+          {/* Subheading (Plus Jakarta Sans) */}
+          <p className="mt-4 sm:mt-5 font-body text-lg sm:text-xl text-white/95 max-w-2xl font-normal leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+            Unlock your best price with AutoNexa
+          </p>
 
-            {/* 3 Value Pillars */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <div className="flex items-start gap-2.5 p-3 rounded-lg bg-surface-container-low/70 border border-border-card/60">
-                <TrendingUp className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
-                <div>
-                  <div className="font-headline font-bold text-sm text-on-surface">
-                    +$2,850 CAD Avg
-                  </div>
-                  <div className="font-body text-xs text-on-surface-variant">
-                    Over dealer trade-in offers
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5 p-3 rounded-lg bg-surface-container-low/70 border border-border-card/60">
-                <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <div className="font-headline font-bold text-sm text-on-surface">
-                    Strict 24h Window
-                  </div>
-                  <div className="font-body text-xs text-on-surface-variant">
-                    Authoritative server-clock
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5 p-3 rounded-lg bg-surface-container-low/70 border border-border-card/60">
-                <EyeOff className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
-                <div>
-                  <div className="font-headline font-bold text-sm text-on-surface">
-                    100% Sealed Bids
-                  </div>
-                  <div className="font-body text-xs text-on-surface-variant">
-                    Zero collusion or snipe wars
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Live Telemetry Ticker Strip */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-6 py-2 px-5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/95 font-mono text-xs shadow-lg">
+            <span className="flex items-center gap-1.5 text-secondary font-bold">
+              <Clock className="w-3.5 h-3.5" />
+              <span>Next Auction Closes:</span>
+              <strong className="tracking-wider text-white" suppressHydrationWarning>
+                {mounted ? formatCountdown(seconds) : "14:38:22"}
+              </strong>
+            </span>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="flex items-center gap-1 text-white/90">
+              <TrendingUp className="w-3.5 h-3.5 text-success" />
+              +$2,850 CAD Avg Over Dealer Trade-in
+            </span>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="flex items-center gap-1 text-white/90">
+              <CheckCircle className="w-3.5 h-3.5 text-secondary" />
+              Zero Lowballing
+            </span>
           </div>
 
-          {/* Right Column: Visual Showcase & Real-Time Telemetry Simulation */}
-          <div className="lg:col-span-5 relative">
-            <div className="relative mx-auto max-w-md lg:max-w-none">
-              {/* Elevated Container Card */}
-              <div className="relative bg-surface-container-lowest border border-border-card rounded-2xl overflow-hidden shadow-ambient-warm transition-transform hover:-translate-y-1 duration-300">
-                {/* Vehicle Showcase Image */}
-                <div className="relative h-64 sm:h-72 w-full bg-surface-container">
-                  <Image
-                    src="/showcase-cars-with-bg/2022-Ford-Bronco.webp"
-                    alt="Featured Wholesale Auction Vehicle"
-                    fill
-                    priority
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-
-                  {/* Top Live Badge */}
-                  <div className="absolute top-3.5 left-3.5 flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white font-mono text-xs font-bold uppercase tracking-wider">
-                      <span className="h-2 w-2 rounded-full bg-brand-neon-crimson animate-ping" />
-                      Live Auction
-                    </span>
-                  </div>
-
-                  {/* Provincial Stamp */}
-                  <div className="absolute top-3.5 right-3.5">
-                    <span className="px-2.5 py-1 rounded-sm bg-surface-container-lowest/90 backdrop-blur-sm border border-border-card font-mono text-xs font-bold text-primary">
-                      ON • OMVIC Verified
-                    </span>
-                  </div>
-
-                  {/* Vehicle Label on Image */}
-                  <div className="absolute bottom-3 left-4 right-4 text-white">
-                    <p className="font-mono text-xs uppercase tracking-wider text-secondary-fixed">
-                      VIN: 1FMEE5DH8NLA09876
-                    </p>
-                    <h2 className="font-headline text-xl font-bold tracking-tight text-white drop-shadow">
-                      2022 Ford Bronco Badlands 4x4
-                    </h2>
-                  </div>
-                </div>
-
-                {/* Auction Telemetry Bar (Autumn Editorial Styled) */}
-                <div className="p-5 bg-surface-container-lowest space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    {/* 24h Countdown */}
-                    <div className="p-3 rounded-lg bg-surface-container-low border border-border-card">
-                      <div className="flex items-center gap-1.5 text-on-surface-variant font-body text-xs font-medium mb-1">
-                        <Clock className="w-3.5 h-3.5 text-primary" />
-                        <span>Auction Closes In</span>
-                      </div>
-                      <div className="font-mono text-xl sm:text-2xl font-bold tracking-wider text-primary">
-                        {formatCountdown(seconds)}
-                      </div>
-                    </div>
-
-                    {/* Sealed Bid Counter (Invariant: NO live CAD amount shown) */}
-                    <div className="p-3 rounded-lg bg-surface-container-low border border-border-card">
-                      <div className="flex items-center gap-1.5 text-on-surface-variant font-body text-xs font-medium mb-1">
-                        <ShieldCheck className="w-3.5 h-3.5 text-secondary" />
-                        <span>Blind Bids Placed</span>
-                      </div>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="font-mono text-xl sm:text-2xl font-bold text-on-surface">
-                          19
-                        </span>
-                        <span className="font-body text-xs font-semibold text-secondary uppercase">
-                          Certified Dealers
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Provincial Compliance Strip */}
-                  <div className="pt-2 border-t border-border-card/60 flex items-center justify-between text-xs text-on-surface-variant font-medium">
-                    <span className="flex items-center gap-1">
-                      <CheckCircle className="w-3.5 h-3.5 text-success" />
-                      Clean Carfax Attached
-                    </span>
-                    <span className="flex items-center gap-1 font-mono text-[11px] text-secondary">
-                      <Award className="w-3.5 h-3.5" />
-                      Top 5% Wholesale Tier
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Interactive Valuation Widget (Images 2 & 3 Inspired) */}
+          <div className="mt-8 sm:mt-10 w-full" id="valuation">
+            <MarketValuationWidget />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Micro-Section: Recognized Press & Media Ticker */}
-      <div className="mt-14 sm:mt-20">
-        <MediaTicker />
-      </div>
+      {/* Infinite Car Company Logos Carousel (Micro-Section) */}
+      <BrandCarousel />
     </div>
   );
 }
