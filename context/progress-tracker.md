@@ -6,9 +6,9 @@ Update this file after every completed feature. Any AI agent reading this should
 
 ## Current Status
 
-**Phase:** 1 & 2 — Design System Initialization & AutoNexa Landing Page
-**Last completed:** Architecture & Context Configuration for AutoNexa Landing Page (Autumn Editorial)
-**Next:** 01 Next.js App Router Scaffold & Autumn Editorial Token Injection in `globals.css`
+**Phase:** 2 — AutoNexa Landing Page & Public Funnel
+**Last completed:** 06-A Navbar & 06-B Hero Section (with As-Seen-On Ticker)
+**Next:** 06-C What is AutoNexa (`WhatIsAutoNexa.tsx`)
 
 ---
 
@@ -16,15 +16,15 @@ Update this file after every completed feature. Any AI agent reading this should
 
 ### Phase 1 — Foundation & Architecture
 - [ ] 01 Next.js 15 Scaffold & Route Groups (`/marketing`, `/seller`, `/dealer`, `/admin`)
-- [ ] 02 Tailwind v4 & Autumn Editorial Design Tokens (`globals.css` @theme config)
+- [x] 02 Tailwind v4 & Autumn Editorial Design Tokens (`globals.css` @theme config)
 - [ ] 03 `next-intl` Bilingual Setup (EN/FR for Quebec Law 25)
 - [ ] 04 TanStack Query & Zustand Store Initialization
 - [ ] 05 JWT Auth Wrapper & Middleware (Role segregation)
 
 ### Phase 2 — AutoNexa Landing Page & Public Funnel
-- [ ] 06-A Navbar (`Navbar.tsx` with logo, navigation links, and portal action buttons)
-- [ ] 06-B Hero Section (`HeroSection.tsx` with Epilogue display title, instant appraisal card)
-- [ ] 06-B.1 Micro-Section: As-Seen-On Media Ticker (`brands-logo` ribbon)
+- [x] 06-A Navbar (`Navbar.tsx` with logo, navigation links, and portal action buttons)
+- [x] 06-B Hero Section (`HeroSection.tsx` with Epilogue display title, instant appraisal card)
+- [x] 06-B.1 Micro-Section: As-Seen-On Media Ticker (`brands-logo` ribbon)
 - [ ] 06-C What is AutoNexa (`WhatIsAutoNexa.tsx` narrative value proposition & statistics)
 - [ ] 06-D Discover Inventory & Makes (`DiscoverSection.tsx` with brand logos & car showcase cards)
 - [ ] 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow)
