@@ -39,7 +39,7 @@ export function BodyTypeSelector({
   return (
     <div className="w-full">
       <div className="mb-3">
-        <span className="font-body text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+        <span className="font-body text-xs font-bold uppercase tracking-wider text-white/70">
           Browse by Body Type
         </span>
       </div>
@@ -57,8 +57,8 @@ export function BodyTypeSelector({
               <div
                 className={`relative h-11 w-full min-w-[50px] mb-1.5 transition-all duration-200 ${
                   isSelected
-                    ? "scale-110 drop-shadow-sm"
-                    : "opacity-80 group-hover:opacity-100 group-hover:scale-105"
+                    ? "scale-110 drop-shadow-[0_6px_14px_rgba(0,0,0,0.6)]"
+                    : "opacity-80 group-hover:opacity-100 group-hover:scale-105 drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]"
                 }`}
               >
                 <Image
@@ -72,14 +72,14 @@ export function BodyTypeSelector({
               <span
                 className={`font-body text-[11px] tracking-tight truncate w-full transition-colors ${
                   isSelected
-                    ? "text-primary font-bold"
-                    : "text-on-surface-variant font-medium group-hover:text-primary"
+                    ? "text-secondary font-bold"
+                    : "text-white/70 font-medium group-hover:text-white"
                 }`}
               >
                 {type.name}
               </span>
               {isSelected && (
-                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1" />
+                <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-1 shadow-[0_0_8px_rgba(217,143,76,0.8)]" />
               )}
             </button>
           );

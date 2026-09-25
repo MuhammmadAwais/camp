@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { BodyTypeSelector } from "@/components/marketing/BodyTypeSelector";
-import { Search, MapPin, Sparkles, ArrowRight } from "lucide-react";
+import { Search, MapPin, ArrowRight } from "lucide-react";
 
 export function MarketValuationWidget() {
   const [activeTab, setActiveTab] = React.useState("cars");
@@ -25,9 +25,9 @@ export function MarketValuationWidget() {
   };
 
   return (
-    <div className="w-full bg-surface-container-lowest/95 backdrop-blur-md border border-border-card rounded-2xl p-4 sm:p-6 lg:p-7 shadow-[0_12px_40px_-6px_rgba(56,20,24,0.12)] text-left">
-      {/* Category Tabs */}
-      <div className="flex items-center gap-2 pb-4 border-b border-border-card/60 overflow-x-auto scrollbar-none">
+    <div className="w-full bg-white/[0.07] backdrop-blur-2xl border border-white/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.15)] text-left transition-all">
+      {/* Category Tabs (Translucent Glass Pills) */}
+      <div className="flex items-center gap-2 pb-4 border-b border-white/10 overflow-x-auto scrollbar-none">
         {categoryTabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -35,10 +35,10 @@ export function MarketValuationWidget() {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`relative px-4 py-2 rounded-lg font-body text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+              className={`relative px-4 py-2 rounded-xl font-body text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer backdrop-blur-md ${
                 isActive
-                  ? "bg-primary text-white shadow-xs"
-                  : "bg-surface-container text-on-surface hover:bg-surface-container-high hover:text-primary"
+                  ? "bg-white/25 text-white border border-white/40 shadow-[0_2px_12px_rgba(255,255,255,0.15)]"
+                  : "bg-white/[0.05] text-white/75 hover:bg-white/[0.12] hover:text-white border border-white/10"
               }`}
             >
               {tab.label}
@@ -52,22 +52,22 @@ export function MarketValuationWidget() {
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
           {/* Make, Model, or VIN input */}
           <div className="sm:col-span-6 relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant/50">
-              <Search className="w-4 h-4 text-outline" />
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-white/50">
+              <Search className="w-4 h-4 text-white/60" />
             </div>
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Enter Year, Make, Model or 17-Char VIN"
-              className="w-full pl-10 pr-4 py-3.5 bg-surface-container-low/70 border border-outline-variant/60 rounded-xl font-body text-sm font-medium text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full pl-10 pr-4 py-3.5 bg-white/[0.08] backdrop-blur-md border border-white/20 rounded-xl font-body text-sm font-medium text-white placeholder:text-white/45 focus:outline-none focus:bg-white/[0.14] focus:border-white/45 focus:ring-1 focus:ring-white/30 transition-all shadow-inner"
             />
           </div>
 
           {/* Postal Code input */}
           <div className="sm:col-span-3 relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant/50">
-              <MapPin className="w-4 h-4 text-outline" />
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-white/50">
+              <MapPin className="w-4 h-4 text-white/60" />
             </div>
             <input
               type="text"
@@ -75,7 +75,7 @@ export function MarketValuationWidget() {
               onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
               placeholder="Postal Code* (e.g. M5V)"
               maxLength={7}
-              className="w-full pl-10 pr-4 py-3.5 bg-surface-container-low/70 border border-outline-variant/60 rounded-xl font-body text-sm font-medium uppercase text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all tracking-wider"
+              className="w-full pl-10 pr-4 py-3.5 bg-white/[0.08] backdrop-blur-md border border-white/20 rounded-xl font-body text-sm font-medium uppercase text-white placeholder:text-white/45 focus:outline-none focus:bg-white/[0.14] focus:border-white/45 focus:ring-1 focus:ring-white/30 transition-all tracking-wider shadow-inner"
             />
           </div>
 
@@ -83,9 +83,8 @@ export function MarketValuationWidget() {
           <div className="sm:col-span-3">
             <button
               type="submit"
-              className="w-full py-3.5 px-6 rounded-xl bg-primary text-white font-body text-sm font-bold tracking-wide hover:bg-primary-hover active:scale-[0.98] shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
+              className="w-full py-3.5 px-6 rounded-xl bg-primary/90 hover:bg-primary text-white font-body text-sm font-bold tracking-wide border border-white/20 backdrop-blur-md shadow-[0_4px_20px_rgba(142,34,44,0.45)] hover:shadow-[0_4px_25px_rgba(142,34,44,0.65)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer group"
             >
-              <Sparkles className="w-4 h-4 text-secondary-fixed transition-transform group-hover:rotate-12" />
               <span>Get Offers</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
@@ -94,7 +93,7 @@ export function MarketValuationWidget() {
       </form>
 
       {/* Body Type Cutouts Selector */}
-      <div className="mt-5 pt-5 border-t border-border-card/60">
+      <div className="mt-5 pt-5 border-t border-white/10">
         <BodyTypeSelector
           selected={selectedBodyType}
           onSelect={(id) => setSelectedBodyType(id)}

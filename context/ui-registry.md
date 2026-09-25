@@ -98,18 +98,18 @@ Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | Raw `public/hero-bg.jfif` full-bleed cover with `brightness-[0.88]` + top-to-bottom dark gradient `bg-gradient-to-b from-black/75 via-black/50 to-black/85` + bottom-edge fade to surface |
-| Border           | None |
-| Border radius    | `rounded-2xl` (widget container) |
-| Text — primary   | `font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]` |
-| Text — secondary | `font-body text-lg sm:text-xl text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]` |
-| Spacing          | `pt-32 sm:pt-36 lg:pt-42 pb-16 px-4 sm:px-6 lg:px-8` |
+| Background       | Raw `public/hero-bg.jfif` full-bleed cover (zero filters, zero texture overlays) with subtle bottom-edge fade to surface |
+| Border           | `border border-white/20` (tickers and badges) |
+| Border radius    | `rounded-2xl` (widget container), `rounded-full` (pills and tickers) |
+| Text — primary   | `font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]` |
+| Text — secondary | `font-body text-lg sm:text-xl text-white/95 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]` |
+| Spacing          | `pt-28 sm:pt-36 lg:pt-40 pb-16 px-4 sm:px-6 lg:px-8` |
 | Hover state      | Interactive transitions on valuation triggers |
-| Shadow           | Deep drop shadows on headline for legibility over dimmed twilight fleet image |
-| Accent usage     | `italic text-secondary underline decoration-secondary/60 underline-offset-8` (consistent headline font) |
+| Shadow           | Deep drop shadows on headline for legibility over raw photographic twilight |
+| Accent usage     | `italic font-serif text-secondary underline decoration-secondary/60 underline-offset-8` |
 
 **Pattern notes:**
-Clean, dimmed hero section. Smooth top-to-bottom darkening gradient for optimal text contrast and sleek luxury aesthetic. Telemetry strip and unneeded disclaimers removed for minimal, purposeful design. Background extends under the floating transparent navbar.
+Clean, unfiltered hero section. Background image extends continuously under the floating transparent navbar from the top of the viewport. Features keyword emphasis on *"Best"*, live 24h auction countdown pill, embedded `MarketValuationWidget`, and connects directly to `BrandCarousel`.
 
 ---
 
@@ -120,18 +120,18 @@ Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | `bg-surface-container-lowest/95 backdrop-blur-md` |
-| Border           | `border border-border-card` |
-| Border radius    | `rounded-2xl` (container), `rounded-xl` (inputs), `rounded-lg` (tabs) |
-| Text — primary   | `font-body text-sm font-medium text-on-surface` |
-| Text — secondary | `text-on-surface-variant text-xs` |
+| Background       | Translucent glassmorphism `bg-white/[0.07] backdrop-blur-2xl` |
+| Border           | `border border-white/20` (container), `border-white/10` (dividers) |
+| Border radius    | `rounded-2xl sm:rounded-3xl` (container), `rounded-xl` (inputs & tabs) |
+| Text — primary   | `font-body text-sm font-medium text-white placeholder:text-white/45` |
+| Text — secondary | `text-white/70 text-xs` |
 | Spacing          | `p-4 sm:p-6 lg:p-7 gap-3` |
-| Interactive state| Focus ring `focus:border-primary focus:ring-1 focus:ring-primary`, active tabs `bg-primary text-white` |
-| Shadow           | `shadow-[0_12px_40px_-6px_rgba(56,20,24,0.12)]` |
-| Accent usage     | `bg-primary hover:bg-primary-hover text-white` CTA button, `text-secondary` icons |
+| Interactive state| Tabs: active `bg-white/25 text-white border-white/40 shadow-[0_2px_12px_rgba(255,255,255,0.15)]`, inactive `bg-white/[0.05] text-white/75 hover:bg-white/[0.12]`; Inputs: `focus:bg-white/[0.14] focus:border-white/45 focus:ring-1 focus:ring-white/30` |
+| Shadow           | `shadow-[0_20px_50px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.15)]` |
+| Accent usage     | `bg-primary/90 hover:bg-primary text-white border border-white/20 backdrop-blur-md shadow-[0_4px_20px_rgba(142,34,44,0.45)]` CTA button |
 
 **Pattern notes:**
-High-conversion Canadian appraisal search tool inspired by AutoTrader. Clean layout free of repetitive regulatory boilerplate disclaimers. Consistent `font-body` typography across search, postal code, and tab triggers.
+Pure glassmorphism card floating over the twilight fleet hero image. Zero solid opaque backgrounds. Clean translucent frosted glass surfaces, white highlights, crisp typography, and luminous depth.
 
 ---
 
@@ -145,14 +145,14 @@ Last updated: 2026-09-25
 | Background       | `bg-transparent` (no card container background) |
 | Border           | `border-0` (no borders around vehicles) |
 | Border radius    | None |
-| Text — primary   | `font-body text-[11px] font-medium text-on-surface-variant` (active: `font-bold text-primary`) |
+| Text — primary   | `font-body text-[11px] font-medium text-white/70 group-hover:text-white` (active: `font-bold text-secondary`) |
 | Spacing          | `grid grid-cols-4 sm:grid-cols-8 gap-3 sm:gap-4` |
-| Hover state      | `group-hover:scale-105 group-hover:opacity-100 group-hover:text-primary` |
-| Shadow           | Clean cutout styling with no card bounding boxes |
-| Accent usage     | `text-primary font-bold` with subtle dot indicator on active body type |
+| Hover state      | `group-hover:scale-105 group-hover:opacity-100 group-hover:text-white` |
+| Shadow           | Vehicle cutouts with `drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]` (active: `drop-shadow-[0_6px_14px_rgba(0,0,0,0.6)]`) |
+| Accent usage     | `text-secondary font-bold` with glowing dot `bg-secondary shadow-[0_0_8px_rgba(217,143,76,0.8)]` |
 
 **Pattern notes:**
-Seamless, cardless 8-vehicle cutout selector (`SUVs`, `Trucks`, `Sedans`, `Coupes`, `Minivans`, `Hatchbacks`, `Convertibles`, `Station Wagons`) using assets from `public/plain-cars-images/`. Vehicles float directly on the widget canvas without boxed card borders.
+Cardless 8-vehicle cutout selector (`SUVs`, `Trucks`, `Sedans`, `Coupes`, `Minivans`, `Hatchbacks`, `Convertibles`, `Station Wagons`) seamlessly integrated directly on top of the translucent glassmorphism widget canvas.
 
 ---
 
