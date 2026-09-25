@@ -3,7 +3,15 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle2, ShieldCheck, MapPin, Gauge, Sparkles, ArrowRight, Clock } from "lucide-react";
+import {
+  Lightning,
+  CheckCircle,
+  ArrowRight,
+  ShieldCheck,
+  MapPin,
+  Gauge,
+  Clock,
+} from "@phosphor-icons/react";
 
 export function DiscoverSection() {
   const [activeCategory, setActiveCategory] = React.useState("all");
@@ -110,7 +118,7 @@ export function DiscoverSection() {
     >
       {/* Subtle Tactile Stone Texture Layer */}
       <div
-        className="absolute inset-0 opacity-[0.06] mix-blend-multiply pointer-events-none"
+        className="absolute inset-0 opacity-[0.05] mix-blend-multiply pointer-events-none"
         style={{
           backgroundImage: "url('/textures/stone-background-1400.jpg')",
           backgroundSize: "cover",
@@ -120,11 +128,11 @@ export function DiscoverSection() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* ========================================================================= */}
-        {/* 1. Top Micro-Section: "Looking to sell your car?" (Comparison Grid)        */}
+        {/* 1. Top Micro-Section: "Looking to sell your car?" (Geometric Cuts)        */}
         {/* ========================================================================= */}
         <div className="mb-24 sm:mb-32">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-            {/* Left Column: Heading, White Jeep Renegade Cutout & Floating Offer Badges */}
+            {/* Left Column: Heading, White Jeep Renegade Cutout & Unobstructed Badges */}
             <div className="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left">
               <h2 className="font-headline text-3xl sm:text-4xl md:text-[40px] font-bold tracking-tight text-on-surface leading-tight mb-2">
                 Looking to sell your car?
@@ -133,36 +141,35 @@ export function DiscoverSection() {
                 Compare Canadian private listings against our 1,400+ verified dealer wholesale network.
               </p>
 
-              {/* Vehicle Cutout Canvas with Floating Offer Badges */}
-              <div className="relative w-full max-w-[420px] aspect-[16/10] mx-auto lg:mx-0 flex items-center justify-center">
-                {/* Floating Offer Pill 1 (Top Left) */}
-                <div className="absolute top-2 left-0 sm:left-2 z-20 bg-surface-container-lowest/95 backdrop-blur-md border border-border-card rounded-full px-3.5 py-1.5 shadow-[0_6px_20px_rgba(32,27,17,0.08)] flex items-center gap-1.5 animate-bounce-slow">
-                  <span className="font-body text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider">
+              {/* Vehicle Cutout Canvas with Balanced, Matte Floating Offer Badges */}
+              <div className="relative w-full max-w-[440px] aspect-[16/10] mx-auto lg:mx-0 flex items-center justify-center pt-4 pb-2">
+                {/* Floating Badge 1 (Top Left, elevated clear of roof) */}
+                <div className="absolute -top-1 left-2 sm:left-4 z-20 bg-surface-container-lowest border border-border-card rounded-md px-3.5 py-1.5 shadow-[0_4px_14px_rgba(32,27,17,0.06)] flex items-center gap-2">
+                  <span className="font-body text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
                     Offer
                   </span>
                   <span className="font-mono text-xs font-bold text-on-surface">
-                    $29,500
+                    $29,500 CAD
                   </span>
                 </div>
 
-                {/* Floating Offer Pill 2 (Bottom Left) */}
-                <div className="absolute bottom-4 -left-2 sm:left-1 z-20 bg-surface-container-lowest/95 backdrop-blur-md border border-border-card rounded-full px-3.5 py-1.5 shadow-[0_6px_20px_rgba(32,27,17,0.08)] flex items-center gap-1.5">
-                  <span className="font-body text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider">
+                {/* Floating Badge 2 (Bottom Left, alongside wheel base) */}
+                <div className="absolute -bottom-2 left-0 sm:left-2 z-20 bg-surface-container-lowest border border-border-card rounded-md px-3.5 py-1.5 shadow-[0_4px_14px_rgba(32,27,17,0.06)] flex items-center gap-2">
+                  <span className="font-body text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
                     Offer
                   </span>
                   <span className="font-mono text-xs font-bold text-on-surface">
-                    $31,990
+                    $31,990 CAD
                   </span>
                 </div>
 
-                {/* Floating Top Bid Pill 3 (Center Right - Highlighted) */}
-                <div className="absolute top-1/2 -right-2 sm:right-0 -translate-y-1/2 z-20 bg-primary text-white border border-primary-light/40 rounded-full px-4 py-2 shadow-[0_8px_24px_rgba(142,34,44,0.3)] flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-success animate-ping" />
-                  <span className="font-body text-[10px] font-bold uppercase tracking-wider text-secondary-fixed">
-                    Top Bid
+                {/* Floating Badge 3 (Top Right, above fender - No green ping, zero grille masking) */}
+                <div className="absolute -top-1 right-2 sm:right-4 z-20 bg-primary text-white border border-primary-hover [clip-path:polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,6px_100%,0_calc(100%-6px))] px-3.5 py-1.5 shadow-sm flex items-center gap-2">
+                  <span className="font-body text-[10px] font-bold uppercase tracking-wider text-secondary">
+                    Top Dealer Bid
                   </span>
                   <span className="font-mono text-xs font-bold text-white">
-                    $34,250
+                    $34,250 CAD
                   </span>
                 </div>
 
@@ -170,28 +177,46 @@ export function DiscoverSection() {
                 <div className="relative w-full h-full">
                   <Image
                     src="/plain-cars-images/image_38.webp"
-                    alt="Sell your SUV with AutoNexa"
+                    alt="Sell your vehicle with AutoNexa"
                     fill
-                    className="object-contain drop-shadow-[0_16px_30px_rgba(0,0,0,0.18)]"
-                    sizes="(max-width: 768px) 100vw, 420px"
+                    className="object-contain"
+                    sizes="(max-width: 768px) 100vw, 440px"
                     priority
                   />
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Two Elegant Comparison Cards */}
+            {/* Right Column: Two Sharp Geometric Comparison Cards */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
-              {/* Card 1: Sell to a Dealership (Fastest Option - AutoNexa Highlighted) */}
-              <div className="relative bg-surface-container-lowest border-2 border-primary/40 rounded-2xl p-6 sm:p-7 shadow-[0_10px_35px_rgba(142,34,44,0.08)] flex flex-col justify-between transition-all hover:shadow-[0_12px_45px_rgba(142,34,44,0.14)] hover:border-primary">
-                {/* Top Badge: "Fastest Option" */}
-                <div className="absolute -top-3.5 left-6 bg-[#201B11] text-white font-body text-[10px] font-bold uppercase tracking-widest px-3.5 py-1 rounded-full shadow-md flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-secondary" />
+              {/* Card 1: Sell to a Dealership (Fastest Option - Geometric Cuts & Corner Triangles) */}
+              <div className="group relative bg-surface-container-lowest border border-primary/40 [clip-path:polygon(0_0,calc(100%-24px)_0,100%_24px,100%_100%,24px_100%,0_calc(100%-24px))] p-6 sm:p-7 shadow-[0_8px_30px_rgba(32,27,17,0.06)] flex flex-col justify-between transition-all duration-300 hover:border-primary">
+                {/* Subtle stone texture on card surface */}
+                <div
+                  className="absolute inset-0 opacity-[0.03] mix-blend-multiply pointer-events-none"
+                  style={{ backgroundImage: "url('/textures/stone-background-1400.jpg')" }}
+                />
+
+                {/* Geometric Top Badge: "Fastest Option" with Phosphor Lightning */}
+                <div className="absolute -top-3 left-6 bg-[#201B11] text-white font-body text-[10px] font-bold uppercase tracking-widest px-3.5 py-1 [clip-path:polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,8px_100%,0_calc(100%-8px))] shadow-sm flex items-center gap-1.5 z-20 border-y border-white/20">
+                  <Lightning weight="fill" className="w-3.5 h-3.5 text-secondary" />
                   <span>Fastest Option</span>
                 </div>
 
-                <div>
-                  <h3 className="font-headline text-lg sm:text-xl font-bold text-on-surface mb-1 mt-1">
+                {/* Solid Corner Triangles (Top-Right Crimson & Bottom-Left Pumpkin) */}
+                <div className="absolute top-0 right-0 w-6 h-6 pointer-events-none z-10">
+                  <div className="w-full h-full bg-primary [clip-path:polygon(100%_0,0_0,100%_100%)] opacity-90 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="absolute bottom-0 left-0 w-6 h-6 pointer-events-none z-10">
+                  <div className="w-full h-full bg-secondary [clip-path:polygon(0_100%,0_0,100%_100%)] opacity-90 group-hover:opacity-100 transition-opacity" />
+                </div>
+
+                {/* Aerospace Corner Crosshairs */}
+                <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t-2 border-l-2 border-primary/40 pointer-events-none z-10" />
+                <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b-2 border-r-2 border-primary/40 pointer-events-none z-10" />
+
+                <div className="relative z-10 pt-2">
+                  <h3 className="font-headline text-lg sm:text-xl font-bold text-on-surface mb-1">
                     Sell to a dealership
                   </h3>
                   <p className="font-body text-xs text-primary font-semibold mb-6">
@@ -200,35 +225,55 @@ export function DiscoverSection() {
 
                   <ul className="space-y-3.5 mb-8">
                     <li className="flex items-center gap-3 text-xs sm:text-sm text-on-surface font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
+                      <CheckCircle weight="fill" className="w-4 h-4 text-success shrink-0" />
                       <span>Sell as early as today</span>
                     </li>
                     <li className="flex items-center gap-3 text-xs sm:text-sm text-on-surface font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
+                      <CheckCircle weight="fill" className="w-4 h-4 text-success shrink-0" />
                       <span>Get multiple competing offers</span>
                     </li>
                     <li className="flex items-center gap-3 text-xs sm:text-sm text-on-surface font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
+                      <CheckCircle weight="fill" className="w-4 h-4 text-success shrink-0" />
                       <span>Trade-in provincial tax credits</span>
                     </li>
                     <li className="flex items-center gap-3 text-xs sm:text-sm text-on-surface font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
+                      <CheckCircle weight="fill" className="w-4 h-4 text-success shrink-0" />
                       <span>Convenient doorstep drop-off</span>
                     </li>
                   </ul>
                 </div>
 
-                <a
-                  href="#valuation"
-                  className="w-full py-3.5 px-5 rounded-xl bg-primary hover:bg-primary-hover text-white font-body text-xs sm:text-sm font-bold tracking-wide shadow-sm hover:shadow-md transition-all text-center block active:scale-[0.99]"
-                >
-                  Get your offer now
-                </a>
+                <div className="relative z-10">
+                  <a
+                    href="#valuation"
+                    className="w-full py-3.5 px-5 bg-primary hover:bg-primary-hover text-white font-body text-xs sm:text-sm font-bold tracking-wide [clip-path:polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,8px_100%,0_calc(100%-8px))] shadow-sm transition-all text-center block active:scale-[0.99]"
+                  >
+                    Get your offer now
+                  </a>
+                </div>
               </div>
 
-              {/* Card 2: Sell Privately (Traditional Alternative) */}
-              <div className="relative bg-surface-container-lowest/80 border border-border-card rounded-2xl p-6 sm:p-7 shadow-xs flex flex-col justify-between hover:border-outline-variant transition-all">
-                <div>
+              {/* Card 2: Sell Privately (Geometric Chamfer & Corner Frames) */}
+              <div className="group relative bg-surface-container-lowest/90 border border-border-card [clip-path:polygon(0_0,calc(100%-24px)_0,100%_24px,100%_100%,24px_100%,0_calc(100%-24px))] p-6 sm:p-7 shadow-xs flex flex-col justify-between hover:border-outline-variant transition-all duration-300">
+                {/* Subtle stone texture on card surface */}
+                <div
+                  className="absolute inset-0 opacity-[0.03] mix-blend-multiply pointer-events-none"
+                  style={{ backgroundImage: "url('/textures/stone-background-1400.jpg')" }}
+                />
+
+                {/* Subtle Neutral Corner Triangles */}
+                <div className="absolute top-0 right-0 w-6 h-6 pointer-events-none z-10">
+                  <div className="w-full h-full bg-outline-variant/60 [clip-path:polygon(100%_0,0_0,100%_100%)] opacity-80 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="absolute bottom-0 left-0 w-6 h-6 pointer-events-none z-10">
+                  <div className="w-full h-full bg-outline-variant/60 [clip-path:polygon(0_100%,0_0,100%_100%)] opacity-80 group-hover:opacity-100 transition-opacity" />
+                </div>
+
+                {/* Technical Corner Crosshairs */}
+                <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t-2 border-l-2 border-outline-variant/60 pointer-events-none z-10" />
+                <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b-2 border-r-2 border-outline-variant/60 pointer-events-none z-10" />
+
+                <div className="relative z-10 pt-2">
                   <h3 className="font-headline text-lg sm:text-xl font-bold text-on-surface mb-1">
                     Sell privately
                   </h3>
@@ -238,30 +283,32 @@ export function DiscoverSection() {
 
                   <ul className="space-y-3.5 mb-8">
                     <li className="flex items-center gap-3 text-xs sm:text-sm text-on-surface font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
+                      <CheckCircle weight="fill" className="w-4 h-4 text-success shrink-0" />
                       <span>Free to list on classifieds</span>
                     </li>
                     <li className="flex items-center gap-3 text-xs sm:text-sm text-on-surface font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
+                      <CheckCircle weight="fill" className="w-4 h-4 text-success shrink-0" />
                       <span>Reach public retail buyers</span>
                     </li>
                     <li className="flex items-center gap-3 text-xs sm:text-sm text-on-surface font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
+                      <CheckCircle weight="fill" className="w-4 h-4 text-success shrink-0" />
                       <span>List your vehicle in minutes</span>
                     </li>
                     <li className="flex items-center gap-3 text-xs sm:text-sm text-on-surface font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
+                      <CheckCircle weight="fill" className="w-4 h-4 text-success shrink-0" />
                       <span>Aim for theoretical retail price</span>
                     </li>
                   </ul>
                 </div>
 
-                <a
-                  href="#valuation"
-                  className="w-full py-3.5 px-5 rounded-xl border-2 border-primary/30 hover:border-primary text-primary hover:bg-primary/5 font-body text-xs sm:text-sm font-bold tracking-wide transition-all text-center block active:scale-[0.99]"
-                >
-                  List your ad
-                </a>
+                <div className="relative z-10">
+                  <a
+                    href="#valuation"
+                    className="w-full py-3.5 px-5 border-2 border-primary/30 hover:border-primary text-primary hover:bg-primary/5 font-body text-xs sm:text-sm font-bold tracking-wide [clip-path:polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,8px_100%,0_calc(100%-8px))] transition-all text-center block active:scale-[0.99]"
+                  >
+                    List your ad
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -338,7 +385,7 @@ export function DiscoverSection() {
                   </span>
 
                   <span className="flex items-center gap-1 font-mono text-xs font-bold text-white bg-black/75 backdrop-blur-md border border-white/20 px-2.5 py-1 rounded-full shadow-xs">
-                    <Clock className="w-3 h-3 text-secondary" />
+                    <Clock weight="bold" className="w-3 h-3 text-secondary" />
                     <span>{car.endsIn}</span>
                   </span>
                 </div>
@@ -355,7 +402,7 @@ export function DiscoverSection() {
               <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-1.5 text-xs text-on-surface-variant font-medium mb-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-outline" />
+                    <MapPin weight="bold" className="w-3.5 h-3.5 text-outline" />
                     <span>{car.location}</span>
                   </div>
 
@@ -366,11 +413,11 @@ export function DiscoverSection() {
                   {/* Vehicle Spec Badges */}
                   <div className="grid grid-cols-2 gap-2 pb-4 mb-4 border-b border-border-card/60 text-xs text-on-surface-variant font-medium">
                     <div className="flex items-center gap-1.5">
-                      <Gauge className="w-3.5 h-3.5 text-outline" />
+                      <Gauge weight="bold" className="w-3.5 h-3.5 text-outline" />
                       <span>{car.mileage}</span>
                     </div>
                     <div className="flex items-center gap-1.5 truncate">
-                      <ShieldCheck className="w-3.5 h-3.5 text-outline" />
+                      <ShieldCheck weight="bold" className="w-3.5 h-3.5 text-outline" />
                       <span className="truncate">{car.transmission}</span>
                     </div>
                   </div>
@@ -392,7 +439,7 @@ export function DiscoverSection() {
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-high hover:bg-primary text-on-surface hover:text-white font-body text-xs font-bold uppercase tracking-wider transition-all duration-200 group/btn"
                   >
                     <span>View Report</span>
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" />
+                    <ArrowRight weight="bold" className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" />
                   </a>
                 </div>
               </div>

@@ -206,15 +206,15 @@ Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | Oat editorial canvas `bg-surface` (`#FDF9F3`) with tactile stone texture (`public/textures/stone-background-1400.jpg` at `opacity-[0.06]`) |
-| Border           | `border-border-card` (container), `border-t-4 border-t-primary` (highlighted card) |
-| Border radius    | `rounded-2xl` (comparison & inventory cards), `rounded-full` (offer pills & badges) |
+| Background       | Oat editorial canvas `bg-surface` (`#FDF9F3`) with tactile stone texture (`public/textures/stone-background-1400.jpg` at `opacity-[0.05]`) |
+| Border           | `border-border-card` (container), `border-primary/40` (geometric cards) |
+| Border radius    | Sharp chamfers `[clip-path:polygon(0_0,calc(100%-24px)_0,100%_24px,100%_100%,24px_100%,0_calc(100%-24px))]` (comparison cards), `[clip-path:polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,8px_100%,0_calc(100%-8px))]` (badge & CTAs) |
 | Text — primary   | `font-headline text-3xl sm:text-4xl font-bold tracking-tight text-on-surface` |
 | Text — secondary | `font-body text-sm sm:text-base text-on-surface-variant` |
 | Spacing          | `py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto` |
-| Hover state      | Cards `hover:shadow-[0_12px_32px_rgba(56,20,24,0.09)] hover:border-primary/40`, vehicle image `group-hover:scale-105` |
-| Shadow           | `shadow-[0_10px_35px_rgba(142,34,44,0.08)]` (Fastest Option card), `shadow-[0_6px_20px_rgba(32,27,17,0.08)]` (floating offer badges) |
-| Accent usage     | `bg-primary hover:bg-primary-hover text-white` CTA buttons, `bg-secondary` live wholesale pulse, `text-success` checkmarks |
+| Hover state      | Cards `hover:border-primary`, vehicle image `group-hover:scale-105` |
+| Shadow           | Crisp matte shadows `shadow-[0_8px_30px_rgba(32,27,17,0.06)]` (no artificial color glows) |
+| Accent usage     | `bg-primary` & `bg-secondary` solid corner triangles, Phosphor `Lightning` & `CheckCircle` icons |
 
 **Pattern notes:**
-Features a top comparison micro-section ("Looking to sell your car?") displaying the white Jeep Renegade (`public/plain-cars-images/image_38.webp`) surrounded by floating live offer pills (`$29,500`, `$31,990`, and `$34,250 Top Bid`) paired with two elegant side-by-side comparison cards (AutoNexa verified dealership network vs. private classifieds). Flows seamlessly into the certified live inventory showcase grid respecting sealed-bid invariants.
+Features a top comparison micro-section ("Looking to sell your car?") displaying the white Jeep Renegade (`public/plain-cars-images/image_38.webp`) framed by 3 matte offer badges without covering vehicle headlights/grille. Includes two sharp geometric chamfered comparison cards with solid corner triangles, aerospace corner crosshairs, and a chamfered "FASTEST OPTION" badge powered by Phosphor icons. Flows into the live inventory showcase.
