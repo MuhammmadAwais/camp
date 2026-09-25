@@ -98,18 +98,18 @@ Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | Raw `public/hero-bg.jfif` full-bleed cover (zero filters, zero texture overlays) with subtle bottom-edge fade to surface |
-| Border           | `border border-white/20` (tickers and badges) |
-| Border radius    | `rounded-2xl` (widget container), `rounded-full` (pills and tickers) |
-| Text — primary   | `font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]` |
-| Text — secondary | `font-body text-lg sm:text-xl text-white/95 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]` |
-| Spacing          | `pt-28 sm:pt-36 lg:pt-40 pb-16 px-4 sm:px-6 lg:px-8` |
+| Background       | Raw `public/hero-bg.jfif` full-bleed cover with `brightness-[0.88]` + top-to-bottom dark gradient `bg-gradient-to-b from-black/75 via-black/50 to-black/85` + bottom-edge fade to surface |
+| Border           | None |
+| Border radius    | `rounded-2xl` (widget container) |
+| Text — primary   | `font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]` |
+| Text — secondary | `font-body text-lg sm:text-xl text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]` |
+| Spacing          | `pt-32 sm:pt-36 lg:pt-42 pb-16 px-4 sm:px-6 lg:px-8` |
 | Hover state      | Interactive transitions on valuation triggers |
-| Shadow           | Deep drop shadows on headline for legibility over raw photographic twilight |
-| Accent usage     | `italic font-serif text-secondary underline decoration-secondary/60 underline-offset-8` |
+| Shadow           | Deep drop shadows on headline for legibility over dimmed twilight fleet image |
+| Accent usage     | `italic text-secondary underline decoration-secondary/60 underline-offset-8` (consistent headline font) |
 
 **Pattern notes:**
-Clean, unfiltered hero section. Background image extends continuously under the floating transparent navbar from the top of the viewport. Features keyword emphasis on *"Best"*, live 24h auction countdown pill, embedded `MarketValuationWidget`, and connects directly to `BrandCarousel`.
+Clean, dimmed hero section. Smooth top-to-bottom darkening gradient for optimal text contrast and sleek luxury aesthetic. Telemetry strip and unneeded disclaimers removed for minimal, purposeful design. Background extends under the floating transparent navbar.
 
 ---
 
@@ -131,7 +131,7 @@ Last updated: 2026-09-25
 | Accent usage     | `bg-primary hover:bg-primary-hover text-white` CTA button, `text-secondary` icons |
 
 **Pattern notes:**
-High-conversion Canadian appraisal search tool inspired by AutoTrader and freight portals. Includes vehicle category tabs (`Cars & SUVs`, `Trucks`, `Electric`, `Luxury`), dual Make/Model/VIN + Postal Code inputs, and embedded `BodyTypeSelector`.
+High-conversion Canadian appraisal search tool inspired by AutoTrader. Clean layout free of repetitive regulatory boilerplate disclaimers. Consistent `font-body` typography across search, postal code, and tab triggers.
 
 ---
 
@@ -142,17 +142,17 @@ Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | `bg-surface-container-lowest/80` (default) / `bg-surface-container-lowest` (active) |
-| Border           | `border border-border-card` (default) / `border-2 border-primary` (active) |
-| Border radius    | `rounded-xl` |
-| Text — primary   | `font-body text-[11px] font-semibold tracking-tight text-on-surface` (active: `text-primary`) |
-| Spacing          | `grid grid-cols-4 sm:grid-cols-8 gap-2.5 p-2` |
-| Hover state      | `hover:border-primary/40 group-hover:scale-105` on car image |
-| Shadow           | `shadow-xs` (default) / `shadow-sm` (active) |
-| Accent usage     | `text-primary` label and primary border on selected item |
+| Background       | `bg-transparent` (no card container background) |
+| Border           | `border-0` (no borders around vehicles) |
+| Border radius    | None |
+| Text — primary   | `font-body text-[11px] font-medium text-on-surface-variant` (active: `font-bold text-primary`) |
+| Spacing          | `grid grid-cols-4 sm:grid-cols-8 gap-3 sm:gap-4` |
+| Hover state      | `group-hover:scale-105 group-hover:opacity-100 group-hover:text-primary` |
+| Shadow           | Clean cutout styling with no card bounding boxes |
+| Accent usage     | `text-primary font-bold` with subtle dot indicator on active body type |
 
 **Pattern notes:**
-8-vehicle body type cutout selector (`SUVs`, `Trucks`, `Sedans`, `Coupes`, `Minivans`, `Hatchbacks`, `Convertibles`, `Station Wagons`) using assets from `public/plain-cars-images/`.
+Seamless, cardless 8-vehicle cutout selector (`SUVs`, `Trucks`, `Sedans`, `Coupes`, `Minivans`, `Hatchbacks`, `Convertibles`, `Station Wagons`) using assets from `public/plain-cars-images/`. Vehicles float directly on the widget canvas without boxed card borders.
 
 ---
 
