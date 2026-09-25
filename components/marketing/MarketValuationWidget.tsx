@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { BodyTypeSelector } from "@/components/marketing/BodyTypeSelector";
-import { Search, MapPin, Sparkles, ArrowRight, ShieldCheck } from "lucide-react";
+import { Search, MapPin, Sparkles, ArrowRight } from "lucide-react";
 
 export function MarketValuationWidget() {
   const [activeTab, setActiveTab] = React.useState("cars");
@@ -25,7 +25,7 @@ export function MarketValuationWidget() {
   };
 
   return (
-    <div className="w-full bg-surface-container-lowest/95 backdrop-blur-md border border-border-card rounded-2xl p-4 sm:p-6 lg:p-7 shadow-[0_12px_40px_-6px_rgba(56,20,24,0.12)]">
+    <div className="w-full bg-surface-container-lowest/95 backdrop-blur-md border border-border-card rounded-2xl p-4 sm:p-6 lg:p-7 shadow-[0_12px_40px_-6px_rgba(56,20,24,0.12)] text-left">
       {/* Category Tabs */}
       <div className="flex items-center gap-2 pb-4 border-b border-border-card/60 overflow-x-auto scrollbar-none">
         {categoryTabs.map((tab) => {
@@ -75,7 +75,7 @@ export function MarketValuationWidget() {
               onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
               placeholder="Postal Code* (e.g. M5V)"
               maxLength={7}
-              className="w-full pl-10 pr-4 py-3.5 bg-surface-container-low/70 border border-outline-variant/60 rounded-xl font-mono text-sm font-medium uppercase text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full pl-10 pr-4 py-3.5 bg-surface-container-low/70 border border-outline-variant/60 rounded-xl font-body text-sm font-medium uppercase text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all tracking-wider"
             />
           </div>
 
@@ -93,23 +93,12 @@ export function MarketValuationWidget() {
         </div>
       </form>
 
-      {/* Body Type Cutouts Selector (Inspired by AutoTrader) */}
+      {/* Body Type Cutouts Selector */}
       <div className="mt-5 pt-5 border-t border-border-card/60">
         <BodyTypeSelector
           selected={selectedBodyType}
           onSelect={(id) => setSelectedBodyType(id)}
         />
-      </div>
-
-      {/* Footer Trust Bar */}
-      <div className="mt-4 pt-3 flex flex-wrap items-center justify-between text-xs text-on-surface-variant gap-2">
-        <div className="flex items-center gap-2 font-medium">
-          <ShieldCheck className="w-4 h-4 text-success" />
-          <span>No Obligation • 100% Free for Private Sellers • Licensed Canadian Dealers</span>
-        </div>
-        <span className="font-mono text-[11px] text-secondary font-semibold">
-          Ontario (OMVIC) • Alberta (AMVIC) • BC (VSA)
-        </span>
       </div>
     </div>
   );

@@ -38,16 +38,13 @@ export function BodyTypeSelector({
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3">
         <span className="font-body text-xs font-bold uppercase tracking-wider text-on-surface-variant">
           Browse by Body Type
         </span>
-        <span className="font-mono text-xs text-secondary font-medium">
-          Instant Wholesale Match
-        </span>
       </div>
 
-      <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
+      <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 sm:gap-4">
         {bodyTypes.map((type) => {
           const isSelected = active === type.id;
           return (
@@ -55,13 +52,15 @@ export function BodyTypeSelector({
               key={type.id}
               type="button"
               onClick={() => handleClick(type.id)}
-              className={`group flex flex-col items-center justify-between p-2 rounded-xl transition-all duration-200 cursor-pointer text-center ${
-                isSelected
-                  ? "bg-surface-container-lowest border-2 border-primary shadow-sm"
-                  : "bg-surface-container-lowest/80 hover:bg-surface-container-lowest border border-border-card hover:border-primary/40 shadow-xs"
-              }`}
+              className="group flex flex-col items-center justify-center p-1 transition-all duration-200 cursor-pointer text-center bg-transparent border-0 outline-none focus:outline-none"
             >
-              <div className="relative h-10 w-full min-w-[50px] mb-1 transition-transform group-hover:scale-105">
+              <div
+                className={`relative h-11 w-full min-w-[50px] mb-1.5 transition-all duration-200 ${
+                  isSelected
+                    ? "scale-110 drop-shadow-sm"
+                    : "opacity-80 group-hover:opacity-100 group-hover:scale-105"
+                }`}
+              >
                 <Image
                   src={type.src}
                   alt={type.name}
@@ -71,12 +70,17 @@ export function BodyTypeSelector({
                 />
               </div>
               <span
-                className={`font-body text-[11px] font-semibold tracking-tight truncate w-full ${
-                  isSelected ? "text-primary" : "text-on-surface group-hover:text-primary"
+                className={`font-body text-[11px] tracking-tight truncate w-full transition-colors ${
+                  isSelected
+                    ? "text-primary font-bold"
+                    : "text-on-surface-variant font-medium group-hover:text-primary"
                 }`}
               >
                 {type.name}
               </span>
+              {isSelected && (
+                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1" />
+              )}
             </button>
           );
         })}
