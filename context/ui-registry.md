@@ -126,12 +126,12 @@ Last updated: 2026-09-25
 | Text — primary   | `font-body text-sm font-medium text-white placeholder:text-white/45` |
 | Text — secondary | `text-white/70 text-xs` |
 | Spacing          | `p-4 sm:p-6 lg:p-7 gap-3` |
-| Interactive state| Tabs: active `bg-white/25 text-white border-white/40 shadow-[0_2px_12px_rgba(255,255,255,0.15)]`, inactive `bg-white/[0.05] text-white/75 hover:bg-white/[0.12]`; Inputs: `focus:bg-white/[0.14] focus:border-white/45 focus:ring-1 focus:ring-white/30` |
+| Interactive state| Tabs: floating text navigation with active `text-white font-bold border-b-2 border-primary` and inactive `text-white/60 hover:text-white border-b-2 border-transparent`; Inputs: `focus:bg-white/[0.14] focus:border-white/45 focus:ring-1 focus:ring-white/30` |
 | Shadow           | `shadow-[0_20px_50px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.15)]` |
-| Accent usage     | `bg-primary/90 hover:bg-primary text-white border border-white/20 backdrop-blur-md shadow-[0_4px_20px_rgba(142,34,44,0.45)]` CTA button |
+| Accent usage     | `border-primary` active tab indicator, `bg-primary/90 hover:bg-primary text-white border border-white/20 backdrop-blur-md shadow-[0_4px_20px_rgba(142,34,44,0.45)]` CTA button |
 
 **Pattern notes:**
-Pure glassmorphism card floating over the twilight fleet hero image. Zero solid opaque backgrounds. Clean translucent frosted glass surfaces, white highlights, crisp typography, and luminous depth.
+Pure glassmorphism card floating over the twilight fleet hero image. Minimalist floating text category tabs with brand red active underline (`border-primary`). Zero button backgrounds or pill borders on tabs. Clean translucent frosted glass surfaces, white highlights, crisp typography, and luminous depth.
 
 ---
 

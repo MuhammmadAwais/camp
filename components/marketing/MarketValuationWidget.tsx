@@ -26,8 +26,8 @@ export function MarketValuationWidget() {
 
   return (
     <div className="w-full bg-white/[0.07] backdrop-blur-2xl border border-white/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.15)] text-left transition-all">
-      {/* Category Tabs (Translucent Glass Pills) */}
-      <div className="flex items-center gap-2 pb-4 border-b border-white/10 overflow-x-auto scrollbar-none">
+      {/* Category Tabs (Floating Text with Red Underline on Active) */}
+      <div className="flex items-center gap-6 sm:gap-8 border-b border-white/10 overflow-x-auto scrollbar-none">
         {categoryTabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -35,10 +35,10 @@ export function MarketValuationWidget() {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`relative px-4 py-2 rounded-xl font-body text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer backdrop-blur-md ${
+              className={`relative pb-3 pt-1 -mb-[2px] font-body text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer bg-transparent border-b-2 outline-none focus:outline-none ${
                 isActive
-                  ? "bg-white/25 text-white border border-white/40 shadow-[0_2px_12px_rgba(255,255,255,0.15)]"
-                  : "bg-white/[0.05] text-white/75 hover:bg-white/[0.12] hover:text-white border border-white/10"
+                  ? "text-white font-bold border-primary"
+                  : "text-white/60 hover:text-white font-medium border-transparent"
               }`}
             >
               {tab.label}
