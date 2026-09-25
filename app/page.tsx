@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/marketing/Navbar";
 import { HeroSection } from "@/components/marketing/HeroSection";
 import { WhatIsAutoNexa } from "@/components/marketing/WhatIsAutoNexa";
+import { DiscoverSection } from "@/components/marketing/DiscoverSection";
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
       <main className="flex-1">
         <HeroSection />
         <WhatIsAutoNexa />
+        <DiscoverSection />
       </main>
     </div>
   );

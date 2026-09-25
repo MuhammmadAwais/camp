@@ -196,3 +196,25 @@ Last updated: 2026-09-25
 
 **Pattern notes:**
 Editorial narrative and dual showcase cards with tactile dark marble backdrop. Features bold pumpkin `01.` index, interactive Canadian compliance tags, multi-weight lead paragraph with brand red/pumpkin keyword underlines, and non-standard chamfered geometric action cards.
+
+---
+
+### `DiscoverSection`
+
+File: `components/marketing/DiscoverSection.tsx`  
+Last updated: 2026-09-25
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Oat editorial canvas `bg-surface` (`#FDF9F3`) with tactile stone texture (`public/textures/stone-background-1400.jpg` at `opacity-[0.06]`) |
+| Border           | `border-border-card` (container), `border-t-4 border-t-primary` (highlighted card) |
+| Border radius    | `rounded-2xl` (comparison & inventory cards), `rounded-full` (offer pills & badges) |
+| Text — primary   | `font-headline text-3xl sm:text-4xl font-bold tracking-tight text-on-surface` |
+| Text — secondary | `font-body text-sm sm:text-base text-on-surface-variant` |
+| Spacing          | `py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto` |
+| Hover state      | Cards `hover:shadow-[0_12px_32px_rgba(56,20,24,0.09)] hover:border-primary/40`, vehicle image `group-hover:scale-105` |
+| Shadow           | `shadow-[0_10px_35px_rgba(142,34,44,0.08)]` (Fastest Option card), `shadow-[0_6px_20px_rgba(32,27,17,0.08)]` (floating offer badges) |
+| Accent usage     | `bg-primary hover:bg-primary-hover text-white` CTA buttons, `bg-secondary` live wholesale pulse, `text-success` checkmarks |
+
+**Pattern notes:**
+Features a top comparison micro-section ("Looking to sell your car?") displaying the white Jeep Renegade (`public/plain-cars-images/image_38.webp`) surrounded by floating live offer pills (`$29,500`, `$31,990`, and `$34,250 Top Bid`) paired with two elegant side-by-side comparison cards (AutoNexa verified dealership network vs. private classifieds). Flows seamlessly into the certified live inventory showcase grid respecting sealed-bid invariants.
