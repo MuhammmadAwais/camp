@@ -21,7 +21,7 @@ export function WhyUsSection() {
   return (
     <section
       id="why-us"
-      className="relative w-full min-h-[900px] lg:min-h-[960px] xl:min-h-[1000px] bg-black text-white py-20 lg:py-0 px-4 sm:px-6 lg:px-12 overflow-hidden flex items-center"
+      className="relative w-full min-h-[900px] lg:min-h-[960px] xl:min-h-[1000px] bg-black text-white py-20 lg:py-0 px-4 sm:px-8 lg:px-14 xl:px-20 overflow-hidden flex items-center"
     >
       {/* 1. Cinematic Background Car Silhouette (Why-Us.jfif) */}
       <div className="absolute inset-0 z-0">
@@ -37,13 +37,13 @@ export function WhyUsSection() {
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/70 pointer-events-none" />
       </div>
 
-      <div className="max-w-[1500px] mx-auto w-full relative z-10">
+      <div className="w-full max-w-[1800px] mx-auto relative z-10">
         {/* ========================================================================= */}
         {/* Desktop Absolute Layout (Exact Reference Match on lg+ screens)           */}
         {/* ========================================================================= */}
         <div className="hidden lg:block relative w-full h-[840px] xl:h-[880px]">
-          {/* Top-Right Corner Header Lockup: One-line title positioned in the top-right corner */}
-          <div className="absolute top-8 sm:top-10 xl:top-12 right-2 sm:right-6 xl:right-12 text-right z-20">
+          {/* Top-Right Corner Header Lockup: Pushed further right into open negative space */}
+          <div className="absolute top-8 sm:top-10 xl:top-12 right-0 sm:right-2 xl:right-4 text-right z-20">
             <h2 className="font-headline text-4xl sm:text-5xl xl:text-6xl font-black tracking-tight text-white whitespace-nowrap leading-none">
               Why AutoNexa
             </h2>
@@ -54,7 +54,7 @@ export function WhyUsSection() {
           </div>
 
           {/* Card 1: PROBLEMS (Bottom-left placement, generous size) */}
-          <div className="absolute top-36 xl:top-40 left-0 xl:left-2 w-[470px] xl:w-[520px] bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-9 xl:p-11 shadow-[0_12px_40px_rgba(0,0,0,0.6)] transition-all hover:border-white/20">
+          <div className="absolute top-36 xl:top-40 left-0 w-[470px] xl:w-[520px] bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-9 xl:p-11 shadow-[0_12px_40px_rgba(0,0,0,0.6)] transition-all hover:border-white/20">
             <span className="block text-xs font-mono tracking-widest text-white/50 uppercase font-semibold mb-6">
               PROBLEMS
             </span>

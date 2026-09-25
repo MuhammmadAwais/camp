@@ -286,19 +286,19 @@ Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | Canvas: Cinematic dark photography `/illustrations/Why-Us.jfif` with top/bottom edge vignettes; Cards: Translucent frosted glass `bg-white/[0.04]` with `backdrop-blur-xl` (car body & reflections clearly visible through cards) |
-| Border           | Cards: `border border-white/10 hover:border-white/20`; Square bullets: `w-1.5 h-1.5` |
-| Border radius    | Glassmorphic cards: `rounded-2xl`; Bullets: square |
-| Text — primary   | Headline: `font-headline text-4xl xl:text-5xl font-bold tracking-tight text-white leading-[1.1]`; Card text: `font-body text-sm xl:text-[15px] text-white/90` |
-| Text — secondary | Section tag: `Why AutoNexa` badge (`bg-white/[0.06] border border-white/10 text-secondary`); Card subheaders: `text-xs font-mono tracking-widest uppercase font-semibold text-white/50` (Problems) & `text-secondary` (Solutions) |
-| Spacing          | Section: `py-20 lg:py-0 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto min-h-[780px] lg:min-h-[820px]`; Desktop stage: `h-[720px] xl:h-[750px]`; Card padding: `p-6 xl:p-8`; List gap: `space-y-4` |
+| Background       | Canvas: Cinematic dark photography `/illustrations/Why-Us.jfif` with top/bottom edge vignettes; Cards: Translucent frosted glass `bg-white/[0.03]` with `backdrop-blur-xl` (car body & reflections clearly visible through cards) |
+| Border           | Cards: `border border-white/10 hover:border-white/20`; Square bullets: `w-2 h-2 rounded-[1px]` |
+| Border radius    | Glassmorphic cards: `rounded-3xl`; Bullets: square |
+| Text — primary   | Headline: `font-headline text-4xl sm:text-5xl xl:text-6xl font-black tracking-tight text-white whitespace-nowrap leading-none`; Sub-headline: `font-headline text-xl sm:text-2xl xl:text-3xl font-bold tracking-tight text-secondary`; Card text: `font-body text-base xl:text-[18px] text-white/95` |
+| Text — secondary | Card subheaders: `text-xs font-mono tracking-widest uppercase font-semibold text-white/50` (Problems) & `text-secondary` (Solutions) |
+| Spacing          | Section: `py-20 lg:py-0 px-4 sm:px-8 lg:px-14 xl:px-20 max-w-[1800px] mx-auto min-h-[900px] lg:min-h-[960px] xl:min-h-[1000px]`; Desktop stage: `h-[840px] xl:h-[880px]`; Card padding: `p-9 xl:p-11`; List gap: `space-y-5` |
 | Hover state      | Cards: `hover:border-white/20` / `hover:border-secondary/30` |
-| Shadow           | Cards: `shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]`; Key: `drop-shadow-[0_12px_24px_rgba(0,0,0,0.9)]` |
-| Accent usage     | `text-secondary` (`Why AutoNexa` pill, `SOLUTIONS` subhead, accent bar, and solution bullets) |
+| Shadow           | Problems Card: `shadow-[0_12px_40px_rgba(0,0,0,0.6)]`; Solutions Card: `shadow-[0_16px_50px_rgba(0,0,0,0.75)]`; Key: `drop-shadow-[0_16px_30px_rgba(0,0,0,0.9)]` |
+| Accent usage     | `text-secondary` (`Problems & Solutions` subhead, `SOLUTIONS` label, accent bar, and solution square bullets) |
 
 **Pattern notes:**
 - **Exact Reference Layout:** Matches the reference placement with the photographic car silhouette background (`/illustrations/Why-Us.jfif`).
-- **Non-Numeric Header (Right Side):** Removed the numeric prefix `02.` and replaced it with a non-numeric `Why AutoNexa` badge and clean headline `Problems & Solutions` positioned directly in the open space above the rear red taillight.
-- **Translucent Frosted Glassmorphism:** Cards use authentic translucent glass (`bg-white/[0.04] backdrop-blur-xl border border-white/10`), allowing the car silhouette, curves, and dark metallic reflections to be seen through the cards.
-- **Top-Left Key Placement:** `/illustrations/why-us-top-key.png` rests on the top-left edge of the `SOLUTIONS` card (`absolute -top-16 -left-6 xl:-top-20 xl:-left-8 w-32 xl:w-36 -rotate-6`), tilted naturally over the card edge as seen in the reference.
-- **Spatial Alignment:** Card 1 (`PROBLEMS`) sits high under the front roofline (`top-16 left-2 xl:left-8`), Card 2 (`SOLUTIONS`) sits lower and shifted right (`top-64 left-[340px] xl:left-[410px]`), and the title sits cleanly on the right side (`top-28 right-2 xl:right-10`).
+- **Single-Line Top-Right Header:** `Why AutoNexa` displays on a single line with `whitespace-nowrap font-black` in the top-right corner of the canvas (`top-8 sm:top-10 xl:top-12 right-0 sm:right-2 xl:right-4`), with `Problems & Solutions` cleanly nested below it.
+- **Translucent Frosted Glassmorphism:** Cards use authentic translucent glass (`bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl`), allowing the car silhouette, curves, and metallic reflections to be seen through the cards.
+- **Top-Right Key Placement:** `/illustrations/why-us-top-key.png` rests on the top-right edge of the `SOLUTIONS` card (`absolute -top-16 -right-6 xl:-top-20 xl:-right-8 w-36 xl:w-44 -rotate-12`), tilted naturally over the card edge as a connecting bridge.
+- **Spatial Alignment:** Card 1 (`PROBLEMS`) sits at `top-36 xl:top-40 left-0 w-[470px] xl:w-[520px]`, Card 2 (`SOLUTIONS`) sits lower at `top-[410px] xl:top-[440px] left-[230px] xl:left-[290px] w-[490px] xl:w-[540px]`, and the header sits far to the right in open dark negative space.
