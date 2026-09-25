@@ -250,3 +250,55 @@ Last updated: 2026-09-25
 - **Bold Color Numerals (About AutoNexa DNA):** Prominent bold numerals (`01.`, `02.`, `03.`) rendered in `font-headline font-black` matching the visual identity established in `WhatIsAutoNexa.tsx`.
 - **Directional Flow Connectors:** Arching dashed SVG flow arrows with arrowheads positioned between steps (`Step 1 → Step 2 → Step 3`) along with a sweeping dashed curved trail guiding the user toward the bottom conversion CTA.
 - **Conversion Trigger:** Centered "Start Your Free Appraisal" CTA button linking to `#valuation` with Canadian seller assurance tags.
+
+---
+
+### `FeaturesSection`
+
+File: `components/marketing/FeaturesSection.tsx`  
+Last updated: 2026-09-25
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Canvas: Deep Obsidian `#120F0D` with tactile `dark-marble.webp` texture overlay (`mix-blend-luminosity opacity-15`); Center Core: `bg-[#16120F]/90 border border-white/20 backdrop-blur-2xl`; Bottom guarantee: `bg-white/[0.02] border border-white/10 rounded-3xl` |
+| Border           | Horizontal dividers: `border-t border-white/10`; Orbital ring: `border border-dashed border-white/15`; Center core: `border border-white/20`; Badges: `border border-white/10` |
+| Border radius    | Central pedestal: `rounded-full`; Orbital ring: `rounded-full`; Feature icons: `rounded-lg`; Badges: `rounded-full` & `rounded-xl`; Bottom container: `rounded-3xl` |
+| Text — primary   | Headline: `font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white`; Feature titles: `font-headline text-xl sm:text-2xl font-bold text-white`; Numerals: `font-headline text-5xl sm:text-6xl font-black text-secondary` & `text-primary` |
+| Text — secondary | Tagline badge: `font-body text-xs font-bold uppercase tracking-widest text-secondary`; Feature copy: `font-body text-sm text-white/70 leading-relaxed font-normal`; Micro telemetry: `font-mono text-xs text-white/60` |
+| Spacing          | Section: `py-24 sm:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto`; Wing columns: `space-y-12`; Indented copy: `pl-0 sm:pl-[72px]` |
+| Hover state      | Feature titles: `group-hover:text-secondary` / `group-hover:text-primary`; Arrow links: `group-hover:translate-x-1 duration-200`; CTA button: `hover:bg-secondary/90 active:scale-95` |
+| Shadow           | Center core: `shadow-[0_16px_40px_rgba(0,0,0,0.7)]`; Orbital node glows: `shadow-[0_0_10px_rgba(229,147,68,0.8)]` |
+| Accent usage     | `text-secondary` (`01.`, `03.`, `05.` bold pumpkin numerals & badges), `text-primary` (`02.`, `04.` bold wine numerals & badges), `text-emerald-400` (live ping, Carfax verified, 100% free seller badge) |
+
+**Pattern notes:**
+- **Non-Grid Architectural Central Hub Layout:** Completely eliminated boxed bento card containers. Replaced with an open, fluid layout anchored by the official AutoNexa brand logo in a central orbital pedestal.
+- **Bold Numerals (About AutoNexa DNA):** Features are labeled with massive, bold numerals (`01.`, `02.`, `03.`, `04.`, `05.`) in `font-headline font-black` alternating in `text-secondary` (honey amber) and `text-primary` (wine red), identical to the typographic hierarchy established in `WhatIsAutoNexa.tsx`.
+- **Professional Minimalist Icons & Typography:** Uses sleek Phosphor icons (`LockKey`, `ChartLineUp`, `CheckCircle`, `ShieldCheck`) housed in minimalist frosted badges with uppercase category tracking tags.
+- **Divider Lines & Directional Flow Connectors:** Subtle divider lines and arrow indicators (`ArrowRight`) that guide the eye between exchange protocols, valuation intelligence, condition verification, and provincial licensing.
+- **Horizontal Grounding Anchor (Feature 05):** Full-width bottom guarantee band highlighting the 100% free seller direct payout (Interac e-Transfer and certified bank draft) with expedited 48-hour release.
+
+---
+
+### `WhyUsSection` (Problems & Solutions)
+
+File: `components/marketing/WhyUsSection.tsx`  
+Last updated: 2026-09-25
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Canvas: Cinematic dark photography `/illustrations/Why-Us.jfif` with top/bottom edge vignettes; Cards: Translucent frosted glass `bg-white/[0.04]` with `backdrop-blur-xl` (car body & reflections clearly visible through cards) |
+| Border           | Cards: `border border-white/10 hover:border-white/20`; Square bullets: `w-1.5 h-1.5` |
+| Border radius    | Glassmorphic cards: `rounded-2xl`; Bullets: square |
+| Text — primary   | Headline: `font-headline text-4xl xl:text-5xl font-bold tracking-tight text-white leading-[1.1]`; Card text: `font-body text-sm xl:text-[15px] text-white/90` |
+| Text — secondary | Section tag: `Why AutoNexa` badge (`bg-white/[0.06] border border-white/10 text-secondary`); Card subheaders: `text-xs font-mono tracking-widest uppercase font-semibold text-white/50` (Problems) & `text-secondary` (Solutions) |
+| Spacing          | Section: `py-20 lg:py-0 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto min-h-[780px] lg:min-h-[820px]`; Desktop stage: `h-[720px] xl:h-[750px]`; Card padding: `p-6 xl:p-8`; List gap: `space-y-4` |
+| Hover state      | Cards: `hover:border-white/20` / `hover:border-secondary/30` |
+| Shadow           | Cards: `shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]`; Key: `drop-shadow-[0_12px_24px_rgba(0,0,0,0.9)]` |
+| Accent usage     | `text-secondary` (`Why AutoNexa` pill, `SOLUTIONS` subhead, accent bar, and solution bullets) |
+
+**Pattern notes:**
+- **Exact Reference Layout:** Matches the reference placement with the photographic car silhouette background (`/illustrations/Why-Us.jfif`).
+- **Non-Numeric Header (Right Side):** Removed the numeric prefix `02.` and replaced it with a non-numeric `Why AutoNexa` badge and clean headline `Problems & Solutions` positioned directly in the open space above the rear red taillight.
+- **Translucent Frosted Glassmorphism:** Cards use authentic translucent glass (`bg-white/[0.04] backdrop-blur-xl border border-white/10`), allowing the car silhouette, curves, and dark metallic reflections to be seen through the cards.
+- **Top-Left Key Placement:** `/illustrations/why-us-top-key.png` rests on the top-left edge of the `SOLUTIONS` card (`absolute -top-16 -left-6 xl:-top-20 xl:-left-8 w-32 xl:w-36 -rotate-6`), tilted naturally over the card edge as seen in the reference.
+- **Spatial Alignment:** Card 1 (`PROBLEMS`) sits high under the front roofline (`top-16 left-2 xl:left-8`), Card 2 (`SOLUTIONS`) sits lower and shifted right (`top-64 left-[340px] xl:left-[410px]`), and the title sits cleanly on the right side (`top-28 right-2 xl:right-10`).

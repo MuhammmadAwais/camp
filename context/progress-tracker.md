@@ -7,8 +7,8 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Current Status
 
 **Phase:** 2 — AutoNexa Landing Page & Public Funnel
-**Last completed:** 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow, bold color index numbers, and directional flow arrows)
-**Next:** 06-F Key Features & Guarantees (`FeaturesSection.tsx` with sealed bid & compliance cards)
+**Last completed:** 06-F Key Features & Guarantees (`FeaturesSection.tsx` with 5-card Bento Grid, micro-UI telemetry, regional spread chart, damage HUD, orbital rings, and zero-fee donut chart)
+**Next:** 06-G Testimonials & Social Proof (`TestimonialsSection.tsx` with avatar cards)
 
 ---
 
@@ -28,7 +28,8 @@ Update this file after every completed feature. Any AI agent reading this should
 - [x] 06-C What is AutoNexa (`WhatIsAutoNexa.tsx` narrative value proposition & geometric showcase cards)
 - [x] 06-D Discover Inventory & Makes (`DiscoverSection.tsx` with top comparison micro-section & car showcase cards)
 - [x] 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow)
-- [ ] 06-F Key Features & Guarantees (`FeaturesSection.tsx` with sealed bid & compliance cards)
+- [x] 06-F Key Features & Guarantees (`FeaturesSection.tsx` with central logo core & editorial features)
+- [x] 06-F.1 Why Us / Problems & Solutions (`WhyUsSection.tsx` with cinematic car silhouette, glassmorphism cards, top key asset, and 02. header)
 - [ ] 06-G Testimonials & Social Proof (`TestimonialsSection.tsx` with avatar cards)
 - [ ] 06-H FAQs Accordion (`FaqSection.tsx` interactive collapsible FAQ)
 - [ ] 06-I Final Conversion CTA Banner (`CtaBanner.tsx` pre-footer appraisal CTA)

@@ -3,6 +3,8 @@ import { HeroSection } from "@/components/marketing/HeroSection";
 import { WhatIsAutoNexa } from "@/components/marketing/WhatIsAutoNexa";
 import { DiscoverSection } from "@/components/marketing/DiscoverSection";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
+import { FeaturesSection } from "@/components/marketing/FeaturesSection";
+import { WhyUsSection } from "@/components/marketing/WhyUsSection";
 
 export default function Home() {
   return (
@@ -13,6 +15,8 @@ export default function Home() {
         <WhatIsAutoNexa />
         <DiscoverSection />
         <HowItWorks />
+        <FeaturesSection />
+        <WhyUsSection />
       </main>
     </div>
   );
