@@ -225,3 +225,28 @@ Last updated: 2026-09-25
 - **Docked Action Element:** `w-[52px] h-[52px] rounded-[18px]` floating squircle button nestled inside the notch with `ArrowUpRight` Phosphor icon.
 - **Elevated Watchlist Heart:** Floating circular white button (`w-9 h-9 rounded-full bg-white/95 shadow-sm`) anchored in the top-right corner of the vehicle photo canvas opposite the status badge.
 - **Sealed Bid Invariant Compliance:** Real live bids remain confidential; inventory cards present the pre-inspected *Wholesale Reserve Est.* alongside retail market values and verified discount spreads (`10% OFF`), with Carfax & dealer licensing attributes.
+
+---
+
+### `HowItWorks`
+
+File: `components/marketing/HowItWorks.tsx`  
+Last updated: 2026-09-25
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Canvas: `bg-surface` (`#FFF8F2`); Image canvas: `bg-surface-container/60` |
+| Border           | Section top: `border-t border-border-card/60`; Step divider: `border-t border-border-card/70`; Badge: `border border-primary/20`; No card borders |
+| Border radius    | Image container: `rounded-2xl`; Badge: `rounded-full`; CTA Button: `rounded-xl` |
+| Text — primary   | Headline: `font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-on-surface`; Step title: `font-headline text-xl sm:text-2xl font-bold text-on-surface`; Step numeral: `font-headline text-3xl sm:text-4xl font-black` |
+| Text — secondary | Subtitle: `font-body text-xs font-semibold text-primary`; Step tag: `font-body text-xs font-bold uppercase tracking-widest text-on-surface-variant/80`; Bullet text: `font-body text-xs sm:text-sm text-on-surface leading-relaxed` |
+| Spacing          | Section: `py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto`; Step grid: `gap-10 lg:gap-12`; Image height: `h-60 sm:h-64` |
+| Hover state      | Image zoom: `group-hover:scale-105`; CTA button: `hover:bg-primary-hover active:scale-[0.98]` |
+| Shadow           | Image: `shadow-xs group-hover:shadow-md`; CTA button: `shadow-md hover:shadow-lg` |
+| Accent usage     | `text-secondary` (`01.` & `03.` bold pumpkin numerals), `text-primary` (`02.` bold wine numeral), `text-secondary` (directional flow dashed paths), `text-success` (check bullets) |
+
+**Pattern notes:**
+- **Cardless Minimalism:** Strictly borderless and unboxed presentation with stylish, rounded illustration frames (`get-estimate.jpg`, `start-bid.png`, `get-paid.jpg`) floating cleanly on the canvas without card rectangles or drop shadows.
+- **Bold Color Numerals (About AutoNexa DNA):** Prominent bold numerals (`01.`, `02.`, `03.`) rendered in `font-headline font-black` matching the visual identity established in `WhatIsAutoNexa.tsx`.
+- **Directional Flow Connectors:** Arching dashed SVG flow arrows with arrowheads positioned between steps (`Step 1 → Step 2 → Step 3`) along with a sweeping dashed curved trail guiding the user toward the bottom conversion CTA.
+- **Conversion Trigger:** Centered "Start Your Free Appraisal" CTA button linking to `#valuation` with Canadian seller assurance tags.

@@ -2,6 +2,7 @@ import { Navbar } from "@/components/marketing/Navbar";
 import { HeroSection } from "@/components/marketing/HeroSection";
 import { WhatIsAutoNexa } from "@/components/marketing/WhatIsAutoNexa";
 import { DiscoverSection } from "@/components/marketing/DiscoverSection";
+import { HowItWorks } from "@/components/marketing/HowItWorks";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
         <HeroSection />
         <WhatIsAutoNexa />
         <DiscoverSection />
+        <HowItWorks />
       </main>
     </div>
   );

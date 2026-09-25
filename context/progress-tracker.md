@@ -7,8 +7,8 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Current Status
 
 **Phase:** 2 — AutoNexa Landing Page & Public Funnel
-**Last completed:** 06-D Discover Inventory & Makes (`DiscoverSection.tsx` with concave notch product cards & docked action buttons)
-**Next:** 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow)
+**Last completed:** 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow, bold color index numbers, and directional flow arrows)
+**Next:** 06-F Key Features & Guarantees (`FeaturesSection.tsx` with sealed bid & compliance cards)
 
 ---
 
@@ -27,7 +27,7 @@ Update this file after every completed feature. Any AI agent reading this should
 - [x] 06-B.1 Micro-Section: As-Seen-On Media Ticker (`brands-logo` ribbon)
 - [x] 06-C What is AutoNexa (`WhatIsAutoNexa.tsx` narrative value proposition & geometric showcase cards)
 - [x] 06-D Discover Inventory & Makes (`DiscoverSection.tsx` with top comparison micro-section & car showcase cards)
-- [ ] 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow)
+- [x] 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow)
 - [ ] 06-F Key Features & Guarantees (`FeaturesSection.tsx` with sealed bid & compliance cards)
 - [ ] 06-G Testimonials & Social Proof (`TestimonialsSection.tsx` with avatar cards)
 - [ ] 06-H FAQs Accordion (`FaqSection.tsx` interactive collapsible FAQ)
