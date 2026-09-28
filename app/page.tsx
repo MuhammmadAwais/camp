@@ -7,6 +7,7 @@ import { FeaturesSection } from "@/components/marketing/FeaturesSection";
 import { WhyUsSection } from "@/components/marketing/WhyUsSection";
 import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
 import { FaqSection } from "@/components/marketing/FaqSection";
+import { CtaBanner } from "@/components/marketing/CtaBanner";
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
         <WhyUsSection />
         <TestimonialsSection />
         <FaqSection />
+        <CtaBanner />
       </main>
     </div>
   );
