@@ -159,5 +159,36 @@
     mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
     -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
   }
+
+  @keyframes marquee-vertical-up {
+    0% {
+      transform: translateY(0%);
+    }
+    100% {
+      transform: translateY(-50%);
+    }
+  }
+
+  @keyframes marquee-vertical-down {
+    0% {
+      transform: translateY(-50%);
+    }
+    100% {
+      transform: translateY(0%);
+    }
+  }
+
+  .animate-marquee-vertical-up {
+    animation: marquee-vertical-up 42s linear infinite;
+  }
+
+  .animate-marquee-vertical-down {
+    animation: marquee-vertical-down 42s linear infinite;
+  }
+
+  .animate-marquee-vertical-up:hover,
+  .animate-marquee-vertical-down:hover {
+    animation-play-state: paused;
+  }
 }
 

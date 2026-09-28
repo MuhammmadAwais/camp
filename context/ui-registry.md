@@ -302,3 +302,56 @@ Last updated: 2026-09-25
 - **Translucent Frosted Glassmorphism:** Cards use authentic translucent glass (`bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl`), allowing the car silhouette, curves, and metallic reflections to be seen through the cards.
 - **Top-Right Key Placement:** `/illustrations/why-us-top-key.png` rests on the top-right edge of the `SOLUTIONS` card (`absolute -top-16 -right-6 xl:-top-20 xl:-right-8 w-36 xl:w-44 -rotate-12`), tilted naturally over the card edge as a connecting bridge.
 - **Spatial Alignment:** Card 1 (`PROBLEMS`) sits at `top-36 xl:top-40 left-0 w-[470px] xl:w-[520px]`, Card 2 (`SOLUTIONS`) sits lower at `top-[410px] xl:top-[440px] left-[230px] xl:left-[290px] w-[490px] xl:w-[540px]`, and the header sits far to the right in open dark negative space.
+
+---
+
+### `TestimonialsSection`
+
+File: `components/marketing/TestimonialsSection.tsx`  
+Last updated: 2026-09-28
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Section: `bg-surface` (warm oat canvas `#FFF8F2`); Cards: `bg-white`; Avatar holder: `bg-surface-container` |
+| Border           | Cards: `border border-border-card/60`; Divider line: `border-b border-border-card/60`; Avatar circle: `border border-border-card/80` |
+| Border radius    | Cards: `rounded-2xl sm:rounded-[22px]`; Avatar: `rounded-full`; Divider pill: `rounded-full` |
+| Text — primary   | Section title: `font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-on-surface`; Reviewer name: `font-headline font-bold text-sm text-on-surface`; Quote text: `font-body text-sm sm:text-[15px] text-on-surface/90 leading-relaxed font-normal` |
+| Text — secondary | Subtitle: `font-body text-base sm:text-lg text-on-surface-variant`; Reviewer meta: `font-body text-xs text-on-surface-variant`; Trust ticker: `font-mono text-xs text-on-surface-variant/80` |
+| Spacing          | Section: `py-24 sm:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto`; Header margin: `mb-16 sm:mb-20`; Card padding: `p-6 sm:p-7`; Grid track: `h-[680px] sm:h-[740px] lg:h-[800px] gap-6 sm:gap-7` |
+| Hover state      | Cards: `hover:shadow-[0_12px_32px_-4px_rgba(32,27,17,0.12)]`; Quote icon: `group-hover:text-primary/30`; Marquee tracks: `hover:animation-play-state: paused` |
+| Shadow           | Cards: `shadow-[0_4px_20px_-2px_rgba(32,27,17,0.06)] hover:shadow-[0_12px_32px_-4px_rgba(32,27,17,0.12)]` |
+| Accent usage     | `text-secondary` (5-star ratings & center header underline), `text-primary/15` (vintage quote glyphs), `text-success` (verified Canadian seller badge), `bg-success` (pulsing status dot) |
+
+**Pattern notes:**
+- **3-Column Infinite Counter-Marquee:** Three vertical columns running staggered infinite CSS translations (`animate-marquee-vertical-up` 42s and `animate-marquee-vertical-down` 42s). Responsive breakdown: 3 columns on `lg`, 2 columns on `md`, 1 column on mobile.
+- **Seamless 60fps Loop Mathematics:** Arrays are duplicated (`[...testimonials, ...testimonials]`) with exact `translateY(-50%)` to `translateY(0%)` loops to guarantee zero jump or hitching during continuous scrolling.
+- **Double Soft-Edge Vignette Fade:** Combining CSS `[mask-image:linear-gradient(to_bottom,transparent_0%,black_12%,black_88%,transparent_100%)]` with absolute top and bottom overlay gradients (`bg-gradient-to-b from-surface via-surface/90 to-transparent`) creates a soft, cinematic boundary as cards scroll into view.
+- **Hover Play-State Pausing:** All marquee movement automatically pauses when the cursor hovers anywhere over the track or cards (`animate-marquee-vertical-*:hover { animation-play-state: paused; }`), allowing users to comfortably read quotes at their own pace.
+- **Card Interior Architecture:** Clean internal layout with star ratings & Phosphor quote watermark on top, direct quote copy, a subtle horizontal divider line, and reviewer avatar + verified Canadian seller checkmark at the bottom.
+- **Strict Autumn Editorial Tokens:** Fully respects the light warm oat canvas (`bg-surface`), honey amber accents (`text-secondary`), and earthy sage indicators (`text-success`).
+
+---
+
+### `FaqSection`
+
+File: `components/marketing/FaqSection.tsx`  
+Last updated: 2026-09-28
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Canvas: Deep Obsidian `#120F0D` with tactile `dark-marble.webp` texture overlay (`opacity-15 mix-blend-luminosity`); Toggle active: `bg-secondary/15` |
+| Border           | Accordion dividers: `border-t border-white/15` & `border-b border-white/15`; Toggle button: `border border-white/15` (inactive) / `border-secondary/40` (active) |
+| Border radius    | Toggle icon circle: `rounded-full` |
+| Text — primary   | Section title: `font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white`; Question title: `font-headline font-semibold text-base sm:text-lg text-white` (group-hover `text-secondary`) |
+| Text — secondary | Section subtitle: `font-body text-base sm:text-lg text-white/70`; Answer body: `font-body text-sm sm:text-base text-white/80 leading-relaxed font-normal` |
+| Spacing          | Section: `py-24 sm:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto`; Grid gap: `gap-12 lg:gap-14 xl:gap-20`; Image container: `max-w-[420px] h-[440px] sm:h-[520px] lg:h-[580px]`; Accordion trigger: `py-5 sm:py-6`; Answer padding: `pr-4 sm:pr-8 mb-6` |
+| Hover state      | Question: `group-hover:text-secondary`; Toggle button: `group-hover:border-white/30 group-hover:text-white` |
+| Shadow           | Visual cutout: `drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]` |
+| Accent usage     | `text-secondary` (honey amber active question title, chevron toggle, ambient blur glow), `bg-primary/10` (plum ambient glow) |
+
+**Pattern notes:**
+- **2-Column Split Layout:** Left side houses a clean, transparent visual cutout of a person thinking (`/illustrations/person-thinking.png`) with zero borders, boxes, or badges, floating naturally against the textured dark canvas.
+- **Horizontal Line-Divided Geometry:** Built cleanly with horizontal dividers (`border-b border-white/15`) instead of separate boxed cards, matching the modern, minimalist reference geometry.
+- **Accordion State Animation:** Uses CSS grid animation (`grid-rows-[1fr]` vs `grid-rows-[0fr]`) for smooth expansion and collapsing without height jumping.
+- **Auto-Open Default State:** The first FAQ item is open by default on initial page load, establishing instant context for viewers.
+- **Tactile Dark Marble Theme:** Seamlessly integrates the dark textured canvas (`#120F0D` + `dark-marble.webp`) to create a bold, cinematic contrast after the light Testimonials section.

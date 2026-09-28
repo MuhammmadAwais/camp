@@ -36,7 +36,7 @@ export function HeroSection() {
           {/* Main Headline (Epilogue) with consistent font styling */}
           <h1 className="font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] leading-[1.12] max-w-4xl">
             The{" "}
-            <span className="italic text-secondary underline decoration-secondary/60 underline-offset-8">
+            <span className=" text-secondary underline decoration-secondary/60 underline-offset-8">
               Best
             </span>{" "}
             Way To Sell Your Car.

@@ -7,8 +7,8 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Current Status
 
 **Phase:** 2 — AutoNexa Landing Page & Public Funnel
-**Last completed:** 06-F Key Features & Guarantees (`FeaturesSection.tsx` with 5-card Bento Grid, micro-UI telemetry, regional spread chart, damage HUD, orbital rings, and zero-fee donut chart)
-**Next:** 06-G Testimonials & Social Proof (`TestimonialsSection.tsx` with avatar cards)
+**Last completed:** 06-H FAQs Accordion (`FaqSection.tsx` with 2-column condition inspection visual and horizontal line-divided accordion)
+**Next:** 06-I Final Conversion CTA Banner (`CtaBanner.tsx` pre-footer appraisal CTA)
 
 ---
 
@@ -30,8 +30,8 @@ Update this file after every completed feature. Any AI agent reading this should
 - [x] 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow)
 - [x] 06-F Key Features & Guarantees (`FeaturesSection.tsx` with central logo core & editorial features)
 - [x] 06-F.1 Why Us / Problems & Solutions (`WhyUsSection.tsx` with cinematic car silhouette, glassmorphism cards, top key asset, and 02. header)
-- [ ] 06-G Testimonials & Social Proof (`TestimonialsSection.tsx` with avatar cards)
-- [ ] 06-H FAQs Accordion (`FaqSection.tsx` interactive collapsible FAQ)
+- [x] 06-G Testimonials & Social Proof (`TestimonialsSection.tsx` with avatar cards)
+- [x] 06-H FAQs Accordion (`FaqSection.tsx` interactive collapsible FAQ)
 - [ ] 06-I Final Conversion CTA Banner (`CtaBanner.tsx` pre-footer appraisal CTA)
 - [ ] 06-J Footer (`Footer.tsx` brand links, OMVIC/AMVIC badges, and legal disclosures)
 - [ ] 07 Legal Pages (`/legal/privacy` and `/legal/terms` PIPEDA & Law 25 compliant)

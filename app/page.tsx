@@ -5,6 +5,8 @@ import { DiscoverSection } from "@/components/marketing/DiscoverSection";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
 import { FeaturesSection } from "@/components/marketing/FeaturesSection";
 import { WhyUsSection } from "@/components/marketing/WhyUsSection";
+import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
+import { FaqSection } from "@/components/marketing/FaqSection";
 
 export default function Home() {
   return (
@@ -17,6 +19,8 @@ export default function Home() {
         <HowItWorks />
         <FeaturesSection />
         <WhyUsSection />
+        <TestimonialsSection />
+        <FaqSection />
       </main>
     </div>
   );
