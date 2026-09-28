@@ -7,8 +7,8 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Current Status
 
 **Phase:** 2 — AutoNexa Landing Page & Public Funnel
-**Last completed:** 06-H FAQs Accordion (`FaqSection.tsx` with 2-column condition inspection visual and horizontal line-divided accordion)
-**Next:** 06-I Final Conversion CTA Banner (`CtaBanner.tsx` pre-footer appraisal CTA)
+**Last completed:** 06-J Footer (`Footer.tsx` with READY TO SELL prompt, glowing CTA, 4 directory columns, and `AutoNexaPhysicsCanvas` interactive bead interaction)
+**Next:** 07 Legal Pages (`/legal/privacy` and `/legal/terms` PIPEDA & Law 25 compliant)
 
 ---
 
@@ -32,8 +32,8 @@ Update this file after every completed feature. Any AI agent reading this should
 - [x] 06-F.1 Why Us / Problems & Solutions (`WhyUsSection.tsx` with cinematic car silhouette, glassmorphism cards, top key asset, and 02. header)
 - [x] 06-G Testimonials & Social Proof (`TestimonialsSection.tsx` with avatar cards)
 - [x] 06-H FAQs Accordion (`FaqSection.tsx` interactive collapsible FAQ)
-- [ ] 06-I Final Conversion CTA Banner (`CtaBanner.tsx` pre-footer appraisal CTA)
-- [ ] 06-J Footer (`Footer.tsx` brand links, OMVIC/AMVIC badges, and legal disclosures)
+- [x] 06-I Final Conversion CTA Banner (`CtaBanner.tsx` pre-footer appraisal CTA)
+- [x] 06-J Footer (`Footer.tsx` brand links, OMVIC/AMVIC badges, and legal disclosures)
 - [ ] 07 Legal Pages (`/legal/privacy` and `/legal/terms` PIPEDA & Law 25 compliant)
 
 ### Phase 3 — Seller Portal (Mobile-First / Light Mode)

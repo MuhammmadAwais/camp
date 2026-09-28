@@ -355,3 +355,52 @@ Last updated: 2026-09-28
 - **Accordion State Animation:** Uses CSS grid animation (`grid-rows-[1fr]` vs `grid-rows-[0fr]`) for smooth expansion and collapsing without height jumping.
 - **Auto-Open Default State:** The first FAQ item is open by default on initial page load, establishing instant context for viewers.
 - **Tactile Dark Marble Theme:** Seamlessly integrates the dark textured canvas (`#120F0D` + `dark-marble.webp`) to create a bold, cinematic contrast after the light Testimonials section.
+
+---
+
+### `CtaBanner`
+
+File: `components/marketing/CtaBanner.tsx`  
+Last updated: 2026-09-28
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Card: `bg-[#0D0B0A]`; Grid overlay: linear-gradient 52px opacity-20 |
+| Border           | Container outline: `border border-secondary/30` |
+| Border radius    | Card container: `rounded-3xl sm:rounded-[36px]` |
+| Text — primary   | Headline line 1: `font-headline text-3xl sm:text-5xl lg:text-[44px] xl:text-[56px] font-bold tracking-tight text-white`; Line 2: `text-secondary` |
+| Text — secondary | Paragraph: `font-body text-base sm:text-lg text-white/75 max-w-lg leading-relaxed` |
+| Spacing          | Section: `py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto`; Card: `min-h-[360px] sm:min-h-[400px] lg:min-h-[420px]`; Text padding: `p-8 sm:p-12 lg:p-16 xl:pl-20` |
+| Hover state      | Ambient static editorial banner |
+| Shadow           | Card: `shadow-[0_20px_50px_rgba(0,0,0,0.8)]`; Portrait: `drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]` |
+| Accent usage     | `text-secondary` (`car & rides?` headline accent), `bg-secondary/10` (soft ambient blur glow) |
+
+**Pattern notes:**
+- **Exact Reference Cadence:** Directly replicates the minimalist reference banner with no extraneous buttons or cluttered badges.
+- **Unbroken 2-Line Typographic Lockup:** `Ready to elevate your` displays cleanly on line 1 without awkward single-word wrapping, followed immediately by `car & rides?` in honey amber on line 2.
+- **Full-Bleed Vertical Portrait:** Anchors the isolated cutout portrait of the smiling woman holding her phone (`/avatars/happy-woman-in-a-green-sweater-holding-a-phone-and-1.webp`) so her head reaches close to the top border, filling the right side proportionally.
+
+---
+
+### `Footer` & `AutoNexaPhysicsCanvas`
+
+File: `components/marketing/Footer.tsx`, `components/marketing/AutoNexaPhysicsCanvas.tsx`  
+Last updated: 2026-09-28
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Footer canvas: `bg-[#0A0807]`; Radial top glow: `bg-secondary/10 blur-[130px]`; CTA button: `bg-secondary` |
+| Border           | Directory divider: `border-b border-white/10`; Canvas container: `border-t border-white/10`; Footnote: `border-t border-white/5` |
+| Border radius    | CTA pill button: `rounded-full` |
+| Text — primary   | Prompt title: `font-headline text-5xl sm:text-7xl md:text-8xl lg:text-[104px] font-black tracking-tight text-white leading-none`; Link titles: `font-body text-sm text-white/80` |
+| Text — secondary | Column headers: `font-mono text-xs font-bold uppercase tracking-widest text-white/50`; Copyright: `font-body text-xs text-white/45` |
+| Spacing          | Section: `pt-20 sm:pt-28 pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto`; Columns: `gap-10 lg:gap-14 pb-16 sm:pb-20` |
+| Hover state      | CTA button: `hover:bg-secondary/90 hover:scale-105 hover:shadow-[0_0_55px_rgba(229,147,68,0.85)]`; Links: `hover:text-secondary` |
+| Shadow           | CTA button: `shadow-[0_0_35px_rgba(229,147,68,0.55)]` |
+| Accent usage     | `bg-secondary` (glowing CTA button), `text-secondary` (hover states), `text-emerald-400` (Law 25 compliance check) |
+
+**Pattern notes:**
+- **Massive Display Prompt (Image 2 Reference):** Centered `READY TO SELL?` in ultra-bold Epilogue uppercase paired with a high-energy glowing amber appraisal pill button.
+- **4-Column Directory Architecture:** Neatly categorized links into Contact, Platform, Company, and Legal & Trust with OMVIC, AMVIC, VSA, and Quebec Law 25 compliance badges.
+- **Interactive Particle Physics Engine (`AutoNexaPhysicsCanvas`):** The word `AUTONEXA` is rasterized into a high-density matrix of tiny dots. When the cursor sweeps over the canvas, an interactive repulsion radius scatters the beads with spring physics, damping, and velocity glow (`text-secondary`), smoothly snapping back to their home coordinates at 60fps.
+- **Performance Optimization:** Includes `IntersectionObserver` to automatically halt the `requestAnimationFrame` loop when the footer is offscreen, eliminating background CPU/GPU load. Scales adaptively for high-DPI displays and touch devices.
