@@ -23,10 +23,10 @@ export function WhyUsSection() {
       id="why-us"
       className="relative w-full min-h-[900px] lg:min-h-[960px] xl:min-h-[1000px] bg-black text-white py-20 lg:py-0 px-4 sm:px-8 lg:px-14 xl:px-20 overflow-hidden flex items-center"
     >
-      {/* 1. Cinematic Background Car Silhouette (Why-Us.jfif) */}
+      {/* 1. Cinematic Background Car Silhouette (why-us.webp) */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/illustrations/Why-Us.jfif"
+          src="/illustrations/why-us.webp"
           alt="Why AutoNexa Car Silhouette"
           fill
           priority

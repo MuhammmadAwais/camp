@@ -20,7 +20,7 @@ export function WhatIsAutoNexa() {
       tagline: "Wholesale Dealer Exchange",
       description:
         "Access a live synchronized inventory stream of private Canadian trades with verified condition reports, Carfax disclosures, and sealed-bid integrity.",
-      image: "/illustrations/live-auction-hub.jfif",
+      image: "/illustrations/live-auction-hub.webp",
       cta: "EXPLORE AUCTIONS",
       href: "#explore",
       cornerAccent: "secondary", // Pumpkin

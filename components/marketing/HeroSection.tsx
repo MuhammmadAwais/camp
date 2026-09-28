@@ -16,11 +16,10 @@ export function HeroSection() {
           suppressHydrationWarning
         >
           <Image
-            src="/hero-bg.jfif"
+            src="/hero-bg.webp"
             alt="AutoNexa Luxury Fleet at Twilight"
             fill
             priority
-            unoptimized
             className="object-cover object-top sm:object-center brightness-[0.88]"
           />
 

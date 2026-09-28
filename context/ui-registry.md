@@ -286,7 +286,7 @@ Last updated: 2026-09-25
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | Canvas: Cinematic dark photography `/illustrations/Why-Us.jfif` with top/bottom edge vignettes; Cards: Translucent frosted glass `bg-white/[0.03]` with `backdrop-blur-xl` (car body & reflections clearly visible through cards) |
+| Background       | Canvas: Cinematic dark photography `/illustrations/why-us.webp` with top/bottom edge vignettes; Cards: Translucent frosted glass `bg-white/[0.03]` with `backdrop-blur-xl` (car body & reflections clearly visible through cards) |
 | Border           | Cards: `border border-white/10 hover:border-white/20`; Square bullets: `w-2 h-2 rounded-[1px]` |
 | Border radius    | Glassmorphic cards: `rounded-3xl`; Bullets: square |
 | Text — primary   | Headline: `font-headline text-4xl sm:text-5xl xl:text-6xl font-black tracking-tight text-white whitespace-nowrap leading-none`; Sub-headline: `font-headline text-xl sm:text-2xl xl:text-3xl font-bold tracking-tight text-secondary`; Card text: `font-body text-base xl:text-[18px] text-white/95` |
@@ -297,7 +297,7 @@ Last updated: 2026-09-25
 | Accent usage     | `text-secondary` (`Problems & Solutions` subhead, `SOLUTIONS` label, accent bar, and solution square bullets) |
 
 **Pattern notes:**
-- **Exact Reference Layout:** Matches the reference placement with the photographic car silhouette background (`/illustrations/Why-Us.jfif`).
+- **Exact Reference Layout:** Matches the reference placement with the photographic car silhouette background (`/illustrations/why-us.webp`).
 - **Single-Line Top-Right Header:** `Why AutoNexa` displays on a single line with `whitespace-nowrap font-black` in the top-right corner of the canvas (`top-8 sm:top-10 xl:top-12 right-0 sm:right-2 xl:right-4`), with `Problems & Solutions` cleanly nested below it.
 - **Translucent Frosted Glassmorphism:** Cards use authentic translucent glass (`bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl`), allowing the car silhouette, curves, and metallic reflections to be seen through the cards.
 - **Top-Right Key Placement:** `/illustrations/why-us-top-key.png` rests on the top-right edge of the `SOLUTIONS` card (`absolute -top-16 -right-6 xl:-top-20 xl:-right-8 w-36 xl:w-44 -rotate-12`), tilted naturally over the card edge as a connecting bridge.
