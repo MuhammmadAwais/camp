@@ -418,8 +418,18 @@ export function DiscoverSection() {
               return (
                 <div
                   key={car.id}
-                  className="group relative bg-white rounded-[32px] p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between border border-border-card/60 shadow-[0_4px_24px_rgba(32,27,17,0.04)] hover:shadow-[0_16px_40px_rgba(32,27,17,0.08)] hover:-translate-y-1"
+                  className="group relative bg-white rounded-[32px] p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between border border-border-card/60 hover:-translate-y-1"
                 >
+                  {/* Smooth Masked Shadow Layer: Zero shadow under the bottom-right corner, soft natural fade */}
+                  <div
+                    className="absolute inset-0 rounded-[32px] pointer-events-none -z-10 shadow-[0_4px_24px_rgba(32,27,17,0.05)] group-hover:shadow-[0_16px_40px_rgba(32,27,17,0.09)] transition-shadow duration-300"
+                    style={{
+                      maskImage:
+                        "radial-gradient(circle at bottom right, transparent 0, transparent 80px, black 120px)",
+                      WebkitMaskImage:
+                        "radial-gradient(circle at bottom right, transparent 0, transparent 80px, black 120px)",
+                    }}
+                  />
 
                   {/* 1. Vehicle Photo Canvas (Taller 4:3 Proportion for High-End Aspect Ratio) */}
                   <div className="relative h-60 sm:h-64 w-full rounded-[24px] overflow-hidden bg-surface-container/60 shrink-0">
@@ -523,23 +533,37 @@ export function DiscoverSection() {
                     </div>
                   </div>
 
-                  {/* 4. Docked Concave Corner Notch & Action Button (Flush at bottom-0 right-0 of card) */}
-                  <div className="absolute bottom-0 right-0 z-20 pointer-events-auto">
-                    <div className="relative w-[76px] h-[76px] bg-surface rounded-tl-[26px] rounded-br-[32px] flex items-center justify-center">
-                      {/* Top Concave Fillet Curve (Smooth transition from card right edge into notch) */}
+                  {/* 4. Docked Concave Corner Notch & Action Button (Outlines white card, zero outer corner border) */}
+                  <div className="absolute -bottom-[1px] -right-[1px] z-20 pointer-events-auto">
+                    <div className="relative w-[77px] h-[77px] bg-surface rounded-tl-[26px] border-t border-l border-border-card/60 flex items-center justify-center">
+                      {/* Top Concave Fillet Curve (Smooth transition from card right edge into notch with border) */}
                       <svg
                         viewBox="0 0 20 20"
-                        className="w-5 h-5 absolute -top-5 right-0 fill-surface pointer-events-none"
+                        className="w-5 h-5 absolute -top-5 right-0 pointer-events-none overflow-visible"
                       >
-                        <path d="M 20,0 A 20 20 0 0 1 0,20 L 20,20 Z" />
+                        <path d="M 20,0 A 20 20 0 0 1 0,20 L 20,20 Z" className="fill-surface" />
+                        <path
+                          d="M 20,0 A 20 20 0 0 1 0,20"
+                          fill="none"
+                          stroke="var(--color-border-card, #EADDCB)"
+                          strokeOpacity="0.6"
+                          strokeWidth="1"
+                        />
                       </svg>
 
-                      {/* Left Concave Fillet Curve (Smooth transition from card bottom edge into notch) */}
+                      {/* Left Concave Fillet Curve (Smooth transition from card bottom edge into notch with border) */}
                       <svg
                         viewBox="0 0 20 20"
-                        className="w-5 h-5 absolute bottom-0 -left-5 fill-surface pointer-events-none"
+                        className="w-5 h-5 absolute bottom-0 -left-5 pointer-events-none overflow-visible"
                       >
-                        <path d="M 0,20 A 20 20 0 0 0 20,0 L 20,20 Z" />
+                        <path d="M 0,20 A 20 20 0 0 0 20,0 L 20,20 Z" className="fill-surface" />
+                        <path
+                          d="M 0,20 A 20 20 0 0 0 20,0"
+                          fill="none"
+                          stroke="var(--color-border-card, #EADDCB)"
+                          strokeOpacity="0.6"
+                          strokeWidth="1"
+                        />
                       </svg>
 
                       {/* Docked Action Button with ArrowUpRight Icon */}
