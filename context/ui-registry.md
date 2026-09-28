@@ -339,22 +339,21 @@ Last updated: 2026-09-28
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | Canvas: Deep Obsidian `#120F0D` with tactile `dark-marble.webp` texture overlay (`opacity-15 mix-blend-luminosity`); Toggle active: `bg-secondary/15` |
-| Border           | Accordion dividers: `border-t border-white/15` & `border-b border-white/15`; Toggle button: `border border-white/15` (inactive) / `border-secondary/40` (active) |
-| Border radius    | Toggle icon circle: `rounded-full` |
-| Text — primary   | Section title: `font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white`; Question title: `font-headline font-semibold text-base sm:text-lg text-white` (group-hover `text-secondary`) |
-| Text — secondary | Section subtitle: `font-body text-base sm:text-lg text-white/70`; Answer body: `font-body text-sm sm:text-base text-white/80 leading-relaxed font-normal` |
-| Spacing          | Section: `py-24 sm:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto`; Grid gap: `gap-12 lg:gap-14 xl:gap-20`; Image container: `max-w-[420px] h-[440px] sm:h-[520px] lg:h-[580px]`; Accordion trigger: `py-5 sm:py-6`; Answer padding: `pr-4 sm:pr-8 mb-6` |
-| Hover state      | Question: `group-hover:text-secondary`; Toggle button: `group-hover:border-white/30 group-hover:text-white` |
-| Shadow           | Visual cutout: `drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]` |
-| Accent usage     | `text-secondary` (honey amber active question title, chevron toggle, ambient blur glow), `bg-primary/10` (plum ambient glow) |
+| Background       | Canvas: `bg-surface` (app warm oat `#FFF8F2`); Support card: `bg-white`; Toggle active: `bg-primary/10`; Active card item: `bg-surface-container-low/40` |
+| Border           | Accordion dividers: `border-t border-border-card` & `border-b border-border-card`; Toggle button: `border border-border-card` (inactive) / `border-primary/40` (active); Tag pill: `border border-primary/20` |
+| Border radius    | Support card: `rounded-2xl`; Toggle icon circle: `rounded-full`; Tag pill: `rounded-full` |
+| Text — primary   | Section title: `font-headline text-3xl sm:text-5xl font-bold tracking-tight text-on-surface`; Title highlight: `text-primary underline decoration-primary/40`; Question title: `font-headline font-semibold text-base sm:text-lg text-on-surface` (active: `text-primary font-bold`) |
+| Text — secondary | Section subtitle: `font-body text-base sm:text-lg text-on-surface-variant`; Answer body: `font-body text-sm sm:text-base text-on-surface-variant leading-relaxed`; Support copy: `text-xs sm:text-sm text-on-surface-variant` |
+| Spacing          | Section: `py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto`; Grid gap: `gap-12 lg:gap-14 xl:gap-20`; Accordion trigger: `py-5 sm:py-6`; Answer padding: `pr-4 sm:pr-8 mb-6` |
+| Hover state      | Question: `group-hover:text-primary`; Toggle button: `group-hover:border-primary/40 group-hover:text-primary`; Support link: `hover:text-primary-hover` |
+| Shadow           | Support card: `shadow-[0_4px_24px_-2px_rgba(32,27,17,0.06)]` |
+| Accent usage     | `text-primary` (brand maroon wine `#8C383E` active questions, chevron toggle, category tag, decorative underline), `bg-primary` (top card accent line) |
 
 **Pattern notes:**
-- **2-Column Split Layout:** Left side houses a clean, transparent visual cutout of a person thinking (`/illustrations/person-thinking.png`) with zero borders, boxes, or badges, floating naturally against the textured dark canvas.
-- **Horizontal Line-Divided Geometry:** Built cleanly with horizontal dividers (`border-b border-white/15`) instead of separate boxed cards, matching the modern, minimalist reference geometry.
-- **Accordion State Animation:** Uses CSS grid animation (`grid-rows-[1fr]` vs `grid-rows-[0fr]`) for smooth expansion and collapsing without height jumping.
-- **Auto-Open Default State:** The first FAQ item is open by default on initial page load, establishing instant context for viewers.
-- **Tactile Dark Marble Theme:** Seamlessly integrates the dark textured canvas (`#120F0D` + `dark-marble.webp`) to create a bold, cinematic contrast after the light Testimonials section.
+- **Asymmetric Split Editorial Layout:** Removed the image cutout completely. The left column (`lg:col-span-5`) hosts the sticky editorial header, a maroon seller knowledge base badge, and a dedicated Canadian marketplace support card.
+- **Maroon Wine Accents:** Infused with the signature Autumn Editorial brand maroon (`#8C383E` / `var(--color-primary)`) for active question highlights, circular toggle rings, category pills, and card accent lines.
+- **Horizontal Line-Divided Geometry:** Built cleanly with warm horizontal divider lines (`border-border-card`) matching the modern minimalist reference geometry.
+- **App Decided Oat Canvas:** Seamlessly integrated into the warm oat canvas (`bg-surface` `#FFF8F2`), completely eliminating dark brown textures for a cohesive, professional feel.
 
 ---
 
@@ -365,18 +364,18 @@ Last updated: 2026-09-28
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | Card: `bg-[#0D0B0A]`; Grid overlay: linear-gradient 52px opacity-20 |
+| Background       | Section: `bg-surface` (warm oat `#FFF8F2`); Card: `bg-[#201B11]`; Grid overlay: linear-gradient 52px opacity-20 |
 | Border           | Container outline: `border border-secondary/30` |
 | Border radius    | Card container: `rounded-3xl sm:rounded-[36px]` |
 | Text — primary   | Headline line 1: `font-headline text-3xl sm:text-5xl lg:text-[44px] xl:text-[56px] font-bold tracking-tight text-white`; Line 2: `text-secondary` |
 | Text — secondary | Paragraph: `font-body text-base sm:text-lg text-white/75 max-w-lg leading-relaxed` |
 | Spacing          | Section: `py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto`; Card: `min-h-[360px] sm:min-h-[400px] lg:min-h-[420px]`; Text padding: `p-8 sm:p-12 lg:p-16 xl:pl-20` |
-| Hover state      | Ambient static editorial banner |
-| Shadow           | Card: `shadow-[0_20px_50px_rgba(0,0,0,0.8)]`; Portrait: `drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]` |
-| Accent usage     | `text-secondary` (`car & rides?` headline accent), `bg-secondary/10` (soft ambient blur glow) |
+| Hover state      | Ambient static editorial banner (no glow) |
+| Shadow           | Card: `shadow-[0_20px_50px_rgba(32,27,17,0.18)]`; Portrait: `drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]` |
+| Accent usage     | `text-secondary` (`car & rides?` headline accent) |
 
 **Pattern notes:**
-- **Exact Reference Cadence:** Directly replicates the minimalist reference banner with no extraneous buttons or cluttered badges.
+- **App Decided Oat Canvas:** Sits on the app's signature light oat canvas (`bg-surface` `#FFF8F2`), completely eliminating muddy brown backgrounds and harsh glow orbs.
 - **Unbroken 2-Line Typographic Lockup:** `Ready to elevate your` displays cleanly on line 1 without awkward single-word wrapping, followed immediately by `car & rides?` in honey amber on line 2.
 - **Full-Bleed Vertical Portrait:** Anchors the isolated cutout portrait of the smiling woman holding her phone (`/avatars/happy-woman-in-a-green-sweater-holding-a-phone-and-1.webp`) so her head reaches close to the top border, filling the right side proportionally.
 
@@ -389,18 +388,17 @@ Last updated: 2026-09-28
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | Footer canvas: `bg-[#0A0807]`; Radial top glow: `bg-secondary/10 blur-[130px]`; CTA button: `bg-secondary` |
-| Border           | Directory divider: `border-b border-white/10`; Canvas container: `border-t border-white/10`; Footnote: `border-t border-white/5` |
+| Background       | Footer canvas: `bg-surface` (app warm oat `#FFF8F2`); CTA button: `bg-primary` (brand accent wine red `#8C383E`) |
+| Border           | Top border: `border-t border-border-card/60`; Directory divider: `border-b border-border-card/80`; Canvas container: `border-t border-border-card/60`; Footnote: `border-t border-border-card/60` |
 | Border radius    | CTA pill button: `rounded-full` |
-| Text — primary   | Prompt title: `font-headline text-5xl sm:text-7xl md:text-8xl lg:text-[104px] font-black tracking-tight text-white leading-none`; Link titles: `font-body text-sm text-white/80` |
-| Text — secondary | Column headers: `font-mono text-xs font-bold uppercase tracking-widest text-white/50`; Copyright: `font-body text-xs text-white/45` |
+| Text — primary   | Prompt title: `font-headline text-5xl sm:text-7xl md:text-8xl lg:text-[104px] font-black tracking-tight text-on-surface leading-none`; Link titles: `font-body text-sm text-on-surface/85`; CTA button: `text-white` |
+| Text — secondary | Column headers: `font-mono text-xs font-bold uppercase tracking-widest text-on-surface-variant`; Copyright: `font-body text-xs text-on-surface-variant` |
 | Spacing          | Section: `pt-20 sm:pt-28 pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto`; Columns: `gap-10 lg:gap-14 pb-16 sm:pb-20` |
-| Hover state      | CTA button: `hover:bg-secondary/90 hover:scale-105 hover:shadow-[0_0_55px_rgba(229,147,68,0.85)]`; Links: `hover:text-secondary` |
-| Shadow           | CTA button: `shadow-[0_0_35px_rgba(229,147,68,0.55)]` |
-| Accent usage     | `bg-secondary` (glowing CTA button), `text-secondary` (hover states), `text-emerald-400` (Law 25 compliance check) |
+| Hover state      | CTA button: `hover:bg-primary-hover hover:scale-105 active:scale-95`; Links: `hover:text-primary` |
+| Shadow           | CTA button: `shadow-md hover:shadow-lg` (clean, zero glow aura) |
+| Accent usage     | `bg-primary` (brand accent red appraisal CTA button: "Get Your Free Appraisal"), `text-primary` (hover states), `text-success` (Law 25 compliance check) |
 
 **Pattern notes:**
-- **Massive Display Prompt (Image 2 Reference):** Centered `READY TO SELL?` in ultra-bold Epilogue uppercase paired with a high-energy glowing amber appraisal pill button.
-- **4-Column Directory Architecture:** Neatly categorized links into Contact, Platform, Company, and Legal & Trust with OMVIC, AMVIC, VSA, and Quebec Law 25 compliance badges.
-- **Interactive Particle Physics Engine (`AutoNexaPhysicsCanvas`):** The word `AUTONEXA` is rasterized into a high-density matrix of tiny dots. When the cursor sweeps over the canvas, an interactive repulsion radius scatters the beads with spring physics, damping, and velocity glow (`text-secondary`), smoothly snapping back to their home coordinates at 60fps.
-- **Performance Optimization:** Includes `IntersectionObserver` to automatically halt the `requestAnimationFrame` loop when the footer is offscreen, eliminating background CPU/GPU load. Scales adaptively for high-DPI displays and touch devices.
+- **App Decided Oat Canvas:** Uses the authentic Autumn Editorial oat background (`bg-surface` `#FFF8F2`) and deep espresso plum text (`text-on-surface` `#201B11`), without brown tones or background glow halos.
+- **Red Beads Physics Engine (`AutoNexaPhysicsCanvas`):** The word `AUTONEXA` is rendered using thousands of red beads on the oat canvas (primary wine red `rgba(140, 56, 62, 0.65)` when resting, dispersing into vibrant crimson `rgba(186, 26, 26, 0.95)` when repelled by the cursor).
+- **Performance Optimization:** Includes `IntersectionObserver` to halt the `requestAnimationFrame` loop when the footer is offscreen, eliminating background CPU/GPU load. Adaptive density on resize and full touch-drag support for mobile devices.

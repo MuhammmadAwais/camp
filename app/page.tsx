@@ -19,7 +19,9 @@ export default function Home() {
         <WhatIsAutoNexa />
         <DiscoverSection />
         <HowItWorks />
+        {/* Temporarily hidden as requested:
         <FeaturesSection />
+        */}
         <WhyUsSection />
         <TestimonialsSection />
         <FaqSection />

@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
-import { CaretDown } from "@phosphor-icons/react";
+import { CaretDown, ChatCircleDots, ShieldCheck, ArrowRight } from "@phosphor-icons/react";
 
 interface FaqItem {
   id: string;
@@ -54,54 +53,67 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="relative w-full bg-[#120F0D] text-white py-24 sm:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"
+      className="relative w-full bg-surface text-on-surface py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 border-t border-border-card/60"
     >
-      {/* Tactile Dark Marble Background Texture */}
-      <div className="absolute inset-0 pointer-events-none opacity-15 mix-blend-luminosity bg-[url('/textures/dark-marble.webp')] bg-repeat bg-[length:400px_400px]" />
-
-      {/* Subtle Warm Amber Vignette Glows */}
-      <div className="absolute top-1/4 -left-40 w-96 h-96 rounded-full bg-secondary/10 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-40 w-96 h-96 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 items-center">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 items-start">
           {/* ========================================================================= */}
-          {/* 1. Left Visual: Person Thinking (Clean cutout, no border / box / badge)    */}
+          {/* 1. Left Column: Editorial Header & Support Assistance Card (No Person Img) */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-5 relative flex items-end justify-center">
-            <div className="relative w-full max-w-[420px] h-[440px] sm:h-[520px] lg:h-[580px]">
-              <Image
-                src="/illustrations/person-thinking.png"
-                alt="Frequently asked questions about AutoNexa"
-                fill
-                sizes="(max-width: 1024px) 100vw, 42vw"
-                className="object-contain object-bottom drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]"
-                priority={false}
-              />
+          <div className="lg:col-span-5 lg:sticky lg:top-28">
+            <h2 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-on-surface leading-[1.12]">
+              Frequently Asked <br />
+              <span className="text-primary  decoration-primary/40 underline-offset-8">
+                Questions.
+              </span>
+            </h2>
+
+            <p className="mt-5 font-body text-base sm:text-lg text-on-surface-variant leading-relaxed max-w-md">
+              Everything you need to know about Canada&apos;s sealed-bid wholesale marketplace,
+              regulatory protections, and guaranteed payout timelines.
+            </p>
+
+            {/* Unique Editorial Support Card with Maroon Accent */}
+            <div className="mt-8 sm:mt-10 p-6 sm:p-7 rounded-2xl bg-white border border-border-card shadow-[0_4px_24px_-2px_rgba(32,27,17,0.06)] relative overflow-hidden">
+              {/* Subtle Maroon Top Accent Line */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
+
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 text-primary">
+                  <ChatCircleDots weight="duotone" className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-headline font-bold text-base text-on-surface">
+                    Have a specific question?
+                  </h3>
+                  <p className="font-body text-xs sm:text-sm text-on-surface-variant mt-1 leading-relaxed">
+                    Our Canadian marketplace specialists are available 7 days a week to assist with appraisals, title transfers, and provincial regulations.
+                  </p>
+                  <a
+                    href="mailto:support@autonexa.ca"
+                    className="inline-flex items-center gap-1.5 font-body text-xs font-bold text-primary hover:text-primary-hover mt-3 group"
+                  >
+                    <span>Talk to an advisor</span>
+                    <ArrowRight weight="bold" className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* ========================================================================= */}
-          {/* 2. Right Column: Heading & Line-Divided Accordion                          */}
+          {/* 2. Right Column: Clean Line-Divided Accordion with Maroon Highlights       */}
           {/* ========================================================================= */}
           <div className="lg:col-span-7">
-            <div className="mb-8 sm:mb-10">
-              <h2 className="font-headline text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
-                Frequently Asked Questions
-              </h2>
-              <p className="mt-3 font-body text-base sm:text-lg text-white/70 max-w-xl leading-relaxed">
-                Everything you need to know about Canada&apos;s sealed-bid wholesale marketplace, seller guarantees, and instant payout timelines.
-              </p>
-            </div>
-
-            {/* Accordion Divider List (Image 2 geometry) */}
-            <div className="w-full border-t border-white/15">
+            <div className="w-full border-t border-border-card">
               {faqs.map((item) => {
                 const isOpen = openId === item.id;
                 return (
                   <div
                     key={item.id}
-                    className="border-b border-white/15 transition-colors duration-200"
+                    className={`border-b border-border-card transition-colors duration-200 ${
+                      isOpen ? "bg-surface-container-low/40 rounded-xl my-1 px-4 sm:px-5 border-transparent" : "px-1"
+                    }`}
                   >
                     <button
                       type="button"
@@ -112,8 +124,8 @@ export function FaqSection() {
                       <span
                         className={`font-headline font-semibold text-base sm:text-lg transition-colors duration-200 ${
                           isOpen
-                            ? "text-secondary"
-                            : "text-white group-hover:text-secondary"
+                            ? "text-primary font-bold"
+                            : "text-on-surface group-hover:text-primary"
                         }`}
                       >
                         {item.question}
@@ -121,8 +133,8 @@ export function FaqSection() {
                       <div
                         className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-all duration-300 ${
                           isOpen
-                            ? "border-secondary/40 bg-secondary/15 text-secondary rotate-180"
-                            : "border-white/15 bg-white/5 text-white/70 group-hover:border-white/30 group-hover:text-white"
+                            ? "border-primary/40 bg-primary/10 text-primary rotate-180"
+                            : "border-border-card bg-surface-container text-on-surface-variant group-hover:border-primary/40 group-hover:text-primary"
                         }`}
                       >
                         <CaretDown weight="bold" className="w-4 h-4" />
@@ -138,7 +150,7 @@ export function FaqSection() {
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <p className="font-body text-sm sm:text-base text-white/80 leading-relaxed font-normal pr-4 sm:pr-8">
+                        <p className="font-body text-sm sm:text-base text-on-surface-variant leading-relaxed font-normal pr-4 sm:pr-8">
                           {item.answer}
                         </p>
                       </div>

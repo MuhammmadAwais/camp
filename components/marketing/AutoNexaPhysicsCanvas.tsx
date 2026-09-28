@@ -145,13 +145,13 @@ export function AutoNexaPhysicsCanvas() {
         if (mouse.active) {
           ctx.beginPath();
           ctx.arc(mouse.x, mouse.y, radius, 0, Math.PI * 2);
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
+          ctx.strokeStyle = "rgba(140, 56, 62, 0.3)";
           ctx.lineWidth = 1;
           ctx.stroke();
 
           ctx.beginPath();
-          ctx.arc(mouse.x, mouse.y, 2, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(229, 147, 68, 0.8)";
+          ctx.arc(mouse.x, mouse.y, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = "#8C383E";
           ctx.fill();
         }
 
@@ -191,7 +191,7 @@ export function AutoNexaPhysicsCanvas() {
           p.x += p.vx;
           p.y += p.vy;
 
-          // Velocity displacement glow
+          // Velocity displacement color
           const speedSq = p.vx * p.vx + p.vy * p.vy;
           const isDisturbed = speedSq > 0.4;
 
@@ -199,9 +199,9 @@ export function AutoNexaPhysicsCanvas() {
           ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
 
           if (isDisturbed) {
-            ctx.fillStyle = "rgba(229, 147, 68, 0.85)"; // Honey amber glow on move
+            ctx.fillStyle = "rgba(186, 26, 26, 0.95)"; // Vibrant crimson red on cursor repulsion
           } else {
-            ctx.fillStyle = "rgba(255, 255, 255, 0.32)"; // Subtle silver resting
+            ctx.fillStyle = "rgba(140, 56, 62, 0.65)"; // Primary wine red resting beads
           }
           ctx.fill();
         }
@@ -259,7 +259,7 @@ export function AutoNexaPhysicsCanvas() {
       onMouseLeave={handleMouseLeave}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative w-full overflow-hidden select-none cursor-crosshair flex items-center justify-center py-6 sm:py-8 border-t border-white/10"
+      className="relative w-full overflow-hidden select-none cursor-crosshair flex items-center justify-center py-6 sm:py-8 border-t border-border-card/60"
       style={{ touchAction: "none" }}
       aria-label="Interactive AutoNexa Physics Particle Display"
     >

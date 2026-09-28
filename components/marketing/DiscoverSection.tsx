@@ -418,12 +418,8 @@ export function DiscoverSection() {
               return (
                 <div
                   key={car.id}
-                  className="group relative bg-white rounded-tl-[32px] rounded-tr-[32px] rounded-bl-[32px] rounded-br-none p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between"
+                  className="group relative bg-white rounded-[32px] p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between border border-border-card/60 shadow-[0_4px_24px_rgba(32,27,17,0.04)] hover:shadow-[0_16px_40px_rgba(32,27,17,0.08)] hover:-translate-y-1"
                 >
-                  {/* Clipped Shadow Layer: Zero shadow exists in the bottom-right 85x85px corner */}
-                  <div
-                    className="absolute inset-0 rounded-tl-[32px] rounded-tr-[32px] rounded-bl-[32px] rounded-br-none shadow-[0_8px_30px_rgba(32,27,17,0.06)] group-hover:shadow-[0_16px_44px_rgba(32,27,17,0.1)] transition-shadow duration-300 -z-10 pointer-events-none [clip-path:polygon(-40px_-40px,calc(100%+40px)_-40px,calc(100%+40px)_calc(100%-85px),calc(100%-85px)_calc(100%-85px),calc(100%-85px)_calc(100%+40px),-40px_calc(100%+40px))]"
-                  />
 
                   {/* 1. Vehicle Photo Canvas (Taller 4:3 Proportion for High-End Aspect Ratio) */}
                   <div className="relative h-60 sm:h-64 w-full rounded-[24px] overflow-hidden bg-surface-container/60 shrink-0">
@@ -529,7 +525,7 @@ export function DiscoverSection() {
 
                   {/* 4. Docked Concave Corner Notch & Action Button (Flush at bottom-0 right-0 of card) */}
                   <div className="absolute bottom-0 right-0 z-20 pointer-events-auto">
-                    <div className="relative w-[76px] h-[76px] bg-surface rounded-tl-[26px] flex items-center justify-center">
+                    <div className="relative w-[76px] h-[76px] bg-surface rounded-tl-[26px] rounded-br-[32px] flex items-center justify-center">
                       {/* Top Concave Fillet Curve (Smooth transition from card right edge into notch) */}
                       <svg
                         viewBox="0 0 20 20"
