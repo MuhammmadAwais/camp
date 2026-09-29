@@ -7,7 +7,7 @@ import { BrandCarousel } from "@/components/marketing/BrandCarousel";
 
 export function HeroSection() {
   return (
-    <div className="relative w-full bg-surface text-on-surface overflow-hidden">
+    <div className="relative w-full bg-[#120F0D] text-white overflow-hidden">
       {/* Hero Visual Section */}
       <section className="relative min-h-[92vh] flex flex-col justify-between pt-32 sm:pt-36 lg:pt-42 pb-16 px-4 sm:px-6 lg:px-8">
         {/* Background Image with Top-to-Bottom Dark Gradient Overlay */}
@@ -26,8 +26,8 @@ export function HeroSection() {
           {/* Smooth top-to-bottom dark gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/50 to-black/85 pointer-events-none" />
 
-          {/* Gentle bottom-edge transition into the warm ivory page canvas */}
-          <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-surface via-surface/75 to-transparent pointer-events-none" />
+          {/* Smooth bottom-edge dark transition into WhatIsAutoNexa */}
+          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#120F0D] via-[#120F0D]/85 to-transparent pointer-events-none" />
         </div>
 
         {/* Content Container */}

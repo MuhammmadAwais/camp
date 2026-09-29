@@ -72,44 +72,46 @@ Input is strictly monospaced for 17-character VINs with automatic uppercase sani
 ### `Navbar`
 
 File: `components/marketing/Navbar.tsx`  
-Last updated: 2026-09-25
+Last updated: 2026-09-29
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | `bg-transparent` (top, floating directly over hero image) / `bg-[#201B11]/90 backdrop-blur-md` (scrolled) |
-| Border           | None (top) / `border-b border-white/10` (scrolled) |
-| Border radius    | `rounded-sm` (buttons), `rounded-full` (national badge) |
-| Text — primary   | `font-body text-sm font-medium text-white/90 hover:text-white` |
-| Text — secondary | `text-white/80 text-xs` |
-| Spacing          | `fixed top-0 left-0 right-0 z-50 py-5 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` |
-| Hover state      | Active indicator `border-b-2 border-secondary` |
-| Shadow           | `shadow-lg` when scrolled |
-| Accent usage     | `text-secondary`, `bg-primary hover:bg-primary-hover text-white` |
+| Background       | Pill container: `bg-[#201B11]/90 backdrop-blur-xl` (resting) / `bg-[#201B11]/95 backdrop-blur-2xl` (scrolled); Emblem badge: `bg-surface border border-border-card/40`; Glider: `bg-white/[0.08]`; CTA pill: `bg-surface border border-border-card/40` |
+| Border           | Pill outline: `border border-white/10` (scrolled: `border-white/15`); Glider: `border border-white/15` |
+| Border radius    | Pill capsule: `rounded-full`; Emblem badge: `rounded-full`; Nav items / Glider: `rounded-full`; CTA action: `rounded-full` |
+| Text — primary   | Nav links: `font-body text-xs sm:text-sm font-semibold text-surface/85` (resting); CTA button: `font-body text-xs sm:text-sm font-bold text-on-surface` |
+| Text — secondary | Nav hover: `text-secondary font-bold`; CTA hover: `text-primary font-extrabold` |
+| Spacing          | Floating pill: `fixed top-4 sm:top-6 left-0 right-0 z-50 flex justify-center px-4`; Pill padding: `p-1.5 sm:p-2 gap-2 sm:gap-3.5`; Links: `px-3.5 sm:px-4 py-2`; CTA: `px-4 sm:px-5 py-2 sm:py-2.5` |
+| Hover state      | GSAP 3D kinetic rolling cylinder text flip (`rotateX(90deg)` / `rotateX(0deg)`), matte sliding glider, emblem 360° tumbling spin (`rotationY: +=360`, `scale: 1.15`), and CTA arrow tilt (`rotation: 45`) |
+| Shadow           | Pill container: `shadow-[0_8px_24px_rgba(0,0,0,0.45)]` (scrolled: `shadow-[0_12px_32px_rgba(0,0,0,0.6)]`); Emblem: `shadow-xs`; CTA: `shadow-xs`; Zero colored glow drop-shadows |
+| Accent usage     | `text-secondary` (honey amber 3D hover text roll), `text-primary` (brand wine red arrow and CTA hover flip) |
 
 **Pattern notes:**
-Floating transparent header positioned directly on top of the hero image starry sky without any solid background blocks. Transitions to subtle glassmorphic backdrop on scroll.
+- **Official AutoNexa Logo:** The left circular button embeds the authentic gold metallic AutoNexa infinity car emblem (`/logo-mark.webp`), which tumbles 360° in 3D on hover.
+- **Strict Autumn Editorial Color Palette:** Features `#201B11` espresso plum dark pill background, `#FFF8F2` warm oat buttons, `#E59344` honey amber link hovers, and `#8C383E` burgundy wine red accent transitions.
+- **Institutional Matte Professionalism:** All artificial colored glows, neon shadows, and fuzzy halos have been eliminated in favor of clean, crisp, bank-grade matte shadows.
 
 ---
 
 ### `HeroSection`
 
 File: `components/marketing/HeroSection.tsx`  
-Last updated: 2026-09-25
+Last updated: 2026-09-29
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | Raw `public/hero-bg.jfif` full-bleed cover (zero filters, zero texture overlays) with subtle bottom-edge fade to surface |
+| Background       | Canvas: `bg-[#120F0D]` with full-bleed `public/hero-bg.webp` twilight fleet cover; Dark transition: `bg-gradient-to-t from-[#120F0D] via-[#120F0D]/85 to-transparent` (zero white fog) |
 | Border           | `border border-white/20` (tickers and badges) |
 | Border radius    | `rounded-2xl` (widget container), `rounded-full` (pills and tickers) |
-| Text — primary   | `font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]` |
-| Text — secondary | `font-body text-lg sm:text-xl text-white/95 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]` |
-| Spacing          | `pt-28 sm:pt-36 lg:pt-40 pb-16 px-4 sm:px-6 lg:px-8` |
+| Text — primary   | `font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]` |
+| Text — secondary | `font-body text-lg sm:text-xl text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]` |
+| Spacing          | `pt-32 sm:pt-36 lg:pt-42 pb-16 px-4 sm:px-6 lg:px-8` |
 | Hover state      | Interactive transitions on valuation triggers |
 | Shadow           | Deep drop shadows on headline for legibility over raw photographic twilight |
-| Accent usage     | `italic font-serif text-secondary underline decoration-secondary/60 underline-offset-8` |
+| Accent usage     | `text-secondary underline decoration-secondary/60 underline-offset-8` |
 
 **Pattern notes:**
-Clean, unfiltered hero section. Background image extends continuously under the floating transparent navbar from the top of the viewport. Features keyword emphasis on *"Best"*, live 24h auction countdown pill, embedded `MarketValuationWidget`, and connects directly to `BrandCarousel`.
+- **Dark Atmospheric Transition:** Bottom edge features a deep `#120F0D` gradient fade rather than white fog, ensuring a cinematic dark-to-dark transition connecting the hero visual directly into `BrandCarousel` and `WhatIsAutoNexa`.
 
 ---
 

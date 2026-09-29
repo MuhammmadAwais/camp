@@ -16,18 +16,19 @@ export function BrandCarousel() {
   const duplicatedLogos = [...brandLogos, ...brandLogos, ...brandLogos];
 
   return (
-    <section className="relative w-full py-8 bg-surface border-y border-border-card overflow-hidden">
+    <section className="relative w-full py-8 bg-[#120F0D] border-y border-white/10 overflow-hidden text-white">
       {/* Subtle marble texture layer for tactile quality */}
       <div
-        className="absolute inset-0 opacity-10 mix-blend-multiply pointer-events-none"
+        className="absolute inset-0 opacity-15 mix-blend-luminosity pointer-events-none"
         style={{
-          backgroundImage: "url('/textures/stone-background-1400.jpg')",
+          backgroundImage: "url('/textures/dark-marble.webp')",
           backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       />
 
       <div className="max-w-7xl mx-auto px-4 mb-4 text-center relative z-10">
-        <p className="font-body text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+        <p className="font-body text-xs font-bold uppercase tracking-widest text-white/60">
           Trusted Wholesale Dealer Network Across All Leading Brands
         </p>
       </div>
@@ -37,7 +38,7 @@ export function BrandCarousel() {
           {duplicatedLogos.map((logo, index) => (
             <div
               key={`${logo.name}-${index}`}
-              className="relative h-10 w-24 sm:h-11 sm:w-28 shrink-0 grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-all duration-300 hover:scale-105 flex items-center justify-center cursor-pointer"
+              className="relative h-10 w-24 sm:h-11 sm:w-28 shrink-0 grayscale hover:grayscale-0 opacity-60 hover:opacity-100 brightness-[1.8] hover:brightness-100 transition-all duration-300 hover:scale-105 flex items-center justify-center cursor-pointer"
             >
               <Image
                 src={logo.src}
