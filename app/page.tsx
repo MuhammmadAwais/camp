@@ -4,7 +4,8 @@ import { WhatIsAutoNexa } from "@/components/marketing/WhatIsAutoNexa";
 import { DiscoverSection } from "@/components/marketing/DiscoverSection";
 import { HowItWorks } from "@/components/marketing/HowItWorks";
 import { FeaturesSection } from "@/components/marketing/FeaturesSection";
-import { WhyUsSection } from "@/components/marketing/WhyUsSection";
+import { ComparisonCards } from "@/components/marketing/ComparisonCards";
+import { ComparisonMatrix } from "@/components/marketing/ComparisonMatrix";
 import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
 import { FaqSection } from "@/components/marketing/FaqSection";
 import { CtaBanner } from "@/components/marketing/CtaBanner";
@@ -22,7 +23,8 @@ export default function Home() {
         {/* Temporarily hidden as requested:
         <FeaturesSection />
         */}
-        <WhyUsSection />
+        <ComparisonCards />
+        <ComparisonMatrix />
         <TestimonialsSection />
         <FaqSection />
         <CtaBanner />

@@ -404,3 +404,53 @@ Last updated: 2026-09-28
 - **App Decided Oat Canvas:** Uses the authentic Autumn Editorial oat background (`bg-surface` `#FFF8F2`) and deep espresso plum text (`text-on-surface` `#201B11`), without brown tones or background glow halos.
 - **Red Beads Physics Engine (`AutoNexaPhysicsCanvas`):** The word `AUTONEXA` is rendered using thousands of red beads on the oat canvas (primary wine red `rgba(140, 56, 62, 0.65)` when resting, dispersing into vibrant crimson `rgba(186, 26, 26, 0.95)` when repelled by the cursor).
 - **Performance Optimization:** Includes `IntersectionObserver` to halt the `requestAnimationFrame` loop when the footer is offscreen, eliminating background CPU/GPU load. Adaptive density on resize and full touch-drag support for mobile devices.
+
+---
+
+### `ComparisonCards`
+
+File: `components/marketing/ComparisonCards.tsx`  
+Last updated: 2026-10-02  
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Section: `bg-surface` (`#FFF8F2`); Card 1 (Traditional): `bg-surface-container-low`; Card 2 (AutoNexa): `bg-surface-container-lowest` (`#FFFFFF`); Unified Header Bar: `bg-surface-container` (left) & `bg-primary text-white` (right) |
+| Border           | Card 1: `border border-border-card/90`; Card 2: `border-2 border-primary/25`; Header Bar: `border border-border-card` |
+| Border radius    | Cards: `rounded-3xl`; Shared Header Bar: `rounded-2xl`; Valuation CTA: `rounded-full` |
+| Text — primary   | Headline: `font-headline text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-black tracking-tight text-on-surface`; Item title: `font-headline font-bold text-sm sm:text-[15px] text-on-surface leading-tight` |
+| Text — secondary | Eyebrows: `font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant/75` & `text-primary`; Item descriptions: `font-body text-xs sm:text-[13px] text-on-surface-variant leading-relaxed` |
+| Spacing          | Section: `py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto`; Cards: `p-7 sm:p-9 lg:p-10 gap-8 lg:gap-10`; Items: `gap-3.5 space-y-6` |
+| Hover state      | Both Cards: Symmetrical inward 3D tilt at rest (`rotateY: +3°` left vs `rotateY: -3°` right) with interactive cursor-tracking 3D tilt (`rotateX`, `rotateY`, `scale-102`) and dynamic glare sheens on hover; Container: `radial-gradient` spotlight |
+| Shadow           | Card 1: `shadow-xs`; Card 2: `shadow-[0_16px_40px_-10px_rgba(140,56,62,0.08)]` |
+| Accent usage     | `text-primary` (brand wine red headline & solution eyebrow), `text-error` (Phosphor `XCircle` fill for traditional challenges), `text-success` (Phosphor `CheckCircle` fill for AutoNexa solutions) |
+
+**Pattern notes:**
+- **Single Rectangular Shared Header Bar:** Features a continuous 50/50 split rectangular bar spanning both columns (`bg-surface-container` on the left and `bg-primary text-white` on the right).
+- **Symmetrical 3D Perspective Stage:** Both cards are housed within a unified `[perspective:1200px]` coordinate stage. On default resting state, Card 1 pitches back 2° and yaws inward +3°, while Card 2 pitches back 2° and yaws inward symmetrically -3°, creating an architecturally balanced, gallery-style 3D presentation.
+- **Interactive Cursor Tilt on Both Cards:** Hovering over either card smoothly tracks mouse movements in 3D (`rotateX`, `rotateY`, `scale-102`) accompanied by an ambient surface glare reflection, returning fluidly to symmetrical rest on mouse leave.
+- **Human-Crafted, Non-Generic Automotive Copy:** Preserves authentic Canadian market economics (dealership margins, unscreened driveway test drives, counterfeit certified drafts vs. 1,400+ sealed-bidding dealers and certified dealer drafts).
+
+---
+
+### `ComparisonMatrix`
+
+File: `components/marketing/ComparisonMatrix.tsx`  
+Last updated: 2026-10-02  
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Section: `bg-surface` (`#FFF8F2`); AutoNexa Column Card: `bg-surface-container-lowest` (`#FFFFFF`); Row hover: `hover:bg-surface-container-low/30` |
+| Border           | Container divider: `border-t border-border-card/60`; AutoNexa Column Card: `border-2 border-primary/25`; Row lines: `border-b border-border-card/40` |
+| Border radius    | AutoNexa Continuous Column Card: `rounded-3xl`; Mobile cards: `rounded-2xl` & `rounded-xl`; Bottom CTA: `rounded-full` |
+| Text — primary   | Headline: `font-headline text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-black tracking-tight text-on-surface`; AutoNexa cells: `font-body text-sm font-bold text-primary` & `font-headline text-base font-black text-primary` |
+| Text — secondary | Criteria labels: `font-body text-sm font-semibold text-on-surface`; Competitor text: `font-body text-xs sm:text-sm text-on-surface-variant` |
+| Spacing          | Section: `py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto`; Table container: `max-w-5xl mx-auto px-4 sm:px-6`; Row padding: `py-4.5` |
+| Hover state      | Interactive cursor-reactive spotlight: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, rgba(140, 56, 62, 0.07), transparent 70%)` |
+| Shadow           | AutoNexa Continuous Column Card: `shadow-[0_20px_50px_-12px_rgba(140,56,62,0.12)]` |
+| Accent usage     | `text-primary` (brand wine red typography & CTA button), `text-success` (Phosphor `Check` bold checkmarks), `text-error` (Phosphor `X` bold crosses) |
+
+**Pattern notes:**
+- **Continuous Full-Height Column Card (Reference Image 5 / CodeAxe):** The AutoNexa column is a single, uninterrupted vertical card spanning from the header (with `/logo-mark.webp` and "AutoNexa | Sealed Dealer Exchange") down through all 10 feature rows to the conversion action button.
+- **Zero Individual Pill Boxes:** Checkmarks and text sit directly on the clean white surface of the AutoNexa card without individual rounded pill borders or row chip backgrounds.
+- **Grounded Canadian Regulatory Dimensions:** Evaluates OMVIC/AMVIC/VSA compliance, sealed blind auction mechanics, 24-hour binding timelines, certified dealer draft payments, and the average +$2,850 CAD net seller advantage.
+- **Responsive Sub-Grid Mobile Presentation:** Responsive transformation for screens < 768px with individual criteria cards and clean AutoNexa highlights.

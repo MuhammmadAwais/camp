@@ -29,7 +29,7 @@ Update this file after every completed feature. Any AI agent reading this should
 - [x] 06-D Discover Inventory & Makes (`DiscoverSection.tsx` with top comparison micro-section & car showcase cards)
 - [x] 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow)
 - [x] 06-F Key Features & Guarantees (`FeaturesSection.tsx` with central logo core & editorial features)
-- [x] 06-F.1 Why Us / Problems & Solutions (`WhyUsSection.tsx` with cinematic car silhouette, glassmorphism cards, top key asset, and 02. header)
+- [x] 06-F.1 Dual Comparison Engine (`ComparisonCards.tsx` 2-card challenge/solution duel & `ComparisonMatrix.tsx` continuous full-height column audit)
 - [x] 06-G Testimonials & Social Proof (`TestimonialsSection.tsx` with avatar cards)
 - [x] 06-H FAQs Accordion (`FaqSection.tsx` interactive collapsible FAQ)
 - [x] 06-I Final Conversion CTA Banner (`CtaBanner.tsx` pre-footer appraisal CTA)
