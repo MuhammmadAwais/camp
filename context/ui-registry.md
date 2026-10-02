@@ -161,21 +161,41 @@ Cardless 8-vehicle cutout selector (`SUVs`, `Trucks`, `Sedans`, `Coupes`, `Miniv
 ### `BrandCarousel`
 
 File: `components/marketing/BrandCarousel.tsx`  
-Last updated: 2026-09-25
+Last updated: 2026-10-02
 
 | Property         | Class |
 | ---------------- | ----- |
-| Background       | `bg-surface` with subtle stone texture (`public/textures/stone-background-1400.jpg`) |
-| Border           | `border-y border-border-card` |
+| Background       | Deep obsidian `bg-[#120F0D]` with tactile dark marble layer (`public/textures/dark-marble.webp` at `opacity-15 mix-blend-luminosity`) |
+| Border           | `border-y border-white/10` |
 | Border radius    | None (full-width continuous carousel) |
-| Text — primary   | `font-body text-xs font-bold uppercase tracking-widest text-on-surface-variant` |
+| Text — primary   | `font-body text-xs font-bold uppercase tracking-widest text-white/60` |
 | Spacing          | `py-8 w-full gap-12 sm:gap-20` |
-| Hover state      | `grayscale hover:grayscale-0 opacity-70 hover:opacity-100 hover:scale-105` |
+| Hover state      | Container: `hover:animation-play-state: paused`; Logos: `opacity-70 hover:opacity-100 hover:scale-110 transition-all duration-300` |
 | Shadow           | None |
-| Accent usage     | Gradient edge masks via `.mask-radial-fade` |
+| Accent usage     | `brightness-0 invert` (normalizes black and dark emblems into crisp silver-white luxury badges) |
 
 **Pattern notes:**
-Smooth, continuous infinite marquee of 8 automotive manufacturer logos (`public/car-company-logos/`) on warm Autumn Editorial surface with horizontal gradient edge masks. Pauses on hover.
+- **Luminance Inversion Normalization:** Resolves the issue where black/dark automaker marks (Cadillac, Polestar, Jeep) were lost against the dark background. Every emblem across the 8 brands now displays with consistent, elegant silver-white brilliance.
+- **Continuous 60fps CSS Marquee:** Runs with smooth hardware-accelerated translation across duplicated tracks with horizontal gradient edge masks (`.mask-radial-fade`).
+
+---
+
+### `LandingAnimationProvider`
+
+File: `components/marketing/LandingAnimationProvider.tsx`  
+Last updated: 2026-10-02
+
+| Property         | Class / Setting |
+| ---------------- | --------------- |
+| Animation Engine | GSAP 3 (`gsap` + `ScrollTrigger`) |
+| Scope            | Scoped via `gsap.context()` for clean unmount teardown with zero memory leaks |
+| Selectors        | `[data-reveal="header"]`, `[data-reveal="stagger-group"]`, `[data-reveal="card"]`, `[data-reveal="fade-up"]`, `[data-reveal="matrix-table"]`, `[data-reveal="matrix-row"]` |
+| Timing & Easing  | Section Headers: `y: 32 -> 0, duration: 0.85s, ease: power3.out`; Card Clusters: `y: 36 -> 0, stagger: 0.1s, duration: 0.8s, ease: power2.out`; Matrix Rows: `y: 16 -> 0, stagger: 0.04s, duration: 0.6s` |
+| Accessibility    | Bypasses tweens automatically when `(prefers-reduced-motion: reduce)` is detected |
+
+**Pattern notes:**
+- **Zero-Overhead Orchestrator:** Manages landing page choreography from a single client provider wrapping `app/page.tsx`, avoiding duplicate hooks in individual components.
+- **Portal Boundary Safety:** Disposes of all ScrollTrigger watchers on unmount via `ctx.revert()`, preventing animation overhead on high-velocity auction portal routes (`/seller`, `/dealer`).
 
 ---
 
