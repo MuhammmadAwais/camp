@@ -38,13 +38,13 @@ export function BrandCarousel() {
           {duplicatedLogos.map((logo, index) => (
             <div
               key={`${logo.name}-${index}`}
-              className="relative h-10 w-24 sm:h-11 sm:w-28 shrink-0 grayscale hover:grayscale-0 opacity-60 hover:opacity-100 brightness-[1.8] hover:brightness-100 transition-all duration-300 hover:scale-105 flex items-center justify-center cursor-pointer"
+              className="relative h-10 w-24 sm:h-11 sm:w-28 shrink-0 opacity-70 hover:opacity-100 transition-all duration-300 hover:scale-110 flex items-center justify-center cursor-pointer"
             >
               <Image
                 src={logo.src}
                 alt={logo.name}
                 fill
-                className="object-contain"
+                className="object-contain brightness-0 invert"
               />
             </div>
           ))}

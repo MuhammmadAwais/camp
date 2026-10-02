@@ -110,7 +110,7 @@ export function ComparisonMatrix({ id = "matrix" }: ComparisonMatrixProps) {
         {/* ========================================================================= */}
         {/* Editorial Headline Lockup                                                */}
         {/* ========================================================================= */}
-        <div className="text-left max-w-3xl mb-12 sm:mb-16">
+        <div data-reveal="header" className="text-left max-w-3xl mb-12 sm:mb-16">
       
           <h2 className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-black tracking-tight text-on-surface leading-[1.08]">
             Other platforms haggle.
@@ -150,7 +150,7 @@ export function ComparisonMatrix({ id = "matrix" }: ComparisonMatrixProps) {
           </div>
 
           {/* Table Content Layer */}
-          <div className="relative z-10">
+          <div data-reveal="matrix-table" className="relative z-10">
             {/* Desktop Table Header */}
             <div className="hidden md:grid grid-cols-12 gap-6 pb-6 pt-3 items-center border-b border-border-card/60">
               <div className="col-span-5 text-xs font-mono font-bold uppercase tracking-widest text-on-surface-variant/70 pl-2">
@@ -200,6 +200,7 @@ export function ComparisonMatrix({ id = "matrix" }: ComparisonMatrixProps) {
                 return (
                   <div
                     key={idx}
+                    data-reveal="matrix-row"
                     className="grid grid-cols-12 gap-6 py-4.5 items-center border-b border-border-card/40 last:border-b-0 hover:bg-surface-container-low/30 rounded-xl px-2 transition-colors duration-150"
                   >
                     {/* Feature Label */}

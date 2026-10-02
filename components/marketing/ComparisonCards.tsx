@@ -164,7 +164,7 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
         {/* ========================================================================= */}
         {/* Section Header                                                           */}
         {/* ========================================================================= */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+        <div data-reveal="header" className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <h2 className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-black tracking-tight text-on-surface leading-[1.12]">
             Dealerships negotiate down.
             <br />
@@ -178,7 +178,7 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
         {/* ========================================================================= */}
         {/* Single Rectangular Card Bar Header (Split 50/50 with One BG on Each Side)  */}
         {/* ========================================================================= */}
-        <div className="w-full rounded-2xl overflow-hidden border border-border-card shadow-xs grid grid-cols-1 lg:grid-cols-2 mb-8 lg:mb-10">
+        <div data-reveal="fade-up" className="w-full rounded-2xl overflow-hidden border border-border-card shadow-xs grid grid-cols-1 lg:grid-cols-2 mb-8 lg:mb-10">
           <div className="py-4 px-6 bg-surface-container text-center text-on-surface font-headline font-bold text-sm sm:text-base tracking-tight border-b lg:border-b-0 lg:border-r border-border-card/70 flex items-center justify-center">
             Traditional Approach
           </div>
@@ -192,6 +192,7 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
         {/* ========================================================================= */}
         <div
           ref={containerRef}
+          data-reveal="stagger-group"
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -210,7 +211,7 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
           {/* ======================================================================= */}
           {/* Column 1: Traditional Approach (Symmetrical 3D Inward Tilt)              */}
           {/* ======================================================================= */}
-          <div className="flex flex-col">
+          <div data-reveal="card" className="flex flex-col">
             <div
               onMouseMove={handleTraditionalMouseMove}
               onMouseLeave={handleTraditionalMouseLeave}
@@ -265,7 +266,7 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
           {/* ======================================================================= */}
           {/* Column 2: AutoNexa Platform (Symmetrical 3D Inward Tilt)                 */}
           {/* ======================================================================= */}
-          <div className="flex flex-col">
+          <div data-reveal="card" className="flex flex-col">
             <div
               onMouseMove={handleAutonexaMouseMove}
               onMouseLeave={handleAutonexaMouseLeave}
