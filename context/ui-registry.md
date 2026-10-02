@@ -474,3 +474,28 @@ Last updated: 2026-10-02
 - **Zero Individual Pill Boxes:** Checkmarks and text sit directly on the clean white surface of the AutoNexa card without individual rounded pill borders or row chip backgrounds.
 - **Grounded Canadian Regulatory Dimensions:** Evaluates OMVIC/AMVIC/VSA compliance, sealed blind auction mechanics, 24-hour binding timelines, certified dealer draft payments, and the average +$2,850 CAD net seller advantage.
 - **Responsive Sub-Grid Mobile Presentation:** Responsive transformation for screens < 768px with individual criteria cards and clean AutoNexa highlights.
+
+---
+
+### `CustomScrollbar`
+
+File: `app/globals.css`  
+Last updated: 2026-10-02  
+
+| Property         | Class / CSS Rule |
+| ---------------- | ---------------- |
+| Background       | Track: `var(--color-surface-container)` (`#F8ECDB`); Thumb: `var(--color-primary)` (`#8C383E`) |
+| Border           | Thumb padding offset: `border: 3px solid transparent; background-clip: padding-box` |
+| Border radius    | Track & Thumb: `border-radius: var(--radius-full)` (`9999px` pill geometry) |
+| Text — primary   | N/A |
+| Text — secondary | N/A |
+| Spacing          | Ergonomic target dimensions: `width: 12px; height: 12px` |
+| Hover state      | Thumb hover: `background-color: var(--color-secondary)` (`#E59344` honey amber); Active: `var(--color-primary-hover)` (`#752B30`) |
+| Shadow           | Ambient track inset clipping |
+| Accent usage     | Terracotta wine red resting thumb (`#8C383E`) transitioning to warm honey amber (`#E59344`) on hover |
+
+**Pattern notes:**
+- **Ergonomic Gripping Target:** Expanded scrollbar width to `12px` for comfortable mouse targeting and click-drag convenience without crowding content margins.
+- **Floating Inset Thumb:** Employs `border: 3px solid transparent` with `background-clip: padding-box` to create a 3px cushion around the pill thumb so it floats gracefully inside the track.
+- **Autumn Editorial Color Alignment:** Fully synced with design tokens — warm oat track (`#F8ECDB`), terracotta wine resting thumb (`#8C383E`), and high-energy honey amber hover glow (`#E59344`).
+- **Cross-Browser Parity:** Firefox fallback via `scrollbar-width: auto; scrollbar-color: var(--color-primary) var(--color-surface-container)`.
