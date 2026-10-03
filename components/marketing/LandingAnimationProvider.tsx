@@ -11,7 +11,7 @@ interface LandingAnimationProviderProps {
 export function LandingAnimationProvider({ children }: LandingAnimationProviderProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     // Only run on client and if user hasn't requested reduced motion
     if (typeof window === "undefined") return;
 

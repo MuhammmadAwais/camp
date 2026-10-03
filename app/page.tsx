@@ -13,7 +13,10 @@ import { LandingAnimationProvider } from "@/components/marketing/LandingAnimatio
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-surface text-on-surface selection:bg-primary selection:text-white">
+    <div
+      className="min-h-screen flex flex-col bg-surface text-on-surface selection:bg-primary selection:text-white"
+      suppressHydrationWarning
+    >
       <Navbar />
       <LandingAnimationProvider>
         <main className="flex-1">

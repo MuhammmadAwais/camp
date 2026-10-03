@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 220" width="500" height="220">
+  <defs>
+    <style>
+      .script-text {
+        font-family: 'Brush Script MT', 'Lucida Calligraphy', 'Segoe Script', 'Great Vibes', cursive, serif;
+        font-size: 110px;
+        font-style: italic;
+        font-weight: 700;
+        fill: #FFFFFF;
+        text-anchor: middle;
+      }
+    </style>
+  </defs>
+  <!-- Outer Oval Ring -->
+  <ellipse cx="250" cy="110" rx="230" ry="92" fill="none" stroke="#FFFFFF" stroke-width="12" />
+  <!-- Inner Fine Accent Ring -->
+  <ellipse cx="250" cy="110" rx="214" ry="78" fill="none" stroke="#FFFFFF" stroke-width="3" />
+  
+  <!-- Classic Ford Script Text -->
+  <text x="250" y="142" class="script-text">Ford</text>
+</svg>

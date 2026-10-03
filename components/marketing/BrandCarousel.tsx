@@ -3,14 +3,14 @@ import Image from "next/image";
 
 export function BrandCarousel() {
   const brandLogos = [
-    { name: "Brand 09", src: "/car-company-logos/image_09.png" },
-    { name: "Brand 10", src: "/car-company-logos/image_10.png" },
-    { name: "Brand 11", src: "/car-company-logos/image_11.png" },
-    { name: "Brand 12", src: "/car-company-logos/image_12.png" },
-    { name: "Brand 13", src: "/car-company-logos/image_13.png" },
-    { name: "Brand 14", src: "/car-company-logos/image_14.png" },
-    { name: "Brand 15", src: "/car-company-logos/image_15.png" },
-    { name: "Brand 16", src: "/car-company-logos/image_16 - Copy.png" },
+    { name: "Audi", src: "/car-company-logos/image_09.png" },
+    { name: "BMW", src: "/car-company-logos/image_10.png" },
+    { name: "Mercedes-Benz", src: "/car-company-logos/image_11.png" },
+    { name: "Porsche", src: "/car-company-logos/image_12.png" },
+    { name: "Cadillac", src: "/car-company-logos/image_13.png" },
+    { name: "Ford", src: "/car-company-logos/image_14.svg" },
+    { name: "Jeep", src: "/car-company-logos/image_15.png" },
+    { name: "Chevrolet", src: "/car-company-logos/image_16 - Copy.png" },
   ];
 
   const duplicatedLogos = [...brandLogos, ...brandLogos, ...brandLogos];
@@ -44,6 +44,7 @@ export function BrandCarousel() {
                 src={logo.src}
                 alt={logo.name}
                 fill
+                unoptimized={logo.src.endsWith(".svg")}
                 className="object-contain brightness-0 invert"
               />
             </div>
