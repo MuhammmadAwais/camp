@@ -8,16 +8,10 @@ import {
   CheckCircle,
   ArrowRight,
   ArrowUpRight,
-  Heart,
 } from "@phosphor-icons/react";
 
 export function DiscoverSection() {
   const [activeCategory, setActiveCategory] = React.useState("all");
-  const [favorites, setFavorites] = React.useState<Record<string, boolean>>({});
-
-  const toggleFavorite = (id: string) => {
-    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
 
   const categories = [
     { id: "all", label: "All Makes" },
@@ -28,46 +22,43 @@ export function DiscoverSection() {
     { id: "electric", label: "Electric & Hybrid" },
   ];
 
-  const inventory = [
+  const recentSales = [
     {
       id: "4runner-2025",
       category: "suv",
-      badge: "Trending",
-      badgeColor: "emerald",
+      badge: "Sold in 24h • 18 Bids",
       title: "2025 Toyota 4Runner TRD Pro",
       description:
-        "Off-road flagship with factory lift, FOX internal bypass shocks, and full Carfax inspection report.",
+        "Off-road flagship with factory lift, FOX internal bypass shocks, and verified clean Carfax inspection.",
       mileage: "8,450 km",
       transmission: "Automatic",
       fuel: "Gasoline",
       dealer: "Brampton, ON",
       image: "/showcase-cars-with-bg/2025-Toyota-4runner.png",
-      wholesaleEst: "$58,900",
-      retailPrice: "$65,500",
-      discount: "10% OFF",
+      soldPrice: "$58,900",
+      tradeInOffer: "$54,700 CAD",
+      surplus: "+$4,200  ",
     },
     {
       id: "civic-2024",
       category: "sedan",
-      badge: "Popular",
-      badgeColor: "pumpkin",
+      badge: "Sold in 24h • 14 Bids",
       title: "2024 Honda Civic Touring",
       description:
-        "Single-owner commuter sedan with premium leather, Bose audio, and verified safety cert.",
+        "Single-owner commuter sedan with premium leather, Bose audio, and verified safety certification.",
       mileage: "14,200 km",
       transmission: "Automatic",
       fuel: "Gasoline",
       dealer: "Toronto, ON",
       image: "/showcase-cars-with-bg/2024-Honda-Civic.webp",
-      wholesaleEst: "$27,400",
-      retailPrice: "$31,200",
-      discount: "12% OFF",
+      soldPrice: "$27,400",
+      tradeInOffer: "$24,600 CAD",
+      surplus: "+$2,800  ",
     },
     {
       id: "atlas-2023",
       category: "suv",
-      badge: "New",
-      badgeColor: "primary",
+      badge: "Sold in 24h • 16 Bids",
       title: "2023 Volkswagen Atlas Execline",
       description:
         "7-passenger family SUV with panoramic sunroof, 3.6L V6 AWD, and zero accident history.",
@@ -76,15 +67,14 @@ export function DiscoverSection() {
       fuel: "Gasoline",
       dealer: "Montreal, QC",
       image: "/showcase-cars-with-bg/2023-VW-Atlas.png",
-      wholesaleEst: "$41,200",
-      retailPrice: "$46,900",
-      discount: "12% OFF",
+      soldPrice: "$41,200",
+      tradeInOffer: "$37,500 CAD",
+      surplus: "+$3,700  ",
     },
     {
       id: "bronco-2022",
       category: "suv",
-      badge: "Hot Deal",
-      badgeColor: "primary",
+      badge: "Sold in 24h • 21 Bids",
       title: "2022 Ford Bronco Badlands",
       description:
         "Sasquatch package with 35-inch tires, electronic front/rear lockers, and verified clean title.",
@@ -93,32 +83,30 @@ export function DiscoverSection() {
       fuel: "Gasoline",
       dealer: "Vancouver, BC",
       image: "/showcase-cars-with-bg/2022-Ford-Bronco.webp",
-      wholesaleEst: "$51,500",
-      retailPrice: "$57,800",
-      discount: "11% OFF",
+      soldPrice: "$51,500",
+      tradeInOffer: "$46,800 CAD",
+      surplus: "+$4,700  ",
     },
     {
       id: "bmw-x1-2021",
       category: "suv",
-      badge: "Trending",
-      badgeColor: "emerald",
+      badge: "Sold in 24h • 12 Bids",
       title: "2021 BMW X1 xDrive28i",
       description:
-        "Compact luxury crossover with M Sport styling, heated steering wheel, and fresh inspection.",
+        "Compact luxury crossover with M Sport styling, heated steering wheel, and fresh inspection cert.",
       mileage: "42,000 km",
       transmission: "Automatic",
       fuel: "Gasoline",
       dealer: "Ottawa, ON",
       image: "/showcase-cars-with-bg/2021-bmw-x1.webp",
-      wholesaleEst: "$30,800",
-      retailPrice: "$35,400",
-      discount: "13% OFF",
+      soldPrice: "$30,800",
+      tradeInOffer: "$27,600 CAD",
+      surplus: "+$3,200  ",
     },
     {
       id: "porsche-911",
       category: "coupe",
-      badge: "Popular",
-      badgeColor: "pumpkin",
+      badge: "Sold in 24h • 27 Bids",
       title: "Porsche 911 Carrera S",
       description:
         "Iconic 3.0L twin-turbo flat-six with Sport Chrono, sports exhaust, and dealer service logs.",
@@ -127,23 +115,22 @@ export function DiscoverSection() {
       fuel: "Gasoline",
       dealer: "Oakville, ON",
       image: "/showcase-cars-with-bg/Porsche-911.webp",
-      wholesaleEst: "$124,000",
-      retailPrice: "$138,500",
-      discount: "10% OFF",
+      soldPrice: "$124,000",
+      tradeInOffer: "$114,500 CAD",
+      surplus: "+$9,500  ",
     },
   ];
 
-  const filteredInventory =
+  const filteredSales =
     activeCategory === "all"
-      ? inventory
-      : inventory.filter((item) => item.category === activeCategory);
+      ? recentSales
+      : recentSales.filter((item) => item.category === activeCategory);
 
   return (
     <section
       id="explore"
       className="relative w-full bg-surface text-on-surface py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-t border-border-card overflow-hidden"
     >
-
       <div className="max-w-7xl mx-auto relative z-10">
         {/* ========================================================================= */}
         {/* 1. Top Micro-Section: "Looking to sell your car?" (Unclipped & Geometric) */}
@@ -372,16 +359,17 @@ export function DiscoverSection() {
         </div>
 
         {/* ========================================================================= */}
-        {/* 2. Main Discover Section: Clean Header with Floating Text Tabs             */}
+        {/* ========================================================================= */}
+        {/* 2. Main Sales Showcase: Clean Header with Floating Text Tabs               */}
         {/* ========================================================================= */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10 pb-4 border-b border-border-card/60">
           <div>
             <h2 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight text-on-surface">
-              Discover Live Inventory & Makes
+              Recently Sold Above Market Rate
             </h2>
             <p className="mt-2 font-body text-sm sm:text-base text-on-surface-variant font-normal">
-              Pre-inspected private trade-ins actively bidding across Canadian
-              dealer terminals.
+              Real sales. Real competition. See what Canadian car owners
+              unlocked by letting 1,400+ licensed dealers bid.
             </p>
           </div>
 
@@ -408,13 +396,11 @@ export function DiscoverSection() {
         </div>
 
         {/* ========================================================================= */}
-        {/* 3. Product Cards with Portrait Aspect Ratio, Heart Above, Dividers & Notch */}
+        {/* 3. Product Cards with Portrait Aspect Ratio, Purposeful Telemetry & Notch  */}
         {/* ========================================================================= */}
         <div className="max-w-[1080px] mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredInventory.map((car) => {
-              const isFav = !!favorites[car.id];
-
+            {filteredSales.map((car) => {
               return (
                 <div
                   key={car.id}
@@ -441,43 +427,19 @@ export function DiscoverSection() {
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 360px"
                     />
 
-                    {/* Top-Left Dynamic Status Badge (Trending, Popular, New, Hot Deal) */}
-                    <div className="absolute top-3.5 left-3.5 z-10">
-                      <span
-                        className={`font-body text-[11px] font-bold tracking-wide px-3 py-1 rounded-full shadow-xs ${
-                          car.badgeColor === "emerald"
-                            ? "bg-emerald-600 text-white"
-                            : car.badgeColor === "pumpkin"
-                            ? "bg-secondary text-white"
-                            : "bg-primary text-white"
-                        }`}
-                      >
+                    {/* Top-Left Purposeful Telemetry Badge (Frosted Obsidian Pill with Emerald Beacon) */}
+                    <div className="absolute top-3.5 left-3.5 z-10 flex items-center gap-2 bg-black/65 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[11px] font-semibold border border-white/15 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+                      <span className="tracking-wide font-body">
                         {car.badge}
                       </span>
                     </div>
-
-                    {/* Top-Right Heart / Watchlist Button (In its own pure heart shape, no rounded circle badge) */}
-                    <button
-                      type="button"
-                      onClick={() => toggleFavorite(car.id)}
-                      className="absolute top-3.5 right-3.5 z-10 p-1.5 transition-all duration-200 hover:scale-115 active:scale-90 cursor-pointer group/fav outline-none"
-                      aria-label="Add to watchlist"
-                    >
-                      <Heart
-                        weight={isFav ? "fill" : "bold"}
-                        className={`w-6 h-6 transition-all drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)] ${
-                          isFav
-                            ? "text-[#E63946] fill-[#E63946]"
-                            : "text-white hover:text-[#E63946]"
-                        }`}
-                      />
-                    </button>
                   </div>
 
                   {/* 2. Card Content Body */}
                   <div className="pt-4 flex-1 flex flex-col justify-between">
                     <div>
-                      {/* Title (Full width available now that heart icon is elevated) */}
+                      {/* Title */}
                       <h3 className="font-headline text-lg sm:text-[19px] font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors line-clamp-1 leading-snug">
                         {car.title}
                       </h3>
@@ -495,15 +457,19 @@ export function DiscoverSection() {
                         {/* Line 1: Specs */}
                         <div className="flex items-center gap-2 font-semibold text-on-surface whitespace-nowrap overflow-hidden">
                           <span>{car.mileage}</span>
-                          <span className="text-outline-variant font-normal">•</span>
+                          <span className="text-outline-variant font-normal">
+                            •
+                          </span>
                           <span>{car.transmission}</span>
-                          <span className="text-outline-variant font-normal">•</span>
+                          <span className="text-outline-variant font-normal">
+                            •
+                          </span>
                           <span>{car.fuel}</span>
                         </div>
 
                         {/* Line 2: Dealer Location */}
                         <div className="flex items-center gap-1.5 text-[11px] font-medium text-on-surface-variant">
-                          <span className="opacity-70">Dealer:</span>
+                          <span className="opacity-70">Sold to Dealer in:</span>
                           <span className="font-bold text-on-surface uppercase tracking-wide">
                             {car.dealer}
                           </span>
@@ -514,26 +480,35 @@ export function DiscoverSection() {
                       <div className="border-t border-border-card/60 my-3" />
                     </div>
 
-                    {/* 3. Bottom Row: Price Spread (with right padding for docked button) */}
-                    <div className="pt-1 flex items-end justify-between min-h-[58px]">
-                      {/* Left: Pricing with Strike-through & Discount Pill */}
-                      <div className="flex flex-col pr-20 justify-end">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="font-headline text-xl sm:text-2xl font-black text-on-surface tracking-tight">
-                            {car.wholesaleEst}
+                    {/* 3. Bottom Row: Payout & Surplus over Trade-In */}
+                    <div className="pt-2 flex items-end justify-between min-h-[60px]">
+                      {/* Left: Pricing with Trade-in Comparison & Sleek Institutional Surplus Chip */}
+                      <div className="flex flex-col justify-end max-w-[calc(100%-70px)] pr-2">
+                        <div className="flex items-center gap-2.5 mb-1 flex-wrap sm:flex-nowrap">
+                          <span className="font-headline text-2xl font-black text-on-surface tracking-tight whitespace-nowrap">
+                            {car.soldPrice}
                           </span>
-                          <span className="font-body text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                            {car.discount}
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#16271E] text-emerald-400 border border-emerald-500/25 font-mono text-[10.5px] font-bold tracking-tight shadow-xs whitespace-nowrap">
+                            <ArrowUpRight
+                              weight="bold"
+                              className="w-3 h-3 text-emerald-400 shrink-0"
+                            />
+                            <span>{car.surplus}</span>
                           </span>
                         </div>
-                        <span className="line-through text-xs font-body text-on-surface-variant/60 font-medium">
-                          {car.retailPrice} CAD
-                        </span>
+                        <div className="text-[11px] font-body text-on-surface-variant flex items-center gap-1.5 whitespace-nowrap">
+                          <span className="text-on-surface-variant/70 font-medium">
+                            Dealer trade-in was:
+                          </span>
+                          <span className="line-through font-mono text-on-surface-variant/50 font-medium">
+                            {car.tradeInOffer}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* 4. Docked Concave Corner Notch & Action Button (Outlines white card, zero outer corner border) */}
+                  {/* 4. Docked Concave Corner Notch & Action Button */}
                   <div className="absolute -bottom-[1px] -right-[1px] z-20 pointer-events-auto">
                     <div className="relative w-[77px] h-[77px] bg-surface rounded-tl-[26px] border-t border-l border-border-card/60 flex items-center justify-center">
                       {/* Top Concave Fillet Curve (Smooth transition from card right edge into notch with border) */}
@@ -541,7 +516,10 @@ export function DiscoverSection() {
                         viewBox="0 0 20 20"
                         className="w-5 h-5 absolute -top-5 right-0 pointer-events-none overflow-visible"
                       >
-                        <path d="M 20,0 A 20 20 0 0 1 0,20 L 20,20 Z" className="fill-surface" />
+                        <path
+                          d="M 20,0 A 20 20 0 0 1 0,20 L 20,20 Z"
+                          className="fill-surface"
+                        />
                         <path
                           d="M 20,0 A 20 20 0 0 1 0,20"
                           fill="none"
@@ -556,7 +534,10 @@ export function DiscoverSection() {
                         viewBox="0 0 20 20"
                         className="w-5 h-5 absolute bottom-0 -left-5 pointer-events-none overflow-visible"
                       >
-                        <path d="M 0,20 A 20 20 0 0 0 20,0 L 20,20 Z" className="fill-surface" />
+                        <path
+                          d="M 0,20 A 20 20 0 0 0 20,0 L 20,20 Z"
+                          className="fill-surface"
+                        />
                         <path
                           d="M 0,20 A 20 20 0 0 0 20,0"
                           fill="none"
@@ -566,20 +547,18 @@ export function DiscoverSection() {
                         />
                       </svg>
 
-                      {/* Docked Action Button with ArrowUpRight Icon */}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          alert(`Viewing wholesale auction details for ${car.title}`)
-                        }
+                      {/* Docked Action Button Linking to #valuation for sellers */}
+                      <a
+                        href="#valuation"
                         className="w-[52px] h-[52px] rounded-[18px] bg-white shadow-[0_4px_14px_rgba(32,27,17,0.12)] hover:shadow-[0_6px_20px_rgba(140,56,62,0.25)] flex items-center justify-center text-on-surface hover:text-white hover:bg-primary transition-all duration-200 cursor-pointer active:scale-95 group/btn"
-                        aria-label="View vehicle deal"
+                        aria-label="Value your car"
+                        title="Value your car"
                       >
                         <ArrowUpRight
                           weight="bold"
                           className="w-5 h-5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
                         />
-                      </button>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -602,7 +581,6 @@ export function DiscoverSection() {
               className="w-4 h-4 transition-transform group-hover:translate-x-1"
             />
           </a>
-
         </div>
       </div>
     </section>

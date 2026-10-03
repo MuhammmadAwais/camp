@@ -76,6 +76,7 @@ Update this file after every completed feature. Any AI agent reading this should
 
 - **2026-09-25 (Architecture):** Adopted AutoNexa as the public-facing brand and product identity. Configured the Autumn Editorial design system from `DESIGN (3).md` for the entire marketing funnel while maintaining auction portal telemetry invariants.
 - **2026-10-03 (Hero & Carousel Micro-Interactions):** Implemented interactive 3D perspective mouse hover tilt with specular glare highlight on `MarketValuationWidget.tsx`. Fixed `image_14.png` (Ford badge) in `BrandCarousel.tsx` with a transparent background cutout, eliminating the solid white oval fill under contrast filters.
+- **2026-10-03 (Seller Marketplace Realignment):** Realigned `DiscoverSection.tsx` product cards from retail buyer inventory to verified recent dealer sales. Preserved 100% of card geometry while showing actual seller payouts, dealer bid counts, and surplus above trade-in offers.
 
 ---
 
