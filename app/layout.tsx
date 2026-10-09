@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
-import { DevRoleBar } from "@/components/shared/DevRoleBar";
 
 export const metadata: Metadata = {
   title: "AutoNexa | Canada's 24h Wholesale Vehicle Exchange",
@@ -25,7 +24,6 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
-          <DevRoleBar />
         </AuthProvider>
       </body>
     </html>

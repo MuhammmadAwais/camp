@@ -98,53 +98,57 @@
   --color-badge-vsa: #10B981;          /* British Columbia */
 
   /* ========================================================
-     PORTAL & WEB APP DESIGN SYSTEM (Porcelain / Obsidian & Racing Emerald)
+     PORTAL & WEB APP DESIGN SYSTEM (Solid Minimalist)
+     Dark: Canvas #000000 | Cards #131215 | Text #FFFFFF | Accent #008C87
+     Light: Canvas #FFFFFF | Cards #F3F4F6 | Text #000000 | Accent #008C87
      ======================================================== */
-  /* Porcelain Light Mode Tokens */
-  --color-portal-canvas: #F8FAFC;
-  --color-portal-surface: #FFFFFF;
-  --color-portal-surface-hover: #F1F5F9;
-  --color-portal-border: #E2E8F0;
-  --color-portal-border-subtle: rgba(226, 232, 240, 0.7);
-  --color-portal-text: #0F172A;
-  --color-portal-text-muted: #64748B;
+  /* Light Mode Tokens */
+  --color-portal-canvas: #FFFFFF;
+  --color-portal-surface: #F3F4F6;
+  --color-portal-surface-hover: #E5E7EB;
+  --color-portal-border: #E5E7EB;
+  --color-portal-border-subtle: rgba(0, 0, 0, 0.06);
+  --color-portal-text: #000000;
+  --color-portal-text-muted: #6B7280;
 
-  /* Obsidian Dark Mode Tokens */
-  --color-portal-dark-canvas: #080C14;
-  --color-portal-dark-surface: #0E1420;
-  --color-portal-dark-surface-hover: #162032;
+  /* Dark Mode Tokens */
+  --color-portal-dark-canvas: #000000;
+  --color-portal-dark-surface: #131215;
+  --color-portal-dark-surface-hover: #1D1C21;
   --color-portal-dark-border: rgba(255, 255, 255, 0.08);
   --color-portal-dark-border-subtle: rgba(255, 255, 255, 0.04);
-  --color-portal-dark-text: #F8FAFC;
-  --color-portal-dark-text-muted: #94A3B8;
+  --color-portal-dark-text: #FFFFFF;
+  --color-portal-dark-text-muted: #9CA3AF;
 
-  /* Racing Emerald Palette Scale */
-  --color-emerald-50: #ECFDF5;
-  --color-emerald-100: #D1FAE5;
-  --color-emerald-200: #A7F3D0;
-  --color-emerald-300: #6EE7B7;
-  --color-emerald-400: #34D399;
-  --color-emerald-500: #10B981;
-  --color-emerald-600: #059669;
-  --color-emerald-700: #047857;
-  --color-emerald-800: #065F46;
-  --color-emerald-900: #064E3B;
-  --color-emerald-950: #022C22;
+  /* Nordic Pine Teal Accent Scale (#008C87) */
+  --color-accent-50: #E6F7F6;
+  --color-accent-100: #CCEFEF;
+  --color-accent-200: #99DFDE;
+  --color-accent-300: #66CFCD;
+  --color-accent-400: #33BFBC;
+  --color-accent-500: #008C87;          /* Unified Brand Accent */
+  --color-accent-600: #00736F;          /* Hover / Active */
+  --color-accent-700: #005B57;
+  --color-accent-800: #004240;
+  --color-accent-900: #002A28;
+  --color-accent-950: #001A18;
 
-  --color-portal-primary: #15803D;
-  --color-portal-primary-hover: #166534;
-  --color-portal-primary-tint: rgba(22, 163, 74, 0.10);
+  --color-portal-accent: #008C87;
+  --color-portal-accent-hover: #00736F;
+  --color-portal-accent-tint: rgba(0, 140, 135, 0.12);
 
-  --color-portal-dark-primary: #10B981;
-  --color-portal-dark-primary-hover: #059669;
-  --color-portal-dark-primary-tint: rgba(16, 185, 129, 0.15);
+  /* Auth Card Tokens (Solid Plain Canvas & 5:4 Geometry) */
+  --color-auth-dark-bg: #000000;
+  --color-auth-dark-card: #131215;
+  --color-auth-dark-border: rgba(255, 255, 255, 0.08);
+  --color-auth-dark-input: rgba(255, 255, 255, 0.05);
+  --color-auth-dark-input-border: rgba(255, 255, 255, 0.10);
 
-  /* Glassmorphic Auth Tokens (why-us.webp backdrop) */
-  --color-glass-card-bg: rgba(9, 13, 22, 0.82);
-  --color-glass-card-border: rgba(255, 255, 255, 0.10);
-  --color-glass-input-bg: rgba(255, 255, 255, 0.04);
-  --color-glass-input-border: rgba(255, 255, 255, 0.08);
-  --color-glass-input-focus: rgba(16, 185, 129, 0.60);
+  --color-auth-light-bg: #FFFFFF;
+  --color-auth-light-card: #F3F4F6;
+  --color-auth-light-border: #E5E7EB;
+  --color-auth-light-input: #FFFFFF;
+  --color-auth-light-input-border: #D1D5DB;
 
   /* ========================================================
      BORDER RADII
@@ -154,7 +158,7 @@
   --radius-md: 0.75rem;                 /* 12px: Interactive controls */
   --radius-lg: 1rem;                    /* 16px: Content cards */
   --radius-xl: 1.5rem;                  /* 24px: Hero containers & modals */
-  --radius-2xl: 2rem;                   /* 32px: Auth floating glassmorphic container */
+  --radius-2xl: 2rem;                   /* 32px: Auth floating solid container */
   --radius-full: 9999px;                /* Pills, avatar circles */
 
   /* ========================================================
@@ -162,8 +166,8 @@
      ======================================================== */
   --shadow-ambient-warm: 0 16px 32px -4px rgba(56, 20, 24, 0.08);
   --shadow-ambient-card: 0 4px 20px -2px rgba(56, 20, 24, 0.05);
-  --shadow-glass-card: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
-  --shadow-emerald-glow: 0 0 25px -4px rgba(16, 185, 129, 0.35);
+  --shadow-portal-card: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
+  --shadow-teal-glow: 0 0 25px -4px rgba(0, 140, 135, 0.35);
 }
 
 @layer base {
@@ -285,33 +289,100 @@
     animation-play-state: paused;
   }
 
-  /* ========================================================
-     GLASSMORPHISM & AUTH UTILITIES (why-us.webp + Floating Card)
-     ======================================================== */
-  .glass-card {
-    background-color: var(--color-glass-card-bg);
-    border: 1px solid var(--color-glass-card-border);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    box-shadow: var(--shadow-glass-card);
+  /* 3D Floating Elements Animations */
+  @keyframes float-slow {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-18px) rotate(1.5deg);
+    }
   }
 
-  .glass-input {
-    background-color: var(--color-glass-input-bg);
-    border: 1px solid var(--color-glass-input-border);
+  @keyframes float-reverse {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(16px) rotate(-2deg);
+    }
+  }
+
+  @keyframes float-diagonal {
+    0%, 100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    50% {
+      transform: translate(-12px, -14px) scale(1.02);
+    }
+  }
+
+  .animate-float-slow {
+    animation: float-slow 9s ease-in-out infinite;
+  }
+
+  .animate-float-reverse {
+    animation: float-reverse 11s ease-in-out infinite;
+  }
+
+  .animate-float-diagonal {
+    animation: float-diagonal 13s ease-in-out infinite;
+  }
+
+  /* ========================================================
+     SOLID AUTH & WEB APP CARD UTILITIES
+     Dark: bg #000000, card #131215, text #FFFFFF, accent #008C87
+     Light: bg #FFFFFF, card #F3F4F6, text #000000, accent #008C87
+     ======================================================== */
+  .auth-card-dark {
+    background-color: #131215;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95);
+  }
+
+  .auth-card-light {
+    background-color: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.08);
+  }
+
+  .auth-input-dark {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.10);
     color: #FFFFFF;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .glass-input:focus {
-    border-color: var(--color-emerald-500);
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+  .auth-input-dark:focus {
+    border-color: #008C87;
+    box-shadow: 0 0 0 2px rgba(0, 140, 135, 0.25);
     background-color: rgba(255, 255, 255, 0.07);
     outline: none;
   }
 
-  .glow-emerald {
-    box-shadow: var(--shadow-emerald-glow);
+  .auth-input-light {
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: #000000;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .auth-input-light:focus {
+    border-color: #008C87;
+    box-shadow: 0 0 0 2px rgba(0, 140, 135, 0.25);
+    background-color: #FFFFFF;
+    outline: none;
+  }
+
+  .auth-input-dark:-webkit-autofill,
+  .auth-input-dark:-webkit-autofill:hover,
+  .auth-input-dark:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 30px #1a191e inset !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+  }
+
+  .glow-teal {
+    box-shadow: 0 0 25px -4px rgba(0, 140, 135, 0.35);
   }
 
   .glow-white-sm {

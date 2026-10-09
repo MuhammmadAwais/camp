@@ -124,53 +124,51 @@ Tailwind v4 automatically generates utility classes from these tokens:
   --color-badge-vsa: #10B981;          /* British Columbia */
 
   /* ========================================================
-     PORTAL & WEB APP DESIGN SYSTEM (Porcelain / Obsidian & Racing Emerald)
+     PORTAL & WEB APP DESIGN SYSTEM (Black / White & Nordic Pine Teal)
      ======================================================== */
-  /* Porcelain Light Mode Tokens */
-  --color-portal-canvas: #F8FAFC;
-  --color-portal-surface: #FFFFFF;
-  --color-portal-surface-hover: #F1F5F9;
-  --color-portal-border: #E2E8F0;
-  --color-portal-border-subtle: rgba(226, 232, 240, 0.7);
-  --color-portal-text: #0F172A;
-  --color-portal-text-muted: #64748B;
+  /* Light Mode Tokens */
+  --color-portal-canvas: #FFFFFF;
+  --color-portal-surface: #F3F4F6;
+  --color-portal-surface-hover: #E5E7EB;
+  --color-portal-border: #E5E7EB;
+  --color-portal-border-subtle: rgba(0, 0, 0, 0.06);
+  --color-portal-text: #000000;
+  --color-portal-text-muted: #4B5563;
 
-  /* Obsidian Dark Mode Tokens */
-  --color-portal-dark-canvas: #080C14;
-  --color-portal-dark-surface: #0E1420;
-  --color-portal-dark-surface-hover: #162032;
+  /* Dark Mode Tokens */
+  --color-portal-dark-canvas: #000000;
+  --color-portal-dark-surface: #131215;
+  --color-portal-dark-surface-hover: #1D1C21;
   --color-portal-dark-border: rgba(255, 255, 255, 0.08);
   --color-portal-dark-border-subtle: rgba(255, 255, 255, 0.04);
-  --color-portal-dark-text: #F8FAFC;
-  --color-portal-dark-text-muted: #94A3B8;
+  --color-portal-dark-text: #FFFFFF;
+  --color-portal-dark-text-muted: #9CA3AF;
 
-  /* Racing Emerald Palette */
-  --color-emerald-50: #ECFDF5;
-  --color-emerald-100: #D1FAE5;
-  --color-emerald-200: #A7F3D0;
-  --color-emerald-300: #6EE7B7;
-  --color-emerald-400: #34D399;
-  --color-emerald-500: #10B981;         /* Dark mode primary accent */
-  --color-emerald-600: #059669;         /* Light mode primary accent */
-  --color-emerald-700: #047857;
-  --color-emerald-800: #065F46;
-  --color-emerald-900: #064E3B;
-  --color-emerald-950: #022C22;
+  /* Nordic Pine Teal Accent Scale (#008C87) */
+  --color-accent-50: #E6F7F6;
+  --color-accent-100: #CCEFEF;
+  --color-accent-200: #99DFDE;
+  --color-accent-300: #66CFCD;
+  --color-accent-400: #33BFBC;
+  --color-accent-500: #008C87;          /* Unified Brand Accent */
+  --color-accent-600: #00736F;          /* Hover / Active */
+  --color-accent-700: #005B57;
+  --color-accent-800: #004240;
+  --color-accent-900: #002A28;
+  --color-accent-950: #001A18;
 
-  --color-portal-primary: #15803D;
-  --color-portal-primary-hover: #166534;
-  --color-portal-primary-tint: rgba(22, 163, 74, 0.10);
+  --color-portal-accent: #008C87;
+  --color-portal-accent-hover: #00736F;
+  --color-portal-accent-tint: rgba(0, 140, 135, 0.12);
 
-  --color-portal-dark-primary: #10B981;
-  --color-portal-dark-primary-hover: #059669;
-  --color-portal-dark-primary-tint: rgba(16, 185, 129, 0.15);
+  /* Auth Card Tokens (Solid Minimalist 5:4 Proportions) */
+  --color-auth-bg: #000000;
+  --color-auth-card-bg: #131215;
+  --color-auth-card-border: rgba(255, 255, 255, 0.08);
+  --color-auth-input-bg: rgba(255, 255, 255, 0.04);
+  --color-auth-input-border: rgba(255, 255, 255, 0.10);
+  --color-auth-input-focus: #008C87;
 
-  /* Glassmorphic Auth Tokens (why-us.webp backdrop) */
-  --color-glass-card-bg: rgba(9, 13, 22, 0.82);
-  --color-glass-card-border: rgba(255, 255, 255, 0.10);
-  --color-glass-input-bg: rgba(255, 255, 255, 0.04);
-  --color-glass-input-border: rgba(255, 255, 255, 0.08);
-  --color-glass-input-focus: rgba(16, 185, 129, 0.60);
 
   /* ========================================================
      BORDER RADII

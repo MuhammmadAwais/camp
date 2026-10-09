@@ -526,3 +526,46 @@ Last updated: 2026-10-09
 - **Micro-Glow Focus Rings:** Text inputs use `.glass-input` with Racing Emerald border and glow ring upon focus.
 - **Segmented Pill Controls:** Sub-headers and Sign In / Sign Up toggles use pill pills (`rounded-full`) with `bg-white/10 text-white` for the active tab.
 - **High-Contrast White CTA:** Primary action button utilizes pure solid white with deep slate text and subtle luminescence (`glow-white-sm`).
+
+---
+
+### `SolidAuthCard` (5:4 Minimalist Dual-Mode Pattern)
+
+File: `features/auth/components/AuthCard.tsx`  
+Last updated: 2026-10-09  
+
+| Property         | Class |
+| ---------------- | ----- |
+| Background       | Dark: `bg-[#131215]` on canvas `bg-[#000000]` / Light: `bg-[#F3F4F6]` on canvas `bg-[#FFFFFF]` |
+| Border           | Dark: `border border-white/10` / Light: `border border-neutral-200` |
+| Border radius    | `rounded-3xl` |
+| Text — primary   | Dark: `text-white font-headline font-bold` / Light: `text-black font-headline font-bold` |
+| Text — secondary | Dark: `text-neutral-400 font-body text-xs` / Light: `text-neutral-600 font-body text-xs` |
+| Spacing          | `p-6 sm:p-8 max-w-[530px] w-full mx-auto sm:aspect-[5/4] sm:min-h-[490px]` |
+| Hover state      | Inputs: `focus:border-[#008C87] focus:ring-2 focus:ring-[#008C87]/25 outline-none`; Buttons: `hover:bg-[#00736F]` |
+| Shadow           | Dark: `shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)]` / Light: `shadow-[0_20px_45px_-15px_rgba(0,0,0,0.08)]` |
+| Accent usage     | Nordic Pine Teal (`#008C87`): Primary CTA (`bg-[#008C87] hover:bg-[#00736F] text-white`), role selector (`bg-[#008C87]/15 text-[#008C87] border-[#008C87]/40`), input focus ring (`focus:border-[#008C87]`), and checkbox accent |
+
+**Pattern notes:**
+- **Solid Minimalist Geometry:** Replaces photographic backgrounds with a plain solid canvas (`#000000` in dark mode, `#FFFFFF` in light mode).
+- **5:4 Proportions:** Card maintains a 5:4 aspect ratio (`sm:aspect-[5/4] sm:min-h-[490px]`) in sign-in mode for a balanced and focused geometric presence, expanding gracefully for multi-field dealer registration.
+- **Nordic Pine Teal Accent:** Unified brand accent `#008C87` provides bank-grade FinTech credibility and regulatory authority without visual fatigue.
+- **Dual Theme Support:** Seamless instant toggle between Dark Mode (`#000000` / `#131215` / `#FFFFFF`) and Light Mode (`#FFFFFF` / `#F3F4F6` / `#000000`).
+- **Edge-Safe Autofill:** Custom input CSS prevents bright browser autofill rectangles in dark mode while preserving native browser credentials.
+
+---
+
+### `Auth3DBackground & Frosted Glass Login System`
+
+File: `features/auth/components/Auth3DBackground.tsx` / `features/auth/components/AuthCard.tsx` / `app/login/page.tsx`  
+Last updated: 2026-10-09  
+
+| Property         | Class / Specification |
+| ---------------- | --------------------- |
+| Canvas           | Deep atmospheric dark canvas `bg-[#000000]` with subtle Emerald / Pine Teal radial ambient lighting |
+| Top-Left Brand   | Authentic AutoNexa gold emblem (`/logo-mark.webp`) beside `Auto<span className="text-[#E59344]">Nexa</span>` in `font-headline font-bold text-xl sm:text-2xl` with gap-3 flex alignment |
+| 3D Sculptures    | Photorealistic translucent smoked frosted glass & dark obsidian acrylic with micro-surface grain, internal emerald pine teal refractions, and warm gold metallic rim light (`/auth-3d/glass/`) |
+| Animations       | Asynchronous continuous floating loops: `@keyframes float-slow` (12s ease-in-out), `@keyframes float-reverse` (15s ease-in-out), `@keyframes float-diagonal` (14s ease-in-out) |
+| Frosted Card     | Translucent frosted glass `bg-[#131215]/65 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 max-w-[440px] w-full shadow-2xl` |
+| Social Login     | Google only (`Continue with Google`), removing GitHub and Apple buttons |
+| Primary CTA      | Nordic Pine Teal `#008C87` (`hover:bg-[#00736F]`) with soft teal glow `shadow-[0_4px_20px_rgba(0,140,135,0.4)]` |

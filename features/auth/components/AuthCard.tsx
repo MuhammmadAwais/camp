@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { Eye, EyeOff, Mail, Lock, User, Building, FileText } from 'lucide-react';
 
 interface AuthCardProps {
   initialMode?: 'signin' | 'signup';
@@ -71,101 +72,97 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
   };
 
   return (
-    <div className="w-full max-w-[430px] mx-auto glass-card rounded-3xl p-6 sm:p-8 relative text-white border border-white/10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] backdrop-blur-2xl bg-[#090D16]/80 transition-all duration-300">
-      {/* 1. Top Segmented Pill Toggle (Sign up | Sign in) */}
-      <div className="flex items-center justify-center p-1 bg-white/[0.05] rounded-full max-w-[210px] mx-auto mb-6 border border-white/10">
-        <button
-          type="button"
-          onClick={() => {
-            setMode('signup');
-            setError(null);
-          }}
-          className={`flex-1 py-1.5 px-4 text-xs font-semibold rounded-full transition-all duration-200 ${
-            mode === 'signup'
-              ? 'bg-white/15 text-white shadow-xs'
-              : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          Sign up
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setMode('signin');
-            setError(null);
-          }}
-          className={`flex-1 py-1.5 px-4 text-xs font-semibold rounded-full transition-all duration-200 ${
-            mode === 'signin'
-              ? 'bg-white/15 text-white shadow-xs'
-              : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          Sign in
-        </button>
+    <div className="w-full max-w-[430px] mx-auto rounded-3xl p-7 sm:p-9 relative text-white border border-white/20 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.2)] backdrop-blur-2xl bg-[#131215]/65 transition-all duration-300">
+      {/* 1. Header: Mode Switcher */}
+      <div className="flex items-center justify-end mb-4">
+        <div className="flex items-center p-1 bg-white/[0.06] rounded-full border border-white/10 font-body text-xs">
+          <button
+            type="button"
+            onClick={() => {
+              setMode('signin');
+              setError(null);
+            }}
+            className={`px-3 py-1 rounded-full font-body font-semibold transition-all cursor-pointer ${
+              mode === 'signin'
+                ? 'bg-white/20 text-white shadow-xs'
+                : 'text-neutral-400 hover:text-white'
+            }`}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMode('signup');
+              setError(null);
+            }}
+            className={`px-3 py-1 rounded-full font-body font-semibold transition-all cursor-pointer ${
+              mode === 'signup'
+                ? 'bg-white/20 text-white shadow-xs'
+                : 'text-neutral-400 hover:text-white'
+            }`}
+          >
+            Register
+          </button>
+        </div>
       </div>
 
-      {/* 2. Header & Title */}
-      <div className="text-left mb-6">
-        <h1 className="font-headline font-bold text-2xl sm:text-[26px] text-white tracking-tight">
-          {mode === 'signin' ? 'Welcome back' : 'Create an account'}
+      {/* 2. Main Title */}
+      <div className="text-left mb-5">
+        <h1 className="font-headline font-bold text-3xl sm:text-4xl text-white tracking-tight">
+          {mode === 'signin' ? 'Login' : 'Create Account'}
         </h1>
-        <p className="font-body text-xs text-neutral-400 mt-1 leading-relaxed">
-          {mode === 'signin'
-            ? 'Access your wholesale terminal and active auctions.'
-            : 'Join Canada’s 24-hour sealed-bid automotive exchange.'}
-        </p>
       </div>
 
       {/* 3. Error Alert */}
       {error && (
-        <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-medium text-center">
+        <div className="mb-4 p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 font-body text-xs font-medium text-center">
           {error}
         </div>
       )}
 
-      {/* 4. In-Card Role Selector for Sign Up */}
+      {/* 4. In-Card Role Selector for Registration */}
       {mode === 'signup' && (
-        <div className="grid grid-cols-2 gap-2 p-1 bg-white/[0.04] border border-white/10 rounded-xl mb-5">
+        <div className="grid grid-cols-2 gap-2 p-1 bg-white/[0.05] border border-white/15 rounded-xl mb-4 backdrop-blur-md font-body">
           <button
             type="button"
             onClick={() => setRole('SELLER')}
-            className={`py-2 px-3 text-xs font-semibold rounded-lg transition-all ${
+            className={`py-2 px-3 text-xs font-body font-semibold rounded-lg transition-all cursor-pointer ${
               role === 'SELLER'
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                ? 'bg-[#008C87]/25 text-[#008C87] border border-[#008C87]/50 font-bold shadow-xs'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
-            🚗 Private Seller
+            Private Seller
           </button>
           <button
             type="button"
             onClick={() => setRole('DEALER')}
-            className={`py-2 px-3 text-xs font-semibold rounded-lg transition-all ${
+            className={`py-2 px-3 text-xs font-body font-semibold rounded-lg transition-all cursor-pointer ${
               role === 'DEALER'
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                ? 'bg-[#008C87]/25 text-[#008C87] border border-[#008C87]/50 font-bold shadow-xs'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
-            🏢 Dealership
+            Dealership
           </button>
         </div>
       )}
 
-      {/* 5. The Main Form */}
-      <form onSubmit={handleSubmit} className="space-y-3.5">
+      {/* 5. Main Form */}
+      <form onSubmit={handleSubmit} className="space-y-3.5 font-body">
         {mode === 'signup' && (
           <div>
+            <label className="block text-[11px] font-body font-medium text-neutral-300 mb-1">Full Name</label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400">
-                👤
-              </span>
+              <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder={role === 'SELLER' ? 'Full legal name' : 'Contact person name'}
-                className="w-full glass-input rounded-xl pl-10 pr-4 py-3 text-sm placeholder:text-neutral-500"
+                placeholder={role === 'SELLER' ? 'Your legal full name' : 'Contact person name'}
+                className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-2 focus:ring-[#008C87]/25 transition-all backdrop-blur-md"
               />
             </div>
           </div>
@@ -174,90 +171,86 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
         {mode === 'signup' && role === 'DEALER' && (
           <>
             <div>
+              <label className="block text-[11px] font-body font-medium text-neutral-300 mb-1">Dealership Name</label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400">
-                  🏢
-                </span>
+                <Building className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
                 <input
                   type="text"
                   required
                   value={dealershipName}
                   onChange={(e) => setDealershipName(e.target.value)}
                   placeholder="Dealership Operating Name"
-                  className="w-full glass-input rounded-xl pl-10 pr-4 py-3 text-sm placeholder:text-neutral-500"
+                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-2 focus:ring-[#008C87]/25 transition-all backdrop-blur-md"
                 />
               </div>
             </div>
 
             <div>
+              <label className="block text-[11px] font-body font-medium text-neutral-300 mb-1">License Number</label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400">
-                  📄
-                </span>
+                <FileText className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
                 <input
                   type="text"
                   required
                   value={licenseNumber}
                   onChange={(e) => setLicenseNumber(e.target.value)}
                   placeholder="OMVIC / AMVIC / VSA License #"
-                  className="w-full glass-input rounded-xl pl-10 pr-4 py-3 text-sm placeholder:text-neutral-500 font-mono"
+                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-mono text-sm outline-none focus:border-[#008C87] focus:ring-2 focus:ring-[#008C87]/25 transition-all backdrop-blur-md"
                 />
               </div>
             </div>
           </>
         )}
 
-        {/* Email Field with Icon */}
+        {/* Email Field */}
         <div>
+          <label className="block text-[11px] font-body font-medium text-neutral-300 mb-1">Email</label>
           <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">
-              ✉
-            </span>
+            <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="w-full glass-input rounded-xl pl-10 pr-4 py-3 text-sm placeholder:text-neutral-500"
+              placeholder="username@gmail.com"
+              className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-2 focus:ring-[#008C87]/25 transition-all backdrop-blur-md"
             />
           </div>
         </div>
 
-        {/* Password Field with Icon and Eye Toggle */}
+        {/* Password Field */}
         <div>
+          <label className="block text-[11px] font-body font-medium text-neutral-300 mb-1">Password</label>
           <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">
-              🔒
-            </span>
+            <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
             <input
               type={showPassword ? 'text' : 'password'}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className="w-full glass-input rounded-xl pl-10 pr-11 py-3 text-sm placeholder:text-neutral-500"
+              placeholder="••••••••••••"
+              className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-11 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-2 focus:ring-[#008C87]/25 transition-all backdrop-blur-md"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white transition-colors text-sm"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white transition-colors cursor-pointer"
             >
-              {showPassword ? '👁' : '👁‍🗨'}
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
         {mode === 'signup' && (
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2.5 font-body">
             <input
               type="tel"
               required
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Mobile Phone"
-              className="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs placeholder:text-neutral-500"
+              className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl px-3.5 py-2 font-body text-xs outline-none focus:border-[#008C87] focus:ring-2 focus:ring-[#008C87]/25 transition-all backdrop-blur-md"
             />
             <input
               type="text"
@@ -266,60 +259,68 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
               onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
               placeholder="Postal Code"
               maxLength={7}
-              className="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs placeholder:text-neutral-500 uppercase font-mono"
+              className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl px-3.5 py-2 font-mono text-xs uppercase outline-none focus:border-[#008C87] focus:ring-2 focus:ring-[#008C87]/25 transition-all backdrop-blur-md"
             />
           </div>
         )}
 
-        {/* Remember Me & Forgot Password (Sign in view) */}
+        {/* Remember Me & Forgot Password */}
         {mode === 'signin' && (
-          <div className="flex items-center justify-between text-xs pt-0.5">
-            <label className="flex items-center gap-2 cursor-pointer text-neutral-400 hover:text-neutral-300 select-none">
+          <div className="flex items-center justify-between font-body text-xs pt-0.5">
+            <label className="flex items-center gap-2 cursor-pointer select-none text-neutral-300 hover:text-white transition-colors font-body">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="rounded border-white/20 bg-white/5 text-emerald-500 focus:ring-emerald-500/30 accent-emerald-500"
+                className="rounded border-white/20 bg-white/10 text-[#008C87] focus:ring-[#008C87]/30 accent-[#008C87]"
               />
               Remember me
             </label>
-            <a href="#forgot" className="text-neutral-400 hover:text-white transition-colors">
-              Forgot password?
+            <a
+              href="#forgot"
+              className="text-neutral-300 hover:text-white transition-colors font-body"
+            >
+              Forgot Password?
             </a>
           </div>
         )}
 
-        {/* Primary Action Button (Pure White High-Contrast) */}
+        {/* Primary Action Button (Nordic Pine Teal #008C87) */}
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full mt-2 bg-white text-slate-950 hover:bg-neutral-100 font-body font-semibold py-3 px-4 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.12)] transition-all active:scale-[0.99] disabled:opacity-50 text-sm"
+          className="w-full mt-2 bg-[#008C87] hover:bg-[#00736F] text-white font-body font-semibold py-3 px-4 rounded-xl shadow-[0_4px_20px_rgba(0,140,135,0.4)] transition-all active:scale-[0.99] disabled:opacity-50 text-sm cursor-pointer"
         >
           {isLoading
             ? 'Processing...'
             : mode === 'signin'
-            ? 'Sign in'
+            ? 'Sign In'
             : `Create ${role === 'SELLER' ? 'Seller' : 'Dealer'} Account`}
         </button>
 
         {/* Divider */}
-        <div className="relative py-2 flex items-center justify-center">
+        <div className="relative py-2 flex items-center justify-center font-body">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-white/10" />
+            <div className="w-full border-t border-white/15" />
           </div>
-          <span className="relative bg-[#090D16] px-3 text-[10px] uppercase tracking-wider font-mono text-neutral-500">
-            or sign in with
+          <span className="relative bg-[#17161b] px-3 font-body text-[11px] uppercase tracking-wider text-neutral-400 rounded-full border border-white/10">
+            or continue with
           </span>
         </div>
 
-        {/* Social Login: Continue with Google */}
+        {/* Social Login: Google Only */}
         <button
           type="button"
-          onClick={() => login({ email: 'seller@autonexa.ca', password: 'password', rememberMe: true })}
-          className="w-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white font-body font-medium py-2.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2.5 text-xs active:scale-[0.99]"
+          onClick={() =>
+            login({
+              email: 'seller@autonexa.ca',
+              password: 'password',
+              rememberMe: true,
+            })
+          }
+          className="w-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 py-2.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2.5 font-body text-xs font-medium text-white shadow-xs cursor-pointer active:scale-[0.99]"
         >
-          {/* Google G SVG */}
-          <svg className="w-4 h-4" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -337,17 +338,9 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
             />
           </svg>
-          Continue with Google
+          <span>Continue with Google</span>
         </button>
       </form>
-
-      {/* 6. Footer Terms Notice */}
-      <p className="text-[11px] text-neutral-500 text-center mt-5 leading-relaxed font-body">
-        By continuing, you agree to our{' '}
-        <a href="#terms" className="text-neutral-400 hover:text-white underline underline-offset-2">
-          Terms &amp; Service
-        </a>
-      </p>
     </div>
   );
 }
