@@ -2,8 +2,14 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { authApi } from '@/lib/api-client';
-import type { User, UserRole, LoginCredentials, RegisterSellerPayload, RegisterDealerPayload } from '@/types/auth';
+import { authService } from '@/features/auth/services/authService';
+import type {
+  User,
+  UserRole,
+  LoginCredentials,
+  RegisterSellerPayload,
+  RegisterDealerPayload,
+} from '@/features/auth/types';
 
 interface AuthContextType {
   user: User | null;
@@ -24,11 +30,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  const refreshSession = useCallback(async () => {
+  const refreshSession = useCallback(() => {
     try {
-      setIsLoading(true);
-      const data = await authApi.getSession();
-      setUser(data.user);
+      const active = authService.getCurrentUser();
+      setUser(active);
     } catch {
       setUser(null);
     } finally {
@@ -43,15 +48,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (credentials: LoginCredentials): Promise<User> => {
     setIsLoading(true);
     try {
-      const { user } = await authApi.login(credentials);
-      setUser(user);
-      
-      // Smart redirect based on role
-      if (user.role === 'SELLER') router.push('/seller/dashboard');
-      else if (user.role === 'ADMIN') router.push('/admin/moderation');
+      const loggedIn = await authService.login(credentials);
+      setUser(loggedIn);
+
+      // Smart routing by role
+      if (loggedIn.role === 'SELLER') router.push('/seller/dashboard');
+      else if (loggedIn.role === 'ADMIN') router.push('/admin/moderation');
       else router.push('/dealer/inventory');
 
-      return user;
+      return loggedIn;
     } finally {
       setIsLoading(false);
     }
@@ -60,10 +65,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const registerSeller = async (payload: RegisterSellerPayload): Promise<User> => {
     setIsLoading(true);
     try {
-      const { user } = await authApi.registerSeller(payload);
-      setUser(user);
+      const newUser = await authService.registerSeller(payload);
+      setUser(newUser);
       router.push('/seller/dashboard');
-      return user;
+      return newUser;
     } finally {
       setIsLoading(false);
     }
@@ -72,10 +77,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const registerDealer = async (payload: RegisterDealerPayload): Promise<User> => {
     setIsLoading(true);
     try {
-      const { user } = await authApi.registerDealer(payload);
-      setUser(user);
+      const newUser = await authService.registerDealer(payload);
+      setUser(newUser);
       router.push('/dealer/inventory');
-      return user;
+      return newUser;
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     setIsLoading(true);
     try {
-      await authApi.logout();
+      await authService.logout();
       setUser(null);
       router.push('/login');
     } finally {
@@ -95,13 +100,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const devSwitchRole = async (role: UserRole | 'LOGOUT') => {
     setIsLoading(true);
     try {
-      const { user } = await authApi.devSwitchRole(role);
-      setUser(user);
-      if (!user) {
+      const switched = authService.switchRole(role);
+      setUser(switched);
+      if (!switched) {
         router.push('/login');
-      } else if (user.role === 'SELLER') {
+      } else if (switched.role === 'SELLER') {
         router.push('/seller/dashboard');
-      } else if (user.role === 'ADMIN') {
+      } else if (switched.role === 'ADMIN') {
         router.push('/admin/moderation');
       } else {
         router.push('/dealer/inventory');

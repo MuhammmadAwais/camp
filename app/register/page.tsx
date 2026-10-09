@@ -1,11 +1,14 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+'use client';
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { AuthCard } from '@/features/auth/components/AuthCard';
+
+export default function RegisterPage() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-black flex flex-col justify-between">
-      {/* 1. High-Performance Dark Automotive Backdrop */}
+    <div className="relative min-h-screen w-full overflow-hidden bg-black flex flex-col justify-between selection:bg-emerald-500 selection:text-slate-950">
+      {/* 1. Dark Automotive Backdrop */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/illustrations/why-us.webp"
@@ -16,12 +19,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           className="object-cover object-center select-none"
           sizes="100vw"
         />
-        {/* Subtle radial & linear dark vignette gradient allowing car contours to peek through */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/85 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/55 to-black/85 backdrop-blur-[2px]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(0,0,0,0.85)_100%)]" />
       </div>
 
-      {/* 2. Top Minimalist Brand Header */}
+      {/* 2. Top Header */}
       <header className="relative z-10 w-full px-6 py-6 sm:px-12 flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-3 group">
           <div className="w-9 h-9 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center p-1.5 transition-transform group-hover:scale-105">
@@ -46,12 +48,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </Link>
       </header>
 
-      {/* 3. Centered Content Slot for Glassmorphic Auth Card */}
+      {/* 3. Centered Glassmorphic AuthCard Feature in Sign Up Mode */}
       <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-8 sm:px-6">
-        {children}
+        <AuthCard initialMode="signup" />
       </main>
 
-      {/* 4. Bottom Legal / Regulatory Strip */}
+      {/* 4. Footer */}
       <footer className="relative z-10 w-full py-4 px-6 text-center text-xs text-neutral-500 font-body">
         Protected by PIPEDA & Quebec Law 25 &bull; OMVIC, AMVIC & VSA Licensed Exchange
       </footer>

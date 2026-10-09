@@ -78,6 +78,7 @@ Update this file after every completed feature. Any AI agent reading this should
 - **2026-10-03 (Hero & Carousel Micro-Interactions):** Implemented interactive 3D perspective mouse hover tilt with specular glare highlight on `MarketValuationWidget.tsx`. Fixed `image_14.png` (Ford badge) in `BrandCarousel.tsx` with a transparent background cutout, eliminating the solid white oval fill under contrast filters.
 - **2026-10-03 (Seller Marketplace Realignment):** Realigned `DiscoverSection.tsx` product cards from retail buyer inventory to verified recent dealer sales. Preserved 100% of card geometry while showing actual seller payouts, dealer bid counts, and surplus above trade-in offers.
 - **2026-10-09 (Web App Design System & Dual-Theme Architecture):** Established dedicated Web App & Portal Design Tokens (Porcelain `#F8FAFC`, Obsidian `#080C14`, Racing Emerald scale `#16A34A` / `#10B981`) in `DESIGN (3).md`, `context/ui-tokens.md`, and `app/globals.css`. Configured glassmorphism utilities (`.glass-card`, `.glass-input`, `.glow-emerald`) over `public/illustrations/why-us.webp` for the upcoming Auth Suite.
+- **2026-10-09 (Feature-Based Architecture Realignment & Route Collision Fix):** Transitioned to a clean frontend-only feature-based directory structure (`features/auth/`, `features/seller/`, `features/dealer/`, `features/admin/`) with isolated services ready for future API integration. Resolved Edge runtime buffer crash and route group collision, restoring seamless rendering of the glassmorphic authentication suite.
 
 ---
 
