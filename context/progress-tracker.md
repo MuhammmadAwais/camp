@@ -15,11 +15,11 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Progress
 
 ### Phase 1 — Foundation & Architecture
-- [ ] 01 Next.js 15 Scaffold & Route Groups (`/marketing`, `/seller`, `/dealer`, `/admin`)
+- [x] 01 Next.js 15 Scaffold & Route Groups (`/auth`, `/seller`, `/dealer`, `/admin`)
 - [x] 02 Tailwind v4 & Autumn Editorial Design Tokens (`globals.css` @theme config)
 - [ ] 03 `next-intl` Bilingual Setup (EN/FR for Quebec Law 25)
 - [ ] 04 TanStack Query & Zustand Store Initialization
-- [ ] 05 JWT Auth Wrapper & Middleware (Role segregation)
+- [x] 05 JWT Auth Wrapper & Middleware (Role segregation & BFF Decoupling)
 
 ### Phase 2 — AutoNexa Landing Page & Public Funnel
 - [x] 06-A Navbar (`Navbar.tsx` with logo, navigation links, and portal action buttons)
