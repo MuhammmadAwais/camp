@@ -224,3 +224,44 @@ The shape system adopts a **Rounded** philosophy (`2`), delivering gentle, organ
 ### List Items & Dividers
 - Separators use soft, tinted lines (`rgba(140, 56, 62, 0.08)`).
 - Hover states across list elements apply an ultra-subtle oat-tint overlay with a smooth 150ms ease transition.
+
+---
+
+# Part 2: Web App & Auction Portal Design System (CAMP)
+
+While the public marketing funnel utilizes the tactile Autumn Editorial system, the **AutoNexa Web Application (Seller Portal, Dealer Terminal, Admin Backoffice, and Auth Suite)** operates on a dedicated **Institutional FinTech & Automotive Wholesale** design system.
+
+## 1. Visual Philosophy: FinTech Precision meets Automotive Power
+- **Focus & Endurance:** Replaces warm editorial paper tones with high-contrast neutral slates to reduce eye fatigue during prolonged trading sessions.
+- **Capital & Trust:** Anchors interactive actions, active bids, and verified transactions in **Racing Emerald**—a color synonymous with liquidity, profitability, and Canadian automotive prestige.
+- **Atmospheric Depth:** Leverages frosted glassmorphism over moody dark automotive backdrops (`why-us.webp`) for the entry gateway, transitioning seamlessly into clean, structured operational dashboards.
+
+## 2. Dual-Theme Palette Architecture
+
+### A. Neutral Canvas & Surfaces
+| Surface Level | Light Mode (Porcelain) | Dark Mode (Obsidian) | Semantic Role |
+| :--- | :--- | :--- | :--- |
+| **Viewport Canvas** | `#F8FAFC` (Slate 50) | `#080C14` (Deep Obsidian) | Full-screen app background |
+| **Primary Container** | `#FFFFFF` (Pure White) | `#0E1420` (Midnight Navy) | Cards, bid slips, inspection panes |
+| **Sunken/Track** | `#F1F5F9` (Slate 100) | `#162032` (Slate Navy) | Input backgrounds, telemetry tracks |
+| **Card Borders** | `#E2E8F0` (Slate 200) | `rgba(255, 255, 255, 0.08)` | 1px clean container framing |
+| **Subtle Dividers** | `rgba(226, 232, 240, 0.7)` | `rgba(255, 255, 255, 0.04)` | Table rows, list item dividers |
+
+### B. Racing Emerald Brand Accent Scale
+- **`emerald-50`**: `#ECFDF5` — Ultra-soft green wash for verified badges in light mode
+- **`emerald-100`**: `#D1FAE5` — Highlight background for active dealer bids
+- **`emerald-200`**: `#A7F3D0` — Subtle success borders
+- **`emerald-400`**: `#34D399` — Vibrant secondary green for dark-mode charts
+- **`emerald-500`**: `#10B981` — **Dark Mode Primary Accent** (Luminescent Jade / Mint)
+- **`emerald-600`**: `#059669` — **Light Mode Primary Accent** (Authoritative Racing Forest)
+- **`emerald-700`**: `#047857` — Active pressed states & high-contrast text on light badges
+- **`emerald-950`**: `#022C22` — Deep tint background for dark mode badges
+
+### C. Glassmorphism & Auth Specification
+Specifically engineered for authentication cards floating over `public/illustrations/why-us.webp`:
+- **Card Background:** `rgba(9, 13, 22, 0.82)` with `backdrop-filter: blur(24px)`
+- **Glass Border:** `1px solid rgba(255, 255, 255, 0.10)`
+- **Ambient Glow:** `box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85)`
+- **Input Background:** `rgba(255, 255, 255, 0.04)` with `1px solid rgba(255, 255, 255, 0.08)`
+- **Input Focus Glow:** `border-color: rgba(16, 185, 129, 0.60)` + `box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.20)`
+- **Primary CTA Button:** High-contrast solid crisp white (`#FFFFFF`) with dark slate ink (`#0F172A`), active hover at `#F1F5F9`.

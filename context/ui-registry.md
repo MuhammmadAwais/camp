@@ -499,3 +499,30 @@ Last updated: 2026-10-02
 - **Floating Inset Thumb:** Employs `border: 3px solid transparent` with `background-clip: padding-box` to create a 3px cushion around the pill thumb so it floats gracefully inside the track.
 - **Autumn Editorial Color Alignment:** Fully synced with design tokens — warm oat track (`#F8ECDB`), terracotta wine resting thumb (`#8C383E`), and high-energy honey amber hover glow (`#E59344`).
 - **Cross-Browser Parity:** Firefox fallback via `scrollbar-width: auto; scrollbar-color: var(--color-primary) var(--color-surface-container)`.
+
+---
+
+## Registered Component Patterns (Portal & Auth System — Racing Emerald & Obsidian)
+
+### `GlassmorphicAuthCard` (Pattern Foundation)
+
+File: `app/globals.css` / `components/auth/AuthCard.tsx`  
+Last updated: 2026-10-09  
+
+| Property         | Class / CSS Rule |
+| ---------------- | ---------------- |
+| Background       | `.glass-card` / `backdrop-blur-2xl bg-glass-card-bg` (`rgba(9, 13, 22, 0.82)`) |
+| Border           | `border border-glass-card-border` (`rgba(255, 255, 255, 0.10)`) |
+| Border radius    | `rounded-2xl` (`1.5rem` / `24px`) |
+| Text — primary   | `text-white font-headline font-bold` |
+| Text — secondary | `text-neutral-400 font-body text-sm` |
+| Spacing          | `p-6 sm:p-8 max-w-md w-full mx-auto` |
+| Hover state      | Inputs: `focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25 focus:bg-white/[0.07]` |
+| Shadow           | `shadow-glass-card` (`0 25px 60px -15px rgba(0, 0, 0, 0.85)`) |
+| Accent usage     | Primary CTA: crisp white `bg-white text-slate-950 font-semibold hover:bg-neutral-100`; Focus/badges: Racing Emerald (`#10B981` / `#16A34A`) |
+
+**Pattern notes:**
+- **Atmospheric Depth:** Designed to float gracefully above `public/illustrations/why-us.webp` with a dark radial vignette gradient overlay.
+- **Micro-Glow Focus Rings:** Text inputs use `.glass-input` with Racing Emerald border and glow ring upon focus.
+- **Segmented Pill Controls:** Sub-headers and Sign In / Sign Up toggles use pill pills (`rounded-full`) with `bg-white/10 text-white` for the active tab.
+- **High-Contrast White CTA:** Primary action button utilizes pure solid white with deep slate text and subtle luminescence (`glow-white-sm`).

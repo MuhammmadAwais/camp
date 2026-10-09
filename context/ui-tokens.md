@@ -109,9 +109,9 @@ Tailwind v4 automatically generates utility classes from these tokens:
   --color-canvas-light: #FAFBFC;        /* Porcelain: Seller app */
   --color-canvas-dark: #080C14;         /* Obsidian: Dealer terminal */
   --color-surface-light: #FFFFFF;
-  --color-surface-dark: #111827;
+  --color-surface-dark: #0E1420;
   --color-track-light: #F1F5F9;
-  --color-track-dark: #1E293B;
+  --color-track-dark: #162032;
 
   --color-brand-primary: #0B2545;       /* Deep Cobalt Navy */
   --color-brand-electric: #3B82F6;      /* Electric Cobalt */
@@ -124,6 +124,55 @@ Tailwind v4 automatically generates utility classes from these tokens:
   --color-badge-vsa: #10B981;          /* British Columbia */
 
   /* ========================================================
+     PORTAL & WEB APP DESIGN SYSTEM (Porcelain / Obsidian & Racing Emerald)
+     ======================================================== */
+  /* Porcelain Light Mode Tokens */
+  --color-portal-canvas: #F8FAFC;
+  --color-portal-surface: #FFFFFF;
+  --color-portal-surface-hover: #F1F5F9;
+  --color-portal-border: #E2E8F0;
+  --color-portal-border-subtle: rgba(226, 232, 240, 0.7);
+  --color-portal-text: #0F172A;
+  --color-portal-text-muted: #64748B;
+
+  /* Obsidian Dark Mode Tokens */
+  --color-portal-dark-canvas: #080C14;
+  --color-portal-dark-surface: #0E1420;
+  --color-portal-dark-surface-hover: #162032;
+  --color-portal-dark-border: rgba(255, 255, 255, 0.08);
+  --color-portal-dark-border-subtle: rgba(255, 255, 255, 0.04);
+  --color-portal-dark-text: #F8FAFC;
+  --color-portal-dark-text-muted: #94A3B8;
+
+  /* Racing Emerald Palette */
+  --color-emerald-50: #ECFDF5;
+  --color-emerald-100: #D1FAE5;
+  --color-emerald-200: #A7F3D0;
+  --color-emerald-300: #6EE7B7;
+  --color-emerald-400: #34D399;
+  --color-emerald-500: #10B981;         /* Dark mode primary accent */
+  --color-emerald-600: #059669;         /* Light mode primary accent */
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065F46;
+  --color-emerald-900: #064E3B;
+  --color-emerald-950: #022C22;
+
+  --color-portal-primary: #15803D;
+  --color-portal-primary-hover: #166534;
+  --color-portal-primary-tint: rgba(22, 163, 74, 0.10);
+
+  --color-portal-dark-primary: #10B981;
+  --color-portal-dark-primary-hover: #059669;
+  --color-portal-dark-primary-tint: rgba(16, 185, 129, 0.15);
+
+  /* Glassmorphic Auth Tokens (why-us.webp backdrop) */
+  --color-glass-card-bg: rgba(9, 13, 22, 0.82);
+  --color-glass-card-border: rgba(255, 255, 255, 0.10);
+  --color-glass-input-bg: rgba(255, 255, 255, 0.04);
+  --color-glass-input-border: rgba(255, 255, 255, 0.08);
+  --color-glass-input-focus: rgba(16, 185, 129, 0.60);
+
+  /* ========================================================
      BORDER RADII
      ======================================================== */
   --radius-xs: 0.25rem;                 /* 4px: Chips, badge tags */
@@ -131,6 +180,7 @@ Tailwind v4 automatically generates utility classes from these tokens:
   --radius-md: 0.75rem;                 /* 12px: Interactive controls */
   --radius-lg: 1rem;                    /* 16px: Content cards */
   --radius-xl: 1.5rem;                  /* 24px: Hero containers & modals */
+  --radius-2xl: 2rem;                   /* 32px: Auth floating glassmorphic container */
   --radius-full: 9999px;                /* Pills, avatar circles */
 
   /* ========================================================
@@ -138,6 +188,8 @@ Tailwind v4 automatically generates utility classes from these tokens:
      ======================================================== */
   --shadow-ambient-warm: 0 16px 32px -4px rgba(56, 20, 24, 0.08);
   --shadow-ambient-card: 0 4px 20px -2px rgba(56, 20, 24, 0.05);
+  --shadow-glass-card: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
+  --shadow-emerald-glow: 0 0 25px -4px rgba(16, 185, 129, 0.35);
 }
 ```
 
@@ -157,3 +209,22 @@ Tailwind v4 automatically generates utility classes from these tokens:
 | **Display Headline** | `font-headline font-bold text-on-surface tracking-tight` | Epilogue editorial headline |
 | **Body Text** | `font-body text-on-surface-variant leading-relaxed` | Plus Jakarta Sans readable text |
 | **Live Telemetry / VIN** | `font-mono text-primary font-semibold tracking-wide` | Monospaced jitter-free readout |
+
+---
+
+## Semantic Token Mapping for Portal & Auth Components
+
+| Element | CSS Classes | Description |
+| :--- | :--- | :--- |
+| **Auth Viewport Canvas** | `relative min-h-screen bg-black overflow-hidden flex items-center justify-center p-4` | Full-screen container over `why-us.webp` |
+| **Auth Glassmorphic Card** | `w-full max-w-md backdrop-blur-2xl bg-glass-card-bg border border-glass-card-border shadow-glass-card rounded-2xl p-6 sm:p-8` | Translucent frosted container |
+| **Auth Segmented Tab (Active)** | `bg-white/10 text-white font-body font-semibold shadow-sm rounded-full py-1.5 px-4` | Pill indicator for Sign In / Sign Up |
+| **Auth Segmented Tab (Inactive)** | `text-neutral-400 hover:text-white font-body font-medium transition-colors py-1.5 px-4` | Inactive tab state |
+| **Auth Input Field** | `w-full bg-glass-input-bg border border-glass-input-border focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-white placeholder:text-neutral-500 rounded-xl px-4 py-3 text-sm transition-all` | Frosted input with emerald focus |
+| **Auth Primary Action Button** | `w-full bg-white text-slate-950 hover:bg-neutral-100 font-body font-semibold py-3 px-4 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.12)] transition-all active:scale-[0.99]` | High-contrast white CTA |
+| **Auth Social Button** | `w-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white font-body font-medium py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-3` | Google OAuth dark glass button |
+| **Portal Canvas (Light)** | `bg-portal-canvas text-portal-text min-h-screen` | Clean Slate 50 workspace |
+| **Portal Canvas (Dark)** | `dark:bg-portal-dark-canvas dark:text-portal-dark-text min-h-screen` | Deep Obsidian terminal |
+| **Portal Primary Action** | `bg-portal-primary hover:bg-portal-primary-hover text-white dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-slate-950 font-semibold rounded-lg px-4 py-2.5 transition-colors` | Racing Emerald action button |
+| **Live Telemetry & Timer** | `font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400` | Jitter-free currency/clock readout |
+

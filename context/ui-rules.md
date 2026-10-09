@@ -91,3 +91,19 @@ All buttons maintain crisp, deliberate geometry (`rounded-sm` / 8px) and semi-bo
 - **NEVER** use proportional fonts for countdown tickers, VIN characters, or currency cents — always use `font-mono`.
 - **NEVER** display live bid CAD amounts while an auction is `ACTIVE` (Sealed Bid Invariant).
 - **NEVER** clutter editorial sections with harsh divider lines; rely on tonal stepping (`bg-surface` to `bg-surface-container`).
+
+---
+
+## 6. Portal & Auth UI Rules (FinTech Precision)
+
+1. **Auth Backdrop & Vignette:**  
+   The authentication screen must render `public/illustrations/why-us.webp` with a subtle dark gradient veil (`from-black/85 via-black/50 to-black/85`) so automotive contours peek through without compromising WCAG AAA text contrast.
+2. **Glassmorphic Constraints:**  
+   Auth cards must use `backdrop-blur-2xl`, translucent charcoal fill (`bg-glass-card-bg`), and a delicate 1px white border (`border-glass-card-border`). Never use opaque solid gray modals for auth.
+3. **Primary Action Contrast:**  
+   The primary submit button on the Auth Card must be solid crisp white (`bg-white text-slate-950 font-semibold`) for immediate visual hierarchy, paired with an interactive scale-down micro-interaction (`active:scale-[0.99]`).
+4. **Input Focus Accents:**  
+   Form inputs must illuminate with a subtle Racing Emerald glow ring (`focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20`) to signal active engagement.
+5. **Theme Segregation:**  
+   Landing page components use Autumn Editorial tokens; portal dashboards use `--color-portal-*` and `--color-emerald-*` tokens. Dealers default to dark mode (`.dark`), while sellers default to light porcelain.
+
