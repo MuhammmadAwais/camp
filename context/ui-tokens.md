@@ -165,7 +165,7 @@ Tailwind v4 automatically generates utility classes from these tokens:
   --color-portal-dark-primary-hover: #059669;
   --color-portal-dark-primary-tint: rgba(16, 185, 129, 0.15);
 
-  /* Glassmorphic Auth Tokens (why-us.webp backdrop) */
+  /* Glassmorphic Auth Tokens (why-us.webp backdrop) — retired from the auth flow 2026-10-10 */
   --color-glass-card-bg: rgba(9, 13, 22, 0.82);
   --color-glass-card-border: rgba(255, 255, 255, 0.10);
   --color-glass-input-bg: rgba(255, 255, 255, 0.04);
@@ -216,13 +216,14 @@ Tailwind v4 automatically generates utility classes from these tokens:
 
 | Element | CSS Classes | Description |
 | :--- | :--- | :--- |
-| **Auth Viewport Canvas** | `relative min-h-screen bg-black overflow-hidden flex items-center justify-center p-4` | Full-screen container over `why-us.webp` |
-| **Auth Glassmorphic Card** | `w-full max-w-md backdrop-blur-2xl bg-glass-card-bg border border-glass-card-border shadow-glass-card rounded-2xl p-6 sm:p-8` | Translucent frosted container |
-| **Auth Segmented Tab (Active)** | `bg-white/10 text-white font-body font-semibold shadow-sm rounded-full py-1.5 px-4` | Pill indicator for Sign In / Sign Up |
-| **Auth Segmented Tab (Inactive)** | `text-neutral-400 hover:text-white font-body font-medium transition-colors py-1.5 px-4` | Inactive tab state |
-| **Auth Input Field** | `w-full bg-glass-input-bg border border-glass-input-border focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-white placeholder:text-neutral-500 rounded-xl px-4 py-3 text-sm transition-all` | Frosted input with emerald focus |
-| **Auth Primary Action Button** | `w-full bg-white text-slate-950 hover:bg-neutral-100 font-body font-semibold py-3 px-4 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.12)] transition-all active:scale-[0.99]` | High-contrast white CTA |
-| **Auth Social Button** | `w-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white font-body font-medium py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-3` | Google OAuth dark glass button |
+| **Auth Layout** | `min-h-screen bg-surface lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]` | Split: sticky image panel (desktop) + ivory form column |
+| **Auth Image Panel** | `rounded-lg overflow-hidden bg-on-surface` + `bg-gradient-to-t from-on-surface via-on-surface/55 to-on-surface/10`; eyebrow `text-secondary`, headline `font-headline text-white` | Step-specific photo via `AuthVisualPanel` |
+| **Auth Form Column** | `w-full max-w-lg` (no card chrome); title `font-headline text-3xl sm:text-[36px] text-on-surface` | Unboxed editorial form |
+| **Auth Stepper (Active / Done / Inactive)** | `bg-primary text-white` / `bg-success/10 text-success ring-1 ring-success/30` / `bg-surface-container text-outline` | 28px badges + chevrons |
+| **Auth Input Field** | `rounded-sm border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/25` | White input on ivory; invalid → `border-error` |
+| **Auth Primary Action Button** | `w-full rounded-sm bg-primary hover:bg-primary-hover text-white font-semibold px-5 py-3.5 shadow-sm` | Terracotta wine CTA |
+| **Auth Secondary / Social Button** | `w-full rounded-sm bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container-low` | Google sign-in, Back |
+| **Auth Info Callout** | `rounded-lg border-l-4 border-primary bg-primary/10 text-on-surface` | `FormAlert tone="info"` |
 | **Portal Canvas (Light)** | `bg-portal-canvas text-portal-text min-h-screen` | Clean Slate 50 workspace |
 | **Portal Canvas (Dark)** | `dark:bg-portal-dark-canvas dark:text-portal-dark-text min-h-screen` | Deep Obsidian terminal |
 | **Portal Primary Action** | `bg-portal-primary hover:bg-portal-primary-hover text-white dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-slate-950 font-semibold rounded-lg px-4 py-2.5 transition-colors` | Racing Emerald action button |

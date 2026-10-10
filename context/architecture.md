@@ -116,6 +116,15 @@ The frontend expects the backend API to adhere to these data contracts:
 
 ---
 
+## Auth Session & Mock API (as built, 2026-10-10)
+
+*   **Session:** `POST /api/auth/login` (or the final OTP verify) returns `{ accessToken, user }` and sets the HttpOnly `autonexa_rt` refresh cookie. The access token lives only in `store/useSessionStore.ts`; `lib/api-client.ts` attaches it and, on a 401, calls `POST /api/auth/refresh` once (concurrent 401s share one refresh) and retries.
+*   **Route protection:** `proxy.ts` redirects to `/login?next=…` when the refresh cookie is absent (optimistic only). `components/auth/RequireSession.tsx` handles expired cookies client-side. The real API must therefore be same-site (or proxied through Next) so the cookie is visible to `proxy.ts`.
+*   **Mock backend:** `app/api/**` route handlers + `lib/mock/*` (in-memory, resets on restart) implement the seller auth/KYC/VIN contract. Leave `NEXT_PUBLIC_API_URL` unset to use them; set it to the Express origin to switch every hook over. Mocks return 404 in production unless `ENABLE_MOCK_API=true`. Demo account, OTP code and demo VINs live in `lib/mock/seed.ts`.
+*   **Seller funnel endpoints:** `POST /api/vin/decode`, `POST /api/auth/register`, `GET /api/auth/registrations/:id`, `POST /api/auth/verify/{email|phone}`, `POST /api/auth/verify/resend`, `POST /api/auth/login|refresh|logout`, `GET /api/auth/me`, `POST /api/auth/password/forgot|reset`, `POST /api/kyc/submissions` (multipart), `GET /api/kyc/status`.
+
+---
+
 ## Invariants
 Rules the Antigravity AI agent must never violate:
 

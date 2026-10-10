@@ -3,14 +3,20 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export function WhatIsAutoNexa() {
   const highlights = [
-    "Certified Canadian Wholesale",
-    "Direct Dealer Bidding",
-    "100% Free For Sellers",
-    "Guaranteed Payout",
+    "Sealed-Bid Auctions",
+    "Licensed Dealers Only",
+    "OMVIC · AMVIC · VSA",
+    "Carfax Disclosed",
+  ];
+
+  const stats = [
+    { value: "1,400+", label: "Licensed dealers" },
+    { value: "$0", label: "Seller fees" },
+    { value: "48h", label: "Payout window" },
   ];
 
   const showcaseCards = [
@@ -33,7 +39,7 @@ export function WhatIsAutoNexa() {
         "Get guaranteed wholesale offers from 1,400+ licensed dealers across Canada. 100% free for private sellers, zero lowballing, and zero dealership haggling.",
       image: "/illustrations/sell-your-car.webp",
       cta: "GET APPRAISAL",
-      href: "#valuation",
+      href: "/sell",
       cornerAccent: "primary", // Red
     },
   ];
@@ -57,7 +63,7 @@ export function WhatIsAutoNexa() {
         {/* Top Half: Editorial Narrative Split (Inspired by Reference 1) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start pb-16 sm:pb-20 border-b border-white/10">
           {/* Left Column: Numeral 01 & Feature Tags */}
-          <div className="lg:col-span-5 flex flex-col justify-between">
+          <div className="lg:col-span-5 flex flex-col justify-between gap-12 lg:self-stretch">
             <div>
               {/* Bold Orange/Pumpkin Index & Subhead (Vertically Centered & Clean) */}
               <div className="flex items-center gap-4 sm:gap-5 mb-8">
@@ -69,44 +75,60 @@ export function WhatIsAutoNexa() {
                 </h2>
               </div>
 
-              {/* Clean Tag Pills without Icons */}
-              <div className="flex flex-wrap gap-2.5 sm:gap-3">
+              {/* Static Trust Tags (non-interactive) */}
+              <ul className="flex flex-wrap gap-2.5 sm:gap-3">
                 {highlights.map((label) => (
-                  <div
+                  <li
                     key={label}
-                    className="px-4 py-2 rounded-full font-body text-xs font-semibold tracking-wide text-white/80 bg-white/[0.06] hover:bg-white/[0.12] hover:text-white border border-white/10 hover:border-secondary/50 backdrop-blur-md transition-all duration-200 cursor-pointer shadow-xs"
+                    className="px-4 py-2 rounded-full font-body text-xs font-semibold tracking-wide text-white/80 bg-white/[0.06] border border-white/10"
                   >
-                    <span>{label}</span>
-                  </div>
+                    {label}
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
+
+            {/* Key Figures Row — anchors the column to the divider height */}
+            <dl className="grid grid-cols-3 gap-6 pt-8 border-t border-white/10">
+              {stats.map((stat) => (
+                <div key={stat.label}>
+                  <dt className="sr-only">{stat.label}</dt>
+                  <dd className="font-headline text-3xl sm:text-4xl font-bold tracking-tight text-white leading-none">
+                    {stat.value}
+                  </dd>
+                  <dd className="mt-2 font-mono text-[11px] uppercase tracking-widest text-white/50">
+                    {stat.label}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
           {/* Right Column: Editorial Lead Copy with Underlines & Keyword Highlights */}
-          <div className="lg:col-span-7 lg:border-l lg:border-white/10 lg:pl-12 flex flex-col justify-between">
-            <p className="font-body text-lg sm:text-2xl md:text-[25px] font-light text-white/70 leading-relaxed sm:leading-[1.7]">
-              <span className="font-bold text-white tracking-tight">AutoNexa</span> is Canada&apos;s modern web auction platform engineered specifically for{" "}
+          <div className="lg:col-span-7 lg:border-l lg:border-white/10 lg:pl-12 flex flex-col">
+            {/* Lead Statement */}
+            <p className="font-body text-xl sm:text-2xl md:text-[28px] font-light text-white/75 leading-snug sm:leading-[1.45] tracking-tight">
+              <span className="font-semibold text-white">AutoNexa</span> is Canada&apos;s wholesale auction platform where private sellers get{" "}
               <span className="font-semibold text-white underline decoration-secondary decoration-2 underline-offset-6">
-                transparent wholesale vehicle transactions
+                competing offers from licensed dealers
               </span>
-              . We eliminate predatory trade-in lowballing by giving private sellers direct access to a competitive network of over{" "}
-              <span className="font-semibold text-white underline decoration-primary decoration-2 underline-offset-6">
-                1,400+ licensed dealers
-              </span>{" "}
-              competing simultaneously in sealed-bid auctions. Every car achieves its{" "}
-              <span className="font-bold text-white tracking-tight">true national market price</span> — with{" "}
-              <span className="font-semibold text-white">zero seller fees</span>, full Canadian regulatory compliance (OMVIC, AMVIC, VSA), and guaranteed payouts in 48 hours.
+              {" "}— not a single trade-in quote.
+            </p>
+
+            {/* Supporting Copy */}
+            <p className="mt-6 max-w-2xl font-body text-base sm:text-lg text-white/60 leading-relaxed">
+              Dealers bid simultaneously in sealed-bid auctions, so your car is priced by the national market rather than one lot&apos;s inventory needs. Selling is{" "}
+              <span className="font-semibold text-white">free for private sellers</span>, every buyer is a provincially registered dealer, and funds are released once the sale closes.
             </p>
 
             {/* Interactive Explore Link */}
-            <div className="mt-8 flex items-center gap-3">
+            <div className="mt-10 flex items-center gap-3">
               <a
                 href="#how-it-works"
-                className="group inline-flex items-center gap-2 font-body text-xs sm:text-sm font-semibold uppercase tracking-wider text-secondary hover:text-secondary-hover transition-colors"
+                className="group inline-flex items-center gap-2 font-body text-sm font-semibold uppercase tracking-wider text-secondary hover:text-secondary-fixed-dim transition-colors"
               >
                 <span>How the sealed-bid auction works</span>
-                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
           </div>

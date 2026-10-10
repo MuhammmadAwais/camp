@@ -202,7 +202,7 @@ Last updated: 2026-10-02
 ### `WhatIsAutoNexa`
 
 File: `components/marketing/WhatIsAutoNexa.tsx`  
-Last updated: 2026-09-25
+Last updated: 2026-10-10
 
 | Property         | Class |
 | ---------------- | ----- |
@@ -210,14 +210,15 @@ Last updated: 2026-09-25
 | Border           | `border-b border-white/10` (divider), `border border-white/15 hover:border-white/30` (cards) |
 | Border radius    | Chamfered geometry `[clip-path:polygon(0_0,calc(100%-28px)_0,100%_28px,100%_100%,28px_100%,0_calc(100%-28px))]` |
 | Text — primary   | `font-headline text-5xl sm:text-7xl font-extrabold text-secondary` (`01.`), `text-white font-bold` |
-| Text — secondary | `font-body text-lg sm:text-2xl text-white/70 leading-relaxed` with `underline decoration-secondary decoration-2` and `underline decoration-primary decoration-2` |
+| Text — secondary | Lead: `font-body text-xl sm:text-2xl md:text-[28px] font-light text-white/75 leading-snug`; Supporting: `font-body text-base sm:text-lg text-white/60 leading-relaxed max-w-2xl`; single emphasis style `underline decoration-secondary decoration-2 underline-offset-6` |
+| Stats row        | `<dl>` 3-col: value `font-headline text-3xl sm:text-4xl font-bold text-white`, label `font-mono text-[11px] uppercase tracking-widest text-white/50`, `pt-8 border-t border-white/10` |
 | Spacing          | `py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto` |
-| Hover state      | Image zoom `group-hover:scale-105`, tags `hover:border-secondary/50`, buttons `hover:bg-primary` |
+| Hover state      | Image zoom `group-hover:scale-105`, buttons `hover:bg-primary` |
 | Shadow           | `shadow-[0_12px_40px_rgba(0,0,0,0.6)]` (cards), `shadow-[0_8px_32px_rgba(0,0,0,0.5)]` (glass banners) |
 | Accent usage     | `text-secondary` (`01.` numeral & pumpkin underlines), `bg-secondary` & `bg-primary` solid geometric corner triangles |
 
 **Pattern notes:**
-Editorial narrative and dual showcase cards with tactile dark marble backdrop. Features bold pumpkin `01.` index, interactive Canadian compliance tags, multi-weight lead paragraph with brand red/pumpkin keyword underlines, and non-standard chamfered geometric action cards.
+Editorial narrative and dual showcase cards with tactile dark marble backdrop. Features bold pumpkin `01.` index, static (non-interactive `<ul>`) trust tags, a key-figures `<dl>` anchored to the column bottom, a lead + supporting copy split with ONE emphasis style (max two highlights), an in-page `ArrowRight` CTA (reserve `ArrowUpRight` for external links), and chamfered geometric action cards.
 
 ---
 
@@ -504,25 +505,184 @@ Last updated: 2026-10-02
 
 ## Registered Component Patterns (Portal & Auth System — Racing Emerald & Obsidian)
 
-### `GlassmorphicAuthCard` (Pattern Foundation)
+### `AuthShell` + `AuthVisualPanel` + `AuthCard` (Seller Onboarding Foundation)
 
-File: `app/globals.css` / `components/auth/AuthCard.tsx`  
-Last updated: 2026-10-09  
+File: `components/auth/AuthShell.tsx`, `components/auth/AuthVisualPanel.tsx`, `components/auth/AuthCard.tsx`  
+Last updated: 2026-10-10 (Autumn Editorial split layout)  
+Mode: Seller onboarding — light Autumn Editorial
 
 | Property         | Class / CSS Rule |
 | ---------------- | ---------------- |
-| Background       | `.glass-card` / `backdrop-blur-2xl bg-glass-card-bg` (`rgba(9, 13, 22, 0.82)`) |
-| Border           | `border border-glass-card-border` (`rgba(255, 255, 255, 0.10)`) |
-| Border radius    | `rounded-2xl` (`1.5rem` / `24px`) |
-| Text — primary   | `text-white font-headline font-bold` |
-| Text — secondary | `text-neutral-400 font-body text-sm` |
-| Spacing          | `p-6 sm:p-8 max-w-md w-full mx-auto` |
-| Hover state      | Inputs: `focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25 focus:bg-white/[0.07]` |
-| Shadow           | `shadow-glass-card` (`0 25px 60px -15px rgba(0, 0, 0, 0.85)`) |
-| Accent usage     | Primary CTA: crisp white `bg-white text-slate-950 font-semibold hover:bg-neutral-100`; Focus/badges: Racing Emerald (`#10B981` / `#16A34A`) |
+| Background       | Page `bg-surface`; panel `bg-on-surface` + step photo + `bg-gradient-to-t from-on-surface via-on-surface/55 to-on-surface/10` (compact banner: `bg-gradient-to-r from-on-surface/90 via-on-surface/50`) |
+| Border           | none on the form column; footer divider `border-t border-border-card` |
+| Border radius    | Panel `rounded-lg` |
+| Text — primary   | Form title `font-headline text-3xl sm:text-[36px] font-bold tracking-tight text-on-surface`; panel headline `font-headline text-3xl xl:text-[40px] text-white` |
+| Text — secondary | Description `font-body text-base text-on-surface-variant`; panel eyebrow `text-xs font-bold uppercase tracking-widest text-secondary` |
+| Spacing          | Grid `lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]`; panel `sticky top-0 h-screen p-4 pr-0`, inner `p-10 xl:p-12`; form `max-w-lg`, eyebrow `mb-10`, body `mt-8` |
+| Hover state      | Footer links `hover:text-primary` |
+| Shadow           | none |
+| Accent usage     | Panel check bullets `bg-secondary/20 ring-1 ring-secondary/50 text-secondary`; header trust dot `bg-success` |
 
 **Pattern notes:**
-- **Atmospheric Depth:** Designed to float gracefully above `public/illustrations/why-us.webp` with a dark radial vignette gradient overlay.
-- **Micro-Glow Focus Rings:** Text inputs use `.glass-input` with Racing Emerald border and glow ring upon focus.
-- **Segmented Pill Controls:** Sub-headers and Sign In / Sign Up toggles use pill pills (`rounded-full`) with `bg-white/10 text-white` for the active tab.
-- **High-Contrast White CTA:** Primary action button utilizes pure solid white with deep slate text and subtle luminescence (`glow-white-sm`).
+- `AuthVisualPanel` picks image and copy from `usePathname()` (see ui-rules §6.6 for the mapping). `variant="compact"` is the mobile banner shown above the form.
+- `AuthCard` props: `title`, `description?`, `eyebrow?` (put `<FunnelSteps>` here), `footer?`, `className?`. `SellStartForm` renders its own `AuthCard` because its heading changes after decoding.
+
+---------------- | ---------------- |
+| Background       | Shell `bg-surface-container-low`; header `bg-surface-container-lowest border-b border-border-card h-16`; card `bg-surface-container-lowest` |
+| Border           | Card `border border-border-card`; footer divider `border-t border-border-card` |
+| Border radius    | Card `rounded-2xl` |
+| Text — primary   | `font-headline text-2xl sm:text-[28px] font-bold tracking-tight text-on-surface` |
+| Text — secondary | `font-body text-[15px] text-on-surface-variant` |
+| Spacing          | Card `w-full max-w-xl p-6 sm:p-10`; eyebrow `mb-8`; body `mt-7` |
+| Hover state      | n/a (container) |
+| Shadow           | `shadow-sm` only |
+| Accent usage     | Header trust line: emerald dot + "PIPEDA Compliant • 256-Bit Encrypted" (short version below `sm`) |
+
+**Pattern notes:**
+- Props: `title`, `description?`, `eyebrow?` (put `<FunnelSteps>` here), `footer?`, `className?`. Every `(auth)` route renders inside `AuthShell` via `app/(auth)/layout.tsx`.
+- `SellStartForm` renders its own `AuthCard` because its heading changes after decoding ("Let's identify your car" → "Review your vehicle details").
+
+---
+
+### Auth form primitives — `AuthField`, `PasswordField`, `AuthSelect`, `AuthCheckbox`, `AuthButton`, `FormAlert`, `MockModeHint`
+
+File: `components/auth/*.tsx`  
+Last updated: 2026-10-10 (light theme)  
+Mode: Seller onboarding — light Autumn Editorial
+
+| Property         | Class / CSS Rule |
+| ---------------- | ---------------- |
+| Background       | Inputs `bg-surface-container-lowest` (`authInputClasses`); checkbox `bg-surface-container-lowest` → `peer-checked:bg-primary` |
+| Border           | `border-outline-variant`; focus `border-primary ring-2 ring-primary/25`; invalid `aria-[invalid=true]:border-error` |
+| Border radius    | Inputs/buttons `rounded-sm` (8px); checkbox `rounded-xs` |
+| Text — primary   | Label `font-body text-sm font-semibold text-on-surface`; value `text-[15px] text-on-surface` |
+| Text — secondary | Hint `text-xs text-on-surface-variant/80`; error `<p role="alert"> text-xs font-medium text-error` |
+| Spacing          | Field stack `space-y-1.5`; forms `space-y-4` |
+| Hover state      | Primary `bg-primary hover:bg-primary-hover text-white`; secondary `bg-surface-container-lowest border-outline-variant hover:bg-surface-container-low` |
+| Shadow           | Primary CTA `shadow-sm` |
+| Accent usage     | `FormAlert` uses a left-border callout: info `border-primary bg-primary/10`, success `border-success bg-success/10`, error `border-error bg-error-container/50` |
+
+**Pattern notes:**
+- All inputs are `forwardRef` and spread `register()` from React Hook Form, with errors linked via `aria-describedby`.
+- `PasswordField` adds show/hide and an optional strength meter (error → secondary → emerald).
+- `AuthButton` props: `variant: "primary" | "secondary"`, `isLoading`, `loadingText`.
+- `MockModeHint` renders only while `IS_MOCK_API` and is styled as a dashed amber dev note.
+- Mono fields (VIN) reset the placeholder to body font: `placeholder:normal-case placeholder:tracking-normal placeholder:font-body`.
+
+---
+
+### `OtpInput`
+
+File: `components/auth/OtpInput.tsx`  
+Last updated: 2026-10-10 (light theme)  
+Mode: Seller onboarding — light Autumn Editorial
+
+| Property         | Class / CSS Rule |
+| ---------------- | ---------------- |
+| Background       | `authInputClasses` per box |
+| Border           | Same as inputs; invalid via `aria-invalid` |
+| Border radius    | `rounded-md` |
+| Text — primary   | `font-mono text-xl font-semibold text-center` |
+| Text — secondary | n/a |
+| Spacing          | `flex justify-between gap-2 sm:gap-2.5`; boxes `aspect-square max-w-14 px-0 py-0` |
+| Hover state      | Focus selects the digit |
+| Shadow           | none |
+| Accent usage     | Blue focus ring |
+
+**Pattern notes:**
+- Controlled (`value`, `onChange`, `onComplete`). Use it through RHF `Controller`. Supports paste and SMS autofill (`autocomplete="one-time-code"`). It refocuses box 1 after a rejected code clears it.
+
+---
+
+### `FunnelSteps`
+
+File: `components/auth/FunnelSteps.tsx`  
+Last updated: 2026-10-10 (light theme)  
+Mode: Seller onboarding — light Autumn Editorial
+
+| Property         | Class / CSS Rule |
+| ---------------- | ---------------- |
+| Background       | Active `bg-primary text-white`; done `bg-success/10 text-success ring-1 ring-success/30`; inactive `bg-surface-container text-outline` |
+| Border           | none; `ChevronRight` separators `text-outline` |
+| Border radius    | `rounded-full` 28px badges |
+| Text — primary   | Active label `font-body text-sm font-semibold text-on-surface` |
+| Text — secondary | Done `text-on-surface-variant`, inactive `text-outline` (non-current labels hide below `sm`) |
+| Spacing          | `gap-1.5 sm:gap-2` |
+| Hover state      | none |
+| Shadow           | none |
+| Accent usage     | Blue = current, emerald = completed |
+
+**Pattern notes:**
+- `current: "vehicle" | "account" | "verify" | "identity"`. Renders `<nav><ol>` with `aria-current="step"` and sr-only status text.
+
+---
+
+### `DecodedVehicleCard`
+
+File: `components/auth/DecodedVehicleCard.tsx`  
+Last updated: 2026-10-10  
+Mode: Seller onboarding — light Autumn Editorial
+
+| Property         | Class / CSS Rule |
+| ---------------- | ---------------- |
+| Background       | `bg-surface-container-low`; spec pills `bg-surface-container-lowest` |
+| Border           | `border border-border-card`; pills `border-border-card` |
+| Border radius    | `rounded-md`; pills `rounded-full` |
+| Text — primary   | Title `font-headline text-xl font-bold text-on-surface` + trim `text-on-surface-variant/80` |
+| Text — secondary | VIN `font-mono text-sm tracking-wider text-on-surface-variant` |
+| Spacing          | `p-5`; pills `mt-4 gap-2 px-3 py-1` |
+| Hover state      | "Edit VIN" `text-primary hover:bg-primary/10` |
+| Shadow           | none |
+| Accent usage     | Eyebrow "VERIFIED VEHICLE" `text-[11px] font-bold uppercase tracking-wider text-primary` |
+
+**Pattern notes:**
+- Pills show engine, drivetrain and fuel type. A failed decode shows "VIN accepted" with manual-entry copy.
+
+---
+
+### `PhotoCapture`
+
+File: `components/auth/PhotoCapture.tsx`  
+Last updated: 2026-10-10 (light theme)  
+Mode: Seller onboarding — light Autumn Editorial
+
+| Property         | Class / CSS Rule |
+| ---------------- | ---------------- |
+| Background       | `bg-surface-container-low hover:bg-surface-container`; preview fills the tile |
+| Border           | Dashed: empty `border-outline-variant`, filled `border-primary`, error `border-error` |
+| Border radius    | `rounded-md` |
+| Text — primary   | Label `text-sm font-semibold text-on-surface` |
+| Text — secondary | Instruction `text-xs text-on-surface-variant` |
+| Spacing          | `aspect-[1.586/1]` (ID card) or `aspect-[3/4] max-w-[220px]` (selfie) |
+| Hover state      | Tile tint; "Retake" pill `bg-on-surface/85 text-white` |
+| Shadow           | none |
+| Accent usage     | Blue border once a photo is attached |
+
+**Pattern notes:**
+- A `<label>`-wrapped `input[type=file]` with `capture`. Object URLs are revoked on change and unmount. `validateKycPhoto()` allows JPG/PNG/WEBP/HEIC up to 10 MB.
+
+---
+
+### Seller Portal — `SellerHeader`, `KycStatusBanner`, `ListingStartCard`, `SellerDashboard`
+
+File: `components/seller/*.tsx`  
+Last updated: 2026-10-10  
+Mode: Porcelain (light) seller portal
+
+| Property         | Class / CSS Rule |
+| ---------------- | ---------------- |
+| Background       | Canvas `bg-portal-canvas`; cards `bg-portal-surface`; header `bg-portal-surface/90 backdrop-blur-md` |
+| Border           | `border border-portal-border` |
+| Border radius    | Cards `rounded-2xl`; tiles/banners `rounded-xl`; buttons `rounded-lg` |
+| Text — primary   | `font-headline font-bold text-portal-text` |
+| Text — secondary | `font-body text-sm text-portal-text-muted` |
+| Spacing          | Page `max-w-6xl px-4 sm:px-6 py-8 sm:py-10 space-y-6`; cards `p-5 sm:p-6` |
+| Hover state      | Primary action `bg-portal-primary hover:bg-portal-primary-hover text-white` |
+| Shadow           | none (tonal borders only) |
+| Accent usage     | KYC needed: `border-secondary/40 bg-secondary-fixed/40` + `text-on-secondary-fixed`; verified: `emerald-50/200/600/800`; counts in `font-mono tabular-nums` |
+
+**Pattern notes:**
+- The stat tiles show counts only. This respects the sealed-bid invariant: no CAD amounts while an auction is ACTIVE.
+- `KycStatusBanner` and `ListingStartCard` read live status from `useKycStatus()`, which re-checks every 3s only while the status is PENDING.
+
+---
