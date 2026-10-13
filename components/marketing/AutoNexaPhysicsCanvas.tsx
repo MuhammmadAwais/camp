@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { cn } from "@/lib/utils";
 
 interface Particle {
   originX: number;
@@ -13,7 +14,27 @@ interface Particle {
   alpha: number;
 }
 
-export function AutoNexaPhysicsCanvas() {
+export interface AutoNexaPhysicsCanvasProps {
+  text?: string;
+  theme?: "light" | "dark";
+  particleColor?: string;
+  activeColor?: string;
+  cursorRingColor?: string;
+  cursorDotColor?: string;
+  showBorder?: boolean;
+  className?: string;
+}
+
+export function AutoNexaPhysicsCanvas({
+  text = "AUTONEXA",
+  theme = "light",
+  particleColor,
+  activeColor,
+  cursorRingColor,
+  cursorDotColor,
+  showBorder = true,
+  className,
+}: AutoNexaPhysicsCanvasProps = {}) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const particlesRef = React.useRef<Particle[]>([]);
@@ -36,8 +57,8 @@ export function AutoNexaPhysicsCanvas() {
     const container = containerRef.current;
     if (!canvas || !container) return;
 
-    const width = container.clientWidth;
-    const height = Math.min(240, Math.max(130, Math.round(width * 0.16)));
+    const width = container.clientWidth || 400;
+    const height = Math.min(240, Math.max(120, Math.round(width * 0.16)));
 
     const dpr = typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 2) : 1;
     canvas.width = width * dpr;
@@ -45,21 +66,26 @@ export function AutoNexaPhysicsCanvas() {
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
 
-    // Offscreen canvas for sampling "AUTONEXA" text
+    // Offscreen canvas for sampling text
     const offscreen = document.createElement("canvas");
     offscreen.width = width;
     offscreen.height = height;
     const offCtx = offscreen.getContext("2d", { willReadFrequently: true });
     if (!offCtx) return;
 
-    // Responsive font size
-    const fontSize = Math.min(Math.round(width * 0.14), Math.round(height * 0.8));
+    // Responsive font size calculated from text length
+    const targetLength = Math.max(text.length, 6);
+    const widthFactor = text.includes(" ") ? 0.55 : 0.68;
+    const maxFontByWidth = Math.round((width * 0.94) / (targetLength * widthFactor));
+    const maxFontByHeight = Math.round(height * 0.78);
+    const fontSize = Math.min(maxFontByWidth, maxFontByHeight);
+
     offCtx.fillStyle = "#ffffff";
     offCtx.textAlign = "center";
     offCtx.textBaseline = "middle";
     offCtx.font = `900 ${fontSize}px "Epilogue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
     offCtx.letterSpacing = "0.06em";
-    offCtx.fillText("AUTONEXA", width / 2, height / 2 + 4);
+    offCtx.fillText(text, width / 2, height / 2 + 4);
 
     const imgData = offCtx.getImageData(0, 0, width, height);
     const data = imgData.data;
@@ -145,13 +171,15 @@ export function AutoNexaPhysicsCanvas() {
         if (mouse.active) {
           ctx.beginPath();
           ctx.arc(mouse.x, mouse.y, radius, 0, Math.PI * 2);
-          ctx.strokeStyle = "rgba(140, 56, 62, 0.3)";
+          ctx.strokeStyle =
+            cursorRingColor ??
+            (theme === "dark" ? "rgba(51, 191, 188, 0.45)" : "rgba(140, 56, 62, 0.3)");
           ctx.lineWidth = 1;
           ctx.stroke();
 
           ctx.beginPath();
           ctx.arc(mouse.x, mouse.y, 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = "#8C383E";
+          ctx.fillStyle = cursorDotColor ?? (theme === "dark" ? "#33BFBC" : "#8C383E");
           ctx.fill();
         }
 
@@ -199,9 +227,13 @@ export function AutoNexaPhysicsCanvas() {
           ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
 
           if (isDisturbed) {
-            ctx.fillStyle = "rgba(186, 26, 26, 0.95)"; // Vibrant crimson red on cursor repulsion
+            ctx.fillStyle =
+              activeColor ??
+              (theme === "dark" ? "rgba(0, 229, 217, 1)" : "rgba(186, 26, 26, 0.95)");
           } else {
-            ctx.fillStyle = "rgba(140, 56, 62, 0.65)"; // Primary wine red resting beads
+            ctx.fillStyle =
+              particleColor ??
+              (theme === "dark" ? "rgba(255, 255, 255, 0.82)" : "rgba(140, 56, 62, 0.65)");
           }
           ctx.fill();
         }
@@ -222,7 +254,7 @@ export function AutoNexaPhysicsCanvas() {
       window.removeEventListener("resize", handleResize);
       observer.disconnect();
     };
-  }, [initParticles]);
+  }, [initParticles, theme, particleColor, activeColor, cursorRingColor, cursorDotColor]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -259,9 +291,13 @@ export function AutoNexaPhysicsCanvas() {
       onMouseLeave={handleMouseLeave}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative w-full overflow-hidden select-none cursor-crosshair flex items-center justify-center py-6 sm:py-8 border-t border-border-card/60"
+      className={cn(
+        "relative w-full overflow-hidden select-none cursor-crosshair flex items-center justify-center",
+        showBorder && "border-t border-border-card/60",
+        className ?? "py-6 sm:py-8"
+      )}
       style={{ touchAction: "none" }}
-      aria-label="Interactive AutoNexa Physics Particle Display"
+      aria-label={`Interactive ${text} Physics Particle Display`}
     >
       <canvas ref={canvasRef} className="block mx-auto" />
     </div>

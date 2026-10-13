@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
 import type { ProvinceCode } from "@/lib/canada";
-import type { IdDocumentType, KycStatus, PendingVerification, SessionUser } from "@/lib/types/auth";
+import type { IdDocumentType, KycStatus, PendingVerification, SessionUser, UserRole } from "@/lib/types/auth";
 import { MOCK_DEMO_SELLER, MOCK_KYC_REVIEW_MS, MOCK_OTP_CODE } from "@/lib/mock/seed";
 
 // In-memory stand-in for the Express + MySQL backend. Resets when the dev server restarts.
@@ -29,6 +29,9 @@ export type MockUser = {
     submittedAt: number | null;
     rejectReason: string | null;
   };
+  role?: UserRole;
+  dealershipName?: string;
+  licenseNumber?: string;
   createdAt: number;
 };
 
@@ -197,7 +200,7 @@ export function toSessionUser(user: MockUser): SessionUser {
     phoneMasked: maskPhone(user.phoneE164),
     postalCode: user.postalCode,
     province: user.province,
-    role: "SELLER",
+    role: user.role ?? "SELLER",
     kycStatus: resolveKyc(user).status,
   };
 }

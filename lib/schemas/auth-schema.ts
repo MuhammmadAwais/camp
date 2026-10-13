@@ -53,6 +53,7 @@ const otpField = z
 
 export const registerFormSchema = z
   .object({
+    role: z.enum(["SELLER", "DEALER"]).default("SELLER"),
     firstName: nameField("First name"),
     lastName: nameField("Last name"),
     email: emailField,
@@ -61,7 +62,10 @@ export const registerFormSchema = z
     province: z.enum(PROVINCE_CODES, { error: "Select your province or territory" }),
     password: newPasswordField,
     confirmPassword: z.string().min(1, "Confirm your password"),
-    isAdult: z.boolean().refine((v) => v, "You must be 18 or older to sell on AutoNexa"),
+    dealershipName: z.string().optional(),
+    licenseNumber: z.string().optional(),
+    licensingBody: z.string().optional(),
+    isAdult: z.boolean().refine((v) => v, "You must accept this declaration to continue"),
     acceptTerms: z.boolean().refine((v) => v, "You must accept the Terms and Privacy Policy"),
     // CASL: commercial messages need express opt-in, so this defaults to false and is optional.
     marketingOptIn: z.boolean(),
@@ -70,13 +74,38 @@ export const registerFormSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],
     message: "Passwords do not match",
-  });
+  })
+  .refine(
+    (data) => {
+      if (data.role === "DEALER") {
+        return Boolean(data.dealershipName && data.dealershipName.trim().length > 0);
+      }
+      return true;
+    },
+    {
+      path: ["dealershipName"],
+      message: "Dealership legal name is required",
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.role === "DEALER") {
+        return Boolean(data.licenseNumber && data.licenseNumber.trim().length > 0);
+      }
+      return true;
+    },
+    {
+      path: ["licenseNumber"],
+      message: "Dealer license number is required",
+    }
+  );
 
 export type RegisterFormInput = z.input<typeof registerFormSchema>;
 export type RegisterFormOutput = z.output<typeof registerFormSchema>;
 
 // The API contract: the form output minus UI-only fields.
 export const registerPayloadSchema = z.object({
+  role: z.enum(["SELLER", "DEALER"]).default("SELLER"),
   firstName: nameField("First name"),
   lastName: nameField("Last name"),
   email: emailField,
@@ -84,6 +113,9 @@ export const registerPayloadSchema = z.object({
   postalCode: postalCodeField,
   province: z.enum(PROVINCE_CODES),
   password: newPasswordField,
+  dealershipName: z.string().optional(),
+  licenseNumber: z.string().optional(),
+  licensingBody: z.string().optional(),
   acceptTerms: z.literal(true),
   isAdult: z.literal(true),
   marketingOptIn: z.boolean(),

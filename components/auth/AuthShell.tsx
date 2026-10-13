@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { AuthVisualPanel } from "@/components/auth/AuthVisualPanel";
@@ -14,24 +13,15 @@ export function AuthShell({ children }: Props) {
     <div className="min-h-screen w-full bg-white text-gray-900 lg:grid lg:grid-cols-12">
       {/* LEFT COLUMN: Clean White Form Canvas */}
       <div className="lg:col-span-6 xl:col-span-5 flex min-h-screen flex-col justify-between px-6 py-6 sm:px-10 sm:py-8 lg:px-12 lg:py-10 bg-white">
-        {/* Top Header: Back Link & Logo Lockup */}
-        <header className="flex items-center justify-between gap-4">
+        {/* Top Header: Back Link only (logo relocated to image top-right) */}
+        <header className="flex items-center justify-start">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 font-body text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors group"
+            className="inline-flex items-center gap-1.5 font-body text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors group"
             aria-label="Back to AutoNexa website"
           >
             <ChevronLeft className="w-4 h-4 text-gray-400 group-hover:text-gray-700 transition-colors" />
             <span>Back to website</span>
-          </Link>
-
-          <Link href="/" className="flex items-center gap-2 focus:outline-none" aria-label="AutoNexa home">
-            <div className="relative w-7 h-[18px] shrink-0">
-              <Image src="/logo-mark-tight.png" alt="AutoNexa" fill sizes="28px" priority className="object-contain" />
-            </div>
-            <span className="font-headline font-bold text-lg text-gray-900 tracking-tight leading-none">
-              Auto<span className="text-[#008C87]">Nexa</span>
-            </span>
           </Link>
         </header>
 
@@ -47,14 +37,13 @@ export function AuthShell({ children }: Props) {
           {children}
         </main>
 
-        {/* Footer */}
+        {/* Left-Side Footer: Copyright + Privacy, Terms, Support */}
         <footer className="pt-6 border-t border-gray-100 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 font-body text-xs text-gray-400">
           <span>© {new Date().getFullYear()} AutoNexa Inc.</span>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 text-xs font-body">
             <Link href="/legal/privacy" className="hover:text-gray-700 transition-colors">Privacy</Link>
-            <Link href="/legal/terms" className="hover:text-gray-700 transition-colors">Terms</Link>
-            <span className="hidden sm:inline text-gray-300">•</span>
-            <span className="hidden sm:inline text-gray-400">256-Bit Encrypted</span>
+            <Link href="/legal/terms" className="hover:text-gray-700 transition-colors">Terms of Use</Link>
+            <a href="mailto:support@autonexa.ca" className="hover:text-gray-700 transition-colors">Support</a>
           </div>
         </footer>
       </div>

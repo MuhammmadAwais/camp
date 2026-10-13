@@ -14,14 +14,14 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { isCollapsed } = useSidebarStore();
 
-  // If on landing page or standalone auth pages, render pure children without app shell
-  const isExcludedPage =
-    pathname === '/' ||
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/register') ||
-    pathname.startsWith('/auth');
+  // The portal sidebar & obsidian shell ONLY activates for authenticated portal routes
+  const isPortalRoute =
+    pathname.startsWith('/seller') ||
+    pathname.startsWith('/dealer') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/dashboard');
 
-  if (isExcludedPage) {
+  if (!isPortalRoute) {
     return <>{children}</>;
   }
 

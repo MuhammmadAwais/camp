@@ -7,7 +7,13 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Current Status
 
 **Phase:** 3 — Web App Foundation, Unified Auth Suite & Zentris Portal Shell
-**Last completed:** 07-B Asymmetric Split-Screen Auth Suite (`AuthShell.tsx`, `AuthVisualPanel.tsx`, `LoginForm.tsx`, `RegisterForm.tsx`, `rounded-bl-[100px]` right photographic panel, clean white left canvas, single-row stacked inputs, solid Nordic Pine Teal CTAs, demo seeds stripped) & Zentris-Replica Sidebar (`AppShell.tsx`, `Sidebar.tsx`, `useSidebarStore.ts`)
+**Last completed:** 07-B Split-Screen Auth Suite Refinements:
+- Permanent route isolation in `AppShell.tsx` (portal-only sidebar routing, zero leak on auth pages).
+- Relocated legal links (`Privacy`, `Terms of Use`, `Support`) to the clean white left canvas footer.
+- Prominent scaled AutoNexa brand emblem in top-right of photographic panel; animated `BID • WIN • DRIVE` tagline at bottom.
+- Dynamic breadcrumb in `FunnelSteps.tsx` (omits Vehicle step on direct cold registrations).
+- Role-based signup toggle (`Private Seller` vs `Licensed Dealer`) with progressive 2-stage sub-stepping in `RegisterForm.tsx` (Credentials &rarr; Regulatory/Contact).
+- Strict single-row stacked inputs, solid Nordic Pine Teal CTAs (`#008C87`), and zero diffuse neon glow.
 **Next:** 08 Seller Dashboard UI & KYC Verification Gate (`/seller/dashboard`)
 
 ---

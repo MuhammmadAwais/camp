@@ -1,27 +1,34 @@
 import { Check, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const STEPS = [
+const ALL_STEPS = [
   { id: "vehicle", label: "Vehicle" },
   { id: "account", label: "Account" },
   { id: "verify", label: "Verify" },
   { id: "identity", label: "Identity" },
 ] as const;
 
-export type FunnelStepId = (typeof STEPS)[number]["id"];
+export type FunnelStepId = (typeof ALL_STEPS)[number]["id"];
 
 interface Props {
   current: FunnelStepId;
+  hasVehicle?: boolean;
 }
 
-// Seller onboarding breadcrumb: VIN → account → email/SMS codes → KYC (SRS FR-EU-01..03).
-export function FunnelSteps({ current }: Props) {
-  const currentIndex = STEPS.findIndex((s) => s.id === current);
+// Onboarding breadcrumb: adapts dynamically based on whether a VIN was entered first.
+export function FunnelSteps({ current, hasVehicle = false }: Props) {
+  // If the user didn't enter a vehicle first (or is registering directly/as dealer),
+  // omit the "Vehicle" step so it isn't falsely shown as completed.
+  const steps = hasVehicle
+    ? ALL_STEPS
+    : ALL_STEPS.filter((s) => s.id !== "vehicle");
+
+  const currentIndex = steps.findIndex((s) => s.id === current);
 
   return (
-    <nav aria-label="Seller onboarding progress">
+    <nav aria-label="Onboarding progress">
       <ol className="flex items-center gap-1.5 sm:gap-2">
-        {STEPS.map((step, index) => {
+        {steps.map((step, index) => {
           const isDone = index < currentIndex;
           const isCurrent = index === currentIndex;
           return (
@@ -50,7 +57,7 @@ export function FunnelSteps({ current }: Props) {
                 </span>
                 <span className="sr-only">{isDone ? "(completed)" : isCurrent ? "(current step)" : "(not started)"}</span>
               </span>
-              {index < STEPS.length - 1 && <ChevronRight className="w-3.5 h-3.5 text-gray-300 shrink-0" aria-hidden />}
+              {index < steps.length - 1 && <ChevronRight className="w-3.5 h-3.5 text-gray-300 shrink-0" aria-hidden />}
             </li>
           );
         })}

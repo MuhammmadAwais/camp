@@ -737,3 +737,24 @@ Mode: Porcelain (light) seller portal
 - `KycStatusBanner` and `ListingStartCard` read live status from `useKycStatus()`, which re-checks every 3s only while the status is PENDING.
 
 ---
+
+### `AuthShell` & `AuthVisualPanel` (Asymmetric Split-Screen Auth Suite)
+
+File: `components/auth/AuthShell.tsx`, `components/auth/AuthVisualPanel.tsx`  
+Last updated: 2026-10-13  
+Mode: Light canvas (`bg-white`) left column + Photographic immersive right panel
+
+| Property         | Class / CSS Rule |
+| ---------------- | ---------------- |
+| Left Canvas      | `bg-white` 5-column / 6-column grid with zero heavy container borders |
+| Left Header      | Minimalist `< Back to website` link (`text-gray-500 hover:text-gray-900`) |
+| Left Footer      | `© 2026 AutoNexa Inc.` + `Privacy`, `Terms of Use`, `Support` legal links |
+| Right Panel      | High-resolution automotive imagery with signature `rounded-bl-[80px] xl:rounded-bl-[100px]` inner curve |
+| Brand Lockup     | Scaled AutoNexa emblem (`w-10 h-[24px]`) + bold wordmark in top-right corner of visual panel |
+| Tagline          | Bottom of visual panel: Interactive dot-matrix physics canvas (`AutoNexaPhysicsCanvas` with `theme="dark"`, spring-damping repulsion physics, and telemetry indicators) |
+| Form Inputs      | First & Last Name paired in 2-col row (`grid grid-cols-2 gap-3`); Postal & Province paired in 2-col row; solid Nordic Pine Teal accents (`#008C87`) |
+| Role Switcher    | Dual-pill segmented control (`Private Seller` vs `Licensed Dealer`) in `RegisterForm.tsx` |
+| Progressive Steps| 2-stage sub-stepping in registration: Sub-Step 1 (Credentials) &rarr; Sub-Step 2 (Role-specific contact/regulatory) |
+| Optional Card    | Rounded container with dedicated `Optional` pill badge avoiding native `<legend>` strikethrough border glitches |
+
+---
