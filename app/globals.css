@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* ========================================================
      TYPOGRAPHY FONTS
@@ -98,20 +100,29 @@
   --color-badge-vsa: #10B981;          /* British Columbia */
 
   /* ========================================================
-     PORTAL & WEB APP DESIGN SYSTEM (Solid Minimalist)
+     PORTAL & WEB APP DESIGN SYSTEM (Solid Minimalist Dual Theme)
      Dark: Canvas #000000 | Cards #131215 | Text #FFFFFF | Accent #008C87
-     Light: Canvas #FFFFFF | Cards #F3F4F6 | Text #000000 | Accent #008C87
+     Light: Canvas #FFFFFF | Cards #F9FAFB | Text #000000 | Accent #008C87
      ======================================================== */
-  /* Light Mode Tokens */
-  --color-portal-canvas: #FFFFFF;
-  --color-portal-surface: #F3F4F6;
-  --color-portal-surface-hover: #E5E7EB;
-  --color-portal-border: #E5E7EB;
-  --color-portal-border-subtle: rgba(0, 0, 0, 0.06);
-  --color-portal-text: #000000;
-  --color-portal-text-muted: #6B7280;
+  /* Dynamic Dual-Theme Tokens mapped to CSS variables */
+  --color-portal-canvas: var(--portal-canvas);
+  --color-portal-surface: var(--portal-surface);
+  --color-portal-surface-hover: var(--portal-surface-hover);
+  --color-portal-border: var(--portal-border);
+  --color-portal-border-subtle: var(--portal-border-subtle);
+  --color-portal-text: var(--portal-text);
+  --color-portal-text-muted: var(--portal-text-muted);
+  --color-portal-primary: var(--portal-accent);
+  --color-portal-primary-hover: var(--portal-accent-hover);
+  --color-portal-primary-tint: var(--portal-accent-tint);
 
-  /* Dark Mode Tokens */
+  /* Static Fallback Tokens */
+  --color-portal-light-canvas: #FFFFFF;
+  --color-portal-light-surface: #F9FAFB;
+  --color-portal-light-border: #E5E7EB;
+  --color-portal-light-text: #000000;
+  --color-portal-light-text-muted: #6B7280;
+
   --color-portal-dark-canvas: #000000;
   --color-portal-dark-surface: #131215;
   --color-portal-dark-surface-hover: #1D1C21;
@@ -171,13 +182,36 @@
 }
 
 @layer base {
+  :root {
+    --portal-canvas: #FFFFFF;
+    --portal-surface: #F9FAFB;
+    --portal-surface-hover: #F3F4F6;
+    --portal-border: #E5E7EB;
+    --portal-border-subtle: rgba(0, 0, 0, 0.06);
+    --portal-text: #000000;
+    --portal-text-muted: #6B7280;
+    --portal-accent: #008C87;
+    --portal-accent-hover: #00736F;
+    --portal-accent-tint: rgba(0, 140, 135, 0.12);
+  }
+
+  .dark {
+    --portal-canvas: #000000;
+    --portal-surface: #131215;
+    --portal-surface-hover: #1D1C21;
+    --portal-border: rgba(255, 255, 255, 0.08);
+    --portal-border-subtle: rgba(255, 255, 255, 0.04);
+    --portal-text: #FFFFFF;
+    --portal-text-muted: #9CA3AF;
+    --portal-accent: #008C87;
+    --portal-accent-hover: #00736F;
+    --portal-accent-tint: rgba(0, 140, 135, 0.18);
+  }
+
   * {
     border-color: var(--color-border-card);
   }
 
-  /* ========================================================
-     CUSTOM EDITORIAL SCROLLBAR SYSTEM
-     ======================================================== */
   /* Firefox */
   * {
     scrollbar-width: auto;
@@ -219,17 +253,27 @@
 
   html {
     scroll-behavior: smooth;
-    background-color: var(--color-surface);
-    color: var(--color-on-surface);
+    background-color: #FFFFFF;
+    color: #000000;
+  }
+
+  html.dark {
+    background-color: #000000;
+    color: #FFFFFF;
   }
 
   body {
-    background-color: var(--color-surface);
-    color: var(--color-on-surface);
+    background-color: #FFFFFF;
+    color: #000000;
     font-family: var(--font-body);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  html.dark body {
+    background-color: #000000;
+    color: #FFFFFF;
   }
 }
 

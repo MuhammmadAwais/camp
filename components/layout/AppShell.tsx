@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useSidebarStore } from '@/lib/store/useSidebarStore';
 import { Sidebar } from './Sidebar';
 import { MobileMenuButton } from './MobileMenuButton';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -14,7 +15,7 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { isCollapsed } = useSidebarStore();
 
-  // The portal sidebar & obsidian shell ONLY activates for authenticated portal routes
+  // The portal sidebar & dual-theme shell ONLY activates for authenticated portal routes
   const isPortalRoute =
     pathname.startsWith('/seller') ||
     pathname.startsWith('/dealer') ||
@@ -28,32 +29,27 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div
       suppressHydrationWarning
-      className="relative min-h-screen w-full bg-[#080C14] text-white flex flex-col font-body selection:bg-[#008C87] selection:text-white"
+      className="relative min-h-screen w-full bg-white dark:bg-black text-black dark:text-white transition-colors duration-200 flex flex-col font-body selection:bg-[#008C87] selection:text-white"
     >
-      {/* 1. Subtle Ambient Portal Substrate Gradients */}
-      <div
-        className="fixed inset-0 z-0 pointer-events-none select-none bg-[radial-gradient(circle_at_85%_15%,rgba(0,140,135,0.08)_0%,transparent_60%)]"
-        aria-hidden="true"
-      />
-      <div
-        className="fixed inset-0 z-0 pointer-events-none select-none bg-[radial-gradient(circle_at_15%_85%,rgba(229,147,68,0.04)_0%,transparent_50%)]"
-        aria-hidden="true"
-      />
-
-      {/* 2. Floating Mobile Menu Button (lg:hidden) */}
+      {/* 1. Floating Mobile Menu Button (lg:hidden) */}
       <MobileMenuButton />
+
+      {/* 2. Floating Top-Right Theme Toggle (Clean, never cut off, zero in-flow distortion) */}
+      <div className="fixed top-4 right-4 sm:top-5 sm:right-6 z-40">
+        <ThemeToggle />
+      </div>
 
       {/* 3. Persistent Sidebar Navigation */}
       <Sidebar />
 
-      {/* 4. Main Viewport Container (Dynamic Padding for Collapsed / Expanded Rail) */}
+      {/* 4. Main Viewport Container */}
       <div
         suppressHydrationWarning
         className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out relative z-10 ${
           isCollapsed ? 'lg:pl-[72px]' : 'lg:pl-[260px]'
         }`}
       >
-        <main className="flex-1 w-full flex flex-col p-4 sm:p-6 lg:p-8 overflow-x-hidden">
+        <main className="flex-1 w-full flex flex-col px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-12 overflow-x-hidden">
           {children}
         </main>
       </div>

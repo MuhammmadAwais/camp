@@ -17,10 +17,10 @@ export function KycStatusBanner({ initialStatus }: Props) {
 
   if (status === "VERIFIED") {
     return (
-      <div className="flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 font-body text-sm text-emerald-800">
-        <BadgeCheck className="w-5 h-5 text-emerald-600 shrink-0" aria-hidden />
+      <div className="flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-4 py-3 font-body text-sm text-emerald-900 dark:text-emerald-300 transition-colors">
+        <BadgeCheck className="w-5 h-5 text-[#008C87] dark:text-[#33BFBC] shrink-0" aria-hidden />
         <span>
-          <strong className="font-semibold">Identity verified.</strong> You&apos;re cleared to list vehicles.
+          <strong className="font-semibold text-emerald-950 dark:text-emerald-200">Identity verified.</strong> You&apos;re cleared to list vehicles.
         </span>
       </div>
     );
@@ -28,7 +28,7 @@ export function KycStatusBanner({ initialStatus }: Props) {
 
   if (status === "PENDING") {
     return (
-      <div role="status" className="flex items-center gap-2.5 rounded-xl border border-portal-border bg-portal-surface px-4 py-3 font-body text-sm text-portal-text">
+      <div role="status" className="flex items-center gap-2.5 rounded-xl border border-portal-border bg-portal-surface px-4 py-3 font-body text-sm text-portal-text transition-colors">
         <Loader2 className="w-5 h-5 text-portal-primary animate-spin shrink-0" aria-hidden />
         <span>
           <strong className="font-semibold">We&apos;re checking your ID.</strong> This usually takes under a minute — this
@@ -48,14 +48,14 @@ export function KycStatusBanner({ initialStatus }: Props) {
   return (
     <div
       className={cn(
-        "flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border px-4 py-4",
-        "border-secondary/40 bg-secondary-fixed/40"
+        "flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border px-4 py-4 transition-colors",
+        "border-[#008C87]/30 bg-[#008C87]/5 dark:bg-[#008C87]/10"
       )}
     >
-      <ShieldAlert className="w-6 h-6 text-on-secondary-container shrink-0" aria-hidden />
+      <ShieldAlert className="w-6 h-6 text-[#008C87] shrink-0" aria-hidden />
       <div className="flex-1">
-        <p className="font-body text-sm font-semibold text-on-secondary-fixed">{copy.title}</p>
-        <p className="font-body text-sm text-on-secondary-fixed-variant">{copy.body}</p>
+        <p className="font-body text-sm font-semibold text-portal-text">{copy.title}</p>
+        <p className="font-body text-sm text-portal-text-muted">{copy.body}</p>
       </div>
       <Link
         href="/verify-kyc"

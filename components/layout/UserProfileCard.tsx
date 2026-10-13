@@ -45,23 +45,23 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
       {/* Popover Dropdown Menu */}
       {isOpen && (
         <div
-          className={`absolute z-50 mb-2 rounded-2xl p-2 bg-[#131215]/95 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.9),0_0_1px_1px_rgba(255,255,255,0.08)] animate-in fade-in zoom-in-95 duration-150 ${
+          className={`absolute z-50 mb-2 rounded-2xl p-2 bg-white dark:bg-[#131215]/95 backdrop-blur-2xl border border-gray-200 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.9)] animate-in fade-in zoom-in-95 duration-150 ${
             isCollapsed
               ? 'left-full bottom-0 ml-2.5 min-w-[240px]'
               : 'bottom-full left-0 w-full mb-2'
           }`}
         >
           {/* User Header in Menu */}
-          <div className="px-3 py-2.5 border-b border-white/10 mb-1">
+          <div className="px-3 py-2.5 border-b border-gray-200 dark:border-white/10 mb-1">
             <div className="flex items-center justify-between mb-0.5">
-              <span className="text-xs font-bold text-white tracking-tight truncate">
+              <span className="text-xs font-bold text-gray-900 dark:text-white tracking-tight truncate">
                 {displayName}
               </span>
               <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-full bg-[#008C87]/20 text-[#008C87] border border-[#008C87]/30">
                 {role || 'USER'}
               </span>
             </div>
-            <p className="text-[11px] text-neutral-400 truncate">{userEmail}</p>
+            <p className="text-[11px] text-gray-500 dark:text-neutral-400 truncate">{userEmail}</p>
           </div>
 
           {/* Menu Items */}
@@ -69,24 +69,24 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
             <Link
               href="/settings/profile"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 text-xs text-neutral-300 hover:text-white hover:bg-white/[0.06] rounded-xl transition-colors cursor-pointer"
+              className="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-700 hover:text-black hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.06] rounded-xl transition-colors cursor-pointer"
             >
-              <UserIcon className="size-4 text-neutral-400" weight="regular" />
+              <UserIcon className="size-4 text-gray-400 dark:text-neutral-400" weight="regular" />
               <span>Profile & Verification</span>
             </Link>
 
             <Link
               href="/settings/security"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 text-xs text-neutral-300 hover:text-white hover:bg-white/[0.06] rounded-xl transition-colors cursor-pointer"
+              className="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-700 hover:text-black hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.06] rounded-xl transition-colors cursor-pointer"
             >
-              <GearSix className="size-4 text-neutral-400" weight="regular" />
+              <GearSix className="size-4 text-gray-400 dark:text-neutral-400" weight="regular" />
               <span>Account Settings</span>
             </Link>
 
             {/* Quick Role Switcher for dev demo */}
-            <div className="my-1 border-t border-white/10 pt-1">
-              <div className="px-3 py-1 text-[10px] font-mono text-neutral-400 uppercase tracking-wider flex items-center gap-1">
+            <div className="my-1 border-t border-gray-200 dark:border-white/10 pt-1">
+              <div className="px-3 py-1 text-[10px] font-mono text-gray-400 dark:text-neutral-400 uppercase tracking-wider flex items-center gap-1">
                 <Swap className="size-3" />
                 <span>Switch Portal Mode</span>
               </div>
@@ -100,7 +100,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
                   className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer ${
                     role === 'SELLER'
                       ? 'bg-[#008C87]/20 text-[#008C87] font-semibold border border-[#008C87]/40'
-                      : 'text-neutral-400 hover:bg-white/5 hover:text-white'
+                      : 'text-gray-500 hover:bg-gray-100 hover:text-black dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white'
                   }`}
                 >
                   Seller
@@ -114,7 +114,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
                   className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer ${
                     isDealer
                       ? 'bg-[#008C87]/20 text-[#008C87] font-semibold border border-[#008C87]/40'
-                      : 'text-neutral-400 hover:bg-white/5 hover:text-white'
+                      : 'text-gray-500 hover:bg-gray-100 hover:text-black dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white'
                   }`}
                 >
                   Dealer
@@ -122,7 +122,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
               </div>
             </div>
 
-            <div className="my-1 border-t border-white/10" />
+            <div className="my-1 border-t border-gray-200 dark:border-white/10" />
 
             <button
               type="button"
@@ -130,9 +130,9 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
                 setIsOpen(false);
                 await logout();
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-colors cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:text-rose-300 dark:hover:bg-rose-500/10 rounded-xl transition-colors cursor-pointer"
             >
-              <SignOut className="size-4 text-rose-400" weight="bold" />
+              <SignOut className="size-4 text-rose-500 dark:text-rose-400" weight="bold" />
               <span>Sign Out</span>
             </button>
           </div>
@@ -145,23 +145,23 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center rounded-xl transition-all cursor-pointer ${
           isCollapsed
-            ? 'p-2 justify-center hover:bg-white/5'
-            : 'p-2 justify-between hover:bg-white/[0.06] border border-white/5 hover:border-white/10'
+            ? 'p-2 justify-center hover:bg-gray-100 dark:hover:bg-white/5'
+            : 'p-2 justify-between hover:bg-gray-100 dark:hover:bg-white/[0.06] border border-gray-200/80 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/10'
         }`}
         aria-label="User account menu"
       >
         <div className="flex items-center gap-2.5 overflow-hidden">
           {/* Avatar Icon */}
-          <div className="size-9 rounded-xl bg-gradient-to-br from-[#008C87]/30 to-[#E59344]/30 border border-white/15 flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-inner">
+          <div className="size-9 rounded-xl bg-gradient-to-br from-[#008C87]/30 to-[#E59344]/30 border border-black/10 dark:border-white/15 flex items-center justify-center shrink-0 text-gray-900 dark:text-white font-bold text-xs shadow-inner">
             {displayName.charAt(0).toUpperCase()}
           </div>
 
           {!isCollapsed && (
             <div className="flex flex-col text-left overflow-hidden">
-              <span className="text-xs font-semibold text-white tracking-tight truncate">
+              <span className="text-xs font-semibold text-gray-900 dark:text-white tracking-tight truncate">
                 {displayName}
               </span>
-              <span className="text-[10px] text-neutral-400 truncate">
+              <span className="text-[10px] text-gray-500 dark:text-neutral-400 truncate">
                 {roleLabel}
               </span>
             </div>
@@ -169,7 +169,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
         </div>
 
         {!isCollapsed && (
-          <CaretUpDown className="size-4 text-neutral-400 shrink-0 ml-1" weight="bold" />
+          <CaretUpDown className="size-4 text-gray-400 dark:text-neutral-400 shrink-0 ml-1" weight="bold" />
         )}
       </button>
     </div>

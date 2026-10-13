@@ -19,9 +19,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth antialiased" suppressHydrationWarning>
+    <html lang="en" className="scroll-smooth antialiased dark" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const stored = localStorage.getItem('autonexa_theme');
+                  if (stored === 'light') {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.classList.add('light');
+                  } else {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('light');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
-        className="min-h-screen bg-surface font-body text-on-surface flex flex-col selection:bg-primary selection:text-white"
+        className="min-h-screen bg-white dark:bg-black font-body text-black dark:text-white flex flex-col selection:bg-[#008C87] selection:text-white"
         suppressHydrationWarning
       >
         <Providers>

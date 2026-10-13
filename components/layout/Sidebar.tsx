@@ -124,9 +124,9 @@ export function Sidebar() {
         />
       )}
 
-      {/* 2. Main Sidebar Aside (Exact Zentris UX Replication) */}
+      {/* 2. Main Sidebar Aside */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#131215]/95 backdrop-blur-2xl border-r border-white/10 transition-all duration-300 ease-in-out font-body ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-white/95 dark:bg-[#131215]/95 backdrop-blur-2xl border-r border-gray-200 dark:border-white/10 text-gray-900 dark:text-white transition-all duration-300 ease-in-out font-body ${
           isCollapsed ? 'w-[72px]' : 'w-[260px]'
         } ${
           isMobileOpen
@@ -136,7 +136,7 @@ export function Sidebar() {
       >
         {/* Top Header: Brand Lockup & Integrated Desktop Collapse Trigger */}
         <div
-          className={`h-20 flex items-center border-b border-white/10 shrink-0 transition-all duration-300 relative ${
+          className={`h-20 flex items-center border-b border-gray-200 dark:border-white/10 shrink-0 transition-all duration-300 relative ${
             isCollapsed ? 'justify-center px-0' : 'justify-between px-5'
           }`}
         >
@@ -167,8 +167,8 @@ export function Sidebar() {
                     className="object-contain select-none"
                   />
                 </div>
-                <span className="font-headline font-bold text-lg text-white tracking-tight leading-none">
-                  Auto<span className="text-[#E59344]">Nexa</span>
+                <span className="font-headline font-bold text-lg text-gray-900 dark:text-white tracking-tight leading-none">
+                  Auto<span className="text-[#008C87]">Nexa</span>
                 </span>
               </div>
             )}
@@ -179,7 +179,7 @@ export function Sidebar() {
             <button
               type="button"
               onClick={toggleSidebar}
-              className="hidden lg:flex size-7 rounded-lg items-center justify-center bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 text-neutral-400 hover:text-white transition-all cursor-pointer shadow-xs"
+              className="hidden lg:flex size-7 rounded-lg items-center justify-center bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.12] border border-gray-200 dark:border-white/10 text-gray-500 hover:text-black dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer shadow-xs"
               title="Collapse sidebar rail"
               aria-label="Collapse sidebar rail"
             >
@@ -192,7 +192,7 @@ export function Sidebar() {
             <button
               type="button"
               onClick={toggleSidebar}
-              className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 size-6 rounded-full bg-[#1b1a1f] hover:bg-[#008C87] border border-white/15 hover:border-[#008C87] text-neutral-400 hover:text-white items-center justify-center transition-all cursor-pointer shadow-md z-50 group"
+              className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 size-6 rounded-full bg-white dark:bg-[#1b1a1f] hover:bg-[#008C87] border border-gray-200 dark:border-white/15 hover:border-[#008C87] text-gray-600 dark:text-neutral-400 hover:text-white items-center justify-center transition-all cursor-pointer shadow-md z-50 group"
               title="Expand sidebar"
               aria-label="Expand sidebar"
             >
@@ -213,14 +213,14 @@ export function Sidebar() {
               <div key={sectionKey} className="space-y-1">
                 {/* Section Header (Expanded Mode Only) */}
                 {!isCollapsed && (
-                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold select-none">
+                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-gray-400 dark:text-neutral-400 font-semibold select-none">
                     {sectionKey}
                   </div>
                 )}
 
                 {/* Section Divider (Collapsed Mode Only) */}
                 {isCollapsed && (
-                  <div className="my-2 border-t border-white/[0.08] mx-2" />
+                  <div className="my-2 border-t border-gray-200 dark:border-white/[0.08] mx-2" />
                 )}
 
                 {/* Section Nav Items */}
@@ -248,7 +248,7 @@ export function Sidebar() {
                         className={`group/item flex items-center justify-between rounded-xl transition-all cursor-pointer ${
                           isMainActive
                             ? 'bg-[#008C87]/15 text-[#008C87] border border-[#008C87]/30 shadow-xs'
-                            : 'text-neutral-300 hover:text-white hover:bg-white/[0.05]'
+                            : 'text-gray-700 hover:text-black hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.05]'
                         } ${isCollapsed ? 'p-2.5 justify-center' : 'px-3 py-2.5'}`}
                       >
                         {/* Direct Link to Route */}
@@ -261,7 +261,7 @@ export function Sidebar() {
                         >
                           <Icon
                             className={`size-5 shrink-0 transition-transform group-hover/item:scale-105 ${
-                              isMainActive ? 'text-[#008C87]' : 'text-neutral-400'
+                              isMainActive ? 'text-[#008C87]' : 'text-gray-400 dark:text-neutral-400'
                             }`}
                             weight={isMainActive ? 'duotone' : 'regular'}
                           />
@@ -281,7 +281,7 @@ export function Sidebar() {
                               e.stopPropagation();
                               toggleGroup(group.id);
                             }}
-                            className="size-6 rounded-lg flex items-center justify-center hover:bg-white/10 text-neutral-400 hover:text-white transition-all cursor-pointer shrink-0 ml-1"
+                            className="size-6 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/10 text-gray-400 hover:text-black dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer shrink-0 ml-1"
                             aria-label={`Toggle ${group.title} sub-menu`}
                           >
                             {isExpanded ? (
@@ -293,9 +293,9 @@ export function Sidebar() {
                         )}
                       </div>
 
-                      {/* Sub-Navigation Tree (Expanded Mode Only - Exact Zentris Structure) */}
+                      {/* Sub-Navigation Tree (Expanded Mode Only) */}
                       {!isCollapsed && hasSubItems && isExpanded && (
-                        <div className="relative ml-5 pl-3.5 border-l border-white/[0.08] my-1 flex flex-col gap-0.5 animate-in fade-in duration-150">
+                        <div className="relative ml-5 pl-3.5 border-l border-gray-200 dark:border-white/[0.08] my-1 flex flex-col gap-0.5 animate-in fade-in duration-150">
                           {group.items.map((sub) => {
                             const isSubActive = pathname === sub.href;
                             return (
@@ -305,12 +305,12 @@ export function Sidebar() {
                                 onClick={closeMobile}
                                 className={`relative text-xs px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center justify-between group/sub ${
                                   isSubActive
-                                    ? 'bg-white/[0.08] text-[#008C87] font-medium'
-                                    : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
+                                    ? 'bg-gray-100 dark:bg-white/[0.08] text-[#008C87] font-medium'
+                                    : 'text-gray-600 hover:text-black hover:bg-gray-50 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-white/[0.04]'
                                 }`}
                               >
                                 {/* Guide line connector notch */}
-                                <span className="absolute -left-[15px] top-1/2 -translate-y-1/2 w-2.5 h-[1px] bg-white/[0.08] group-hover/sub:bg-[#008C87]/40 transition-colors" />
+                                <span className="absolute -left-[15px] top-1/2 -translate-y-1/2 w-2.5 h-[1px] bg-gray-200 dark:bg-white/[0.08] group-hover/sub:bg-[#008C87]/40 transition-colors" />
 
                                 <span className="truncate">{sub.title}</span>
                                 {isSubActive && (
@@ -341,7 +341,7 @@ export function Sidebar() {
         </div>
 
         {/* Bottom User Profile Section */}
-        <div className="p-3 border-t border-white/10 shrink-0 bg-[#0f0e12]/60">
+        <div className="p-3 border-t border-gray-200 dark:border-white/10 shrink-0 bg-gray-50/80 dark:bg-[#0f0e12]/60">
           <UserProfileCard isCollapsed={isCollapsed} />
         </div>
       </aside>
