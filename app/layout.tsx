@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Providers } from "./providers";
 import { AuthProvider } from "@/lib/auth-context";
 import { AppShell } from "@/components/layout/AppShell";
 
@@ -23,13 +24,14 @@ export default function RootLayout({
         className="min-h-screen bg-surface font-body text-on-surface flex flex-col selection:bg-primary selection:text-white"
         suppressHydrationWarning
       >
-        <AuthProvider>
-          <AppShell>
-            {children}
-          </AppShell>
-        </AuthProvider>
+        <Providers>
+          <AuthProvider>
+            <AppShell>
+              {children}
+            </AppShell>
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );
 }
-

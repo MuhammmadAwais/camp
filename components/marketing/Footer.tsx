@@ -107,6 +107,11 @@ export function Footer() {
                 </a>
               </li>
               <li>
+                <Link href="/login" className="hover:text-primary transition-colors">
+                  Seller Sign In
+                </Link>
+              </li>
+              <li>
                 <a href="#testimonials" className="hover:text-primary transition-colors">
                   Seller Stories
                 </a>

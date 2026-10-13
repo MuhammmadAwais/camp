@@ -6,8 +6,8 @@ Update this file after every completed feature. Any AI agent reading this should
 
 ## Current Status
 
-**Phase:** 3 — Web App Foundation & Authentication System
-**Last completed:** 07-B Main Web App Shell & Zentris-Replica Sidebar (`AppShell.tsx`, `Sidebar.tsx`, `SidebarFlyout.tsx`, `UserProfileCard.tsx`, `MobileMenuButton.tsx`, `useSidebarStore.ts`, navbar-free distraction-less portal architecture, Nordic Pine Teal & Deep Dark palette)
+**Phase:** 3 — Web App Foundation, Unified Auth Suite & Zentris Portal Shell
+**Last completed:** 07-B Split-Screen Auth Suite (`AuthSplitLayout.tsx`, `/login`, `/register`, `/forgot-password`, `/reset-password`, `/verify`, unbordered clean white form, right visual photography with rounded-bl-[80px]) & Zentris-Replica Sidebar (`AppShell.tsx`, `Sidebar.tsx`, `useSidebarStore.ts`)
 **Next:** 08 Seller Dashboard UI & KYC Verification Gate (`/seller/dashboard`)
 
 ---
@@ -15,11 +15,11 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Progress
 
 ### Phase 1 — Foundation & Architecture
-- [x] 01 Next.js 15 Scaffold & Route Groups (`/auth`, `/seller`, `/dealer`, `/admin`)
+- [x] 01 Next.js 16 Scaffold & Route Groups (`(auth)`, `(seller)`, `(dealer)`, `(admin)`)
 - [x] 02 Tailwind v4 & Autumn Editorial Design Tokens (`globals.css` @theme config)
 - [ ] 03 `next-intl` Bilingual Setup (EN/FR for Quebec Law 25)
-- [ ] 04 TanStack Query & Zustand Store Initialization
-- [x] 05 JWT Auth Wrapper & Middleware (Role segregation & BFF Decoupling)
+- [x] 04 TanStack Query & Zustand Store Initialization (`app/providers.tsx`, `lib/query-keys.ts`, `store/`)
+- [x] 05 JWT Auth Wrapper & Proxy (`proxy.ts`, `lib/auth-context.tsx`, role segregation)
 
 ### Phase 2 — AutoNexa Landing Page & Public Funnel
 - [x] 06-A Navbar (`Navbar.tsx` with logo, navigation links, and portal action buttons)
@@ -37,7 +37,13 @@ Update this file after every completed feature. Any AI agent reading this should
 - [ ] 07 Legal Pages (`/legal/privacy` and `/legal/terms` PIPEDA & Law 25 compliant)
 
 ### Phase 3 — Seller Portal (Mobile-First / Light Mode)
-- [ ] 08 Seller Dashboard UI & KYC Verification Gate
+- [x] 08-A VIN-first entry `/sell` (ISO 3779 check digit + NHTSA vPIC decode, manual fallback) — hero widget routes here
+- [x] 08-B Registration `/register` (FR-EU-01 fields, CASL opt-in, PIPEDA consent, 18+/owner attestation, postal→province suggest)
+- [x] 08-C Email + SMS OTP verification `/verify` (attempt limit, resend cooldown, session issued on completion)
+- [x] 08-D Login, forgot password, reset password (`/login`, `/forgot-password`, `/reset-password`)
+- [x] 08-E KYC flow `/verify-kyc` (consent → ID front/back → selfie → review → PENDING → VERIFIED; provider stubbed)
+- [x] 08-F Seller dashboard shell `/dashboard` with KYC gate banner and listing-start card (FR-EU-11 empty states)
+- [ ] 08-G Swap mock API for Express (set `NEXT_PUBLIC_API_URL`); Google OAuth start/callback; real KYC provider SDK (liveness)
 - [ ] 09 Listing Wizard: VIN Auto-decode via NHTSA VPIC
 - [ ] 10 Listing Wizard: Details & Specs (Mileage, Trans, History)
 - [ ] 11 Listing Wizard: Interactive SVG Damage Hotspot Mapper
@@ -79,6 +85,11 @@ Update this file after every completed feature. Any AI agent reading this should
 - **2026-10-03 (Seller Marketplace Realignment):** Realigned `DiscoverSection.tsx` product cards from retail buyer inventory to verified recent dealer sales. Preserved 100% of card geometry while showing actual seller payouts, dealer bid counts, and surplus above trade-in offers.
 - **2026-10-09 (Web App Design System & Dual-Theme Architecture):** Established dedicated Web App & Portal Design Tokens (Porcelain `#F8FAFC`, Obsidian `#080C14`, Racing Emerald scale `#16A34A` / `#10B981`) in `DESIGN (3).md`, `context/ui-tokens.md`, and `app/globals.css`. Configured glassmorphism utilities (`.glass-card`, `.glass-input`, `.glow-emerald`) over `public/illustrations/why-us.webp` for the upcoming Auth Suite.
 - **2026-10-09 (Feature-Based Architecture Realignment & Route Collision Fix):** Transitioned to a clean frontend-only feature-based directory structure (`features/auth/`, `features/seller/`, `features/dealer/`, `features/admin/`) with isolated services ready for future API integration. Resolved Edge runtime buffer crash and route group collision, restoring seamless rendering of the glassmorphic authentication suite.
+
+- **2026-10-10 (Seller Onboarding Funnel):** Chose a VIN-first funnel — the hero widget hands off to `/sell`, the decoded VIN carries through registration in `useSellIntentStore` (VIN + postal only; specs stay in TanStack). Contact verification is email first, then SMS; a session is only issued once both pass (FR-EU-01). Built against Next.js route-handler mocks in `app/api/**` that mirror the planned Express contract (`{ data }` / `{ error: { code, message, fields, details } }`); mocks answer only in development or with `ENABLE_MOCK_API=true`. i18n (next-intl) deliberately deferred — new form strings are English-only and will need extracting in step 03.
+- **2026-10-10 (Auth UI token note):** The registry's auth pattern called for `bg-white text-slate-950` / `text-neutral-400`; implemented with tokens instead (`text-portal-text`, `text-white/60`) to honour the no-raw-colour rule. Error text on the dark glass uses `text-primary-fixed-dim` because `text-error` fails contrast there.
+
+- **2026-10-10 (Onboarding Light Theme, revised):** After review, the interim royal-blue theme was replaced with the brand's Autumn Editorial palette (wine `primary`, honey `secondary`, ivory `surface`) and a split layout with step-specific photography (`AuthVisualPanel`). Inputs and buttons now use 8px `rounded-sm`; the 24px `rounded-xl` read as pills. The temporary `trust-blue`/`portal-input-border`/`portal-text-secondary`/`portal-text-subtle` tokens were removed again.
 
 ---
 

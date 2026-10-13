@@ -350,6 +350,12 @@ export function Navbar() {
         {/* 3. Right Action Pill Button: Color Palette + Arrow Tilt (No Glow)         */}
         {/* ========================================================================= */}
         <div className="flex items-center gap-2">
+          <Link
+            href="/login"
+            className="hidden md:inline-flex px-3 py-2 rounded-full font-body text-sm font-semibold text-surface/85 hover:text-white hover:bg-white/10 transition-colors whitespace-nowrap"
+          >
+            Sign in
+          </Link>
           <a
             href="#valuation"
             ref={ctaPillRef}
@@ -427,6 +433,13 @@ export function Navbar() {
             >
               Get Free Appraisal ↗
             </a>
+            <Link
+              href="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block w-full text-center py-3 rounded-full border border-white/15 text-surface font-bold text-xs uppercase tracking-wider hover:bg-white/10 transition-colors"
+            >
+              Seller sign in
+            </Link>
           </div>
         </div>
       )}

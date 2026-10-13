@@ -1,10 +1,14 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { BodyTypeSelector } from "@/components/marketing/BodyTypeSelector";
 import { Search, MapPin, ArrowRight } from "lucide-react";
+import { normalizePostalCode } from "@/lib/canada";
+import { isValidVin, sanitizeVinInput } from "@/lib/vin";
 
 export function MarketValuationWidget() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = React.useState("cars");
   const [query, setQuery] = React.useState("");
   const [postalCode, setPostalCode] = React.useState("");
@@ -56,11 +60,17 @@ export function MarketValuationWidget() {
     { id: "luxury", label: "Luxury & Performance" },
   ];
 
+  // Enters the VIN-first seller funnel. A full VIN is decoded immediately on /sell;
+  // a make/model search lands on the same page with the VIN field ready to fill.
   const handleValuationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(
-      `Starting appraisal valuation for: ${query || "All " + selectedBodyType} in ${postalCode || "Canada"}`
-    );
+    const params = new URLSearchParams();
+    const vin = sanitizeVinInput(query);
+    if (isValidVin(vin)) params.set("vin", vin);
+    const postal = normalizePostalCode(postalCode);
+    if (postal) params.set("postal", postal);
+    const search = params.toString();
+    router.push(search ? `/sell?${search}` : "/sell");
   };
 
   return (

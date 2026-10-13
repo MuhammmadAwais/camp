@@ -94,16 +94,14 @@ All buttons maintain crisp, deliberate geometry (`rounded-sm` / 8px) and semi-bo
 
 ---
 
-## 6. Portal & Auth UI Rules (FinTech Precision)
+## 6. Portal & Auth UI Rules (Seller Onboarding — Light Autumn Editorial)
 
-1. **Auth Backdrop & Vignette:**  
-   The authentication screen must render `public/illustrations/why-us.webp` with a subtle dark gradient veil (`from-black/85 via-black/50 to-black/85`) so automotive contours peek through without compromising WCAG AAA text contrast.
-2. **Glassmorphic Constraints:**  
-   Auth cards must use `backdrop-blur-2xl`, translucent charcoal fill (`bg-glass-card-bg`), and a delicate 1px white border (`border-glass-card-border`). Never use opaque solid gray modals for auth.
-3. **Primary Action Contrast:**  
-   The primary submit button on the Auth Card must be solid crisp white (`bg-white text-slate-950 font-semibold`) for immediate visual hierarchy, paired with an interactive scale-down micro-interaction (`active:scale-[0.99]`).
-4. **Input Focus Accents:**  
-   Form inputs must illuminate with a subtle Racing Emerald glow ring (`focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20`) to signal active engagement.
-5. **Theme Segregation:**  
-   Landing page components use Autumn Editorial tokens; portal dashboards use `--color-portal-*` and `--color-emerald-*` tokens. Dealers default to dark mode (`.dark`), while sellers default to light porcelain.
+Revised 2026-10-10 (second pass): the onboarding flow uses the brand's Autumn Editorial palette, not a separate portal palette. The dark glass treatment and the interim royal-blue theme are both retired.
 
+1. **Layout:** split screen on `lg+`. On the left is a sticky, rounded image panel (`AuthVisualPanel`) with step-specific photography, an amber eyebrow, an Epilogue headline and three check-mark reassurances. On the right is the form on `bg-surface`. Below `lg` the image becomes a 144–176px banner above the form.
+2. **Form column:** unboxed, `max-w-lg`. No card border or shadow, because the split layout does the framing.
+3. **Primary action:** `bg-primary hover:bg-primary-hover text-white rounded-sm`. Secondary/social: white with `border-outline-variant`. Links use `text-primary`.
+4. **Inputs:** `rounded-sm` (8px — never the 24px `rounded-xl`), white on ivory, `border-outline-variant`, focus `border-primary ring-2 ring-primary/25`. Labels `text-sm font-semibold text-on-surface`; helpers `text-xs text-on-surface-variant/80`; errors `text-error` with `role="alert"`.
+5. **Stepper:** Vehicle › Account › Verify › Identity. Active = wine badge, completed = sage `success` check, inactive = `bg-surface-container text-outline`.
+6. **Imagery:** use photos without embedded text, currency or third-party branding. Current mapping: `/sell` + login → `hero-bg.webp`; `/register` → `sell-your-car.webp`; `/verify` → `why-us.webp`; `/verify-kyc` → `features/condition-inspection.jpg`.
+7. **Theme segregation:** landing and onboarding share Autumn Editorial. The seller dashboard still uses Porcelain + `portal-primary` green (an open decision). Dealers default to dark Obsidian.
