@@ -555,17 +555,18 @@ Last updated: 2026-10-09
 
 ---
 
-### `Auth3DBackground & Frosted Glass Login System`
+### `AuthFrostedGlass & Progressive Registration System`
 
-File: `features/auth/components/Auth3DBackground.tsx` / `features/auth/components/AuthCard.tsx` / `app/login/page.tsx`  
-Last updated: 2026-10-09  
+File: `features/auth/components/Auth3DBackground.tsx` / `features/auth/components/AuthCard.tsx` / `app/login/page.tsx` / `app/register/page.tsx`  
+Last updated: 2026-10-13  
 
 | Property         | Class / Specification |
 | ---------------- | --------------------- |
-| Canvas           | Deep atmospheric dark canvas `bg-[#000000]` with subtle Emerald / Pine Teal radial ambient lighting |
-| Top-Left Brand   | Authentic AutoNexa gold emblem (`/logo-mark.webp`) beside `Auto<span className="text-[#E59344]">Nexa</span>` in `font-headline font-bold text-xl sm:text-2xl` with gap-3 flex alignment |
-| 3D Sculptures    | Photorealistic translucent smoked frosted glass & dark obsidian acrylic with micro-surface grain, internal emerald pine teal refractions, and warm gold metallic rim light (`/auth-3d/glass/`) |
-| Animations       | Asynchronous continuous floating loops: `@keyframes float-slow` (12s ease-in-out), `@keyframes float-reverse` (15s ease-in-out), `@keyframes float-diagonal` (14s ease-in-out) |
-| Frosted Card     | Translucent frosted glass `bg-[#131215]/65 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 max-w-[440px] w-full shadow-2xl` |
-| Social Login     | Google only (`Continue with Google`), removing GitHub and Apple buttons |
-| Primary CTA      | Nordic Pine Teal `#008C87` (`hover:bg-[#00736F]`) with soft teal glow `shadow-[0_4px_20px_rgba(0,140,135,0.4)]` |
+| Canvas           | Deep atmospheric dark canvas `bg-[#000000]` with subtle Emerald / Pine Teal radial ambient lighting (no floating 3D clutter) |
+| Top-Left Brand   | Optically balanced AutoNexa gold emblem (`/logo-mark-tight.webp`, cropped to content bbox 734x390) beside `Auto<span className="text-[#E59344]">Nexa</span>` in `font-headline font-bold text-xl sm:text-2xl text-white`, no blurry drop shadows |
+| Form Inputs      | Unified `font-body text-sm` (`Plus Jakarta Sans`) across all inputs and placeholders. Strictly one full-width input per row (`w-full`), never two inputs side-by-side |
+| Input Icons      | Standardized 16px left icons (`User`, `Mail`, `Lock`, `Building`, `FileText`, `Phone`, `MapPin`) in `text-neutral-400` |
+| Primary CTA      | Nordic Pine Teal `#008C87` (`hover:bg-[#00736F]`) with clean subtle `shadow-sm` (all diffuse glows removed) |
+| Progressive Flow | Step 1 (Credentials & Role) &rarr; Step 2 (Phone & Postal Code / Dealership Verification), maintaining compact card height |
+| Frosted Card     | Translucent frosted glass `bg-[#131215]/65 backdrop-blur-2xl border border-white/20 rounded-3xl p-7 sm:p-9 max-w-[440px] w-full shadow-2xl` |
+| Social Login     | Google only (`Continue with Google`), clean matte border `border-white/15` |
