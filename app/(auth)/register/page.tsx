@@ -22,7 +22,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Sea
       footer={
         <>
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-primary hover:underline underline-offset-4">
+          <Link href="/login" className="font-semibold text-[#008C87] hover:underline underline-offset-4">
             Sign in
           </Link>
         </>

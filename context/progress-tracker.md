@@ -7,7 +7,7 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Current Status
 
 **Phase:** 3 — Web App Foundation, Unified Auth Suite & Zentris Portal Shell
-**Last completed:** 07-B Split-Screen Auth Suite (`AuthSplitLayout.tsx`, `/login`, `/register`, `/forgot-password`, `/reset-password`, `/verify`, unbordered clean white form, right visual photography with rounded-bl-[80px]) & Zentris-Replica Sidebar (`AppShell.tsx`, `Sidebar.tsx`, `useSidebarStore.ts`)
+**Last completed:** 07-B Asymmetric Split-Screen Auth Suite (`AuthShell.tsx`, `AuthVisualPanel.tsx`, `LoginForm.tsx`, `RegisterForm.tsx`, `rounded-bl-[100px]` right photographic panel, clean white left canvas, single-row stacked inputs, solid Nordic Pine Teal CTAs, demo seeds stripped) & Zentris-Replica Sidebar (`AppShell.tsx`, `Sidebar.tsx`, `useSidebarStore.ts`)
 **Next:** 08 Seller Dashboard UI & KYC Verification Gate (`/seller/dashboard`)
 
 ---

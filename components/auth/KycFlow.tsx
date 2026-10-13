@@ -6,7 +6,6 @@ import { ArrowLeft, ArrowRight, BadgeCheck, IdCard, Loader2, Lock, ScanFace, Shi
 import { AuthButton } from "@/components/auth/AuthButton";
 import { AuthCheckbox } from "@/components/auth/AuthCheckbox";
 import { FormAlert } from "@/components/auth/FormAlert";
-import { MockModeHint } from "@/components/auth/MockModeHint";
 import { PhotoCapture, validateKycPhoto } from "@/components/auth/PhotoCapture";
 import { useKycStatus, useSubmitKyc } from "@/hooks/useKyc";
 import { getApiFailure, getErrorMessage } from "@/lib/api-errors";
@@ -260,7 +259,6 @@ function KycCapture({ rejectReason, expired }: CaptureProps) {
             capture="user"
             aspect="portrait"
           />
-          <MockModeHint>any photo works. The real provider SDK runs an interactive liveness check here.</MockModeHint>
           <StepNav onBack={() => setStep("document")} onNext={goFromSelfie} />
         </div>
       )}

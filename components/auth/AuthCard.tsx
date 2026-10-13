@@ -9,16 +9,24 @@ interface Props {
   children: React.ReactNode;
 }
 
-// Unboxed editorial form column — the split layout supplies the framing, so no card chrome here.
+// Unboxed clean editorial form column — seamless on white canvas.
 export function AuthCard({ title, description, eyebrow, footer, className, children }: Props) {
   return (
-    <section className={cn("w-full max-w-lg", className)}>
-      {eyebrow && <div className="mb-10">{eyebrow}</div>}
-      <h1 className="font-headline text-3xl sm:text-[36px] font-bold tracking-tight text-on-surface leading-[1.1]">{title}</h1>
-      {description && <p className="mt-3 font-body text-base text-on-surface-variant leading-relaxed">{description}</p>}
-      <div className="mt-8">{children}</div>
+    <section className={cn("w-full", className)}>
+      {eyebrow && <div className="mb-6">{eyebrow}</div>}
+      <h1 className="font-headline text-2xl sm:text-3xl font-bold tracking-tight text-[#111827] leading-tight">
+        {title}
+      </h1>
+      {description && (
+        <p className="mt-2 font-body text-sm text-gray-500 leading-normal">
+          {description}
+        </p>
+      )}
+      <div className="mt-6">{children}</div>
       {footer && (
-        <div className="mt-8 pt-6 border-t border-border-card font-body text-sm text-on-surface-variant text-center">{footer}</div>
+        <div className="mt-6 pt-5 border-t border-gray-100 font-body text-xs sm:text-sm text-gray-500 text-center">
+          {footer}
+        </div>
       )}
     </section>
   );

@@ -1,50 +1,68 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { AuthVisualPanel } from "@/components/auth/AuthVisualPanel";
 
 interface Props {
   children: React.ReactNode;
 }
 
-// Split onboarding layout on the Autumn Editorial palette: step imagery on the left (desktop),
-// form on the warm ivory canvas on the right. On mobile the image becomes a short banner.
 export function AuthShell({ children }: Props) {
   return (
-    <div className="min-h-screen w-full bg-surface text-on-surface lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-      <aside className="hidden lg:block sticky top-0 h-screen p-4 pr-0">
-        <AuthVisualPanel />
-      </aside>
-
-      <div className="flex min-h-screen flex-col">
-        <header className="flex items-center justify-between gap-4 px-5 sm:px-8 lg:px-12 h-16 lg:h-20">
-          <Link href="/" className="flex items-center gap-2.5 lg:invisible" aria-label="AutoNexa home">
-            <span className="relative w-9 h-5">
-              <Image src="/logo-mark.webp" alt="" fill sizes="36px" className="object-contain" />
-            </span>
-            <span className="font-headline text-lg font-bold tracking-tight text-on-surface">AutoNexa</span>
+    <div className="min-h-screen w-full bg-white text-gray-900 lg:grid lg:grid-cols-12">
+      {/* LEFT COLUMN: Clean White Form Canvas */}
+      <div className="lg:col-span-6 xl:col-span-5 flex min-h-screen flex-col justify-between px-6 py-6 sm:px-10 sm:py-8 lg:px-12 lg:py-10 bg-white">
+        {/* Top Header: Back Link & Logo Lockup */}
+        <header className="flex items-center justify-between gap-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1 font-body text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors group"
+            aria-label="Back to AutoNexa website"
+          >
+            <ChevronLeft className="w-4 h-4 text-gray-400 group-hover:text-gray-700 transition-colors" />
+            <span>Back to website</span>
           </Link>
-          <p className="flex items-center gap-2 font-body text-xs font-medium text-on-surface-variant">
-            <span className="w-2 h-2 rounded-full bg-success shrink-0" aria-hidden />
-            <span className="hidden sm:inline">PIPEDA Compliant • 256-Bit Encrypted</span>
-            <span className="sm:hidden">Secure &amp; private</span>
-          </p>
+
+          <Link href="/" className="flex items-center gap-2 focus:outline-none" aria-label="AutoNexa home">
+            <div className="relative w-7 h-[18px] shrink-0">
+              <Image src="/logo-mark-tight.png" alt="AutoNexa" fill sizes="28px" priority className="object-contain" />
+            </div>
+            <span className="font-headline font-bold text-lg text-gray-900 tracking-tight leading-none">
+              Auto<span className="text-[#008C87]">Nexa</span>
+            </span>
+          </Link>
         </header>
 
-        <div className="lg:hidden px-4 sm:px-8">
-          <div className="h-36 sm:h-44">
+        {/* Mobile-only compact visual banner */}
+        <div className="lg:hidden my-6">
+          <div className="h-40 sm:h-48 rounded-2xl overflow-hidden shadow-sm">
             <AuthVisualPanel variant="compact" />
           </div>
         </div>
 
-        <main className="flex-1 flex justify-center px-5 sm:px-8 lg:px-12 py-8 lg:py-10">{children}</main>
+        {/* Main Form Center Area */}
+        <main className="flex-1 flex flex-col justify-center py-6 sm:py-8 w-full max-w-[420px] mx-auto">
+          {children}
+        </main>
 
-        <footer className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-5 pb-6 font-body text-xs text-on-surface-variant/80">
-          <span>© {new Date().getFullYear()} AutoNexa</span>
-          <Link href="/legal/privacy" className="hover:text-primary transition-colors">Privacy</Link>
-          <Link href="/legal/terms" className="hover:text-primary transition-colors">Terms</Link>
-          <a href="mailto:support@autonexa.ca" className="hover:text-primary transition-colors">support@autonexa.ca</a>
+        {/* Footer */}
+        <footer className="pt-6 border-t border-gray-100 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 font-body text-xs text-gray-400">
+          <span>© {new Date().getFullYear()} AutoNexa Inc.</span>
+          <div className="flex items-center gap-4">
+            <Link href="/legal/privacy" className="hover:text-gray-700 transition-colors">Privacy</Link>
+            <Link href="/legal/terms" className="hover:text-gray-700 transition-colors">Terms</Link>
+            <span className="hidden sm:inline text-gray-300">•</span>
+            <span className="hidden sm:inline text-gray-400">256-Bit Encrypted</span>
+          </div>
         </footer>
       </div>
+
+      {/* RIGHT COLUMN: High-impact Visual Panel with signature rounded-bl-[100px] */}
+      <aside className="hidden lg:block lg:col-span-6 xl:col-span-7 sticky top-0 h-screen w-full bg-white pl-0">
+        <AuthVisualPanel variant="full" />
+      </aside>
     </div>
   );
 }

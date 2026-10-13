@@ -34,7 +34,7 @@ const PROVINCE_OPTIONS = PROVINCES.map((p) => ({ value: p.code, label: p.name })
 
 const SERVER_FIELDS = ["firstName", "lastName", "email", "phone", "postalCode", "province", "password"] as const;
 
-// FR-EU-01 — full name, email, mobile, postal code, province; email + SMS verified next.
+// FR-EU-01 — full name, email, mobile, postal code, province; stacked single-row inputs.
 export function RegisterForm({ initialVin, initialPostalCode }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -106,26 +106,34 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
     <div className="space-y-5">
       <GoogleAuthButton label="Sign up with Google" />
 
-      <div className="flex items-center gap-3" aria-hidden>
-        <span className="h-px flex-1 bg-border-card" />
-        <span className="font-body text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant/80">or with email</span>
-        <span className="h-px flex-1 bg-border-card" />
+      <div className="flex items-center gap-3 my-4" aria-hidden>
+        <span className="h-px flex-1 bg-gray-200" />
+        <span className="font-body text-xs font-semibold uppercase tracking-wider text-gray-400">or with email</span>
+        <span className="h-px flex-1 bg-gray-200" />
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <AuthField
-            label="First name"
-            autoComplete="given-name"
-            icon={<User className="w-4 h-4" />}
-            error={errors.firstName?.message}
-            {...register("firstName")}
-          />
-          <AuthField label="Last name" autoComplete="family-name" error={errors.lastName?.message} {...register("lastName")} />
-        </div>
+        {/* Single-row stacked inputs: NO two inputs in the same row */}
+        <AuthField
+          label="First name"
+          placeholder="e.g. Alex"
+          autoComplete="given-name"
+          icon={<User className="w-4 h-4" />}
+          error={errors.firstName?.message}
+          {...register("firstName")}
+        />
 
         <AuthField
-          label="Email"
+          label="Last name"
+          placeholder="e.g. Morgan"
+          autoComplete="family-name"
+          icon={<User className="w-4 h-4" />}
+          error={errors.lastName?.message}
+          {...register("lastName")}
+        />
+
+        <AuthField
+          label="Email address"
           type="email"
           autoComplete="email"
           inputMode="email"
@@ -136,13 +144,13 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
         />
 
         <AuthField
-          label="Mobile number"
+          label="Mobile phone number"
           type="tel"
           autoComplete="tel-national"
           inputMode="tel"
           placeholder="(416) 555-0123"
           icon={<Phone className="w-4 h-4" />}
-          hint="We'll text a 6-digit code to verify it. Canadian numbers only."
+          hint="We will text a 6-digit verification code. Canadian numbers only."
           error={errors.phone?.message}
           {...register("phone", {
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,60 +159,66 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
           })}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <AuthField
-            label="Postal code"
-            autoComplete="postal-code"
-            placeholder="M5V 2T6"
-            icon={<MapPin className="w-4 h-4" />}
-            className="uppercase tracking-wider"
-            error={errors.postalCode?.message}
-            {...register("postalCode", {
-              onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                e.target.value = normalizePostalCode(e.target.value);
-                const suggested = suggestProvinceFromPostal(e.target.value);
-                if (suggested && !getValues("province")) setValue("province", suggested, { shouldValidate: true });
-              },
-            })}
-          />
-          <AuthSelect
-            label="Province / territory"
-            placeholder="Select…"
-            autoComplete="address-level1"
-            options={PROVINCE_OPTIONS}
-            error={errors.province?.message}
-            {...register("province")}
-          />
-        </div>
+        <AuthField
+          label="Postal code"
+          autoComplete="postal-code"
+          placeholder="M5V 2T6"
+          icon={<MapPin className="w-4 h-4" />}
+          className="uppercase tracking-wider"
+          error={errors.postalCode?.message}
+          {...register("postalCode", {
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+              e.target.value = normalizePostalCode(e.target.value);
+              const suggested = suggestProvinceFromPostal(e.target.value);
+              if (suggested && !getValues("province")) setValue("province", suggested, { shouldValidate: true });
+            },
+          })}
+        />
+
+        <AuthSelect
+          label="Province / territory"
+          placeholder="Select province or territory…"
+          autoComplete="address-level1"
+          options={PROVINCE_OPTIONS}
+          error={errors.province?.message}
+          {...register("province")}
+        />
 
         <PasswordField
           label="Password"
           autoComplete="new-password"
+          placeholder="Min. 10 characters"
           hint="At least 10 characters with a letter and a number."
           showStrength
           strengthValue={passwordValue}
           error={errors.password?.message}
           {...register("password")}
         />
+
         <PasswordField
           label="Confirm password"
+          placeholder="Re-enter password"
           autoComplete="new-password"
           error={errors.confirmPassword?.message}
           {...register("confirmPassword")}
         />
 
-        <fieldset className="space-y-3 pt-1">
-          <legend className="mb-3 font-body text-sm font-semibold text-on-surface">Required</legend>
-          <AuthCheckbox label="I confirm I am 18 or older and the registered owner of the vehicle I plan to sell." error={errors.isAdult?.message} {...register("isAdult")} />
+        <fieldset className="space-y-3 pt-2">
+          <legend className="sr-only">Requirements</legend>
+          <AuthCheckbox
+            label="I confirm I am 18 or older and the registered owner of the vehicle I plan to sell."
+            error={errors.isAdult?.message}
+            {...register("isAdult")}
+          />
           <AuthCheckbox
             label={
               <>
                 I agree to the{" "}
-                <Link href="/legal/terms" className="font-semibold text-primary underline underline-offset-2" target="_blank">
+                <Link href="/legal/terms" className="font-semibold text-[#008C87] underline underline-offset-2" target="_blank">
                   Terms
                 </Link>{" "}
-                and consent to the collection and use of my information as described in the{" "}
-                <Link href="/legal/privacy" className="font-semibold text-primary underline underline-offset-2" target="_blank">
+                and consent to the{" "}
+                <Link href="/legal/privacy" className="font-semibold text-[#008C87] underline underline-offset-2" target="_blank">
                   Privacy Policy
                 </Link>
                 .
@@ -215,10 +229,12 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
           />
         </fieldset>
 
-        <fieldset className="rounded-md border border-border-card bg-surface-container-low p-4">
-          <legend className="px-1 font-body text-xs font-semibold uppercase tracking-wider text-on-surface-variant/80">Optional</legend>
+        <fieldset className="rounded-lg border border-gray-200 bg-gray-50/60 p-3.5">
+          <legend className="px-1 font-body text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+            Optional
+          </legend>
           <AuthCheckbox
-            label="Send me market updates and selling tips by email. You can unsubscribe at any time."
+            label="Send me market auction updates and selling tips by email. You can unsubscribe anytime."
             {...register("marketingOptIn")}
           />
         </fieldset>

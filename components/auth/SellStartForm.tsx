@@ -16,7 +16,6 @@ import { useVinDecode } from "@/hooks/useVinDecode";
 import { IS_MOCK_API } from "@/lib/api-client";
 import { getErrorMessage } from "@/lib/api-errors";
 import { normalizePostalCode } from "@/lib/canada";
-import { MOCK_DEMO_VINS } from "@/lib/mock/seed";
 import {
   vinDecodeFormSchema,
   type VinDecodeFormInput,
@@ -72,7 +71,7 @@ export function SellStartForm({ initialVin, initialPostalCode }: Props) {
   const signInFooter = (
     <>
       Already have an account?{" "}
-      <Link href="/login" className="font-semibold text-primary hover:underline underline-offset-4">
+      <Link href="/login" className="font-semibold text-[#008C87] hover:underline underline-offset-4">
         Sign in
       </Link>
     </>
@@ -151,26 +150,10 @@ export function SellStartForm({ initialVin, initialPostalCode }: Props) {
           Decode my vehicle <ArrowRight className="w-4 h-4" aria-hidden />
         </AuthButton>
 
-        {IS_MOCK_API && (
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-body text-xs text-on-surface-variant/80">Try a demo VIN:</span>
-            {MOCK_DEMO_VINS.map((demo) => (
-              <button
-                key={demo.vin}
-                type="button"
-                onClick={() => setValue("vin", demo.vin, { shouldValidate: true })}
-                className="rounded-md border border-border-card bg-surface-container-lowest px-2 py-1 font-mono text-[11px] text-on-surface-variant hover:border-primary hover:text-primary transition-colors cursor-pointer"
-              >
-                {demo.label}
-              </button>
-            ))}
-          </div>
-        )}
-
         <button
           type="button"
           onClick={() => continueToAccount(null)}
-          className="w-full text-center font-body text-sm font-semibold text-primary hover:text-primary-hover hover:underline underline-offset-4 transition-colors cursor-pointer"
+          className="w-full text-center font-body text-sm font-semibold text-[#008C87] hover:underline underline-offset-4 transition-colors cursor-pointer"
         >
           Don&apos;t have your VIN handy? Create your account first →
         </button>

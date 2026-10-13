@@ -8,7 +8,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   loadingText?: string;
 }
 
-// Onboarding CTAs: solid royal blue primary; white outlined secondary (social sign-in, back).
+// Onboarding CTAs: solid Nordic Pine Teal (#008C87) primary; clean white outlined secondary.
 export function AuthButton({
   variant = "primary",
   isLoading = false,
@@ -23,9 +23,11 @@ export function AuthButton({
       disabled={disabled || isLoading}
       aria-busy={isLoading || undefined}
       className={cn(
-        "w-full inline-flex items-center justify-center gap-2 rounded-sm px-5 py-3.5 font-body text-[15px] font-semibold transition-colors active:scale-[0.99] cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-        variant === "primary" && "bg-primary text-white hover:bg-primary-hover shadow-sm",
-        variant === "secondary" && "bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container-low",
+        "w-full inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-body text-sm font-semibold transition-all duration-150 active:scale-[0.99] cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+        variant === "primary" &&
+          "bg-[#008C87] text-white hover:bg-[#00736F] focus-visible:ring-[#008C87] shadow-sm",
+        variant === "secondary" &&
+          "bg-white border border-[#E5E7EB] text-[#111827] hover:bg-[#F9FAFB] hover:border-[#D1D5DB] focus-visible:ring-gray-300 shadow-2xs",
         className
       )}
       {...props}

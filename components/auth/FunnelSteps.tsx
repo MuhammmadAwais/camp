@@ -29,20 +29,20 @@ export function FunnelSteps({ current }: Props) {
               <span className="flex items-center gap-2">
                 <span
                   className={cn(
-                    "w-7 h-7 rounded-full flex items-center justify-center font-body text-xs font-bold shrink-0",
-                    isCurrent && "bg-primary text-white",
-                    isDone && "bg-success/10 text-success ring-1 ring-success/30",
-                    !isCurrent && !isDone && "bg-surface-container text-outline"
+                    "w-6 h-6 rounded-full flex items-center justify-center font-body text-xs font-bold shrink-0 transition-colors",
+                    isCurrent && "bg-[#008C87] text-white",
+                    isDone && "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300",
+                    !isCurrent && !isDone && "bg-gray-100 text-gray-400"
                   )}
                 >
-                  {isDone ? <Check className="w-3.5 h-3.5" strokeWidth={3} aria-hidden /> : index + 1}
+                  {isDone ? <Check className="w-3 h-3" strokeWidth={3} aria-hidden /> : index + 1}
                 </span>
                 <span
                   className={cn(
-                    "font-body text-sm whitespace-nowrap",
-                    isCurrent ? "font-semibold text-on-surface" : "font-medium",
-                    isDone && "text-on-surface-variant",
-                    !isCurrent && !isDone && "text-outline",
+                    "font-body text-xs sm:text-sm whitespace-nowrap",
+                    isCurrent ? "font-semibold text-gray-900" : "font-medium",
+                    isDone && "text-gray-600",
+                    !isCurrent && !isDone && "text-gray-400",
                     !isCurrent && "hidden sm:inline"
                   )}
                 >
@@ -50,7 +50,7 @@ export function FunnelSteps({ current }: Props) {
                 </span>
                 <span className="sr-only">{isDone ? "(completed)" : isCurrent ? "(current step)" : "(not started)"}</span>
               </span>
-              {index < STEPS.length - 1 && <ChevronRight className="w-4 h-4 text-outline shrink-0" aria-hidden />}
+              {index < STEPS.length - 1 && <ChevronRight className="w-3.5 h-3.5 text-gray-300 shrink-0" aria-hidden />}
             </li>
           );
         })}

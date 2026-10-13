@@ -597,30 +597,28 @@ Last updated: 2026-10-13
 
 ---
 
-### Auth form primitives — `AuthField`, `PasswordField`, `AuthSelect`, `AuthCheckbox`, `AuthButton`, `FormAlert`, `MockModeHint`
+### Auth Split Suite — `AuthShell`, `AuthVisualPanel`, `AuthCard`, `AuthField`, `PasswordField`, `AuthSelect`, `AuthCheckbox`, `AuthButton`
 
 File: `components/auth/*.tsx`  
-Last updated: 2026-10-10 (light theme)  
-Mode: Seller onboarding — light Autumn Editorial
+Last updated: 2026-10-13  
+Mode: Asymmetric Editorial Split (Solara & Truet Reference)
 
 | Property         | Class / CSS Rule |
 | ---------------- | ---------------- |
-| Background       | Inputs `bg-surface-container-lowest` (`authInputClasses`); checkbox `bg-surface-container-lowest` → `peer-checked:bg-primary` |
-| Border           | `border-outline-variant`; focus `border-primary ring-2 ring-primary/25`; invalid `aria-[invalid=true]:border-error` |
-| Border radius    | Inputs/buttons `rounded-sm` (8px); checkbox `rounded-xs` |
-| Text — primary   | Label `font-body text-sm font-semibold text-on-surface`; value `text-[15px] text-on-surface` |
-| Text — secondary | Hint `text-xs text-on-surface-variant/80`; error `<p role="alert"> text-xs font-medium text-error` |
-| Spacing          | Field stack `space-y-1.5`; forms `space-y-4` |
-| Hover state      | Primary `bg-primary hover:bg-primary-hover text-white`; secondary `bg-surface-container-lowest border-outline-variant hover:bg-surface-container-low` |
-| Shadow           | Primary CTA `shadow-sm` |
-| Accent usage     | `FormAlert` uses a left-border callout: info `border-primary bg-primary/10`, success `border-success bg-success/10`, error `border-error bg-error-container/50` |
+| Layout           | Split 12-col grid: Left 5-col Form Canvas (`bg-white`), Right 7-col Photography (`sticky top-0 h-screen`) |
+| Right Banner Radius | Signature bottom-left curve: `rounded-bl-[80px] xl:rounded-bl-[100px] overflow-hidden` |
+| Visual Assets    | `/auth/deal-making.jfif` (Sign In / Recovery), `/auth/keys-giving.jpg` (Registration / Sell / Verify) |
+| Visual Overlay   | Multi-stop dark gradient: `bg-gradient-to-t from-black/95 via-black/60 to-black/30` |
+| Input Fields     | Stacked single-row: `w-full rounded-lg border border-[#E5E7EB] bg-white px-3.5 py-2.5 font-body text-sm text-[#111827] focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87]` |
+| Primary Action   | Solid Nordic Pine Teal: `bg-[#008C87] hover:bg-[#00736F] text-white font-semibold py-3 rounded-lg shadow-sm active:scale-[0.99]` (Zero diffuse glows) |
+| Secondary Action | Crisp neutral: `bg-white border border-[#E5E7EB] text-[#111827] hover:bg-[#F9FAFB] py-3 rounded-lg` |
+| Form Card        | Flat, unbordered canvas: `w-full max-w-[420px] mx-auto` (No heavy card container borders) |
+| Header Lockup    | Left `< Back to website` link + Proportional AutoNexa emblem (`w-7 h-[18px]`) with `Auto<span className="text-[#008C87]">Nexa</span>` |
 
 **Pattern notes:**
-- All inputs are `forwardRef` and spread `register()` from React Hook Form, with errors linked via `aria-describedby`.
-- `PasswordField` adds show/hide and an optional strength meter (error → secondary → emerald).
-- `AuthButton` props: `variant: "primary" | "secondary"`, `isLoading`, `loadingText`.
-- `MockModeHint` renders only while `IS_MOCK_API` and is styled as a dashed amber dev note.
-- Mono fields (VIN) reset the placeholder to body font: `placeholder:normal-case placeholder:tracking-normal placeholder:font-body`.
+- **Zero Two-Input Rows:** First name, last name, postal code, and province are each rendered on their own full-width stacked row.
+- **Seeded Demo Accounts Stripped:** All hardcoded demo fill buttons and mock hints are removed from the client interface.
+- **Interactive Checkbox:** "Keep me logged in" with custom `#008C87` check indicator.
 
 ---
 

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
+import { ArrowRight } from "lucide-react";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { FormAlert } from "@/components/auth/FormAlert";
 import { PasswordField } from "@/components/auth/PasswordField";
@@ -34,9 +35,9 @@ export function ResetPasswordForm({ token }: Props) {
   if (!token) {
     return (
       <FormAlert tone="error">
-        This reset link is incomplete.{" "}
+        This reset link is incomplete or expired.{" "}
         <Link href="/forgot-password" className="font-semibold underline">
-          Request a new one
+          Request a new link
         </Link>
         .
       </FormAlert>
@@ -59,6 +60,7 @@ export function ResetPasswordForm({ token }: Props) {
       <PasswordField
         label="New password"
         autoComplete="new-password"
+        placeholder="Min. 10 characters"
         hint="At least 10 characters with a letter and a number."
         showStrength
         strengthValue={passwordValue}
@@ -67,6 +69,7 @@ export function ResetPasswordForm({ token }: Props) {
       />
       <PasswordField
         label="Confirm new password"
+        placeholder="Re-enter new password"
         autoComplete="new-password"
         error={errors.confirmPassword?.message}
         {...register("confirmPassword")}
@@ -85,7 +88,7 @@ export function ResetPasswordForm({ token }: Props) {
         </FormAlert>
       )}
       <AuthButton type="submit" isLoading={isSubmitting} loadingText="Updating password…">
-        Update password
+        Update password <ArrowRight className="w-4 h-4" aria-hidden />
       </AuthButton>
     </form>
   );

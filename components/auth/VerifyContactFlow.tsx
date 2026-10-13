@@ -9,13 +9,11 @@ import { Controller, useForm } from "react-hook-form";
 import { Loader2, Mail, MessageSquareText } from "lucide-react";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { FormAlert } from "@/components/auth/FormAlert";
-import { MockModeHint } from "@/components/auth/MockModeHint";
 import { OtpInput } from "@/components/auth/OtpInput";
 import { useApplySession } from "@/hooks/useSession";
 import { usePendingVerification, useResendCode, useVerifyContact } from "@/hooks/useAuthMutations";
 import { applyFieldErrors, getErrorMessage } from "@/lib/api-errors";
 import { getPostAuthRoute } from "@/lib/auth-routing";
-import { MOCK_OTP_CODE } from "@/lib/mock/seed";
 import { authKeys } from "@/lib/query-keys";
 import { otpFormSchema, type OtpFormInput } from "@/lib/schemas/auth-schema";
 import type { PendingVerification, VerificationChannel } from "@/lib/types/auth";
@@ -167,10 +165,6 @@ function OtpStep({ channel, verification }: OtpStepProps) {
 
       {resent && <FormAlert tone="success">A new code is on its way.</FormAlert>}
 
-      <MockModeHint>
-        no {channel === "email" ? "email" : "SMS"} is sent — enter <span className="font-mono font-semibold">{MOCK_OTP_CODE}</span>.
-      </MockModeHint>
-
       <AuthButton type="submit" isLoading={verify.isPending} loadingText="Verifying…">
         {channel === "email" ? "Verify email" : "Verify mobile & continue"}
       </AuthButton>
@@ -184,7 +178,7 @@ function OtpStep({ channel, verification }: OtpStepProps) {
             type="button"
             onClick={handleResend}
             disabled={resend.isPending}
-            className="font-semibold text-primary hover:underline underline-offset-4 cursor-pointer disabled:opacity-50"
+            className="font-semibold text-[#008C87] hover:underline underline-offset-4 cursor-pointer disabled:opacity-50"
           >
             {resend.isPending ? "Sending…" : "Resend code"}
           </button>

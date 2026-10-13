@@ -13,7 +13,7 @@ export const AuthCheckbox = React.forwardRef<HTMLInputElement, Props>(({ label, 
 
   return (
     <div>
-      <label htmlFor={inputId} className="flex items-start gap-3 cursor-pointer group">
+      <label htmlFor={inputId} className="flex items-start gap-3 cursor-pointer group select-none">
         <span className="relative mt-0.5 shrink-0">
           <input
             ref={ref}
@@ -24,13 +24,13 @@ export const AuthCheckbox = React.forwardRef<HTMLInputElement, Props>(({ label, 
             className="peer sr-only"
             {...props}
           />
-          <span className="block w-5 h-5 rounded-xs border border-outline-variant bg-surface-container-lowest transition-colors group-hover:border-outline peer-checked:bg-primary peer-checked:border-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary/40 peer-focus-visible:ring-offset-1 peer-aria-[invalid=true]:border-error" />
-          <Check className="absolute inset-0 m-auto w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" strokeWidth={3} aria-hidden />
+          <span className="block w-4.5 h-4.5 rounded border border-[#D1D5DB] bg-white transition-colors group-hover:border-[#9CA3AF] peer-checked:bg-[#008C87] peer-checked:border-[#008C87] peer-focus-visible:ring-2 peer-focus-visible:ring-[#008C87]/40 peer-focus-visible:ring-offset-1 peer-aria-[invalid=true]:border-[#BA1A1A]" />
+          <Check className="absolute inset-0 m-auto w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" strokeWidth={3} aria-hidden />
         </span>
-        <span className="font-body text-sm text-on-surface-variant leading-relaxed">{label}</span>
+        <span className="font-body text-xs sm:text-sm text-gray-600 leading-relaxed">{label}</span>
       </label>
       {error && (
-        <p id={errorId} role="alert" className="mt-1 ml-8 font-body text-xs font-medium text-error">
+        <p id={errorId} role="alert" className="mt-1 ml-7 font-body text-xs font-medium text-[#BA1A1A]">
           {error}
         </p>
       )}

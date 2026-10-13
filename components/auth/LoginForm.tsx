@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,13 +11,11 @@ import { AuthButton } from "@/components/auth/AuthButton";
 import { AuthField } from "@/components/auth/AuthField";
 import { FormAlert } from "@/components/auth/FormAlert";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
-import { MockModeHint } from "@/components/auth/MockModeHint";
 import { PasswordField } from "@/components/auth/PasswordField";
 import { useLogin } from "@/hooks/useAuthMutations";
 import { useApplySession } from "@/hooks/useSession";
 import { applyFieldErrors, getApiFailure, getErrorMessage } from "@/lib/api-errors";
 import { getPostAuthRoute } from "@/lib/auth-routing";
-import { MOCK_DEMO_SELLER } from "@/lib/mock/seed";
 import { authKeys } from "@/lib/query-keys";
 import { loginSchema, type LoginInput, type LoginPayload } from "@/lib/schemas/auth-schema";
 import type { PendingVerification } from "@/lib/types/auth";
@@ -40,12 +39,12 @@ export function LoginForm({ next, notice }: Props) {
   const queryClient = useQueryClient();
   const login = useLogin();
   const applySession = useApplySession();
+  const [rememberMe, setRememberMe] = useState(true);
 
   const {
     register,
     handleSubmit,
     setError,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput, unknown, LoginPayload>({
     resolver: zodResolver(loginSchema),
@@ -77,12 +76,12 @@ export function LoginForm({ next, notice }: Props) {
     <div className="space-y-5">
       {noticeEntry && <FormAlert tone={noticeEntry.tone}>{noticeEntry.text}</FormAlert>}
 
-      <GoogleAuthButton label="Continue with Google" />
+      <GoogleAuthButton label="Sign in with Google" />
 
-      <div className="flex items-center gap-3" aria-hidden>
-        <span className="h-px flex-1 bg-border-card" />
-        <span className="font-body text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant/80">or</span>
-        <span className="h-px flex-1 bg-border-card" />
+      <div className="flex items-center gap-3 my-4" aria-hidden>
+        <span className="h-px flex-1 bg-gray-200" />
+        <span className="font-body text-xs font-semibold uppercase tracking-wider text-gray-400">or</span>
+        <span className="h-px flex-1 bg-gray-200" />
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
@@ -96,10 +95,29 @@ export function LoginForm({ next, notice }: Props) {
           error={errors.email?.message}
           {...register("email")}
         />
+
         <div className="space-y-1.5">
-          <PasswordField label="Password" autoComplete="current-password" error={errors.password?.message} {...register("password")} />
-          <div className="flex justify-end">
-            <Link href="/forgot-password" className="font-body text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
+          <PasswordField
+            label="Password"
+            autoComplete="current-password"
+            placeholder="Min. 10 characters"
+            error={errors.password?.message}
+            {...register("password")}
+          />
+          <div className="flex items-center justify-between pt-1">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 text-[#008C87] focus:ring-[#008C87]"
+              />
+              <span className="font-body text-xs text-gray-600">Keep me logged in</span>
+            </label>
+            <Link
+              href="/forgot-password"
+              className="font-body text-xs font-semibold text-[#008C87] hover:underline underline-offset-4 transition-colors"
+            >
               Forgot password?
             </Link>
           </div>
@@ -110,20 +128,6 @@ export function LoginForm({ next, notice }: Props) {
         <AuthButton type="submit" isLoading={isSubmitting} loadingText="Signing in…">
           Sign in <ArrowRight className="w-4 h-4" aria-hidden />
         </AuthButton>
-
-        <MockModeHint>
-          use the seeded demo seller from <span className="font-mono">lib/mock/seed.ts</span>, or register a new account.{" "}
-          <button
-            type="button"
-            className="font-semibold underline cursor-pointer"
-            onClick={() => {
-              setValue("email", MOCK_DEMO_SELLER.email);
-              setValue("password", MOCK_DEMO_SELLER.password);
-            }}
-          >
-            Fill demo account
-          </button>
-        </MockModeHint>
       </form>
     </div>
   );

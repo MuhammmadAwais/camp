@@ -4,13 +4,17 @@ import { createSession, fail, mockApiDisabled, ok, parseJson, simulateLatency, w
 import { verifyPayloadSchema } from "@/lib/schemas/auth-schema";
 import type { VerifyContactResponse } from "@/lib/types/auth";
 
-export async function POST(request: NextRequest, ctx: RouteContext<"/api/auth/verify/[channel]">) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ channel: string }> }
+) {
   const disabled = mockApiDisabled();
   if (disabled) return disabled;
   await simulateLatency();
 
-  const { channel } = await ctx.params;
+  const { channel } = await params;
   if (channel !== "email" && channel !== "phone") return fail(404, "NOT_FOUND", "Unknown verification channel");
+  const validChannel: "email" | "phone" = channel;
 
   const parsed = await parseJson(request, verifyPayloadSchema);
   if ("response" in parsed) return parsed.response;
@@ -22,19 +26,19 @@ export async function POST(request: NextRequest, ctx: RouteContext<"/api/auth/ve
   }
   const { registration, user } = found;
 
-  if (registration.attempts[channel] >= OTP_MAX_ATTEMPTS) {
+  if (registration.attempts[validChannel] >= OTP_MAX_ATTEMPTS) {
     return fail(429, "OTP_LOCKED", "Too many incorrect attempts. Request a new code.");
   }
 
   if (!isValidOtp(code)) {
-    registration.attempts[channel] += 1;
-    const remaining = OTP_MAX_ATTEMPTS - registration.attempts[channel];
+    registration.attempts[validChannel] += 1;
+    const remaining = OTP_MAX_ATTEMPTS - registration.attempts[validChannel];
     return fail(422, "OTP_INVALID", "That code isn't right", {
       code: remaining > 0 ? `That code isn't right. ${remaining} attempt${remaining === 1 ? "" : "s"} left.` : "Too many incorrect attempts. Request a new code.",
     });
   }
 
-  if (channel === "email") user.emailVerified = true;
+  if (validChannel === "email") user.emailVerified = true;
   else user.phoneVerified = true;
 
   const verification = toPendingVerification(registrationId, user);

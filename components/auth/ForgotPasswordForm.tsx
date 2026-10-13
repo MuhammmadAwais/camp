@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Mail } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { AuthField } from "@/components/auth/AuthField";
 import { FormAlert } from "@/components/auth/FormAlert";
-import { MockModeHint } from "@/components/auth/MockModeHint";
 import { useForgotPassword } from "@/hooks/useAuthMutations";
 import { applyFieldErrors, getErrorMessage } from "@/lib/api-errors";
 import { forgotPasswordSchema, type ForgotPasswordInput } from "@/lib/schemas/auth-schema";
@@ -38,18 +37,18 @@ export function ForgotPasswordForm() {
     return (
       <div className="space-y-4">
         <FormAlert tone="success">
-          If an account exists for <strong className="font-semibold">{getValues("email")}</strong>, we&apos;ve emailed a link to
+          If an account exists for <strong className="font-semibold">{getValues("email")}</strong>, we have emailed a secure link to
           reset your password. It expires in 30 minutes.
         </FormAlert>
-        {forgot.data.devResetPath && (
-          <MockModeHint>
-            no email is sent.{" "}
+        {forgot.data.devResetPath && process.env.NODE_ENV !== "production" && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+            Dev link:{" "}
             <Link href={forgot.data.devResetPath} className="font-semibold underline">
-              Open the reset link
+              Open password reset link
             </Link>
-          </MockModeHint>
+          </div>
         )}
-        <Link href="/login" className="block text-center font-body text-sm font-semibold text-primary hover:underline underline-offset-4">
+        <Link href="/login" className="block text-center font-body text-sm font-semibold text-[#008C87] hover:underline underline-offset-4">
           Back to sign in
         </Link>
       </div>
@@ -59,7 +58,7 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
       <AuthField
-        label="Email"
+        label="Email address"
         type="email"
         autoComplete="email"
         inputMode="email"
@@ -70,7 +69,7 @@ export function ForgotPasswordForm() {
       />
       {forgot.isError && !errors.email && <FormAlert tone="error">{getErrorMessage(forgot.error)}</FormAlert>}
       <AuthButton type="submit" isLoading={isSubmitting} loadingText="Sending link…">
-        Send reset link
+        Send reset link <ArrowRight className="w-4 h-4" aria-hidden />
       </AuthButton>
     </form>
   );

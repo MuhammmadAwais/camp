@@ -12,13 +12,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
   const params = await searchParams;
   return (
     <AuthCard
-      title="Welcome back"
-      description="Sign in to track your auction, review dealer offers and manage your listing."
+      title="Sign In"
+      description="Enter your email and password to access your AutoNexa account."
       footer={
         <>
-          New to AutoNexa?{" "}
-          <Link href="/sell" className="font-semibold text-primary hover:underline underline-offset-4">
-            Get dealer offers
+          Not registered yet?{" "}
+          <Link href="/register" className="font-semibold text-[#008C87] hover:underline underline-offset-4">
+            Create an Account
           </Link>
         </>
       }
