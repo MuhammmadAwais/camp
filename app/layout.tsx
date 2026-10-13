@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import { AppShell } from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
   title: "AutoNexa | Canada's 24h Wholesale Vehicle Exchange",
@@ -23,7 +24,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <AuthProvider>
-          {children}
+          <AppShell>
+            {children}
+          </AppShell>
         </AuthProvider>
       </body>
     </html>

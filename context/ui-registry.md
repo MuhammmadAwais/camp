@@ -570,3 +570,24 @@ Last updated: 2026-10-13
 | Progressive Flow | Step 1 (Credentials & Role) &rarr; Step 2 (Phone & Postal Code / Dealership Verification), maintaining compact card height |
 | Frosted Card     | Translucent frosted glass `bg-[#131215]/65 backdrop-blur-2xl border border-white/20 rounded-3xl p-7 sm:p-9 max-w-[440px] w-full shadow-2xl` |
 | Social Login     | Google only (`Continue with Google`), clean matte border `border-white/15` |
+
+---
+
+### `PortalAppShell & Zentris-Replica Sidebar System`
+
+File: `components/layout/AppShell.tsx` / `components/layout/Sidebar.tsx` / `components/layout/SidebarFlyout.tsx` / `components/layout/UserProfileCard.tsx` / `lib/store/useSidebarStore.ts`  
+Last updated: 2026-10-13  
+
+| Property         | Class / Specification |
+| ---------------- | --------------------- |
+| Shell Background | Deep dark obsidian canvas `bg-[#080C14]` with subtle Nordic Pine Teal (`rgba(0,140,135,0.08)`) and Honey Amber (`rgba(229,147,68,0.04)`) radial lighting substrate |
+| Navbar Policy    | **Zero Top Navbar** — maximum screen real-estate dedicated to auction telemetry and inventory grids without distraction |
+| Desktop Sidebar  | `fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#131215]/95 backdrop-blur-2xl border-r border-white/10 transition-all duration-300 ease-in-out` |
+| Rail Dimensions  | Expanded: `w-[260px]` / Collapsed icon rail: `w-[72px]` |
+| Viewport Padding | Dynamic left padding on main content wrapper: `isCollapsed ? "lg:pl-[72px]" : "lg:pl-[260px]"` |
+| Brand Lockup     | Expanded: `/logo-mark-tight.webp` (`w-8 h-[18px]`) beside `Auto<span className="text-[#E59344]">Nexa</span>` (`text-lg font-bold`) / Collapsed: centered emblem (`w-9 h-5`) |
+| Toggle Controls  | Desktop: Integrated header button (`SidebarSimple`) + border notch button (`CaretRight`); Mobile: Floating glass trigger (`lg:hidden`) |
+| Nav Items Active | `bg-[#008C87]/15 text-[#008C87] border border-[#008C87]/30 shadow-xs` with active glow indicator bead `size-1 rounded-full bg-[#008C87] shadow-[0_0_6px_#008C87]` |
+| Expanded Tree    | Branch guide lines `border-l border-white/[0.08]` with horizontal connector notch `w-2.5 h-[1px] bg-white/[0.08]` |
+| Collapsed Flyout | Hover popover `absolute left-full top-0 ml-2.5 min-w-[210px] rounded-2xl bg-[#131215]/95 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.9)]` |
+| Profile Menu     | Bottom user avatar trigger opening popover with Profile Settings, Portal Mode Switcher (`SELLER` vs `DEALER_ADMIN`), and Sign Out |
