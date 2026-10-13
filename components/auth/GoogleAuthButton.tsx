@@ -7,6 +7,7 @@ import { IS_MOCK_API } from "@/lib/api-client";
 
 interface Props {
   label: string;
+  onClick?: () => void;
 }
 
 function GoogleMark() {
@@ -22,10 +23,14 @@ function GoogleMark() {
 }
 
 // FR-EU-01 Google OAuth. The real flow redirects to the Express OAuth endpoint; it needs the backend.
-export function GoogleAuthButton({ label }: Props) {
+export function GoogleAuthButton({ label, onClick }: Props) {
   const [showNotice, setShowNotice] = useState(false);
 
   const handleClick = () => {
+    if (onClick) {
+      onClick();
+      return;
+    }
     if (IS_MOCK_API) {
       setShowNotice(true);
       return;
