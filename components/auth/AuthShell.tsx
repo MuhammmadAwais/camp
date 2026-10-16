@@ -36,12 +36,6 @@ export function AuthShell({ children }: Props) {
           </Link>
         </header>
 
-        {/* Mobile-only compact visual banner (< 1024px) */}
-        <div className="lg:hidden my-4 sm:my-6">
-          <div className="h-32 sm:h-40 rounded-2xl overflow-hidden shadow-xs border border-gray-100">
-            <AuthVisualPanel variant="compact" />
-          </div>
-        </div>
 
         {/* Main Form Center Area */}
         <main className="flex-1 flex flex-col justify-center py-4 sm:py-6 lg:py-8 w-full max-w-[420px] mx-auto">

@@ -746,7 +746,7 @@ Mode: Dual-layout Responsive Architecture (Mobile-First Touch Canvas < 1024px &r
 
 | Property         | Class / CSS Rule |
 | ---------------- | ---------------- |
-| Layout Structure | Mobile (`< 1024px`): Single-column clean white canvas with top brand bar and compact visual hero banner (`h-32 sm:h-40 rounded-2xl overflow-hidden`); Desktop (`≥ 1024px`): 12-col split grid (`lg:grid-cols-12` — 5-col form canvas / 7-col sticky photographic panel) |
+| Layout Structure | Mobile (`< 1024px`): Clean, direct single-column white form canvas with top navigation header (zero banner image clutter above the fold); Desktop (`≥ 1024px`): 12-col split grid (`lg:grid-cols-12` — 5-col form canvas / 7-col sticky photographic panel) |
 | Mobile Top Bar   | `< Back to website` link + mobile brand lockup (`lg:hidden flex items-center gap-2` with official emblem) |
 | Left Canvas      | `bg-white px-4 py-5 sm:px-8 sm:py-8 lg:px-12 lg:py-10 max-w-[420px] w-full mx-auto` |
 | Touch Ergonomics | All buttons & role pills enforced with `min-h-[44px]` / `min-h-[46px]` touch boundaries and `active:scale-[0.99]` feedback |
