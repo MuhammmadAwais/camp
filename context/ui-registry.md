@@ -770,9 +770,49 @@ Mode: Autumn Editorial responsive execution (from ultra-compact 320px mobile vie
 | What Is AutoNexa | Fluid stats row (`grid-cols-3 gap-2.5 sm:gap-6` with `text-2xl sm:text-3xl lg:text-4xl`) preventing text collision on narrow viewports; showcase cards with fluid glassmorphic banner padding (`p-4 sm:p-6`) and `min-h-[44px]` action buttons |
 | Discover Section | Category tabs with `touch-pan-x overscroll-x-contain pb-1`, card price row with wrap safety (`flex-wrap items-baseline gap-1.5 sm:gap-2.5 max-w-[calc(100%-72px)]`), and mobile-fluid conversion CTA (`w-full sm:w-auto min-h-[48px]`) |
 | How It Works | Responsive illustration cards (`h-52 sm:h-64 rounded-2xl`), hidden desktop flow lines (`hidden lg:block`), and responsive bottom appraisal trigger (`w-full sm:w-auto min-h-[48px]`) |
-| Comparison Cards | Adaptive card padding (`p-5 sm:p-8 lg:p-10`), stacked cards on `< 1024px`, and responsive bottom row with `flex flex-col sm:flex-row items-stretch sm:items-center` and `w-full sm:w-auto min-h-[44px]` CTA |
-| Comparison Matrix | Desktop 12-column table with continuous highlighted AutoNexa card &rarr; Mobile stacked card grid (`md:hidden space-y-4 pt-4`) with prominent AutoNexa highlight banner, comparison data rows, and full-width `min-h-[48px]` CTA |
+| Comparison Cards | Desktop 50/50 comparison split bar (`hidden lg:grid`) &rarr; Mobile interactive segmented pill switcher (`lg:hidden flex items-center p-1 rounded-xl bg-surface-container border border-border-card min-h-[44px]`) switching between `AutoNexa Platform` and `Traditional Approach`, with in-card context identity badges (`Traditional Dealership: Trade-In Friction` / `AutoNexa Platform: 1,400+ Dealer Bids`), in-card cross-navigation, and `min-h-[48px]` appraisal action trigger |
+| Comparison Matrix | Desktop 12-column table with continuous highlighted AutoNexa card &rarr; Mobile consolidated comparative architecture (`md:hidden`): single top AutoNexa advantage banner (official emblem, "AutoNexa Platform", `+$2,850 CAD` net equity badge), unified comparative card container (`rounded-2xl bg-surface-container-low border border-border-card divide-y divide-border-card/60`), 3-way comparative telemetry rows (`AutoNexa [col-span-6]` high-contrast card vs `Trade-In [col-span-3]` vs `Classifieds [col-span-3]`), completely eliminating repetitive 10-card bloat and duplicate logos, completed with full-width `min-h-[48px]` CTA |
 | Marketing Footer | Scaling headline (`text-4xl sm:text-6xl md:text-8xl lg:text-[104px]`), single-column mobile wrapping for directory links (`grid-cols-1 sm:grid-cols-2 md:grid-cols-4`), and dynamically self-resizing `AutoNexaPhysicsCanvas` |
+
+### `ComparisonCards` (Interactive Dual-Perspective Comparison Suite)
+
+File: `components/marketing/ComparisonCards.tsx`  
+Last updated: 2026-10-16  
+Mode: Autumn Editorial responsive execution (Segmented mobile pill switcher < 1024px &rarr; 50/50 split duel ≥ 1024px)
+
+| Property         | Class / Implementation Pattern |
+| ---------------- | ------------------------------ |
+| Container        | `max-w-6xl mx-auto space-y-6 sm:space-y-8` on warm oat canvas (`bg-surface`) |
+| Top Split Bar    | Desktop only (`hidden lg:grid grid-cols-2 rounded-2xl bg-surface-container-low border border-border-card overflow-hidden divide-x divide-border-card/60 p-1 sm:p-1.5`) |
+| Mobile Switcher  | `lg:hidden flex items-center p-1 rounded-xl bg-surface-container border border-border-card` with `min-h-[44px]` tap targets and smooth active pill states |
+| Traditional Card | `rounded-3xl border border-border-card/80 bg-surface-container-low p-6 sm:p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden transition-all duration-300` with warning accent badge (`bg-error/10 text-error`) |
+| AutoNexa Card    | `rounded-3xl border-2 border-primary/30 bg-surface-container-lowest p-6 sm:p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden shadow-[0_20px_50px_rgba(140,56,62,0.08)]` with official emblem and honey amber highlight badge (`bg-secondary/20 text-on-surface`) |
+| Interactive CTA  | Card bottom action: `inline-flex items-center justify-center gap-2 px-6 py-3.5 min-h-[48px] rounded-xl bg-primary hover:bg-primary-hover text-white font-body text-sm font-bold shadow-xs transition-colors` |
+
+**Pattern notes:**
+Eliminated mobile header stacking where traditional and AutoNexa titles stacked detached from content. The segmented mobile switcher gives instant single-tap switching between platforms while maintaining full comparative context via contextual in-card identity badges and cross-navigation links.
+
+---
+
+### `ComparisonMatrix` (Consolidated 3-Way Comparative Audit)
+
+File: `components/marketing/ComparisonMatrix.tsx`  
+Last updated: 2026-10-16  
+Mode: Autumn Editorial responsive execution (Unified micro-strips < 768px &rarr; Continuous 12-col column audit ≥ 768px)
+
+| Property         | Class / Implementation Pattern |
+| ---------------- | ------------------------------ |
+| Container        | `max-w-5xl mx-auto px-2 sm:px-6` with cursor spotlight overlay on desktop |
+| Desktop Matrix   | 12-column grid (`grid-cols-12 gap-6 py-4.5 items-center`) with continuous full-height AutoNexa column card (`col-start-6 col-span-3 rounded-3xl bg-surface-container-lowest border-2 border-primary/25 shadow-[0_20px_50px_-12px_rgba(140,56,62,0.12)]`) |
+| Mobile Advantage Banner | `p-4 rounded-2xl bg-surface-container-lowest border-2 border-primary/30 shadow-xs flex items-center justify-between gap-3` with official logo emblem and `+$2,850 CAD` net equity badge |
+| Mobile Micro-Strips | `rounded-2xl bg-surface-container-low border border-border-card divide-y divide-border-card/60 overflow-hidden shadow-xs` with `p-3.5 space-y-2` row items |
+| 3-Way Mobile Grid | `grid grid-cols-12 gap-1.5 items-stretch`: AutoNexa (`col-span-6 bg-surface-container-lowest border border-primary/25 px-2.5 py-1.5`), Dealership Trade-In (`col-span-3 bg-surface-container/60 border border-border-card/40 text-center px-1.5 py-1.5`), and Classifieds (`col-span-3 bg-surface-container/60 border border-border-card/40 text-center px-1.5 py-1.5`) |
+| Action Button    | Full-width mobile trigger: `min-h-[48px] rounded-xl bg-primary hover:bg-primary-hover text-white font-body text-sm font-bold shadow-xs` |
+
+**Pattern notes:**
+Replaced 10 bloated mobile cards (which previously repeated the full AutoNexa logo and banner 10 times and generated ~1,200px of scrolling) with a consolidated comparative architecture: a single top advantage banner establishing authority, followed by a compact micro-strip card comparing all 10 criteria side-by-side with zero clutter.
+
+---
 
 ### Portal Shell & Wholesale Dashboard — Responsive Architecture
 

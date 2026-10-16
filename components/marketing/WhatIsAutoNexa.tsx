@@ -39,7 +39,7 @@ export function WhatIsAutoNexa() {
         "Get guaranteed wholesale offers from 1,400+ licensed dealers across Canada. 100% free for private sellers, zero lowballing, and zero dealership haggling.",
       image: "/illustrations/sell-your-car.webp",
       cta: "GET APPRAISAL",
-      href: "/sell",
+      href: "/login",
       cornerAccent: "primary", // Red
     },
   ];

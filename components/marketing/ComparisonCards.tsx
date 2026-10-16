@@ -11,6 +11,7 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = React.useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = React.useState(false);
+  const [mobileTab, setMobileTab] = React.useState<"autonexa" | "traditional">("autonexa");
 
   // Symmetrical 3D Tilt State for Card 1 (Traditional Approach):
   // Resting: pitch back 2°, yaw inward +3°
@@ -176,14 +177,45 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
         </div>
 
         {/* ========================================================================= */}
-        {/* Single Rectangular Card Bar Header (Split 50/50 with One BG on Each Side)  */}
+        {/* Desktop Split Header Bar (Hidden on Mobile)                               */}
         {/* ========================================================================= */}
-        <div data-reveal="fade-up" className="w-full rounded-2xl overflow-hidden border border-border-card shadow-xs grid grid-cols-1 lg:grid-cols-2 mb-8 lg:mb-10">
-          <div className="py-4 px-6 bg-surface-container text-center text-on-surface font-headline font-bold text-sm sm:text-base tracking-tight border-b lg:border-b-0 lg:border-r border-border-card/70 flex items-center justify-center">
+        <div data-reveal="fade-up" className="hidden lg:grid w-full rounded-2xl overflow-hidden border border-border-card shadow-xs grid-cols-2 mb-8 lg:mb-10">
+          <div className="py-4 px-6 bg-surface-container text-center text-on-surface font-headline font-bold text-base tracking-tight border-r border-border-card/70 flex items-center justify-center">
             Traditional Approach
           </div>
-          <div className="py-4 px-6 bg-primary text-white text-center font-headline font-bold text-sm sm:text-base tracking-tight flex items-center justify-center gap-2.5">
+          <div className="py-4 px-6 bg-primary text-white text-center font-headline font-bold text-base tracking-tight flex items-center justify-center gap-2.5">
             <span>AutoNexa Platform</span>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* Mobile Interactive Segmented Switcher (Visible < 1024px)                  */}
+        {/* ========================================================================= */}
+        <div className="lg:hidden flex items-center justify-center mb-6">
+          <div className="inline-flex p-1 rounded-2xl bg-surface-container border border-border-card shadow-xs w-full max-w-sm">
+            <button
+              type="button"
+              onClick={() => setMobileTab("autonexa")}
+              className={`flex-1 py-2.5 px-3 min-h-[44px] rounded-xl font-body text-xs sm:text-sm font-bold transition-all cursor-pointer text-center flex items-center justify-center gap-1.5 ${
+                mobileTab === "autonexa"
+                  ? "bg-primary text-white shadow-xs"
+                  : "text-on-surface-variant hover:text-on-surface"
+              }`}
+            >
+              <span>AutoNexa Platform</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab("traditional")}
+              className={`flex-1 py-2.5 px-3 min-h-[44px] rounded-xl font-body text-xs sm:text-sm font-bold transition-all cursor-pointer text-center ${
+                mobileTab === "traditional"
+                  ? "bg-surface-container-highest text-on-surface shadow-xs font-bold"
+                  : "text-on-surface-variant hover:text-on-surface"
+              }`}
+            >
+              Traditional Approach
+            </button>
           </div>
         </div>
 
@@ -211,7 +243,7 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
           {/* ======================================================================= */}
           {/* Column 1: Traditional Approach (Symmetrical 3D Inward Tilt)              */}
           {/* ======================================================================= */}
-          <div data-reveal="card" className="flex flex-col">
+          <div data-reveal="card" className={`flex-col ${mobileTab === "traditional" ? "flex" : "hidden lg:flex"}`}>
             <div
               onMouseMove={handleTraditionalMouseMove}
               onMouseLeave={handleTraditionalMouseLeave}
@@ -235,6 +267,14 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
               )}
 
               <div className="relative z-20">
+                {/* Header Badge */}
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 rounded-full bg-error/10 text-error border border-error/20 font-mono text-[10.5px] font-bold uppercase tracking-wider">
+                    Traditional Dealership
+                  </span>
+                  <span className="font-mono text-[10.5px] text-on-surface-variant/70">Trade-In Friction</span>
+                </div>
+
                 <span className="block font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant/75 mb-6">
                   CHALLENGES &amp; FRICTION
                 </span>
@@ -256,9 +296,21 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
                 </ul>
               </div>
 
-              <div className="relative z-20 mt-8 pt-6 border-t border-border-card/60 flex items-center justify-between text-xs font-mono text-on-surface-variant">
-                <span>Avg Timeline: 3–6 Weeks</span>
-                <span className="text-error font-semibold">Low Price Certainty</span>
+              <div>
+                <div className="relative z-20 mt-8 pt-6 border-t border-border-card/60 flex items-center justify-between text-xs font-mono text-on-surface-variant">
+                  <span>Avg Timeline: 3–6 Weeks</span>
+                  <span className="text-error font-semibold">Low Price Certainty</span>
+                </div>
+
+                <div className="lg:hidden mt-4 pt-3 border-t border-border-card/40 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setMobileTab("autonexa")}
+                    className="w-full py-2.5 text-xs font-body font-bold text-primary hover:text-primary-hover transition-colors cursor-pointer"
+                  >
+                    See how AutoNexa solves this &rarr;
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -266,7 +318,7 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
           {/* ======================================================================= */}
           {/* Column 2: AutoNexa Platform (Symmetrical 3D Inward Tilt)                 */}
           {/* ======================================================================= */}
-          <div data-reveal="card" className="flex flex-col">
+          <div data-reveal="card" className={`flex-col ${mobileTab === "autonexa" ? "flex" : "hidden lg:flex"}`}>
             <div
               onMouseMove={handleAutonexaMouseMove}
               onMouseLeave={handleAutonexaMouseLeave}
@@ -290,6 +342,16 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
               )}
 
               <div className="relative z-20">
+                {/* Header Badge */}
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 font-mono text-[10.5px] font-bold uppercase tracking-wider">
+                    AutoNexa Platform
+                  </span>
+                  <span className="inline-flex items-center gap-1 font-mono text-[10.5px] font-bold text-emerald-600">
+                    <CheckCircle weight="fill" className="w-3.5 h-3.5 text-success" /> 1,400+ Dealer Bids
+                  </span>
+                </div>
+
                 <span className="block font-mono text-[11px] font-bold uppercase tracking-widest text-primary mb-6">
                   OUR SOLUTION
                 </span>
@@ -311,16 +373,31 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
                 </ul>
               </div>
 
-              <div className="relative z-20 mt-8 pt-6 border-t border-border-card/60 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <div className="hidden sm:flex items-center gap-2" />
+              <div>
+                <div className="relative z-20 mt-8 pt-6 border-t border-border-card/60 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                  <div className="text-xs font-mono text-on-surface-variant flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-success" />
+                    <span>Timeline: 24h Payout</span>
+                  </div>
 
-                <a
-                  href="#valuation"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 min-h-[44px] rounded-full bg-primary hover:bg-primary-hover text-white font-body text-xs sm:text-sm font-bold tracking-wide transition-all duration-200 shadow-xs hover:scale-105 active:scale-95"
-                >
-                  <span>Get Instant Valuation</span>
-                  <ArrowRight weight="bold" className="w-3.5 h-3.5" />
-                </a>
+                  <a
+                    href="/login"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 min-h-[44px] rounded-full bg-primary hover:bg-primary-hover text-white font-body text-xs sm:text-sm font-bold tracking-wide transition-all duration-200 shadow-xs hover:scale-105 active:scale-95"
+                  >
+                    <span>Get Instant Valuation</span>
+                    <ArrowRight weight="bold" className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                <div className="lg:hidden mt-3 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setMobileTab("traditional")}
+                    className="text-xs font-body font-medium text-on-surface-variant hover:text-on-surface underline underline-offset-4 transition-colors cursor-pointer"
+                  >
+                    Compare with traditional dealership risks
+                  </button>
+                </div>
               </div>
             </div>
           </div>

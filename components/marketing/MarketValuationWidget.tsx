@@ -60,17 +60,9 @@ export function MarketValuationWidget() {
     { id: "luxury", label: "Luxury & Performance" },
   ];
 
-  // Enters the VIN-first seller funnel. A full VIN is decoded immediately on /sell;
-  // a make/model search lands on the same page with the VIN field ready to fill.
   const handleValuationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
-    const vin = sanitizeVinInput(query);
-    if (isValidVin(vin)) params.set("vin", vin);
-    const postal = normalizePostalCode(postalCode);
-    if (postal) params.set("postal", postal);
-    const search = params.toString();
-    router.push(search ? `/sell?${search}` : "/sell");
+    router.push("/login");
   };
 
   return (

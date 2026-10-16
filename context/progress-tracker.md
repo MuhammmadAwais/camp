@@ -7,10 +7,12 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Current Status
 
 **Phase:** 3 — Web App Foundation, Unified Auth Suite & Wholesale Portal Shell
-**Last completed:** Full-Stack Mobile-First Responsive Architecture & Living Registry Imprint:
-- **Phase 1 (Auth Suite):** Mobile-first clean canvas with top brand bar, compact visual banner, responsive 2-stage sub-stepping forms, and touch target enforcement (`min-h-[44px]`).
-- **Phase 2 (Marketing Landing):** Capsule navbar with responsive CTA text, backdrop dismissal, fluid Epilogue headline scaling, touch-pan-x category tabs, stacked comparison matrix cards on `< 768px`, and auto-resizing physics brand telemetry canvas.
-- **Phase 3 (Wholesale Portal & Dashboard):** Viewport top clearance (`pt-16 sm:pt-20 lg:pt-8`), dual-mode adaptive floating mobile menu button, full-width mobile navigation drawer with dedicated close button and Escape dismissal, and fluid count telemetry on seller dashboard.
+**Phase:** 3 — Web App Foundation, Unified Auth Suite & Wholesale Portal Shell
+**Last completed:** Comparison Suite Mobile Architectural Refactor & Imprint:
+- **`ComparisonCards.tsx`:** Desktop 50/50 comparison split bar (`hidden lg:grid`) &rarr; Mobile interactive segmented pill switcher (`lg:hidden min-h-[44px]`) switching between `AutoNexa Platform` and `Traditional Approach`, with in-card context identity badges, cross-navigation links, and `min-h-[48px]` appraisal action trigger.
+- **`ComparisonMatrix.tsx`:** Desktop 12-column table with continuous highlighted AutoNexa card &rarr; Mobile consolidated comparative architecture (`md:hidden`): single top AutoNexa advantage banner (official emblem, "AutoNexa Platform", `+$2,850 CAD` badge), unified comparative card container (`rounded-2xl bg-surface-container-low border border-border-card divide-y divide-border-card/60`), 3-way comparative telemetry rows (`AutoNexa [col-span-6]` high-contrast card vs `Trade-In [col-span-3]` vs `Classifieds [col-span-3]`), eliminating repetitive card bloat and 10 duplicate logos, completed with full-width `min-h-[48px]` CTA.
+- **TypeScript & Build Verification:** Verified with `npx tsc --noEmit` (Code 0).
+- **Living Registry Imprint:** Both component specifications captured in `context/ui-registry.md`.
 **Next:** 09 Listing Wizard: VIN Auto-decode via NHTSA VPIC & Photo Upload pipeline
 
 ---

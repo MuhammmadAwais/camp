@@ -149,190 +149,148 @@ export function ComparisonMatrix({ id = "matrix" }: ComparisonMatrixProps) {
             <div className="col-start-6 col-span-3 -my-5 rounded-3xl bg-surface-container-lowest border-2 border-primary/25 shadow-[0_20px_50px_-12px_rgba(140,56,62,0.12)]" />
           </div>
 
-          {/* Table Content Layer */}
-          <div data-reveal="matrix-table" className="relative z-10">
-            {/* Desktop Table Header */}
-            <div className="hidden md:grid grid-cols-12 gap-6 pb-6 pt-3 items-center border-b border-border-card/60">
-              <div className="col-span-5 text-xs font-mono font-bold uppercase tracking-widest text-on-surface-variant/70 pl-2">
-                CRITERIA &amp; SAFETY GUARANTEES
-              </div>
+          {/* Mobile Swipe Hint */}
+          <div className="md:hidden flex items-center justify-between text-xs text-on-surface-variant font-mono mb-3 px-1">
+            <span className="flex items-center gap-1.5">
+              <span>Swipe columns to compare</span>
+              <ArrowRight weight="bold" className="w-3.5 h-3.5 text-primary" />
+            </span>
+            <span className="font-bold text-primary">AutoNexa Platform</span>
+          </div>
 
-              {/* AutoNexa Column Header (Inside Continuous Column Card) */}
-              <div className="col-span-3 text-center flex flex-col items-center justify-center gap-1.5">
-                <div className="relative w-24 h-24 shrink-0">
-                  <Image
-                    src="/logo-mark.webp"
-                    alt="AutoNexa Logo"
-                    fill
-                    className="object-contain"
-                    priority
-                  />
+          {/* Table Content Layer (Unified Columns Across All Screens) */}
+          <div data-reveal="matrix-table" className="relative z-10 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="min-w-[620px] md:min-w-0">
+              {/* Table Header */}
+              <div className="grid grid-cols-12 gap-3 sm:gap-6 pb-6 pt-3 items-center border-b border-border-card/60">
+                <div className="col-span-5 text-[11px] sm:text-xs font-mono font-bold uppercase tracking-widest text-on-surface-variant/70 pl-2">
+                  CRITERIA &amp; SAFETY GUARANTEES
                 </div>
-          
-              </div>
 
-              {/* Dealership Trade-In */}
-              <div className="col-span-2 text-center flex flex-col items-center justify-center gap-1">
-                <span className="font-headline font-bold text-sm tracking-tight text-on-surface">
-                  Dealership
-                </span>
-                <span className="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant/60">
-                  Trade-In
-                </span>
-              </div>
-
-              {/* Classifieds */}
-              <div className="col-span-2 text-center flex flex-col items-center justify-center gap-1">
-                <span className="font-headline font-bold text-sm tracking-tight text-on-surface">
-                  Classifieds
-                </span>
-                <span className="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant/60">
-                  Private Sale
-                </span>
-              </div>
-            </div>
-
-            {/* Desktop Matrix Rows */}
-            <div className="hidden md:block">
-              {rows.map((row, idx) => {
-                const isSurplusRow = idx === rows.length - 1;
-
-                return (
-                  <div
-                    key={idx}
-                    data-reveal="matrix-row"
-                    className="grid grid-cols-12 gap-6 py-4.5 items-center border-b border-border-card/40 last:border-b-0 hover:bg-surface-container-low/30 rounded-xl px-2 transition-colors duration-150"
-                  >
-                    {/* Feature Label */}
-                    <div className="col-span-5 font-body text-sm font-semibold text-on-surface pr-4 pl-2">
-                      {row.feature}
-                    </div>
-
-                    {/* AutoNexa Column Cell: NO BOXES / NO PILLS! Clean, pure checks and typography */}
-                    <div className="col-span-3 text-center flex items-center justify-center">
-                      {row.autonexa.status === "check" ? (
-                        <Check weight="bold" className="w-5 h-5 text-success" />
-                      ) : (
-                        <span
-                          className={
-                            isSurplusRow
-                              ? "font-headline text-base font-black text-primary"
-                              : "font-body text-sm font-bold text-primary"
-                          }
-                        >
-                          {row.autonexa.text}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Dealership Trade-In Cell */}
-                    <div className="col-span-2 text-center font-body text-xs sm:text-sm text-on-surface-variant">
-                      {row.tradeIn.status === "check" && (
-                        <div className="flex justify-center text-success">
-                          <Check weight="bold" className="w-4 h-4" />
-                        </div>
-                      )}
-                      {row.tradeIn.status === "cross" && (
-                        <div className="flex justify-center text-error">
-                          <X weight="bold" className="w-4 h-4" />
-                        </div>
-                      )}
-                      {row.tradeIn.text && (
-                        <span className="font-body text-xs sm:text-sm font-medium">
-                          {row.tradeIn.text}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Classifieds Cell */}
-                    <div className="col-span-2 text-center font-body text-xs sm:text-sm text-on-surface-variant">
-                      {row.classifieds.status === "check" && (
-                        <div className="flex justify-center text-success">
-                          <Check weight="bold" className="w-4 h-4" />
-                        </div>
-                      )}
-                      {row.classifieds.status === "cross" && (
-                        <div className="flex justify-center text-error">
-                          <X weight="bold" className="w-4 h-4" />
-                        </div>
-                      )}
-                      {row.classifieds.text && (
-                        <span className="font-body text-xs sm:text-sm font-medium">
-                          {row.classifieds.text}
-                        </span>
-                      )}
-                    </div>
+                {/* AutoNexa Column Header */}
+                <div className="col-span-3 text-center flex flex-col items-center justify-center gap-1.5">
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0">
+                    <Image
+                      src="/logo-mark.webp"
+                      alt="AutoNexa Logo"
+                      fill
+                      className="object-contain"
+                      priority
+                    />
                   </div>
-                );
-              })}
-            </div>
+                  <span className="font-headline font-bold text-xs sm:text-sm text-primary">AutoNexa</span>
+                </div>
 
-            {/* Desktop Bottom Action Row inside the AutoNexa Column */}
-            <div className="hidden md:grid grid-cols-12 gap-6 pt-6 pb-2 items-center">
-              <div className="col-span-3 text-center flex justify-center" />
-              <div className="col-span-4 text-right pr-2" />
-            </div>
+                {/* Dealership Trade-In */}
+                <div className="col-span-2 text-center flex flex-col items-center justify-center gap-1">
+                  <span className="font-headline font-bold text-xs sm:text-sm tracking-tight text-on-surface">
+                    Dealership
+                  </span>
+                  <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-on-surface-variant/60">
+                    Trade-In
+                  </span>
+                </div>
 
-            {/* Mobile Stacked View (< 768px) */}
-            <div className="md:hidden space-y-4 pt-4">
-              {rows.map((row, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 rounded-2xl bg-surface-container-low border border-border-card text-left space-y-3"
-                >
-                  <div className="font-body text-sm font-bold text-on-surface">
-                    {row.feature}
-                  </div>
+                {/* Classifieds */}
+                <div className="col-span-2 text-center flex flex-col items-center justify-center gap-1">
+                  <span className="font-headline font-bold text-xs sm:text-sm tracking-tight text-on-surface">
+                    Classifieds
+                  </span>
+                  <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-on-surface-variant/60">
+                    Private Sale
+                  </span>
+                </div>
+              </div>
 
-                  {/* AutoNexa Highlight (Clean, no clunky pill outlines) */}
-                  <div className="p-3.5 rounded-xl bg-surface-container-lowest border-2 border-primary/25 shadow-xs flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 shrink-0">
-                      <div className="relative w-5 h-3 shrink-0">
-                        <Image
-                          src="/logo-mark.webp"
-                          alt="AutoNexa Logo"
-                          fill
-                          className="object-contain"
-                        />
+              {/* Matrix Rows */}
+              <div>
+                {rows.map((row, idx) => {
+                  const isSurplusRow = idx === rows.length - 1;
+
+                  return (
+                    <div
+                      key={idx}
+                      data-reveal="matrix-row"
+                      className="grid grid-cols-12 gap-3 sm:gap-6 py-3.5 sm:py-4.5 items-center border-b border-border-card/40 last:border-b-0 hover:bg-surface-container-low/30 rounded-xl px-2 transition-colors duration-150"
+                    >
+                      {/* Feature Label */}
+                      <div className="col-span-5 font-body text-xs sm:text-sm font-semibold text-on-surface pr-2 sm:pr-4 pl-2">
+                        {row.feature}
                       </div>
-                      <span className="font-headline font-bold text-xs text-primary">AutoNexa</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 font-body text-xs font-bold text-primary text-right">
-                      {row.autonexa.status === "check" && (
-                        <Check weight="bold" className="w-4 h-4 text-success shrink-0" />
-                      )}
-                      <span>{row.autonexa.text || "Guaranteed"}</span>
-                    </div>
-                  </div>
 
-                  {/* Trade-In & Classifieds Comparisons */}
-                  <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-border-card/50 text-on-surface-variant">
-                    <div>
-                      <span className="block font-mono text-[10px] uppercase text-on-surface-variant/70">
-                        Trade-In:
-                      </span>
-                      <span>{row.tradeIn.text || (row.tradeIn.status === "check" ? "Yes" : "No")}</span>
-                    </div>
-                    <div>
-                      <span className="block font-mono text-[10px] uppercase text-on-surface-variant/70">
-                        Classifieds:
-                      </span>
-                      <span>{row.classifieds.text || (row.classifieds.status === "check" ? "Yes" : "No")}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                      {/* AutoNexa Column Cell */}
+                      <div className="col-span-3 text-center flex items-center justify-center px-1">
+                        {row.autonexa.status === "check" ? (
+                          <Check weight="bold" className="w-4 h-4 sm:w-5 sm:h-5 text-success" />
+                        ) : (
+                          <span
+                            className={
+                              isSurplusRow
+                                ? "font-headline text-sm sm:text-base font-black text-primary"
+                                : "font-body text-xs sm:text-sm font-bold text-primary"
+                            }
+                          >
+                            {row.autonexa.text}
+                          </span>
+                        )}
+                      </div>
 
-              <div className="pt-4 text-center">
-                <a
-                  href="#valuation"
-                  className="inline-flex items-center justify-center gap-2 w-full py-3.5 min-h-[48px] rounded-xl bg-primary hover:bg-primary-hover text-white font-body text-sm font-bold shadow-xs transition-colors"
-                >
-                  <span>Start 24h Auction</span>
-                  <ArrowRight weight="bold" className="w-4 h-4" />
-                </a>
+                      {/* Dealership Trade-In Cell */}
+                      <div className="col-span-2 text-center font-body text-xs sm:text-sm text-on-surface-variant px-1">
+                        {row.tradeIn.status === "check" && (
+                          <div className="flex justify-center text-success">
+                            <Check weight="bold" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </div>
+                        )}
+                        {row.tradeIn.status === "cross" && (
+                          <div className="flex justify-center text-error">
+                            <X weight="bold" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </div>
+                        )}
+                        {row.tradeIn.text && (
+                          <span className="font-body text-[11px] sm:text-sm font-medium">
+                            {row.tradeIn.text}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Classifieds Cell */}
+                      <div className="col-span-2 text-center font-body text-xs sm:text-sm text-on-surface-variant px-1">
+                        {row.classifieds.status === "check" && (
+                          <div className="flex justify-center text-success">
+                            <Check weight="bold" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </div>
+                        )}
+                        {row.classifieds.status === "cross" && (
+                          <div className="flex justify-center text-error">
+                            <X weight="bold" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </div>
+                        )}
+                        {row.classifieds.text && (
+                          <span className="font-body text-[11px] sm:text-sm font-medium">
+                            {row.classifieds.text}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
+          </div>
+
+          {/* Bottom Action Trigger */}
+          <div className="pt-8 text-center flex flex-col items-center justify-center gap-3">
+            <a
+              href="/login"
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 min-h-[48px] rounded-xl bg-primary hover:bg-primary-hover text-white font-body text-sm font-bold shadow-xs transition-all hover:scale-105 active:scale-95"
+            >
+              <span>Start 24h Auction</span>
+              <ArrowRight weight="bold" className="w-4 h-4" />
+            </a>
+            <p className="font-mono text-xs text-on-surface-variant/70">
+              100% Free for Private Sellers • No Obligation to Accept
+            </p>
           </div>
         </div>
       </div>
