@@ -100,9 +100,9 @@
   --color-badge-vsa: #10B981;          /* British Columbia */
 
   /* ========================================================
-     PORTAL & WEB APP DESIGN SYSTEM (Solid Minimalist Dual Theme)
-     Dark: Canvas #000000 | Cards #131215 | Text #FFFFFF | Accent #008C87
-     Light: Canvas #FFFFFF | Cards #F9FAFB | Text #000000 | Accent #008C87
+     PORTAL & WEB APP DESIGN SYSTEM (Autumn Editorial Dual Theme)
+     Light: Canvas #FFF8F2 | Surface #FFFFFF | Text #201B11 | Accent #8C383E (Wine)
+     Dark: Canvas #0C0A09 | Surface #131215 | Text #FFFFFF | Accent #E59344 (Amber)
      ======================================================== */
   /* Dynamic Dual-Theme Tokens mapped to CSS variables */
   --color-portal-canvas: var(--portal-canvas);
@@ -117,13 +117,13 @@
   --color-portal-primary-tint: var(--portal-accent-tint);
 
   /* Static Fallback Tokens */
-  --color-portal-light-canvas: #FFFFFF;
-  --color-portal-light-surface: #F9FAFB;
+  --color-portal-light-canvas: #FFF8F2;
+  --color-portal-light-surface: #FFFFFF;
   --color-portal-light-border: #E5E7EB;
-  --color-portal-light-text: #000000;
+  --color-portal-light-text: #201B11;
   --color-portal-light-text-muted: #6B7280;
 
-  --color-portal-dark-canvas: #000000;
+  --color-portal-dark-canvas: #0C0A09;
   --color-portal-dark-surface: #131215;
   --color-portal-dark-surface-hover: #1D1C21;
   --color-portal-dark-border: rgba(255, 255, 255, 0.08);
@@ -131,32 +131,20 @@
   --color-portal-dark-text: #FFFFFF;
   --color-portal-dark-text-muted: #9CA3AF;
 
-  /* Nordic Pine Teal Accent Scale (#008C87) */
-  --color-accent-50: #E6F7F6;
-  --color-accent-100: #CCEFEF;
-  --color-accent-200: #99DFDE;
-  --color-accent-300: #66CFCD;
-  --color-accent-400: #33BFBC;
-  --color-accent-500: #008C87;          /* Unified Brand Accent */
-  --color-accent-600: #00736F;          /* Hover / Active */
-  --color-accent-700: #005B57;
-  --color-accent-800: #004240;
-  --color-accent-900: #002A28;
-  --color-accent-950: #001A18;
+  /* Autumn Editorial Accent Tokens for Portal */
+  --color-portal-accent: var(--portal-accent);
+  --color-portal-accent-hover: var(--portal-accent-hover);
+  --color-portal-accent-tint: var(--portal-accent-tint);
 
-  --color-portal-accent: #008C87;
-  --color-portal-accent-hover: #00736F;
-  --color-portal-accent-tint: rgba(0, 140, 135, 0.12);
-
-  /* Auth Card Tokens (Solid Plain Canvas & 5:4 Geometry) */
-  --color-auth-dark-bg: #000000;
+  /* Auth Card Tokens (Solid Plain Canvas & Dual-Theme Geometry) */
+  --color-auth-dark-bg: #0C0A09;
   --color-auth-dark-card: #131215;
   --color-auth-dark-border: rgba(255, 255, 255, 0.08);
   --color-auth-dark-input: rgba(255, 255, 255, 0.05);
   --color-auth-dark-input-border: rgba(255, 255, 255, 0.10);
 
-  --color-auth-light-bg: #FFFFFF;
-  --color-auth-light-card: #F3F4F6;
+  --color-auth-light-bg: #FFF8F2;
+  --color-auth-light-card: #FFFFFF;
   --color-auth-light-border: #E5E7EB;
   --color-auth-light-input: #FFFFFF;
   --color-auth-light-input-border: #D1D5DB;
@@ -178,34 +166,35 @@
   --shadow-ambient-warm: 0 16px 32px -4px rgba(56, 20, 24, 0.08);
   --shadow-ambient-card: 0 4px 20px -2px rgba(56, 20, 24, 0.05);
   --shadow-portal-card: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
-  --shadow-teal-glow: 0 0 25px -4px rgba(0, 140, 135, 0.35);
+  --shadow-amber-glow: 0 0 25px -4px rgba(229, 147, 68, 0.35);
+  --shadow-wine-glow: 0 0 25px -4px rgba(140, 56, 62, 0.35);
 }
 
 @layer base {
   :root {
-    --portal-canvas: #FFFFFF;
-    --portal-surface: #F9FAFB;
-    --portal-surface-hover: #F3F4F6;
-    --portal-border: #E5E7EB;
-    --portal-border-subtle: rgba(0, 0, 0, 0.06);
-    --portal-text: #000000;
-    --portal-text-muted: #6B7280;
-    --portal-accent: #008C87;
-    --portal-accent-hover: #00736F;
-    --portal-accent-tint: rgba(0, 140, 135, 0.12);
+    --portal-canvas: #FFF8F2;
+    --portal-surface: #FFFFFF;
+    --portal-surface-hover: #F8ECDB;
+    --portal-border: #EADDCB;
+    --portal-border-subtle: rgba(140, 56, 62, 0.08);
+    --portal-text: #201B11;
+    --portal-text-muted: #554242;
+    --portal-accent: #8C383E;
+    --portal-accent-hover: #752B30;
+    --portal-accent-tint: rgba(140, 56, 62, 0.08);
   }
 
   .dark {
-    --portal-canvas: #000000;
+    --portal-canvas: #0C0A09;
     --portal-surface: #131215;
     --portal-surface-hover: #1D1C21;
     --portal-border: rgba(255, 255, 255, 0.08);
     --portal-border-subtle: rgba(255, 255, 255, 0.04);
     --portal-text: #FFFFFF;
     --portal-text-muted: #9CA3AF;
-    --portal-accent: #008C87;
-    --portal-accent-hover: #00736F;
-    --portal-accent-tint: rgba(0, 140, 135, 0.18);
+    --portal-accent: #E59344;
+    --portal-accent-hover: #D9822F;
+    --portal-accent-tint: rgba(229, 147, 68, 0.15);
   }
 
   * {
@@ -252,12 +241,14 @@
   }
 
   /* ========================================================
-     WEB APP & PORTAL SCROLLBAR (Theme Green / Nordic Pine Teal #008C87)
+     WEB APP & PORTAL SCROLLBAR (Autumn Editorial Dual-Theme Adaptive)
+     Light: Terracotta Wine #8C383E thumb
+     Dark: Honey Amber #E59344 thumb
      ======================================================== */
   html[data-app-theme="webapp"],
   html[data-app-theme="webapp"] * {
     scrollbar-width: thin;
-    scrollbar-color: #008C87 transparent;
+    scrollbar-color: var(--portal-accent) transparent;
   }
 
   html[data-app-theme="webapp"] ::-webkit-scrollbar {
@@ -270,27 +261,31 @@
   }
 
   html[data-app-theme="webapp"].dark ::-webkit-scrollbar-track {
-    background: #09090b;
+    background: #0C0A09;
   }
 
   html[data-app-theme="webapp"]:not(.dark) ::-webkit-scrollbar-track {
-    background: #f4f4f5;
+    background: #F8ECDB;
   }
 
   html[data-app-theme="webapp"] ::-webkit-scrollbar-thumb {
-    background-color: #008C87;
+    background-color: var(--portal-accent);
     background-clip: padding-box;
     border: 2px solid transparent;
     border-radius: 9999px;
     transition: background-color 0.2s ease;
   }
 
-  html[data-app-theme="webapp"] ::-webkit-scrollbar-thumb:hover {
-    background-color: #33BFBC;
+  html[data-app-theme="webapp"]:not(.dark) ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--portal-accent-hover);
+  }
+
+  html[data-app-theme="webapp"].dark ::-webkit-scrollbar-thumb:hover {
+    background-color: #FEA857;
   }
 
   html[data-app-theme="webapp"] ::-webkit-scrollbar-thumb:active {
-    background-color: #00736F;
+    background-color: var(--portal-accent-hover);
   }
 
   html[data-app-theme="webapp"] ::-webkit-scrollbar-corner {
@@ -421,8 +416,8 @@
 
   /* ========================================================
      SOLID AUTH & WEB APP CARD UTILITIES
-     Dark: bg #000000, card #131215, text #FFFFFF, accent #008C87
-     Light: bg #FFFFFF, card #F3F4F6, text #000000, accent #008C87
+     Dark: bg #0C0A09, card #131215, text #FFFFFF, accent #E59344 (Amber)
+     Light: bg #FFF8F2, card #FFFFFF, text #201B11, accent #8C383E (Wine)
      ======================================================== */
   .auth-card-dark {
     background-color: #131215;
@@ -444,8 +439,8 @@
   }
 
   .auth-input-dark:focus {
-    border-color: #008C87;
-    box-shadow: 0 0 0 2px rgba(0, 140, 135, 0.25);
+    border-color: #E59344;
+    box-shadow: 0 0 0 2px rgba(229, 147, 68, 0.25);
     background-color: rgba(255, 255, 255, 0.07);
     outline: none;
   }
@@ -453,13 +448,13 @@
   .auth-input-light {
     background-color: #FFFFFF;
     border: 1px solid #D1D5DB;
-    color: #000000;
+    color: #201B11;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .auth-input-light:focus {
-    border-color: #008C87;
-    box-shadow: 0 0 0 2px rgba(0, 140, 135, 0.25);
+    border-color: #8C383E;
+    box-shadow: 0 0 0 2px rgba(140, 56, 62, 0.25);
     background-color: #FFFFFF;
     outline: none;
   }
@@ -471,8 +466,12 @@
     -webkit-text-fill-color: #FFFFFF !important;
   }
 
-  .glow-teal {
-    box-shadow: 0 0 25px -4px rgba(0, 140, 135, 0.35);
+  .glow-amber {
+    box-shadow: 0 0 25px -4px rgba(229, 147, 68, 0.35);
+  }
+
+  .glow-wine {
+    box-shadow: 0 0 25px -4px rgba(140, 56, 62, 0.35);
   }
 
   .glow-white-sm {

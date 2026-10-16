@@ -109,8 +109,8 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
       <div className="flex items-center justify-between mb-4">
         {mode === 'signup' && (
           <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-body">
-            <span className={`w-2 h-2 rounded-full ${signupStep === 1 ? 'bg-[#008C87]' : 'bg-neutral-600'}`} />
-            <span className={`w-2 h-2 rounded-full ${signupStep === 2 ? 'bg-[#008C87]' : 'bg-neutral-600'}`} />
+            <span className={`w-2 h-2 rounded-full ${signupStep === 1 ? 'bg-[#E59344]' : 'bg-neutral-600'}`} />
+            <span className={`w-2 h-2 rounded-full ${signupStep === 2 ? 'bg-[#E59344]' : 'bg-neutral-600'}`} />
             <span className="ml-1 text-[11px] text-neutral-400">Step {signupStep} of 2</span>
           </div>
         )}
@@ -185,7 +185,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
             onClick={() => setRole('SELLER')}
             className={`py-2 px-3 text-xs font-body font-semibold rounded-lg transition-all cursor-pointer ${
               role === 'SELLER'
-                ? 'bg-[#008C87]/25 text-[#008C87] border border-[#008C87]/50 font-bold shadow-xs'
+                ? 'bg-[#E59344]/25 text-[#E59344] border border-[#E59344]/50 font-bold shadow-xs'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
@@ -196,7 +196,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
             onClick={() => setRole('DEALER')}
             className={`py-2 px-3 text-xs font-body font-semibold rounded-lg transition-all cursor-pointer ${
               role === 'DEALER'
-                ? 'bg-[#008C87]/25 text-[#008C87] border border-[#008C87]/50 font-bold shadow-xs'
+                ? 'bg-[#E59344]/25 text-[#E59344] border border-[#E59344]/50 font-bold shadow-xs'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
@@ -220,7 +220,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={role === 'SELLER' ? 'Your legal full name' : 'Contact person name'}
-                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87] transition-all backdrop-blur-md"
+                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#E59344] focus:ring-1 focus:ring-[#E59344] transition-all backdrop-blur-md"
                 />
               </div>
             </div>
@@ -235,7 +235,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="username@gmail.com"
-                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87] transition-all backdrop-blur-md"
+                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#E59344] focus:ring-1 focus:ring-[#E59344] transition-all backdrop-blur-md"
                 />
               </div>
             </div>
@@ -250,7 +250,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 6 characters"
-                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-11 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87] transition-all backdrop-blur-md"
+                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-11 py-2.5 font-body text-sm outline-none focus:border-[#E59344] focus:ring-1 focus:ring-[#E59344] transition-all backdrop-blur-md"
                 />
                 <button
                   type="button"
@@ -267,7 +267,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
             <button
               type="button"
               onClick={handleNextStep}
-              className="w-full mt-2 bg-[#008C87] hover:bg-[#00736F] text-white font-body font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.99] text-sm cursor-pointer shadow-sm"
+              className="w-full mt-2 bg-[#8C383E] hover:bg-[#752B30] text-white font-body font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.99] text-sm cursor-pointer shadow-sm"
             >
               <span>Continue</span>
               <ArrowRight className="w-4 h-4" />
@@ -290,7 +290,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
                       value={dealershipName}
                       onChange={(e) => setDealershipName(e.target.value)}
                       placeholder="Dealership Operating Name"
-                      className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87] transition-all backdrop-blur-md"
+                      className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#E59344] focus:ring-1 focus:ring-[#E59344] transition-all backdrop-blur-md"
                     />
                   </div>
                 </div>
@@ -305,7 +305,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
                       value={licenseNumber}
                       onChange={(e) => setLicenseNumber(e.target.value)}
                       placeholder="OMVIC / AMVIC / VSA License #"
-                      className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87] transition-all backdrop-blur-md"
+                      className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#E59344] focus:ring-1 focus:ring-[#E59344] transition-all backdrop-blur-md"
                     />
                   </div>
                 </div>
@@ -322,7 +322,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="(416) 555-0192"
-                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87] transition-all backdrop-blur-md"
+                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#E59344] focus:ring-1 focus:ring-[#E59344] transition-all backdrop-blur-md"
                 />
               </div>
             </div>
@@ -338,7 +338,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
                   onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
                   placeholder="e.g. M5V 2T6"
                   maxLength={7}
-                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87] transition-all backdrop-blur-md"
+                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#E59344] focus:ring-1 focus:ring-[#E59344] transition-all backdrop-blur-md"
                 />
               </div>
             </div>
@@ -348,7 +348,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#008C87] hover:bg-[#00736F] text-white font-body font-semibold py-3 px-4 rounded-xl transition-all active:scale-[0.99] disabled:opacity-50 text-sm cursor-pointer shadow-sm"
+                className="w-full bg-[#8C383E] hover:bg-[#752B30] text-white font-body font-semibold py-3 px-4 rounded-xl transition-all active:scale-[0.99] disabled:opacity-50 text-sm cursor-pointer shadow-sm"
               >
                 {isLoading
                   ? 'Processing...'
@@ -383,7 +383,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="username@gmail.com"
-                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87] transition-all backdrop-blur-md"
+                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-4 py-2.5 font-body text-sm outline-none focus:border-[#E59344] focus:ring-1 focus:ring-[#E59344] transition-all backdrop-blur-md"
                 />
               </div>
             </div>
@@ -398,7 +398,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-11 py-2.5 font-body text-sm outline-none focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87] transition-all backdrop-blur-md"
+                  className="w-full bg-white/[0.06] border border-white/15 text-white placeholder:text-neutral-400 rounded-xl pl-10 pr-11 py-2.5 font-body text-sm outline-none focus:border-[#E59344] focus:ring-1 focus:ring-[#E59344] transition-all backdrop-blur-md"
                 />
                 <button
                   type="button"
@@ -418,7 +418,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="rounded border-white/20 bg-white/10 text-[#008C87] focus:ring-[#008C87]/30 accent-[#008C87]"
+                  className="rounded border-white/20 bg-white/10 text-[#E59344] focus:ring-[#E59344]/30 accent-[#E59344]"
                 />
                 Remember me
               </label>
@@ -434,7 +434,7 @@ export function AuthCard({ initialMode = 'signin' }: AuthCardProps) {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2 bg-[#008C87] hover:bg-[#00736F] text-white font-body font-semibold py-3 px-4 rounded-xl transition-all active:scale-[0.99] disabled:opacity-50 text-sm cursor-pointer shadow-sm"
+              className="w-full mt-2 bg-[#8C383E] hover:bg-[#752B30] text-white font-body font-semibold py-3 px-4 rounded-xl transition-all active:scale-[0.99] disabled:opacity-50 text-sm cursor-pointer shadow-sm"
             >
               {isLoading ? 'Processing...' : 'Sign In'}
             </button>

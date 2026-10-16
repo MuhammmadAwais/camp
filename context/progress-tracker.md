@@ -19,7 +19,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **02 Tailwind CSS v4 & Dual-Theme Tokens** (`globals.css` @theme config with Autumn Editorial & FinTech Obsidian/Porcelain)
 - [x] **03 TanStack Query v5 & Zustand Store Initialization** (`app/providers.tsx`, `lib/query-keys.ts`, `store/`)
 - [x] **04 Enterprise Workspace Organization** (`docs/specifications/`, `docs/references/`, `docs/designs/`)
-- [x] **05 Dual Route-Aware Scrollbar Engine** (Autumn Wine `#8C383E` for landing vs. Nordic Teal `#008C87` for portals)
+- [x] **05 Dual Route-Aware Scrollbar Engine** (Autumn Wine `#8C383E` for light mode vs. Honey Amber `#E59344` for dark mode, green eliminated)
 - [x] **06 In-Rail Nav Toggle & Segmented Theme Switcher** (`Sidebar.tsx`, `ThemeToggle.tsx`)
 - [x] **07 Pre-Hydration Browser Extension Shield** (`layout.tsx` DOM interception for `bis_skin_checked` attribute mutations)
 - [ ] **08 Role Route Guards & Edge Middleware** (`components/auth/RequireRole.tsx`, `proxy.ts` matchers for `/seller/*`, `/dealer/*`, `/admin/*`)
@@ -111,7 +111,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ---
 
 ### Phase 5 — Dealership Trading Terminal (Desktop-First Priority)
-*Primary Canvas: Desktop Monitor (`1280px` to `1920px`). High-density FinTech Obsidian Dark theme (`#080C14`, `#131215`, `#008C87` teal, `#16A34A` emerald).*
+*Primary Canvas: Desktop Monitor (`1280px` to `1920px`). High-density FinTech Obsidian Dark theme (`#0C0A09`, `#131215`, `#E59344` amber, `#8C383E` wine, `#10B981` emerald checkmarks).*
 
 #### Milestone 5.1: Dealer Onboarding & Subscription
 - [ ] **Page 5.1: Dealership Registration & Licensing**
@@ -193,4 +193,4 @@ Update this file after completing each page/component. Any AI agent reading this
 2. **Strict Integer CAD Cents:** Never use JavaScript floating-point arithmetic for currency. Store, calculate, and pass all dollar values as whole integer cents (e.g. `$35,000.00` = `3500000`). Format to currency decimals only in the final UI presentation layer.
 3. **Decoupled API Boundary:** All mutations run via TanStack `useMutation` through `lib/api-client.ts`. When `NEXT_PUBLIC_API_URL` is omitted, contract-accurate Next.js route handlers (`app/api/**`) simulate network latency, HTTP status codes, and mock data.
 4. **Living Component Imprinting:** Run `/imprint` after building every new UI page to record visual patterns, prop signatures, and Tailwind token classes in `context/ui-registry.md`.
-5. **No Hardcoded Hex Colors:** Use designated design tokens (`bg-primary`, `bg-secondary`, `bg-portal-surface`, `text-portal-text`, `border-portal-border`, `#008C87` Nordic Teal, `#16A34A` Emerald).
+5. **No Hardcoded Hex Colors:** Use designated design tokens (`bg-primary`, `bg-secondary`, `bg-portal-surface`, `text-portal-text`, `border-portal-border`, Autumn Editorial `#8C383E` Wine & `#E59344` Amber, `#10B981` Emerald checkmarks).

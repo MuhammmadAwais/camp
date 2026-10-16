@@ -46,7 +46,7 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div
       suppressHydrationWarning
-      className="relative min-h-screen w-full bg-white dark:bg-black text-black dark:text-white transition-colors duration-200 flex flex-col font-body selection:bg-[#008C87] selection:text-white"
+      className="relative min-h-screen w-full bg-portal-canvas text-portal-text transition-colors duration-200 flex flex-col font-body selection:bg-[#8C383E] selection:text-white dark:selection:bg-[#E59344] dark:selection:text-[#0C0A09]"
     >
       {/* 1. Floating Mobile Menu Button (lg:hidden) */}
       <MobileMenuButton />

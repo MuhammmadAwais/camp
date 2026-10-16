@@ -38,10 +38,10 @@ export function SidebarFlyout({
         <Link
           href={mainHref}
           onClick={onClose}
-          className="text-xs font-bold text-white hover:text-[#008C87] transition-colors flex items-center justify-between cursor-pointer group"
+          className="text-xs font-bold text-white hover:text-[#E59344] transition-colors flex items-center justify-between cursor-pointer group"
         >
           <span>{title}</span>
-          <span className="text-[10px] text-neutral-400 group-hover:text-[#008C87] font-normal">
+          <span className="text-[10px] text-neutral-400 group-hover:text-[#E59344] font-normal">
             View All →
           </span>
         </Link>
@@ -58,13 +58,13 @@ export function SidebarFlyout({
               onClick={onClose}
               className={`text-xs px-3 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between ${
                 isActive
-                  ? 'bg-[#008C87]/15 text-[#008C87] font-semibold border border-[#008C87]/30'
+                  ? 'bg-[#E59344]/15 text-[#E59344] font-semibold border border-[#E59344]/30'
                   : 'text-neutral-300 hover:text-white hover:bg-white/[0.06]'
               }`}
             >
               <span>{sub.title}</span>
               {isActive && (
-                <span className="size-1.5 rounded-full bg-[#008C87] shadow-[0_0_8px_#008C87]" />
+                <span className="size-1.5 rounded-full bg-[#E59344] shadow-[0_0_8px_#E59344]" />
               )}
             </Link>
           );

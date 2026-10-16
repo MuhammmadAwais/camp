@@ -179,7 +179,7 @@ export function Sidebar() {
                     />
                   </div>
                   <span className="font-headline font-bold text-lg text-gray-900 dark:text-white tracking-tight leading-none">
-                    Auto<span className="text-[#008C87]">Nexa</span>
+                    Auto<span className="text-[#8C383E] dark:text-[#E59344]">Nexa</span>
                   </span>
                 </div>
               </>
@@ -195,7 +195,7 @@ export function Sidebar() {
                   />
                 </div>
                 <span className="font-headline font-bold text-lg text-gray-900 dark:text-white tracking-tight leading-none">
-                  Auto<span className="text-[#008C87]">Nexa</span>
+                  Auto<span className="text-[#8C383E] dark:text-[#E59344]">Nexa</span>
                 </span>
               </div>
             )}
@@ -295,7 +295,7 @@ export function Sidebar() {
                       <div
                         className={`group/item flex items-center justify-between rounded-xl transition-all cursor-pointer ${
                           isMainActive
-                            ? 'bg-[#008C87]/15 text-[#008C87] border border-[#008C87]/30 shadow-xs'
+                            ? 'bg-[#8C383E]/10 text-[#8C383E] border border-[#8C383E]/25 dark:bg-[#E59344]/15 dark:text-[#E59344] dark:border-[#E59344]/30 shadow-xs'
                             : 'text-gray-700 hover:text-black hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.05]'
                         } ${isCollapsed ? 'p-2.5 justify-center' : 'px-3 py-2.5 min-h-[44px]'}`}
                       >
@@ -309,7 +309,7 @@ export function Sidebar() {
                         >
                           <Icon
                             className={`size-5 shrink-0 transition-transform group-hover/item:scale-105 ${
-                              isMainActive ? 'text-[#008C87]' : 'text-gray-400 dark:text-neutral-400'
+                              isMainActive ? 'text-[#8C383E] dark:text-[#E59344]' : 'text-gray-400 dark:text-neutral-400'
                             }`}
                             weight={isMainActive ? 'duotone' : 'regular'}
                           />
@@ -353,16 +353,16 @@ export function Sidebar() {
                                 onClick={closeMobile}
                                 className={`relative text-xs px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center justify-between group/sub ${
                                   isSubActive
-                                    ? 'bg-gray-100 dark:bg-white/[0.08] text-[#008C87] font-medium'
+                                    ? 'bg-[#8C383E]/10 text-[#8C383E] dark:bg-white/[0.08] dark:text-[#E59344] font-medium'
                                     : 'text-gray-600 hover:text-black hover:bg-gray-50 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-white/[0.04]'
                                 }`}
                               >
                                 {/* Guide line connector notch */}
-                                <span className="absolute -left-[15px] top-1/2 -translate-y-1/2 w-2.5 h-[1px] bg-gray-200 dark:bg-white/[0.08] group-hover/sub:bg-[#008C87]/40 transition-colors" />
+                                <span className="absolute -left-[15px] top-1/2 -translate-y-1/2 w-2.5 h-[1px] bg-gray-200 dark:bg-white/[0.08] group-hover/sub:bg-[#8C383E]/40 dark:group-hover/sub:bg-[#E59344]/40 transition-colors" />
 
                                 <span className="truncate">{sub.title}</span>
                                 {isSubActive && (
-                                  <span className="size-1 rounded-full bg-[#008C87] shadow-[0_0_6px_#008C87]" />
+                                  <span className="size-1 rounded-full bg-[#8C383E] shadow-[0_0_6px_#8C383E] dark:bg-[#E59344] dark:shadow-[0_0_6px_#E59344]" />
                                 )}
                               </Link>
                             );

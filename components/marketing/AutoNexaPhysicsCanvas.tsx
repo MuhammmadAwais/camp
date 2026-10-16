@@ -173,13 +173,13 @@ export function AutoNexaPhysicsCanvas({
           ctx.arc(mouse.x, mouse.y, radius, 0, Math.PI * 2);
           ctx.strokeStyle =
             cursorRingColor ??
-            (theme === "dark" ? "rgba(51, 191, 188, 0.45)" : "rgba(140, 56, 62, 0.3)");
+            (theme === "dark" ? "rgba(229, 147, 68, 0.45)" : "rgba(140, 56, 62, 0.3)");
           ctx.lineWidth = 1;
           ctx.stroke();
 
           ctx.beginPath();
           ctx.arc(mouse.x, mouse.y, 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = cursorDotColor ?? (theme === "dark" ? "#33BFBC" : "#8C383E");
+          ctx.fillStyle = cursorDotColor ?? (theme === "dark" ? "#E59344" : "#8C383E");
           ctx.fill();
         }
 
@@ -229,7 +229,7 @@ export function AutoNexaPhysicsCanvas({
           if (isDisturbed) {
             ctx.fillStyle =
               activeColor ??
-              (theme === "dark" ? "rgba(0, 229, 217, 1)" : "rgba(186, 26, 26, 0.95)");
+              (theme === "dark" ? "rgba(229, 147, 68, 1)" : "rgba(186, 26, 26, 0.95)");
           } else {
             ctx.fillStyle =
               particleColor ??

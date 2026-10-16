@@ -57,7 +57,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
               <span className="text-xs font-bold text-gray-900 dark:text-white tracking-tight truncate">
                 {displayName}
               </span>
-              <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-full bg-[#008C87]/20 text-[#008C87] border border-[#008C87]/30">
+              <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-full bg-[#8C383E]/15 text-[#8C383E] border border-[#8C383E]/30 dark:bg-[#E59344]/20 dark:text-[#E59344] dark:border-[#E59344]/30">
                 {role || 'USER'}
               </span>
             </div>
@@ -99,7 +99,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
                   }}
                   className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer ${
                     role === 'SELLER'
-                      ? 'bg-[#008C87]/20 text-[#008C87] font-semibold border border-[#008C87]/40'
+                      ? 'bg-[#8C383E]/15 text-[#8C383E] font-semibold border border-[#8C383E]/30 dark:bg-[#E59344]/20 dark:text-[#E59344] dark:border-[#E59344]/40'
                       : 'text-gray-500 hover:bg-gray-100 hover:text-black dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white'
                   }`}
                 >
@@ -113,7 +113,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
                   }}
                   className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer ${
                     isDealer
-                      ? 'bg-[#008C87]/20 text-[#008C87] font-semibold border border-[#008C87]/40'
+                      ? 'bg-[#8C383E]/15 text-[#8C383E] font-semibold border border-[#8C383E]/30 dark:bg-[#E59344]/20 dark:text-[#E59344] dark:border-[#E59344]/40'
                       : 'text-gray-500 hover:bg-gray-100 hover:text-black dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white'
                   }`}
                 >
@@ -152,7 +152,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
       >
         <div className="flex items-center gap-2.5 overflow-hidden">
           {/* Avatar Icon */}
-          <div className="size-9 rounded-xl bg-gradient-to-br from-[#008C87]/30 to-[#E59344]/30 border border-black/10 dark:border-white/15 flex items-center justify-center shrink-0 text-gray-900 dark:text-white font-bold text-xs shadow-inner">
+          <div className="size-9 rounded-xl bg-gradient-to-br from-[#8C383E]/30 to-[#E59344]/30 border border-black/10 dark:border-white/15 flex items-center justify-center shrink-0 text-gray-900 dark:text-white font-bold text-xs shadow-inner">
             {displayName.charAt(0).toUpperCase()}
           </div>
 

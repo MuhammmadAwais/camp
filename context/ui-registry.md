@@ -423,7 +423,7 @@ Last updated: 2026-09-28
 
 **Pattern notes:**
 - **App Decided Oat Canvas:** Uses the authentic Autumn Editorial oat background (`bg-surface` `#FFF8F2`) and deep espresso plum text (`text-on-surface` `#201B11`), without brown tones or background glow halos.
-- **Red Beads Physics Engine (`AutoNexaPhysicsCanvas`):** The word `AUTONEXA` is rendered using thousands of red beads on the oat canvas (primary wine red `rgba(140, 56, 62, 0.65)` when resting, dispersing into vibrant crimson `rgba(186, 26, 26, 0.95)` when repelled by the cursor).
+- **Dual-Theme Physics Engine (`AutoNexaPhysicsCanvas`):** The word `AUTONEXA` or custom taglines are rendered using thousands of interactive beads. In Light Mode: primary wine red `rgba(140, 56, 62, 0.65)` when resting, dispersing into vibrant crimson `rgba(186, 26, 26, 0.95)` when repelled by the cursor. In Dark Mode: crisp white beads `rgba(255, 255, 255, 0.82)` on obsidian canvas, dispersing into radiant warm Honey Amber `rgba(229, 147, 68, 1)` when repelled by the amber cursor ring. Zero teal/green.
 - **Performance Optimization:** Includes `IntersectionObserver` to halt the `requestAnimationFrame` loop when the footer is offscreen, eliminating background CPU/GPU load. Adaptive density on resize and full touch-drag support for mobile devices.
 
 ---
@@ -545,15 +545,15 @@ Last updated: 2026-10-09
 | Text — primary   | Dark: `text-white font-headline font-bold` / Light: `text-black font-headline font-bold` |
 | Text — secondary | Dark: `text-neutral-400 font-body text-xs` / Light: `text-neutral-600 font-body text-xs` |
 | Spacing          | `p-6 sm:p-8 max-w-[530px] w-full mx-auto sm:aspect-[5/4] sm:min-h-[490px]` |
-| Hover state      | Inputs: `focus:border-[#008C87] focus:ring-2 focus:ring-[#008C87]/25 outline-none`; Buttons: `hover:bg-[#00736F]` |
-| Shadow           | Dark: `shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)]` / Light: `shadow-[0_20px_45px_-15px_rgba(0,0,0,0.08)]` |
-| Accent usage     | Nordic Pine Teal (`#008C87`): Primary CTA (`bg-[#008C87] hover:bg-[#00736F] text-white`), role selector (`bg-[#008C87]/15 text-[#008C87] border-[#008C87]/40`), input focus ring (`focus:border-[#008C87]`), and checkbox accent |
+| Hover state      | Inputs: `focus:border-[#8C383E] focus:ring-2 focus:ring-[#8C383E]/25 outline-none`; Buttons: `hover:bg-[#752B30]` (Light) / `hover:bg-[#D9822F]` (Dark) |
+| Shadow           | Dark: `shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)]` / Light: `shadow-[0_20px_45px_-15px_rgba(56,20,24,0.08)]` |
+| Accent usage     | Autumn Editorial Dual-Theme: Primary CTA (`bg-[#8C383E] hover:bg-[#752B30]` Light / `bg-[#E59344] hover:bg-[#D9822F]` Dark), role selector (`bg-[#8C383E]/15 text-[#8C383E]` Light / `bg-[#E59344]/20 text-[#E59344]` Dark), and input focus ring (`focus:border-[#8C383E]`) |
 
 **Pattern notes:**
-- **Solid Minimalist Geometry:** Replaces photographic backgrounds with a plain solid canvas (`#000000` in dark mode, `#FFFFFF` in light mode).
+- **Solid Minimalist Geometry:** Pure solid canvas (`#0C0A09` in dark mode, `#FFF8F2` in light mode).
 - **5:4 Proportions:** Card maintains a 5:4 aspect ratio (`sm:aspect-[5/4] sm:min-h-[490px]`) in sign-in mode for a balanced and focused geometric presence, expanding gracefully for multi-field dealer registration.
-- **Nordic Pine Teal Accent:** Unified brand accent `#008C87` provides bank-grade FinTech credibility and regulatory authority without visual fatigue.
-- **Dual Theme Support:** Seamless instant toggle between Dark Mode (`#000000` / `#131215` / `#FFFFFF`) and Light Mode (`#FFFFFF` / `#F3F4F6` / `#000000`).
+- **Autumn Editorial Palette:** Unified brand palette `#8C383E` (Terracotta Wine) and `#E59344` (Honey Amber) provides high-end editorial authority with zero green accents.
+- **Dual Theme Support:** Seamless instant toggle between Dark Mode (`#0C0A09` / `#131215` / `#FFFFFF` with Amber `#E59344`) and Light Mode (`#FFF8F2` / `#FFFFFF` / `#201B11` with Wine `#8C383E`).
 - **Edge-Safe Autofill:** Custom input CSS prevents bright browser autofill rectangles in dark mode while preserving native browser credentials.
 
 ---
@@ -569,7 +569,7 @@ Last updated: 2026-10-13
 | Top-Left Brand   | Optically balanced AutoNexa gold emblem (`/logo-mark-tight.webp`, cropped to content bbox 734x390) beside `Auto<span className="text-[#E59344]">Nexa</span>` in `font-headline font-bold text-xl sm:text-2xl text-white`, no blurry drop shadows |
 | Form Inputs      | Unified `font-body text-sm` (`Plus Jakarta Sans`) across all inputs and placeholders. Strictly one full-width input per row (`w-full`), never two inputs side-by-side |
 | Input Icons      | Standardized 16px left icons (`User`, `Mail`, `Lock`, `Building`, `FileText`, `Phone`, `MapPin`) in `text-neutral-400` |
-| Primary CTA      | Nordic Pine Teal `#008C87` (`hover:bg-[#00736F]`) with clean subtle `shadow-sm` (all diffuse glows removed) |
+| Primary CTA      | Autumn Editorial: Terracotta Wine `#8C383E` (`hover:bg-[#752B30]`) in Light Mode / Honey Amber `#E59344` (`hover:bg-[#D9822F]`) in Dark Mode with clean subtle `shadow-sm` |
 | Progressive Flow | Step 1 (Credentials & Role) &rarr; Step 2 (Phone & Postal Code / Dealership Verification), maintaining compact card height |
 | Frosted Card     | Translucent frosted glass `bg-[#131215]/65 backdrop-blur-2xl border border-white/20 rounded-3xl p-7 sm:p-9 max-w-[440px] w-full shadow-2xl` |
 | Social Login     | Google only (`Continue with Google`), clean matte border `border-white/15` |
@@ -583,14 +583,14 @@ Last updated: 2026-10-13
 
 | Property         | Class / Specification |
 | ---------------- | --------------------- |
-| Shell Background | Deep dark obsidian canvas `bg-[#080C14]` with subtle Nordic Pine Teal (`rgba(0,140,135,0.08)`) and Honey Amber (`rgba(229,147,68,0.04)`) radial lighting substrate |
+| Shell Background | Dual-theme adaptive canvas: Light Mode soft warm ivory `bg-[#FFF8F2]`; Dark Mode obsidian espresso `bg-[#0C0A09]` |
 | Navbar Policy    | **Zero Top Navbar** — maximum screen real-estate dedicated to auction telemetry and inventory grids without distraction |
-| Desktop Sidebar  | `fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#131215]/95 backdrop-blur-2xl border-r border-white/10 transition-all duration-300 ease-in-out` |
+| Desktop Sidebar  | `fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-white/95 dark:bg-[#131215]/95 backdrop-blur-2xl border-r border-gray-200 dark:border-white/10 transition-all duration-300 ease-in-out` |
 | Rail Dimensions  | Expanded: `w-[260px]` / Collapsed icon rail: `w-[72px]` |
 | Viewport Padding | Dynamic left padding on main content wrapper: `isCollapsed ? "lg:pl-[72px]" : "lg:pl-[260px]"` |
-| Brand Lockup     | Expanded: `/logo-mark-tight.webp` (`w-8 h-[18px]`) beside `Auto<span className="text-[#E59344]">Nexa</span>` (`text-lg font-bold`) / Collapsed: centered emblem (`w-9 h-5`) |
+| Brand Lockup     | Expanded: `/logo-mark-tight.webp` (`w-8 h-[18px]`) beside `Auto<span className="text-[#8C383E] dark:text-[#E59344]">Nexa</span>` (`text-lg font-bold`) / Collapsed: centered emblem (`w-9 h-5`) |
 | Toggle Controls  | Desktop: Integrated header button (`SidebarSimple`) + border notch button (`CaretRight`); Mobile: Floating glass trigger (`lg:hidden`) |
-| Nav Items Active | `bg-[#008C87]/15 text-[#008C87] border border-[#008C87]/30 shadow-xs` with active glow indicator bead `size-1 rounded-full bg-[#008C87] shadow-[0_0_6px_#008C87]` |
+| Nav Items Active | `bg-[#8C383E]/10 text-[#8C383E] dark:bg-[#E59344]/15 dark:text-[#E59344] border border-[#8C383E]/25 dark:border-[#E59344]/30 shadow-xs` with active glow indicator bead `size-1 rounded-full bg-[#8C383E] dark:bg-[#E59344]` |
 | Expanded Tree    | Branch guide lines `border-l border-white/[0.08]` with horizontal connector notch `w-2.5 h-[1px] bg-white/[0.08]` |
 | Collapsed Flyout | Hover popover `absolute left-full top-0 ml-2.5 min-w-[210px] rounded-2xl bg-[#131215]/95 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.9)]` |
 | Profile Menu     | Bottom user avatar trigger opening popover with Profile Settings, Portal Mode Switcher (`SELLER` vs `DEALER_ADMIN`), and Sign Out |
@@ -609,16 +609,16 @@ Mode: Asymmetric Editorial Split (Solara & Truet Reference)
 | Right Banner Radius | Signature bottom-left curve: `rounded-bl-[80px] xl:rounded-bl-[100px] overflow-hidden` |
 | Visual Assets    | `/auth/deal-making.jfif` (Sign In / Recovery), `/auth/keys-giving.jpg` (Registration / Sell / Verify) |
 | Visual Overlay   | Multi-stop dark gradient: `bg-gradient-to-t from-black/95 via-black/60 to-black/30` |
-| Input Fields     | Stacked single-row: `w-full rounded-lg border border-[#E5E7EB] bg-white px-3.5 py-2.5 font-body text-sm text-[#111827] focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87]` |
-| Primary Action   | Solid Nordic Pine Teal: `bg-[#008C87] hover:bg-[#00736F] text-white font-semibold py-3 rounded-lg shadow-sm active:scale-[0.99]` (Zero diffuse glows) |
+| Input Fields     | Stacked single-row: `w-full rounded-lg border border-[#E5E7EB] bg-white px-3.5 py-2.5 font-body text-sm text-[#111827] focus:border-[#8C383E] focus:ring-1 focus:ring-[#8C383E]` |
+| Primary Action   | Solid Terracotta Wine: `bg-[#8C383E] hover:bg-[#752B30] text-white font-semibold py-3 rounded-lg shadow-sm active:scale-[0.99]` (Zero diffuse glows) |
 | Secondary Action | Crisp neutral: `bg-white border border-[#E5E7EB] text-[#111827] hover:bg-[#F9FAFB] py-3 rounded-lg` |
 | Form Card        | Flat, unbordered canvas: `w-full max-w-[420px] mx-auto` (No heavy card container borders) |
-| Header Lockup    | Left `< Back to website` link + Proportional AutoNexa emblem (`w-7 h-[18px]`) with `Auto<span className="text-[#008C87]">Nexa</span>` |
+| Header Lockup    | Left `< Back to website` link + Proportional AutoNexa emblem (`w-7 h-[18px]`) with `Auto<span className="text-[#8C383E] dark:text-[#E59344]">Nexa</span>` |
 
 **Pattern notes:**
 - **Zero Two-Input Rows:** First name, last name, postal code, and province are each rendered on their own full-width stacked row.
 - **Seeded Demo Accounts Stripped:** All hardcoded demo fill buttons and mock hints are removed from the client interface.
-- **Interactive Checkbox:** "Keep me logged in" with custom `#008C87` check indicator.
+- **Interactive Checkbox:** "Keep me logged in" with custom `#8C383E` check indicator.
 
 ---
 
@@ -754,7 +754,7 @@ Mode: Dual-layout Responsive Architecture (Mobile-First Touch Canvas < 1024px &r
 | Breadcrumbs      | `FunnelSteps.tsx` features `overflow-x-auto scrollbar-none` horizontal swipe protection for narrow devices |
 | Legal Footer     | Responsive stack: `flex flex-col sm:flex-row items-center justify-between gap-y-3 gap-x-4 text-center sm:text-left` |
 | Right Panel      | High-resolution imagery with signature `rounded-bl-[80px] xl:rounded-bl-[100px]` inner curve, gold emblem, and interactive dot-matrix physics canvas |
-| Accent Color     | Solid Nordic Pine Teal (`#008C87`), focus rings (`focus:ring-[#008C87]`), and text selection (`selection:bg-[#008C87] selection:text-white`) |
+| Accent Color     | Autumn Editorial Dual-Theme: Terracotta Wine (`#8C383E` Light) & Honey Amber (`#E59344` Dark), focus rings (`focus:ring-[#8C383E]`), and text selection (`selection:bg-[#8C383E] dark:selection:bg-[#E59344]`) |
 
 ### Marketing Landing Suite — Responsive Mobile-First Architecture
 
@@ -827,7 +827,7 @@ Mode: Porcelain / Obsidian dual-theme responsive execution with institutional Fi
 | Portal Sidebar Drawer | Fixed overlay drawer on mobile with guaranteed `w-[280px] sm:w-[290px]` width (independent of desktop rail collapse state), dedicated top mobile close trigger (`X` icon), full-screen backdrop dismissal (`bg-black/85 backdrop-blur-sm`), and `Escape` keyboard dismissal |
 | In-Rail Sidebar Toggle | In collapsed mode (`isCollapsed`), the external sticking-out arrow has been eliminated. Replaced with an in-rail toggle button with horizontal bars (`=`) centered above the Home icon (`size-10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/[0.08]`) matching reference specs |
 | Theme Mode Toggle | Ultra-clean segmented pill (`bg-white/90 border-gray-200/90` in light mode &rarr; `bg-[#121114]/80 border-white/[0.08]` in dark mode) with refined typography, balanced Lucide `Sun` and `Moon` icons, active pill elevation, zero pulsing dot clutter, and smooth micro-press scaling |
-| Adaptive Scrollbars | Route-aware dual scrollbar architecture: Landing page uses warm terracotta wine red (`#8C383E` with `#F8ECDB` track); Web app, portals, and auth suite use unified theme green (`#008C87` Nordic Pine Teal) with dark/light theme-aware tracks |
+| Adaptive Scrollbars | Route-aware dual scrollbar architecture: Landing page and Web App light mode use warm terracotta wine red (`#8C383E` with `#F8ECDB` track); Dark mode uses Honey Amber (`#E59344` with `#0C0A09` track), completely eliminating green. |
 | Seller Dashboard Stats | Sealed-bid compliant count telemetry in responsive grid (`grid-cols-3 gap-2 sm:gap-4 p-3 sm:p-4`) with fluid font scaling (`text-xl sm:text-3xl font-bold tabular-nums`) preventing mobile label clipping |
 | Location Badge & Welcome | `flex-wrap items-center gap-2` preventing badge truncation on compact smartphones |
 | Status Banners & Actions | `KycStatusBanner` and `ListingStartCard` buttons upgrade to full-width mobile touch triggers (`w-full sm:w-auto min-h-[44px]`) with clear status messaging |

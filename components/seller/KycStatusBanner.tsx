@@ -18,7 +18,7 @@ export function KycStatusBanner({ initialStatus }: Props) {
   if (status === "VERIFIED") {
     return (
       <div className="flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 px-4 py-3 font-body text-sm text-emerald-900 dark:text-emerald-300 transition-colors">
-        <BadgeCheck className="w-5 h-5 text-[#008C87] dark:text-[#33BFBC] shrink-0" aria-hidden />
+        <BadgeCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden />
         <span>
           <strong className="font-semibold text-emerald-950 dark:text-emerald-200">Identity verified.</strong> You&apos;re cleared to list vehicles.
         </span>
@@ -49,10 +49,10 @@ export function KycStatusBanner({ initialStatus }: Props) {
     <div
       className={cn(
         "flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border px-4 py-4 transition-colors",
-        "border-[#008C87]/30 bg-[#008C87]/5 dark:bg-[#008C87]/10"
+        "border-[#E59344]/30 bg-[#E59344]/5 dark:bg-[#E59344]/10"
       )}
     >
-      <ShieldAlert className="w-6 h-6 text-[#008C87] shrink-0" aria-hidden />
+      <ShieldAlert className="w-6 h-6 text-[#E59344] shrink-0" aria-hidden />
       <div className="flex-1">
         <p className="font-body text-sm font-semibold text-portal-text">{copy.title}</p>
         <p className="font-body text-sm text-portal-text-muted">{copy.body}</p>

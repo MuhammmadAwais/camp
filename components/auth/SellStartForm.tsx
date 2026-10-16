@@ -71,7 +71,7 @@ export function SellStartForm({ initialVin, initialPostalCode }: Props) {
   const signInFooter = (
     <>
       Already have an account?{" "}
-      <Link href="/login" className="font-semibold text-[#008C87] hover:underline underline-offset-4">
+      <Link href="/login" className="font-semibold text-[#8C383E] hover:underline underline-offset-4">
         Sign in
       </Link>
     </>
@@ -153,7 +153,7 @@ export function SellStartForm({ initialVin, initialPostalCode }: Props) {
         <button
           type="button"
           onClick={() => continueToAccount(null)}
-          className="w-full text-center font-body text-sm font-semibold text-[#008C87] hover:underline underline-offset-4 transition-colors cursor-pointer"
+          className="w-full text-center font-body text-sm font-semibold text-[#8C383E] hover:underline underline-offset-4 transition-colors cursor-pointer"
         >
           Don&apos;t have your VIN handy? Create your account first →
         </button>

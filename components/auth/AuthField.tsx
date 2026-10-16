@@ -10,7 +10,7 @@ export interface AuthFieldProps extends React.InputHTMLAttributes<HTMLInputEleme
 }
 
 export const authInputClasses =
-  "w-full rounded-lg border border-[#E5E7EB] bg-white px-3.5 py-2.5 font-body text-sm text-[#111827] placeholder:text-[#9CA3AF] transition-colors focus:outline-none focus:border-[#008C87] focus:ring-1 focus:ring-[#008C87] disabled:bg-[#F3F4F6] disabled:text-[#9CA3AF] aria-[invalid=true]:border-[#BA1A1A] aria-[invalid=true]:focus:ring-[#BA1A1A]/20 shadow-2xs";
+  "w-full rounded-lg border border-[#E5E7EB] bg-white px-3.5 py-2.5 font-body text-sm text-[#111827] placeholder:text-[#9CA3AF] transition-colors focus:outline-none focus:border-[#8C383E] focus:ring-1 focus:ring-[#8C383E] disabled:bg-[#F3F4F6] disabled:text-[#9CA3AF] aria-[invalid=true]:border-[#BA1A1A] aria-[invalid=true]:focus:ring-[#BA1A1A]/20 shadow-2xs";
 
 // Labelled text input with hint and an accessible error bound via aria-describedby.
 export const AuthField = React.forwardRef<HTMLInputElement, AuthFieldProps>(

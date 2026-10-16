@@ -178,7 +178,7 @@ function OtpStep({ channel, verification }: OtpStepProps) {
             type="button"
             onClick={handleResend}
             disabled={resend.isPending}
-            className="font-semibold text-[#008C87] hover:underline underline-offset-4 cursor-pointer disabled:opacity-50"
+            className="font-semibold text-[#8C383E] hover:underline underline-offset-4 cursor-pointer disabled:opacity-50"
           >
             {resend.isPending ? "Sending…" : "Resend code"}
           </button>

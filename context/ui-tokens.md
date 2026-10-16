@@ -124,19 +124,30 @@ Tailwind v4 automatically generates utility classes from these tokens:
   --color-badge-vsa: #10B981;          /* British Columbia */
 
   /* ========================================================
-     PORTAL & WEB APP DESIGN SYSTEM (Black / White & Nordic Pine Teal)
+     PORTAL & WEB APP DESIGN SYSTEM (Autumn Editorial Dual Theme)
+     Light: Canvas #FFF8F2 | Surface #FFFFFF | Text #201B11 | Accent #8C383E (Wine)
+     Dark: Canvas #0C0A09 | Surface #131215 | Text #FFFFFF | Accent #E59344 (Amber)
      ======================================================== */
-  /* Light Mode Tokens */
-  --color-portal-canvas: #FFFFFF;
-  --color-portal-surface: #F3F4F6;
-  --color-portal-surface-hover: #E5E7EB;
-  --color-portal-border: #E5E7EB;
-  --color-portal-border-subtle: rgba(0, 0, 0, 0.06);
-  --color-portal-text: #000000;
-  --color-portal-text-muted: #4B5563;
+  /* Dynamic Dual-Theme Tokens mapped to CSS variables */
+  --color-portal-canvas: var(--portal-canvas);
+  --color-portal-surface: var(--portal-surface);
+  --color-portal-surface-hover: var(--portal-surface-hover);
+  --color-portal-border: var(--portal-border);
+  --color-portal-border-subtle: var(--portal-border-subtle);
+  --color-portal-text: var(--portal-text);
+  --color-portal-text-muted: var(--portal-text-muted);
+  --color-portal-primary: var(--portal-accent);
+  --color-portal-primary-hover: var(--portal-accent-hover);
+  --color-portal-primary-tint: var(--portal-accent-tint);
 
-  /* Dark Mode Tokens */
-  --color-portal-dark-canvas: #000000;
+  /* Static Fallback Tokens */
+  --color-portal-light-canvas: #FFF8F2;
+  --color-portal-light-surface: #FFFFFF;
+  --color-portal-light-border: #E5E7EB;
+  --color-portal-light-text: #201B11;
+  --color-portal-light-text-muted: #6B7280;
+
+  --color-portal-dark-canvas: #0C0A09;
   --color-portal-dark-surface: #131215;
   --color-portal-dark-surface-hover: #1D1C21;
   --color-portal-dark-border: rgba(255, 255, 255, 0.08);
@@ -144,30 +155,23 @@ Tailwind v4 automatically generates utility classes from these tokens:
   --color-portal-dark-text: #FFFFFF;
   --color-portal-dark-text-muted: #9CA3AF;
 
-  /* Nordic Pine Teal Accent Scale (#008C87) */
-  --color-accent-50: #E6F7F6;
-  --color-accent-100: #CCEFEF;
-  --color-accent-200: #99DFDE;
-  --color-accent-300: #66CFCD;
-  --color-accent-400: #33BFBC;
-  --color-accent-500: #008C87;          /* Unified Brand Accent */
-  --color-accent-600: #00736F;          /* Hover / Active */
-  --color-accent-700: #005B57;
-  --color-accent-800: #004240;
-  --color-accent-900: #002A28;
-  --color-accent-950: #001A18;
+  /* Autumn Editorial Accent Tokens for Portal */
+  --color-portal-accent: var(--portal-accent);
+  --color-portal-accent-hover: var(--portal-accent-hover);
+  --color-portal-accent-tint: var(--portal-accent-tint);
 
-  --color-portal-accent: #008C87;
-  --color-portal-accent-hover: #00736F;
-  --color-portal-accent-tint: rgba(0, 140, 135, 0.12);
+  /* Auth Card Tokens (Solid Plain Canvas & Dual-Theme Geometry) */
+  --color-auth-dark-bg: #0C0A09;
+  --color-auth-dark-card: #131215;
+  --color-auth-dark-border: rgba(255, 255, 255, 0.08);
+  --color-auth-dark-input: rgba(255, 255, 255, 0.05);
+  --color-auth-dark-input-border: rgba(255, 255, 255, 0.10);
 
-  /* Auth Card Tokens (Solid Minimalist 5:4 Proportions) */
-  --color-auth-bg: #000000;
-  --color-auth-card-bg: #131215;
-  --color-auth-card-border: rgba(255, 255, 255, 0.08);
-  --color-auth-input-bg: rgba(255, 255, 255, 0.04);
-  --color-auth-input-border: rgba(255, 255, 255, 0.10);
-  --color-auth-input-focus: #008C87;
+  --color-auth-light-bg: #FFF8F2;
+  --color-auth-light-card: #FFFFFF;
+  --color-auth-light-border: #E5E7EB;
+  --color-auth-light-input: #FFFFFF;
+  --color-auth-light-input-border: #D1D5DB;
 
 
 
@@ -187,8 +191,9 @@ Tailwind v4 automatically generates utility classes from these tokens:
      ======================================================== */
   --shadow-ambient-warm: 0 16px 32px -4px rgba(56, 20, 24, 0.08);
   --shadow-ambient-card: 0 4px 20px -2px rgba(56, 20, 24, 0.05);
-  --shadow-glass-card: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
-  --shadow-emerald-glow: 0 0 25px -4px rgba(16, 185, 129, 0.35);
+  --shadow-portal-card: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
+  --shadow-amber-glow: 0 0 25px -4px rgba(229, 147, 68, 0.35);
+  --shadow-wine-glow: 0 0 25px -4px rgba(140, 56, 62, 0.35);
 }
 ```
 
@@ -223,8 +228,8 @@ Tailwind v4 automatically generates utility classes from these tokens:
 | **Auth Primary Action Button** | `w-full rounded-sm bg-primary hover:bg-primary-hover text-white font-semibold px-5 py-3.5 shadow-sm` | Terracotta wine CTA |
 | **Auth Secondary / Social Button** | `w-full rounded-sm bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container-low` | Google sign-in, Back |
 | **Auth Info Callout** | `rounded-lg border-l-4 border-primary bg-primary/10 text-on-surface` | `FormAlert tone="info"` |
-| **Portal Canvas (Light)** | `bg-portal-canvas text-portal-text min-h-screen` | Clean Slate 50 workspace |
-| **Portal Canvas (Dark)** | `dark:bg-portal-dark-canvas dark:text-portal-dark-text min-h-screen` | Deep Obsidian terminal |
-| **Portal Primary Action** | `bg-portal-primary hover:bg-portal-primary-hover text-white dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-slate-950 font-semibold rounded-lg px-4 py-2.5 transition-colors` | Racing Emerald action button |
-| **Live Telemetry & Timer** | `font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400` | Jitter-free currency/clock readout |
+| **Portal Canvas (Light)** | `bg-portal-canvas text-portal-text min-h-screen` | Soft warm Ivory workspace (`#FFF8F2` / `#FFFFFF`) |
+| **Portal Canvas (Dark)** | `dark:bg-portal-dark-canvas dark:text-portal-dark-text min-h-screen` | Deep Obsidian Espresso terminal (`#0C0A09` / `#131215`) |
+| **Portal Primary Action** | `bg-portal-primary hover:bg-portal-primary-hover text-white font-semibold rounded-lg px-4 py-2.5 transition-colors` | Terracotta Wine (Light) / Honey Amber (Dark) |
+| **Live Telemetry & Timer** | `font-mono tabular-nums font-semibold text-primary dark:text-secondary` | Monospaced jitter-free currency/clock readout |
 

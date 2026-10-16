@@ -37,7 +37,7 @@ export function FunnelSteps({ current, hasVehicle = false }: Props) {
                 <span
                   className={cn(
                     "w-6 h-6 rounded-full flex items-center justify-center font-body text-xs font-bold shrink-0 transition-colors",
-                    isCurrent && "bg-[#008C87] text-white",
+                    isCurrent && "bg-[#8C383E] text-white",
                     isDone && "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300",
                     !isCurrent && !isDone && "bg-gray-100 text-gray-400"
                   )}

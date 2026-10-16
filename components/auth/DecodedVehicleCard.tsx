@@ -15,7 +15,7 @@ export function DecodedVehicleCard({ vehicle, onEdit }: Props) {
     <div className="rounded-lg border border-gray-200 bg-gray-50/70 p-5">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 font-body text-[11px] font-bold uppercase tracking-wider text-[#008C87]">
+          <p className="flex items-center gap-1.5 font-body text-[11px] font-bold uppercase tracking-wider text-[#8C383E]">
             <BadgeCheck className="w-3.5 h-3.5" aria-hidden />
             {isDecoded ? "Verified vehicle" : "VIN accepted"}
           </p>
@@ -29,7 +29,7 @@ export function DecodedVehicleCard({ vehicle, onEdit }: Props) {
           <button
             type="button"
             onClick={onEdit}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-body text-xs font-semibold text-[#008C87] hover:bg-[#008C87]/10 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008C87]"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-body text-xs font-semibold text-[#8C383E] hover:bg-[#8C383E]/10 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8C383E]"
           >
             <PenLine className="w-3.5 h-3.5" aria-hidden />
             Edit VIN

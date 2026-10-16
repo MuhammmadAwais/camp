@@ -7,7 +7,7 @@ interface Props {
   user: SessionUser;
 }
 
-// FR-EU-11 dashboard shell with dual-theme black/white support & green accents.
+// FR-EU-11 dashboard shell with Autumn Editorial dual-theme (Terracotta Wine & Honey Amber).
 export function SellerDashboard({ user }: Props) {
   const stats = [
     { label: "Active auctions", value: "0", icon: Timer },
@@ -25,7 +25,7 @@ export function SellerDashboard({ user }: Props) {
         </h1>
         <p className="mt-1.5 flex flex-wrap items-center gap-2 font-body text-sm text-portal-text-muted">
           <span>Selling from</span>
-          <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-[#008C87]/10 text-[#008C87] border border-[#008C87]/25 font-semibold">
+          <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-[#8C383E]/10 text-[#8C383E] border border-[#8C383E]/25 dark:bg-[#E59344]/15 dark:text-[#E59344] dark:border-[#E59344]/30 font-semibold">
             {user.postalCode}
           </span>
           <span>· {user.province}</span>
@@ -42,10 +42,10 @@ export function SellerDashboard({ user }: Props) {
             {stats.map(({ label, value, icon: Icon }) => (
               <div
                 key={label}
-                className="rounded-xl border border-portal-border bg-portal-surface p-3 sm:p-4 transition-colors hover:border-[#008C87]/40"
+                className="rounded-xl border border-portal-border bg-portal-surface p-3 sm:p-4 transition-colors hover:border-[#8C383E]/40 dark:hover:border-[#E59344]/40"
               >
                 <dt className="flex items-center gap-1 sm:gap-1.5 font-body text-[11px] sm:text-xs text-portal-text-muted">
-                  <Icon className="w-3.5 h-3.5 text-[#008C87] shrink-0" aria-hidden />
+                  <Icon className="w-3.5 h-3.5 text-[#8C383E] dark:text-[#E59344] shrink-0" aria-hidden />
                   <span className="truncate">{label}</span>
                 </dt>
                 <dd className="mt-1.5 sm:mt-2.5 font-mono text-xl sm:text-3xl font-bold tabular-nums text-portal-text">
@@ -55,7 +55,7 @@ export function SellerDashboard({ user }: Props) {
             ))}
           </dl>
 
-          <section className="rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 transition-colors hover:border-[#008C87]/30">
+          <section className="rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 transition-colors hover:border-[#8C383E]/30 dark:hover:border-[#E59344]/30">
             <h2 className="font-headline text-lg font-bold text-portal-text">Your auctions</h2>
             <p className="mt-6 mb-4 text-center font-body text-sm text-portal-text-muted max-w-md mx-auto">
               No auctions yet. Once your listing is approved, a 24-hour sealed-bid auction starts and the live bid count appears here.
@@ -63,9 +63,9 @@ export function SellerDashboard({ user }: Props) {
           </section>
         </div>
 
-        <aside className="rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 h-fit transition-colors hover:border-[#008C87]/30">
+        <aside className="rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 h-fit transition-colors hover:border-[#8C383E]/30 dark:hover:border-[#E59344]/30">
           <h2 className="flex items-center gap-2 font-headline text-lg font-bold text-portal-text">
-            <Bell className="w-4 h-4 text-[#008C87]" aria-hidden /> Notifications
+            <Bell className="w-4 h-4 text-[#8C383E] dark:text-[#E59344]" aria-hidden /> Notifications
           </h2>
           <p className="mt-6 mb-2 text-center font-body text-sm text-portal-text-muted">You&apos;re all caught up.</p>
         </aside>

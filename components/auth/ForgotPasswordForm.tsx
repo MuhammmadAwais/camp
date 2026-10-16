@@ -48,7 +48,7 @@ export function ForgotPasswordForm() {
             </Link>
           </div>
         )}
-        <Link href="/login" className="block text-center font-body text-sm font-semibold text-[#008C87] hover:underline underline-offset-4">
+        <Link href="/login" className="block text-center font-body text-sm font-semibold text-[#8C383E] hover:underline underline-offset-4">
           Back to sign in
         </Link>
       </div>

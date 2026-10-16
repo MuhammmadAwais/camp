@@ -8,7 +8,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   loadingText?: string;
 }
 
-// Onboarding CTAs: solid Nordic Pine Teal (#008C87) primary; clean white outlined secondary.
+// Onboarding CTAs: Autumn Editorial Terracotta Wine (#8C383E) primary; clean outlined secondary.
 export function AuthButton({
   variant = "primary",
   isLoading = false,
@@ -25,7 +25,7 @@ export function AuthButton({
       className={cn(
         "w-full inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-body text-sm font-semibold transition-all duration-150 active:scale-[0.99] cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
         variant === "primary" &&
-          "bg-[#008C87] text-white hover:bg-[#00736F] focus-visible:ring-[#008C87] shadow-sm",
+          "bg-[#8C383E] text-white hover:bg-[#752B30] focus-visible:ring-[#8C383E] shadow-sm",
         variant === "secondary" &&
           "bg-white border border-[#E5E7EB] text-[#111827] hover:bg-[#F9FAFB] hover:border-[#D1D5DB] focus-visible:ring-gray-300 shadow-2xs",
         className

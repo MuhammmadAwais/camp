@@ -11,7 +11,7 @@ interface Props {
 
 export function AuthShell({ children }: Props) {
   return (
-    <div className="min-h-screen w-full bg-white text-gray-900 lg:grid lg:grid-cols-12 selection:bg-[#008C87] selection:text-white">
+    <div className="min-h-screen w-full bg-white text-gray-900 lg:grid lg:grid-cols-12 selection:bg-[#8C383E] selection:text-white dark:selection:bg-[#E59344] dark:selection:text-[#0C0A09]">
       {/* LEFT COLUMN: Clean White Form Canvas */}
       <div className="lg:col-span-6 xl:col-span-5 flex min-h-screen flex-col justify-between px-4 py-5 sm:px-8 sm:py-8 lg:px-12 lg:py-10 bg-white">
         {/* Top Header: Back Link + Mobile-Visible Logo */}
@@ -31,7 +31,7 @@ export function AuthShell({ children }: Props) {
               <Image src="/logo-mark-tight.png" alt="AutoNexa Emblem" fill sizes="28px" className="object-contain" priority />
             </div>
             <span className="font-headline font-bold text-base text-gray-900 tracking-tight">
-              Auto<span className="text-[#008C87]">Nexa</span>
+              Auto<span className="text-[#8C383E] dark:text-[#E59344]">Nexa</span>
             </span>
           </Link>
         </header>

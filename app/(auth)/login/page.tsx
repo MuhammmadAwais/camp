@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
       footer={
         <>
           Not registered yet?{" "}
-          <Link href="/register" className="font-semibold text-[#008C87] hover:underline underline-offset-4">
+          <Link href="/register" className="font-semibold text-[#8C383E] hover:underline underline-offset-4">
             Create an Account
           </Link>
         </>

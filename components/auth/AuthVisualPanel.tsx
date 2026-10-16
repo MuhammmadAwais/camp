@@ -82,7 +82,7 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
 
   if (!isFull) {
     return (
-      <div className="relative h-full w-full overflow-hidden rounded-2xl bg-[#001A18]">
+      <div className="relative h-full w-full overflow-hidden rounded-2xl bg-[#0C0A09]">
         <Image
           key={imgSrc}
           src={imgSrc}
@@ -98,7 +98,7 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/55 to-black/25" aria-hidden />
         <div className="relative z-10 flex h-full flex-col justify-end p-4 sm:p-5 text-white">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#33BFBC]">{panel.tagline}</p>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#E59344]">{panel.tagline}</p>
           <p className="mt-0.5 sm:mt-1 font-headline text-sm sm:text-base font-bold leading-snug text-white line-clamp-2">{panel.title}</p>
         </div>
       </div>
@@ -106,7 +106,7 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-bl-[80px] xl:rounded-bl-[100px] bg-[#001A18] shadow-2xl">
+    <div className="relative h-full w-full overflow-hidden rounded-bl-[80px] xl:rounded-bl-[100px] bg-[#0C0A09] shadow-2xl">
       <Image
         key={imgSrc}
         src={imgSrc}
@@ -121,7 +121,7 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
           }
         }}
       />
-      {/* Dark multi-stop gradient overlay with subtle Nordic Pine teal undertone */}
+      {/* Dark multi-stop gradient overlay with warm obsidian espresso undertone */}
       <div
         className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/35"
         aria-hidden
@@ -135,7 +135,7 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
               <Image src="/logo-mark-tight.png" alt="AutoNexa Emblem" fill sizes="44px" className="object-contain" priority />
             </div>
             <span className="font-headline font-bold text-2xl xl:text-3xl text-white tracking-tight leading-none">
-              Auto<span className="text-[#33BFBC]">Nexa</span>
+              Auto<span className="text-[#E59344]">Nexa</span>
             </span>
           </Link>
         </div>

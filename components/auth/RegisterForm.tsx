@@ -155,7 +155,7 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
             ? `Step 1 of 2: ${role === "DEALER" ? "Dealer Credentials" : "Account Credentials"}`
             : `Step 2 of 2: ${role === "DEALER" ? "Dealership & Licensing" : "Contact & Location"}`}
         </span>
-        <span className="font-mono text-[11px] font-bold text-[#008C87] bg-[#008C87]/10 px-2 py-0.5 rounded-full">
+        <span className="font-mono text-[11px] font-bold text-[#8C383E] bg-[#8C383E]/10 px-2 py-0.5 rounded-full">
           {subStep} / 2
         </span>
       </div>
@@ -350,11 +350,11 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
                     label={
                       <>
                         I agree to the{" "}
-                        <Link href="/legal/terms" className="font-semibold text-[#008C87] underline underline-offset-2" target="_blank">
+                        <Link href="/legal/terms" className="font-semibold text-[#8C383E] underline underline-offset-2" target="_blank">
                           Terms
                         </Link>{" "}
                         and consent to the{" "}
-                        <Link href="/legal/privacy" className="font-semibold text-[#008C87] underline underline-offset-2" target="_blank">
+                        <Link href="/legal/privacy" className="font-semibold text-[#8C383E] underline underline-offset-2" target="_blank">
                           Privacy Policy
                         </Link>
                         .
@@ -421,11 +421,11 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
                     label={
                       <>
                         I agree to the{" "}
-                        <Link href="/legal/terms" className="font-semibold text-[#008C87] underline underline-offset-2" target="_blank">
+                        <Link href="/legal/terms" className="font-semibold text-[#8C383E] underline underline-offset-2" target="_blank">
                           Terms
                         </Link>{" "}
                         and consent to the{" "}
-                        <Link href="/legal/privacy" className="font-semibold text-[#008C87] underline underline-offset-2" target="_blank">
+                        <Link href="/legal/privacy" className="font-semibold text-[#8C383E] underline underline-offset-2" target="_blank">
                           Privacy Policy
                         </Link>
                         .

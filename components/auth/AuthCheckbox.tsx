@@ -24,7 +24,7 @@ export const AuthCheckbox = React.forwardRef<HTMLInputElement, Props>(({ label, 
             className="peer sr-only"
             {...props}
           />
-          <span className="block w-4.5 h-4.5 rounded border border-[#D1D5DB] bg-white transition-colors group-hover:border-[#9CA3AF] peer-checked:bg-[#008C87] peer-checked:border-[#008C87] peer-focus-visible:ring-2 peer-focus-visible:ring-[#008C87]/40 peer-focus-visible:ring-offset-1 peer-aria-[invalid=true]:border-[#BA1A1A]" />
+          <span className="block w-4.5 h-4.5 rounded border border-[#D1D5DB] bg-white transition-colors group-hover:border-[#9CA3AF] peer-checked:bg-[#8C383E] peer-checked:border-[#8C383E] peer-focus-visible:ring-2 peer-focus-visible:ring-[#8C383E]/40 peer-focus-visible:ring-offset-1 peer-aria-[invalid=true]:border-[#BA1A1A]" />
           <Check className="absolute inset-0 m-auto w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" strokeWidth={3} aria-hidden />
         </span>
         <span className="font-body text-xs sm:text-sm text-gray-600 leading-relaxed">{label}</span>

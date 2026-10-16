@@ -98,13 +98,13 @@ export function LoginForm({ next, notice }: Props) {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 text-[#008C87] focus:ring-[#008C87]"
+                className="w-4 h-4 rounded border-gray-300 text-[#8C383E] focus:ring-[#8C383E]"
               />
               <span className="font-body text-xs text-gray-600">Keep me logged in</span>
             </label>
             <Link
               href="/forgot-password"
-              className="font-body text-xs font-semibold text-[#008C87] hover:underline underline-offset-4 transition-colors py-1"
+              className="font-body text-xs font-semibold text-[#8C383E] hover:underline underline-offset-4 transition-colors py-1"
             >
               Forgot password?
             </Link>
