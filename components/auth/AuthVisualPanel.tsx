@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,7 +15,7 @@ type PanelContent = {
 };
 
 const DEFAULT_PANEL: PanelContent = {
-  image: "/auth/deal-making.jfif",
+  image: "/auth/deal-making.webp",
   eyebrow: "Wholesale Auction Floor",
   title: "Your car, Canada's top dealers, one sealed-bid auction.",
   tagline: "BID • WIN • DRIVE",
@@ -22,43 +23,43 @@ const DEFAULT_PANEL: PanelContent = {
 
 const PANELS: Record<string, PanelContent> = {
   "/login": {
-    image: "/auth/deal-making.jfif",
+    image: "/auth/deal-making.webp",
     eyebrow: "Wholesale Auction Floor",
     title: "Canada's Premier Wholesale Vehicle Marketplace",
     tagline: "BID • WIN • DRIVE",
   },
   "/register": {
-    image: "/auth/keys-giving.jpg",
+    image: "/auth/keys-giving.webp",
     eyebrow: "Canadian Marketplace",
     title: "Verified Sellers Get Serious Dealer Competition",
     tagline: "BID • WIN • DRIVE",
   },
   "/sell": {
-    image: "/auth/keys-giving.jpg",
+    image: "/auth/keys-giving.webp",
     eyebrow: "Instant Valuation",
     title: "Skip Lowball Trade-Ins. Let Canadian Dealers Compete.",
     tagline: "BID • WIN • DRIVE",
   },
   "/verify": {
-    image: "/auth/keys-giving.jpg",
+    image: "/auth/keys-giving.webp",
     eyebrow: "Account Security",
     title: "Two Quick Codes Keep Your Account Protected",
     tagline: "BID • WIN • DRIVE",
   },
   "/verify-kyc": {
-    image: "/auth/keys-giving.jpg",
+    image: "/auth/keys-giving.webp",
     eyebrow: "Identity Verification",
     title: "Confirming Ownership Protects Every Transaction",
     tagline: "BID • WIN • DRIVE",
   },
   "/forgot-password": {
-    image: "/auth/deal-making.jfif",
+    image: "/auth/deal-making.webp",
     eyebrow: "Account Recovery",
     title: "Secure Account Recovery",
     tagline: "BID • WIN • DRIVE",
   },
   "/reset-password": {
-    image: "/auth/deal-making.jfif",
+    image: "/auth/deal-making.webp",
     eyebrow: "Account Recovery",
     title: "Set Your New Password",
     tagline: "BID • WIN • DRIVE",
@@ -73,17 +74,27 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
   const pathname = usePathname();
   const panel = PANELS[pathname] ?? DEFAULT_PANEL;
   const isFull = variant === "full";
+  const [imgSrc, setImgSrc] = useState(panel.image);
+
+  useEffect(() => {
+    setImgSrc(panel.image);
+  }, [panel.image]);
 
   if (!isFull) {
     return (
       <div className="relative h-full w-full overflow-hidden rounded-2xl bg-[#001A18]">
         <Image
-          key={panel.image}
-          src={panel.image}
-          alt=""
+          key={imgSrc}
+          src={imgSrc}
+          alt="AutoNexa Marketplace"
           fill
           sizes="(max-width: 1024px) 100vw, 0px"
           className="object-cover object-center"
+          onError={() => {
+            if (imgSrc.endsWith(".webp")) {
+              setImgSrc(imgSrc.replace(".webp", ".jpg"));
+            }
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/55 to-black/25" aria-hidden />
         <div className="relative z-10 flex h-full flex-col justify-end p-4 sm:p-5 text-white">
@@ -97,13 +108,18 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
   return (
     <div className="relative h-full w-full overflow-hidden rounded-bl-[80px] xl:rounded-bl-[100px] bg-[#001A18] shadow-2xl">
       <Image
-        key={panel.image}
-        src={panel.image}
-        alt=""
+        key={imgSrc}
+        src={imgSrc}
+        alt="AutoNexa Marketplace"
         fill
         priority
         sizes="(min-width: 1024px) 58vw, 0px"
         className="object-cover object-center"
+        onError={() => {
+          if (imgSrc.endsWith(".webp")) {
+            setImgSrc(imgSrc.replace(".webp", ".jpg"));
+          }
+        }}
       />
       {/* Dark multi-stop gradient overlay with subtle Nordic Pine teal undertone */}
       <div
