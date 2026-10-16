@@ -1,103 +1,196 @@
 # Progress Tracker: AutoNexa & CAMP Platform
 
-Update this file after every completed feature. Any AI agent reading this should immediately know what is done, what is in progress, and what is next.
+Update this file after completing each page/component. Any AI agent reading this will immediately know what is done, what is in progress, and what is next.
 
 ---
 
 ## Current Status
 
-**Phase:** 3 — Web App Foundation, Unified Auth Suite & Wholesale Portal Shell
-**Phase:** 3 — Web App Foundation, Unified Auth Suite & Wholesale Portal Shell
-**Last completed:** Comparison Suite Mobile Architectural Refactor & Imprint:
-- **`ComparisonCards.tsx`:** Desktop 50/50 comparison split bar (`hidden lg:grid`) &rarr; Mobile interactive segmented pill switcher (`lg:hidden min-h-[44px]`) switching between `AutoNexa Platform` and `Traditional Approach`, with in-card context identity badges, cross-navigation links, and `min-h-[48px]` appraisal action trigger.
-- **`ComparisonMatrix.tsx`:** Desktop 12-column table with continuous highlighted AutoNexa card &rarr; Mobile consolidated comparative architecture (`md:hidden`): single top AutoNexa advantage banner (official emblem, "AutoNexa Platform", `+$2,850 CAD` badge), unified comparative card container (`rounded-2xl bg-surface-container-low border border-border-card divide-y divide-border-card/60`), 3-way comparative telemetry rows (`AutoNexa [col-span-6]` high-contrast card vs `Trade-In [col-span-3]` vs `Classifieds [col-span-3]`), eliminating repetitive card bloat and 10 duplicate logos, completed with full-width `min-h-[48px]` CTA.
-- **TypeScript & Build Verification:** Verified with `npx tsc --noEmit` (Code 0).
-- **Living Registry Imprint:** Both component specifications captured in `context/ui-registry.md`.
-**Next:** 09 Listing Wizard: VIN Auto-decode via NHTSA VPIC & Photo Upload pipeline
+**Active Phase:** Phase 3 — Unified Authentication, KYC Verification & RBAC Route Infrastructure  
+**Next Page to Build:** Phase 4.1: `/seller/dashboard` (Seller Dashboard Shell, Active Auction Cards & Telemetry)  
+**Workspace State:** Professional Directory Structure established (`docs/specifications/`, `docs/references/`, `docs/designs/`). Clean git status and zero TypeScript compilation errors.
 
 ---
 
-## Progress
+## Master Implementation Plan by Phases & Pages
 
-### Phase 1 — Foundation & Architecture
-- [x] 01 Next.js 16 Scaffold & Route Groups (`(auth)`, `(seller)`, `(dealer)`, `(admin)`)
-- [x] 02 Tailwind v4 & Autumn Editorial Design Tokens (`globals.css` @theme config)
-- [ ] 03 `next-intl` Bilingual Setup (EN/FR for Quebec Law 25)
-- [x] 04 TanStack Query & Zustand Store Initialization (`app/providers.tsx`, `lib/query-keys.ts`, `store/`)
-- [x] 05 JWT Auth Wrapper & Proxy (`proxy.ts`, `lib/auth-context.tsx`, role segregation)
-
-### Phase 2 — AutoNexa Landing Page & Public Funnel
-- [x] 06-A Navbar (`Navbar.tsx` with logo, navigation links, and portal action buttons)
-- [x] 06-B Hero Section (`HeroSection.tsx` with Epilogue display title, instant appraisal card)
-- [x] 06-B.1 Micro-Section: As-Seen-On Media Ticker (`brands-logo` ribbon)
-- [x] 06-C What is AutoNexa (`WhatIsAutoNexa.tsx` narrative value proposition & geometric showcase cards)
-- [x] 06-D Discover Inventory & Makes (`DiscoverSection.tsx` with top comparison micro-section & car showcase cards)
-- [x] 06-E How It Works (`HowItWorks.tsx` with 3-step illustrated workflow)
-- [x] 06-F Key Features & Guarantees (`FeaturesSection.tsx` with central logo core & editorial features)
-- [x] 06-F.1 Dual Comparison Engine (`ComparisonCards.tsx` 2-card challenge/solution duel & `ComparisonMatrix.tsx` continuous full-height column audit)
-- [x] 06-G Testimonials & Social Proof (`TestimonialsSection.tsx` with avatar cards)
-- [x] 06-H FAQs Accordion (`FaqSection.tsx` interactive collapsible FAQ)
-- [x] 06-I Final Conversion CTA Banner (`CtaBanner.tsx` pre-footer appraisal CTA)
-- [x] 06-J Footer (`Footer.tsx` brand links, OMVIC/AMVIC badges, and legal disclosures)
-- [ ] 07 Legal Pages (`/legal/privacy` and `/legal/terms` PIPEDA & Law 25 compliant)
-
-### Phase 3 — Seller Portal (Mobile-First / Light Mode)
-- [x] 08-A VIN-first entry `/sell` (ISO 3779 check digit + NHTSA vPIC decode, manual fallback) — hero widget routes here
-- [x] 08-B Registration `/register` (FR-EU-01 fields, CASL opt-in, PIPEDA consent, 18+/owner attestation, postal→province suggest)
-- [x] 08-C Email + SMS OTP verification `/verify` (attempt limit, resend cooldown, session issued on completion)
-- [x] 08-D Login, forgot password, reset password (`/login`, `/forgot-password`, `/reset-password`)
-- [x] 08-E KYC flow `/verify-kyc` (consent → ID front/back → selfie → review → PENDING → VERIFIED; provider stubbed)
-- [x] 08-F Seller dashboard shell `/dashboard` with KYC gate banner and listing-start card (FR-EU-11 empty states)
-- [ ] 08-G Swap mock API for Express (set `NEXT_PUBLIC_API_URL`); Google OAuth start/callback; real KYC provider SDK (liveness)
-- [ ] 09 Listing Wizard: VIN Auto-decode via NHTSA VPIC
-- [ ] 10 Listing Wizard: Details & Specs (Mileage, Trans, History)
-- [ ] 11 Listing Wizard: Interactive SVG Damage Hotspot Mapper
-- [ ] 12 Listing Wizard: Direct-to-S3 Image Upload (Client compressed, EXIF stripped)
-- [ ] 13 Listing Wizard: Price Review & Submission
-
-### Phase 4 — Dealer Terminal (Desktop / Dark Mode)
-- [ ] 14 Dealer Dashboard & Subscription Gate UI (Stripe integration)
-- [ ] 15 Live Inventory Feed (Regional radius filtered)
-- [ ] 16 Vehicle Detail View (Carfax, Specs, Damage report)
-
-### Phase 5 — The Bidding Engine (Real-Time)
-- [ ] 17 Server-Synced 24h Countdown Timer UI
-- [ ] 18 Dealer UI: Sealed Bid Submission & Upward Revision
-- [ ] 19 Seller UI: Live Bid Count Telemetry (Bid amounts strictly hidden)
-
-### Phase 6 — Resolution & Fulfillment
-- [ ] 20 Seller UI: Post-Auction Unsealed Ledger & Dealer Selection
-- [ ] 21 24h Acceptance Window Timer UI
-- [ ] 22 Dealer UI: Offline Appointment Logger (Complete / No-Show / Decline)
-
-### Phase 7 — Admin Backoffice
-- [ ] 23 Listing Moderation Queue
-- [ ] 24 Dealer License Verification Table (OMVIC / AMVIC / VSA)
+### Phase 1 — Foundation, RBAC Security Infrastructure & Workspace
+- [x] **01 Next.js 16 Scaffold & Route Groups** (`app/(marketing)`, `app/(auth)`, `app/(seller)`, `app/(dealer)`, `app/(admin)`)
+- [x] **02 Tailwind CSS v4 & Dual-Theme Tokens** (`globals.css` @theme config with Autumn Editorial & FinTech Obsidian/Porcelain)
+- [x] **03 TanStack Query v5 & Zustand Store Initialization** (`app/providers.tsx`, `lib/query-keys.ts`, `store/`)
+- [x] **04 Enterprise Workspace Organization** (`docs/specifications/`, `docs/references/`, `docs/designs/`)
+- [x] **05 Dual Route-Aware Scrollbar Engine** (Autumn Wine `#8C383E` for landing vs. Nordic Teal `#008C87` for portals)
+- [x] **06 In-Rail Nav Toggle & Segmented Theme Switcher** (`Sidebar.tsx`, `ThemeToggle.tsx`)
+- [x] **07 Pre-Hydration Browser Extension Shield** (`layout.tsx` DOM interception for `bis_skin_checked` attribute mutations)
+- [ ] **08 Role Route Guards & Edge Middleware** (`components/auth/RequireRole.tsx`, `proxy.ts` matchers for `/seller/*`, `/dealer/*`, `/admin/*`)
+- [ ] **09 `next-intl` Bilingual Layer** (Quebec Law 25 compliance for French `/fr` and English `/en` strings)
 
 ---
 
-## Agent Directives
-*   **UI Imprinting:** Run `/imprint` after completing each landing page component in Phase 2 to register its exact props and Tailwind token classes in `ui-registry.md`.
-*   **Design Compliance:** Every landing page component must adhere strictly to `DESIGN (3).md` and `ui-tokens.md` (terracotta wine `#8C383E`, honey amber `#E59344`, cream ivory canvas `#FFF8F2`, Epilogue display headers, Plus Jakarta Sans body).
-*   **State Verification:** Run `/review` before finalizing the landing page or portal transitions.
+### Phase 2 — Public Marketing Funnel & Appraisal Engine (Completed)
+*Design Language: Autumn Editorial (Terracotta Wine `#8C383E`, Honey Amber `#E59344`, Cream Canvas `#FFF8F2`). Full responsive parity.*
+
+- [x] **10-A Navigation Header** (`Navbar.tsx` — brand identity, portal deep links, and sticky scroll transitions)
+- [x] **10-B Hero Section & Appraisal Card** (`HeroSection.tsx` & `MarketValuationWidget.tsx` with 3D tilt & glare micro-interactions)
+- [x] **10-B.1 Press & Media Ribbon** (`BrandCarousel.tsx` with high-contrast badge cutouts)
+- [x] **10-C What is AutoNexa** (`WhatIsAutoNexa.tsx` narrative value proposition & statistics cards)
+- [x] **10-D Discover Wholesale Sales** (`DiscoverSection.tsx` verified dealer transactions & surplus above trade-in)
+- [x] **10-E How It Works** (`HowItWorks.tsx` 3-step illustrated auction journey)
+- [x] **10-F Features & Guarantees** (`FeaturesSection.tsx` sealed bid secrecy, OMVIC/AMVIC compliance, EXIF privacy)
+- [x] **10-F.1 Dual Comparison Engine** (`ComparisonCards.tsx` 2-card challenge & `ComparisonMatrix.tsx` full-height audit matrix)
+- [x] **10-G Social Proof & Testimonials** (`TestimonialsSection.tsx` with verified Canadian province badges)
+- [x] **10-H Interactive FAQs Accordion** (`FaqSection.tsx` high-intent Q&A)
+- [x] **10-I Pre-Footer Conversion Banner** (`CtaBanner.tsx` valuation trigger banner)
+- [x] **10-J Regulatory Footer** (`Footer.tsx` OMVIC, AMVIC, VSA compliance seals & legal notices)
+- [ ] **11 Legal Pages** (`/legal/privacy` and `/legal/terms` PIPEDA & Quebec Law 25 compliant)
 
 ---
 
-## Decisions Made During Build
+### Phase 3 — Unified Authentication & Canadian KYC Suite
+*Design Mode: Porcelain Light / Obsidian Dark Glassmorphism (`.glass-card`, `.glow-teal`). Both Mobile & Desktop responsive.*
 
-- **2026-09-25 (Architecture):** Adopted AutoNexa as the public-facing brand and product identity. Configured the Autumn Editorial design system from `DESIGN (3).md` for the entire marketing funnel while maintaining auction portal telemetry invariants.
-- **2026-10-03 (Hero & Carousel Micro-Interactions):** Implemented interactive 3D perspective mouse hover tilt with specular glare highlight on `MarketValuationWidget.tsx`. Fixed `image_14.png` (Ford badge) in `BrandCarousel.tsx` with a transparent background cutout, eliminating the solid white oval fill under contrast filters.
-- **2026-10-03 (Seller Marketplace Realignment):** Realigned `DiscoverSection.tsx` product cards from retail buyer inventory to verified recent dealer sales. Preserved 100% of card geometry while showing actual seller payouts, dealer bid counts, and surplus above trade-in offers.
-- **2026-10-09 (Web App Design System & Dual-Theme Architecture):** Established dedicated Web App & Portal Design Tokens (Porcelain `#F8FAFC`, Obsidian `#080C14`, Racing Emerald scale `#16A34A` / `#10B981`) in `DESIGN (3).md`, `context/ui-tokens.md`, and `app/globals.css`. Configured glassmorphism utilities (`.glass-card`, `.glass-input`, `.glow-emerald`) over `public/illustrations/why-us.webp` for the upcoming Auth Suite.
-- **2026-10-09 (Feature-Based Architecture Realignment & Route Collision Fix):** Transitioned to a clean frontend-only feature-based directory structure (`features/auth/`, `features/seller/`, `features/dealer/`, `features/admin/`) with isolated services ready for future API integration. Resolved Edge runtime buffer crash and route group collision, restoring seamless rendering of the glassmorphic authentication suite.
-
-- **2026-10-10 (Seller Onboarding Funnel):** Chose a VIN-first funnel — the hero widget hands off to `/sell`, the decoded VIN carries through registration in `useSellIntentStore` (VIN + postal only; specs stay in TanStack). Contact verification is email first, then SMS; a session is only issued once both pass (FR-EU-01). Built against Next.js route-handler mocks in `app/api/**` that mirror the planned Express contract (`{ data }` / `{ error: { code, message, fields, details } }`); mocks answer only in development or with `ENABLE_MOCK_API=true`. i18n (next-intl) deliberately deferred — new form strings are English-only and will need extracting in step 03.
-- **2026-10-10 (Auth UI token note):** The registry's auth pattern called for `bg-white text-slate-950` / `text-neutral-400`; implemented with tokens instead (`text-portal-text`, `text-white/60`) to honour the no-raw-colour rule. Error text on the dark glass uses `text-primary-fixed-dim` because `text-error` fails contrast there.
-
-- **2026-10-10 (Onboarding Light Theme, revised):** After review, the interim royal-blue theme was replaced with the brand's Autumn Editorial palette (wine `primary`, honey `secondary`, ivory `surface`) and a split layout with step-specific photography (`AuthVisualPanel`). Inputs and buttons now use 8px `rounded-sm`; the 24px `rounded-xl` read as pills. The temporary `trust-blue`/`portal-input-border`/`portal-text-secondary`/`portal-text-subtle` tokens were removed again.
+- [x] **12 Login Page** (`/login` — `LoginForm.tsx` email/password, demo role switcher, redirect sanitization)
+- [x] **13 Seller Registration** (`/register` — `RegisterForm.tsx` FR-EU-01 fields, CASL opt-in, PIPEDA consent, postal auto-lookup)
+- [x] **14 Contact OTP Verification** (`/verify` — `VerifyOtpForm.tsx` SMS + Email two-channel verification with resend cooldown)
+- [x] **15 Password Recovery Suite** (`/forgot-password` & `/reset-password` — email verification token mock)
+- [ ] **16 Automated Identity KYC Verification** (`/verify-kyc` — `KycVerificationView.tsx`: Government ID capture [Driver's License / Passport] + liveness selfie stub, `PENDING` → `VERIFIED` state engine)
 
 ---
 
-## Notes
+### Phase 4 — Seller Portal & 5-Step Listing Wizard (Mobile-First Priority)
+*Primary Canvas: Mobile Viewport (`375px` to `640px`) scalable to Desktop. Light porcelain theme (`#FAFBFC`).*
 
-- Assets in `public/` are mapped directly to their respective sections (`brands-logo/`, `car-company-logos/`, `illustrations/`, `showcase-cars-with-bg/`, `textures/`, `logo.png`).
+#### Milestone 4.1: Seller Dashboard
+- [ ] **Page 4.1: Seller Dashboard Shell**
+  - **Route:** `/seller/dashboard`
+  - **Component:** `SellerDashboard.tsx`
+  - **Features:** KYC Status Banner, active vehicle cards, sealed-bid count telemetry (`N sealed dealer bids`), "List New Car" CTA, empty-state placeholder.
+  - **API Contract:** `GET /api/seller/dashboard`, `GET /api/kyc/status`.
+
+#### Milestone 4.2: 5-Step Listing Wizard (`/seller/list-car`)
+- [ ] **Page 4.2.1: Step 1 — VIN Auto-Decode**
+  - **Route:** `/seller/list-car/vin` (or Step 1 in `ListingWizard.tsx`)
+  - **Component:** `VinDecodeStep.tsx`
+  - **Features:** 17-character VIN mask, ISO 3779 checksum validator, NHTSA vPIC auto-decode hook, manual specification fallback override.
+  - **API Contract:** `POST /api/vin/decode`.
+- [ ] **Page 4.2.2: Step 2 — Vehicle Specs & History**
+  - **Route:** `/seller/list-car/details`
+  - **Component:** `VehicleSpecsStep.tsx`
+  - **Features:** Odometer mileage in km, transmission, drivetrain, exterior/interior colour, number of keys, accident declaration, lien status.
+  - **API Contract:** Controlled inputs via React Hook Form + Zod validation.
+- [ ] **Page 4.2.3: Step 3 — Interactive 2D Damage Hotspot Mapper**
+  - **Route:** `/seller/list-car/condition`
+  - **Component:** `DamageMapperStep.tsx`
+  - **Features:** Interactive SVG vehicle schematics (front, sides, rear, roof). Tap to place pins, select severity (Minor, Moderate, Severe), add description and photo attachments.
+  - **API Contract:** `DamageHotspot[]` saved to `useListingWizardStore`.
+- [ ] **Page 4.2.4: Step 4 — Media Gallery & Direct-to-S3 Upload**
+  - **Route:** `/seller/list-car/media`
+  - **Component:** `PhotoUploadStep.tsx`
+  - **Features:** 8 to 30 photo intake, drag-to-reorder grid, client-side downscaling to 1920px (`browser-image-compression`), EXIF metadata scrubbing, presigned S3 upload progress bar.
+  - **API Contract:** `POST /api/listings/media/presign`.
+- [ ] **Page 4.2.5: Step 5 — Reserve Price & Legal Submission**
+  - **Route:** `/seller/list-car/pricing`
+  - **Component:** `PriceReviewStep.tsx`
+  - **Features:** Reserve asking price in CAD cents (formatted as `$XX,XXX`), declaration checkboxes (owner attestation, accurate condition declaration), 1-click submit to moderation queue.
+  - **API Contract:** `POST /api/listings`.
+
+#### Milestone 4.3: Auction Telemetry & Fulfillment
+- [ ] **Page 4.3: Active Auction Live Tracker**
+  - **Route:** `/seller/listings/[id]`
+  - **Component:** `SellerActiveAuctionView.tsx`
+  - **Features:** 24h digital countdown timer clock, real-time sealed-bid count telemetry via SSE. *(Strict invariant: zero dollar amounts exposed)*.
+- [ ] **Page 4.4: Post-Auction Unsealed Dealer Selection**
+  - **Route:** `/seller/listings/[id]/select-dealer`
+  - **Component:** `DealerSelectionView.tsx`
+  - **Features:** Unsealed bid ladder ranked by amount or dealer proximity (km), dealer OMVIC/AMVIC ratings, 24h decision countdown, "Select Dealership" acceptance action.
+- [ ] **Page 4.5: Offline Appointment & Dealership Voucher**
+  - **Route:** `/seller/listings/[id]/appointment`
+  - **Component:** `AppointmentVoucherCard.tsx`
+  - **Features:** Dealership address, business hours, map directions, required documents checklist (Ownership slip, safety cert, ID), 24h appointment countdown timer, QR verification pass.
+
+---
+
+### Phase 5 — Dealership Trading Terminal (Desktop-First Priority)
+*Primary Canvas: Desktop Monitor (`1280px` to `1920px`). High-density FinTech Obsidian Dark theme (`#080C14`, `#131215`, `#008C87` teal, `#16A34A` emerald).*
+
+#### Milestone 5.1: Dealer Onboarding & Subscription
+- [ ] **Page 5.1: Dealership Registration & Licensing**
+  - **Route:** `/dealer/register`
+  - **Component:** `DealerRegisterView.tsx`
+  - **Features:** Business name, OMVIC / AMVIC / VSA license intake, operating address, geographic service radius (25km–150km).
+- [ ] **Page 5.2: Subscription Tier Gate**
+  - **Route:** `/dealer/subscription`
+  - **Component:** `DealerSubscriptionView.tsx`
+  - **Features:** Stripe CAD billing tiers (Basic, Pro, Enterprise), monthly/annual toggle, bid quota monitor, past-due billing banner.
+
+#### Milestone 5.2: Trading Floor & Bidding Engine
+- [ ] **Page 5.3: Live Wholesale Auction Exchange (Trading Floor)**
+  - **Route:** `/dealer/inventory`
+  - **Component:** `DealerInventoryFeed.tsx`
+  - **Features:** High-density vehicle card grid / matrix, faceted filters (Make, Year, Max Mileage, Radius km, Damage grade), server-synced 24h countdown clocks with sub-15min Canadian Crimson urgency state.
+- [ ] **Page 5.4: Vehicle Inspection Sheet & Photo Gallery**
+  - **Route:** `/dealer/auctions/[id]`
+  - **Component:** `VehicleInspectionView.tsx`
+  - **Features:** High-res photo gallery with pan/zoom, declared damage hotspot inspector, decoded technical specifications, Carfax history summary stub.
+- [ ] **Page 5.5: Sealed-Bid Placement Modal / Slip**
+  - **Route:** Integrated modal or `/dealer/auctions/[id]/bid`
+  - **Component:** `SealedBidSlip.tsx`
+  - **Features:** Integer CAD cents dollar input, quick-increment chips (`+$250`, `+$500`, `+$1,000`), upward-revision tracker (dealers can raise their bids, never lower them), legally binding commitment declaration.
+- [ ] **Page 5.6: Active Bids & Outbid Telemetry**
+  - **Route:** `/dealer/active-bids`
+  - **Component:** `DealerActiveBidsView.tsx`
+  - **Features:** All placed bids across open auctions, status indicators (`ACTIVE`, `OUTBID_ESTIMATE`, `CLOSING_SOON`), 1-click upward revision modal.
+
+#### Milestone 5.3: Match Fulfillment & Administration
+- [ ] **Page 5.7: Won Matches & Offline Inspection Logger**
+  - **Route:** `/dealer/won-matches`
+  - **Component:** `DealerWonMatchesView.tsx`
+  - **Features:** Seller contact unsealed, 24h appointment countdown clock, appointment outcome logger (`COMPLETED` with final transaction price, `NO_SHOW`, or `DECLINED_AFTER_INSPECTION` with reason).
+- [ ] **Page 5.8: Dealership Team Management** (`DEALER_ADMIN` role only)
+  - **Route:** `/dealer/team`
+  - **Component:** `DealerTeamView.tsx`
+  - **Features:** Invite staff members, assign roles (`DEALER_ADMIN` vs `DEALER_AGENT`), revoke access.
+- [ ] **Page 5.9: Dealership Invoices & Quotas** (`DEALER_ADMIN` role only)
+  - **Route:** `/dealer/billing`
+  - **Component:** `DealerBillingView.tsx`
+  - **Features:** Stripe billing portal launcher, invoice history download, monthly bid quota gauge.
+
+---
+
+### Phase 6 — Platform Administrator Backoffice (Desktop-First Priority)
+*Primary Canvas: Desktop Workstation (`1440px`+). Clean institutional data density.*
+
+- [ ] **Page 6.1: Seller Listing Moderation Queue**
+  - **Route:** `/admin/moderation`
+  - **Component:** `ListingModerationView.tsx`
+  - **Features:** Review pending seller submissions before the 24h auction opens. Decoded VIN specs vs. photos check, damage inspection check. 1-click "Approve & Start 24h Auction", "Request Edits", or "Reject with Reason".
+- [ ] **Page 6.2: Dealer Regulatory License Verification Queue**
+  - **Route:** `/admin/dealers`
+  - **Component:** `DealerVerificationView.tsx`
+  - **Features:** Pending dealership registrations, validation against provincial registries (OMVIC, AMVIC, VSA), approve/suspend dealer accounts.
+- [ ] **Page 6.3: Auction Master Operations & Emergency Overrides**
+  - **Route:** `/admin/auctions`
+  - **Component:** `AdminAuctionsView.tsx`
+  - **Features:** Filter auctions by state (`PENDING_REVIEW`, `ACTIVE`, `UNSEALED`, `ACCEPTED`, `COMPLETED`, `CANCELLED`). Manual 24h time extension, emergency cancellation with mandatory audit log note.
+- [ ] **Page 6.4: Dispute Resolution Case Management**
+  - **Route:** `/admin/disputes`
+  - **Component:** `DisputeManagementView.tsx`
+  - **Features:** Case management for post-inspection disputes between seller and dealer. Status tracking (`OPEN`, `INVESTIGATING`, `RESOLVED`, `CLOSED`), resolution notes logger.
+- [ ] **Page 6.5: Platform Analytics & Provincial Volume**
+  - **Route:** `/admin/analytics`
+  - **Component:** `AdminAnalyticsView.tsx`
+  - **Features:** Gross Merchandise Value (GMV), auction success rate, average bids per listing, provincial volume heat map (Ontario, Alberta, BC, Quebec), subscription MRR.
+- [ ] **Page 6.6: Immutable Platform Audit Trail**
+  - **Route:** `/admin/audit-log`
+  - **Component:** `AdminAuditLogView.tsx`
+  - **Features:** Non-repudiation audit table recording every administrative action, actor ID, entity modified, timestamp, and before/after JSON diffs.
+
+---
+
+## Agent Directives & Production Invariants
+
+1. **Strict Sealed-Bid Invariant:** The UI must NEVER render or expose live bid CAD amounts to sellers or competing dealers while an auction is `ACTIVE`. Only the real-time bid count (`current_bid_count`) is displayed.
+2. **Strict Integer CAD Cents:** Never use JavaScript floating-point arithmetic for currency. Store, calculate, and pass all dollar values as whole integer cents (e.g. `$35,000.00` = `3500000`). Format to currency decimals only in the final UI presentation layer.
+3. **Decoupled API Boundary:** All mutations run via TanStack `useMutation` through `lib/api-client.ts`. When `NEXT_PUBLIC_API_URL` is omitted, contract-accurate Next.js route handlers (`app/api/**`) simulate network latency, HTTP status codes, and mock data.
+4. **Living Component Imprinting:** Run `/imprint` after building every new UI page to record visual patterns, prop signatures, and Tailwind token classes in `context/ui-registry.md`.
+5. **No Hardcoded Hex Colors:** Use designated design tokens (`bg-primary`, `bg-secondary`, `bg-portal-surface`, `text-portal-text`, `border-portal-border`, `#008C87` Nordic Teal, `#16A34A` Emerald).

@@ -2,7 +2,7 @@
 
 Strict, production-grade rules for building user interfaces across AutoNexa.
 This system merges two distinct visual experiences:
-1. **The Public Marketing Experience (AutoNexa Landing Page):** Governed by the **Autumn Editorial** design language ([DESIGN (3).md](file:///c:/Users/Prime/OneDrive/Documents/Office/Office%20Projects/camp/DESIGN%20%283%29.md)) — tactile warmth, editorial restraint, warm ivory canvas, and curated typography.
+1. **The Public Marketing Experience (AutoNexa Landing Page):** Governed by the **Autumn Editorial** design language ([DESIGN (3).md](file:///c:/Users/Prime/OneDrive/Documents/Office/Office%20Projects/camp/docs/designs/DESIGN%20%283%29.md)) — tactile warmth, editorial restraint, warm ivory canvas, and curated typography.
 2. **The High-Velocity Auction Portals (Seller / Dealer):** FinTech data density, dual-mode (Porcelain / Obsidian), and sealed-bid telemetry.
 
 ---

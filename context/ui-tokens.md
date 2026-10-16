@@ -2,7 +2,7 @@
 
 Design tokens engineered for the AutoNexa Canadian wholesale vehicle marketplace.
 These tokens unite two core domains:
-1. **The Public Marketing & Landing Experience (AutoNexa):** Powered by the **Autumn Editorial** design system specified in [DESIGN (3).md](file:///c:/Users/Prime/OneDrive/Documents/Office/Office%20Projects/camp/DESIGN%20%283%29.md) — rich terracotta wine, honey amber, warm oat canvas, and editorial typography.
+1. **The Public Marketing & Landing Experience (AutoNexa):** Powered by the **Autumn Editorial** design system specified in [DESIGN (3).md](file:///c:/Users/Prime/OneDrive/Documents/Office/Office%20Projects/camp/docs/designs/DESIGN%20%283%29.md) — rich terracotta wine, honey amber, warm oat canvas, and editorial typography.
 2. **The High-Velocity Auction Portals (Seller / Dealer):** Institutional FinTech density, dual-mode (Porcelain Light vs. Obsidian Dark), and monospaced auction telemetry.
 
 Never hardcode hex values or use raw Tailwind color classes (e.g. `bg-blue-500`) in components. Use these exact token classes throughout the codebase.
