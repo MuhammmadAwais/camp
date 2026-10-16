@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { Providers } from "./providers";
 import { AuthProvider } from "@/lib/auth-context";
@@ -21,7 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth antialiased dark" suppressHydrationWarning>
       <head>
-        <script
+        <Script
+          id="autonexa-theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
