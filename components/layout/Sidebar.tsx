@@ -212,6 +212,7 @@ export function Sidebar() {
           </button>
 
           {/* Integrated Desktop Toggle Trigger */}
+          {/* Integrated Desktop Toggle Trigger (Expanded Mode) */}
           {!isCollapsed && (
             <button
               type="button"
@@ -223,23 +224,36 @@ export function Sidebar() {
               <SidebarSimple className="size-4" weight="bold" />
             </button>
           )}
-
-          {/* Collapsed Edge Expansion Notch Trigger */}
-          {isCollapsed && (
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 size-6 rounded-full bg-white dark:bg-[#1b1a1f] hover:bg-[#008C87] border border-gray-200 dark:border-white/15 hover:border-[#008C87] text-gray-600 dark:text-neutral-400 hover:text-white items-center justify-center transition-all cursor-pointer shadow-md z-50 group"
-              title="Expand sidebar"
-              aria-label="Expand sidebar"
-            >
-              <CaretRight className="size-3 group-hover:translate-x-0.5 transition-transform" weight="bold" />
-            </button>
-          )}
         </div>
 
         {/* Navigation Stream */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-4 scrollbar-none">
+          {/* Collapsed In-Rail Toggle Trigger (Clean bars placed above Home icon, matching reference) */}
+          {isCollapsed && (
+            <div className="hidden lg:flex flex-col items-center pt-1 pb-1">
+              <button
+                type="button"
+                onClick={toggleSidebar}
+                className="size-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-black dark:text-neutral-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-all cursor-pointer group"
+                title="Expand full sidebar"
+                aria-label="Expand full sidebar"
+              >
+                {/* Clean two horizontal bars (=) matching reference image */}
+                <svg
+                  className="w-4.5 h-4.5 transition-transform duration-200 group-hover:scale-105"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                >
+                  <line x1="4" y1="7.5" x2="16" y2="7.5" />
+                  <line x1="4" y1="12.5" x2="16" y2="12.5" />
+                </svg>
+              </button>
+              <div className="w-8 border-t border-gray-200 dark:border-white/[0.08] mt-2.5" />
+            </div>
+          )}
           {['PORTAL', 'TRANSACTIONS', 'COMPLIANCE', 'PREFERENCES'].map((sectionKey) => {
             const sectionItems = NAV_ITEMS.filter(
               (item) => item.section === sectionKey
@@ -255,10 +269,7 @@ export function Sidebar() {
                   </div>
                 )}
 
-                {/* Section Divider (Collapsed Mode Only) */}
-                {isCollapsed && (
-                  <div className="my-2 border-t border-gray-200 dark:border-white/[0.08] mx-2" />
-                )}
+             
 
                 {/* Section Nav Items */}
                 {sectionItems.map((group) => {

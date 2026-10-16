@@ -15,12 +15,29 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { isCollapsed } = useSidebarStore();
 
-  // The portal sidebar & dual-theme shell ONLY activates for authenticated portal routes
+  // The portal sidebar & dual-theme shell activates for authenticated portal routes
   const isPortalRoute =
     pathname.startsWith('/seller') ||
     pathname.startsWith('/dealer') ||
     pathname.startsWith('/admin') ||
     pathname.startsWith('/dashboard');
+
+  const isWebApp =
+    isPortalRoute ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    pathname.startsWith('/verify') ||
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/reset-password');
+
+  React.useEffect(() => {
+    if (isWebApp) {
+      document.documentElement.setAttribute('data-app-theme', 'webapp');
+    } else {
+      document.documentElement.setAttribute('data-app-theme', 'landing');
+    }
+  }, [isWebApp]);
 
   if (!isPortalRoute) {
     return <>{children}</>;
