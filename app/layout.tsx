@@ -29,6 +29,21 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
+                  if (typeof Element !== 'undefined' && Element.prototype && Element.prototype.setAttribute) {
+                    var origSetAttr = Element.prototype.setAttribute;
+                    Element.prototype.setAttribute = function(name, val) {
+                      if (name === 'bis_skin_checked' || name === 'bis_register') return;
+                      return origSetAttr.apply(this, arguments);
+                    };
+                  }
+                  if (typeof document !== 'undefined') {
+                    var bisElements = document.querySelectorAll('[bis_skin_checked], [bis_register]');
+                    for (var i = 0; i < bisElements.length; i++) {
+                      bisElements[i].removeAttribute('bis_skin_checked');
+                      bisElements[i].removeAttribute('bis_register');
+                    }
+                  }
+
                   const stored = localStorage.getItem('autonexa_theme');
                   if (stored === 'light') {
                     document.documentElement.classList.remove('dark');
