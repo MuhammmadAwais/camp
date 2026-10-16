@@ -59,7 +59,7 @@ export function KycStatusBanner({ initialStatus }: Props) {
       </div>
       <Link
         href="/verify-kyc"
-        className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-portal-primary hover:bg-portal-primary-hover px-4 py-2.5 font-body text-sm font-semibold text-white transition-colors"
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg bg-portal-primary hover:bg-portal-primary-hover px-4 py-2.5 min-h-[44px] font-body text-sm font-semibold text-white transition-colors cursor-pointer"
       >
         Verify now <ArrowRight className="w-4 h-4" aria-hidden />
       </Link>

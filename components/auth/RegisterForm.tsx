@@ -171,7 +171,7 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
               <button
                 type="button"
                 onClick={() => handleRoleChange("SELLER")}
-                className={`py-2 px-3 rounded-md font-body text-xs font-semibold transition-all cursor-pointer ${
+                className={`min-h-[44px] py-2 px-3 rounded-md font-body text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center justify-center text-center ${
                   role === "SELLER"
                     ? "bg-white text-gray-900 shadow-xs border border-gray-200/80"
                     : "text-gray-500 hover:text-gray-900"
@@ -182,7 +182,7 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
               <button
                 type="button"
                 onClick={() => handleRoleChange("DEALER")}
-                className={`py-2 px-3 rounded-md font-body text-xs font-semibold transition-all cursor-pointer ${
+                className={`min-h-[44px] py-2 px-3 rounded-md font-body text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center justify-center text-center ${
                   role === "DEALER"
                     ? "bg-white text-gray-900 shadow-xs border border-gray-200/80"
                     : "text-gray-500 hover:text-gray-900"
@@ -191,7 +191,6 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
                 Licensed Dealer
               </button>
             </div>
-          
           </div>
 
           <GoogleAuthButton label={`Sign up as ${role === "DEALER" ? "Dealer" : "Seller"} with Google`} />
@@ -208,8 +207,8 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
         {/* ===================== SUB-STEP 1: CREDENTIALS ===================== */}
         {subStep === 1 && (
           <>
-            {/* First and Last Name in a Single Row */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* First and Last Name in a Responsive Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <AuthField
                 label="First name"
                 placeholder="e.g. Alex"
@@ -384,7 +383,7 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
                   })}
                 />
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <AuthField
                     label="Postal code"
                     autoComplete="postal-code"
@@ -481,7 +480,7 @@ export function RegisterForm({ initialVin, initialPostalCode }: Props) {
               <button
                 type="button"
                 onClick={() => setSubStep(1)}
-                className="w-full py-2 font-body text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full min-h-[44px] py-2 font-body text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back to Credentials</span>

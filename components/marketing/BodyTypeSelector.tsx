@@ -44,7 +44,7 @@ export function BodyTypeSelector({
         </span>
       </div>
 
-      <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 sm:gap-4">
+      <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 sm:gap-4">
         {bodyTypes.map((type) => {
           const isSelected = active === type.id;
           return (
@@ -52,10 +52,10 @@ export function BodyTypeSelector({
               key={type.id}
               type="button"
               onClick={() => handleClick(type.id)}
-              className="group flex flex-col items-center justify-center p-1 transition-all duration-200 cursor-pointer text-center bg-transparent border-0 outline-none focus:outline-none"
+              className="group flex flex-col items-center justify-center p-1 min-h-[44px] transition-all duration-200 cursor-pointer text-center bg-transparent border-0 outline-none focus:outline-none"
             >
               <div
-                className={`relative h-11 w-full min-w-[50px] mb-1.5 transition-all duration-200 ${
+                className={`relative h-9 sm:h-11 w-full min-w-[40px] sm:min-w-[50px] mb-1.5 transition-all duration-200 ${
                   isSelected
                     ? "scale-110 drop-shadow-[0_6px_14px_rgba(0,0,0,0.6)]"
                     : "opacity-80 group-hover:opacity-100 group-hover:scale-105 drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]"
@@ -70,7 +70,7 @@ export function BodyTypeSelector({
                 />
               </div>
               <span
-                className={`font-body text-[11px] tracking-tight truncate w-full transition-colors ${
+                className={`font-body text-[10px] sm:text-[11px] tracking-tight truncate w-full transition-colors ${
                   isSelected
                     ? "text-secondary font-bold"
                     : "text-white/70 font-medium group-hover:text-white"

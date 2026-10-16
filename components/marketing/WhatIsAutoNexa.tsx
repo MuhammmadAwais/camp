@@ -89,14 +89,14 @@ export function WhatIsAutoNexa() {
             </div>
 
             {/* Key Figures Row — anchors the column to the divider height */}
-            <dl className="grid grid-cols-3 gap-6 pt-8 border-t border-white/10">
+            <dl className="grid grid-cols-3 gap-2.5 sm:gap-6 pt-6 sm:pt-8 border-t border-white/10">
               {stats.map((stat) => (
                 <div key={stat.label}>
                   <dt className="sr-only">{stat.label}</dt>
-                  <dd className="font-headline text-3xl sm:text-4xl font-bold tracking-tight text-white leading-none">
+                  <dd className="font-headline text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-none">
                     {stat.value}
                   </dd>
-                  <dd className="mt-2 font-mono text-[11px] uppercase tracking-widest text-white/50">
+                  <dd className="mt-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-wider sm:tracking-widest text-white/50 leading-tight">
                     {stat.label}
                   </dd>
                 </div>
@@ -178,25 +178,25 @@ export function WhatIsAutoNexa() {
                 <div className="absolute bottom-3 right-3 w-3 h-3 border-b border-r border-white/40 pointer-events-none z-20" />
 
                 {/* Floating Glassmorphic Content Banner */}
-                <div className="absolute inset-x-4 sm:inset-x-6 bottom-4 sm:bottom-6 z-20 bg-white/[0.08] backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-5 sm:p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)] transition-all duration-300 group-hover:bg-white/[0.12] group-hover:border-white/30">
+                <div className="absolute inset-x-3 sm:inset-x-6 bottom-3 sm:bottom-6 z-20 bg-white/[0.08] backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)] transition-all duration-300 group-hover:bg-white/[0.12] group-hover:border-white/30">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-body text-[11px] font-bold uppercase tracking-widest text-secondary">
+                    <span className="font-body text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-secondary">
                       {card.tagline}
                     </span>
                     <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
                   </div>
 
-                  <h3 className="font-headline text-xl sm:text-2xl font-bold text-white mb-2 tracking-tight">
+                  <h3 className="font-headline text-lg sm:text-2xl font-bold text-white mb-1.5 sm:mb-2 tracking-tight">
                     {card.title}
                   </h3>
 
-                  <p className="font-body text-xs sm:text-sm text-white/80 leading-relaxed mb-4 line-clamp-2">
+                  <p className="font-body text-xs sm:text-sm text-white/80 leading-relaxed mb-3 sm:mb-4 line-clamp-2">
                     {card.description}
                   </p>
 
                   <Link
                     href={card.href}
-                    className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-lg bg-white/10 hover:bg-primary text-white border border-white/25 hover:border-primary font-body text-xs font-bold uppercase tracking-wider backdrop-blur-sm transition-all duration-300 group/btn active:scale-[0.98]"
+                    className="inline-flex items-center gap-2 px-4 sm:px-4.5 py-2 sm:py-2.5 min-h-[44px] rounded-lg bg-white/10 hover:bg-primary text-white border border-white/25 hover:border-primary font-body text-xs font-bold uppercase tracking-wider backdrop-blur-sm transition-all duration-300 group/btn active:scale-[0.98]"
                   >
                     <span>{card.cta}</span>
                     <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />

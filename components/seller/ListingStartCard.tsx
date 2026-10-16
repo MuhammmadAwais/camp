@@ -45,7 +45,7 @@ export function ListingStartCard({ initialKycStatus }: Props) {
         <button
           type="button"
           disabled
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-portal-primary px-4 py-2.5 font-body text-sm font-semibold text-white opacity-50 cursor-not-allowed"
+          className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 rounded-lg bg-portal-primary px-4 py-2.5 font-body text-sm font-semibold text-white opacity-50 cursor-not-allowed"
         >
           {!isVerified && <Lock className="w-4 h-4" aria-hidden />}
           Start listing

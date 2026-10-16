@@ -26,8 +26,8 @@ export function FunnelSteps({ current, hasVehicle = false }: Props) {
   const currentIndex = steps.findIndex((s) => s.id === current);
 
   return (
-    <nav aria-label="Onboarding progress">
-      <ol className="flex items-center gap-1.5 sm:gap-2">
+    <nav aria-label="Onboarding progress" className="w-full overflow-x-auto scrollbar-none py-1">
+      <ol className="flex items-center gap-1.5 sm:gap-2 min-w-max">
         {steps.map((step, index) => {
           const isDone = index < currentIndex;
           const isCurrent = index === currentIndex;

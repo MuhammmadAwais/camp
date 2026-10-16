@@ -13,14 +13,14 @@ export function Footer() {
         {/* 1. Top Hero Prompt: Massive "READY TO SELL?" (Matching Image 2)           */}
         {/* ========================================================================= */}
         <div className="text-center max-w-4xl mx-auto mb-16 sm:mb-24">
-          <h2 className="font-headline text-5xl sm:text-7xl md:text-8xl lg:text-[104px] font-black tracking-tight text-on-surface leading-none">
+          <h2 className="font-headline text-4xl sm:text-6xl md:text-8xl lg:text-[104px] font-black tracking-tight text-on-surface leading-none">
             READY TO SELL?
           </h2>
 
-          <div className="mt-8 sm:mt-10 flex justify-center">
+          <div className="mt-8 sm:mt-10 flex justify-center px-4">
             <a
               href="#valuation"
-              className="inline-flex items-center justify-center rounded-full bg-primary px-8 sm:px-11 py-4 font-body font-bold text-white shadow-md hover:shadow-lg transition-all duration-300 hover:bg-primary-hover hover:scale-105 active:scale-95 text-base sm:text-lg"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-full bg-primary px-8 sm:px-11 py-3.5 sm:py-4 min-h-[48px] font-body font-bold text-white shadow-md hover:shadow-lg transition-all duration-300 hover:bg-primary-hover hover:scale-105 active:scale-95 text-base sm:text-lg"
             >
               Get Your Free Appraisal
             </a>
@@ -30,7 +30,7 @@ export function Footer() {
         {/* ========================================================================= */}
         {/* 2. Four-Column Directory Grid (Matching Image 2 Structure)                */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 lg:gap-14 pb-16 sm:pb-20 border-b border-border-card/80">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 lg:gap-14 pb-16 sm:pb-20 border-b border-border-card/80">
           {/* Column 1: Contact */}
           <div>
             <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-5">

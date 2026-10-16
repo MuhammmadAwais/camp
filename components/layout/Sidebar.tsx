@@ -15,6 +15,7 @@ import {
   CaretRight,
   CaretLeft,
   SidebarSimple,
+  X,
 } from '@phosphor-icons/react';
 import { useSidebarStore } from '@/lib/store/useSidebarStore';
 import { SidebarFlyout, type SubNavItem } from './SidebarFlyout';
@@ -38,6 +39,16 @@ export function Sidebar() {
 
   // Active flyout in collapsed rail mode
   const [activeFlyoutId, setActiveFlyoutId] = useState<string | null>(null);
+
+  // Close mobile sidebar on Escape key
+  React.useEffect(() => {
+    if (!isMobileOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMobile();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileOpen, closeMobile]);
 
   // Dynamic Navigation items tailored to AutoNexa Canadian Marketplace
   const isDealer = role === 'DEALER_ADMIN' || role === 'DEALER_AGENT';
@@ -126,18 +137,18 @@ export function Sidebar() {
 
       {/* 2. Main Sidebar Aside */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-white/95 dark:bg-[#131215]/95 backdrop-blur-2xl border-r border-gray-200 dark:border-white/10 text-gray-900 dark:text-white transition-all duration-300 ease-in-out font-body ${
-          isCollapsed ? 'w-[72px]' : 'w-[260px]'
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-white/95 dark:bg-[#131215]/95 backdrop-blur-2xl border-r border-gray-200 dark:border-white/10 text-gray-900 dark:text-white transition-all duration-300 ease-in-out font-body w-[280px] sm:w-[290px] ${
+          isCollapsed ? 'lg:w-[72px]' : 'lg:w-[260px]'
         } ${
           isMobileOpen
             ? 'translate-x-0'
             : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        {/* Top Header: Brand Lockup & Integrated Desktop Collapse Trigger */}
+        {/* Top Header: Brand Lockup, Mobile Close Button & Integrated Desktop Collapse Trigger */}
         <div
-          className={`h-20 flex items-center border-b border-gray-200 dark:border-white/10 shrink-0 transition-all duration-300 relative ${
-            isCollapsed ? 'justify-center px-0' : 'justify-between px-5'
+          className={`h-20 flex items-center border-b border-gray-200 dark:border-white/10 shrink-0 transition-all duration-300 relative justify-between px-5 ${
+            isCollapsed ? 'lg:justify-center lg:px-0' : 'lg:justify-between lg:px-5'
           }`}
         >
           <Link
@@ -147,15 +158,31 @@ export function Sidebar() {
             aria-label="AutoNexa Home"
           >
             {isCollapsed ? (
-              <div className="relative w-9 h-5 flex items-center justify-center">
-                <Image
-                  src="/logo-mark-tight.webp"
-                  alt="AutoNexa Logo"
-                  fill
-                  priority
-                  className="object-contain select-none group-hover:scale-105 transition-transform duration-200"
-                />
-              </div>
+              <>
+                <div className="hidden lg:flex relative w-9 h-5 items-center justify-center">
+                  <Image
+                    src="/logo-mark-tight.webp"
+                    alt="AutoNexa Logo"
+                    fill
+                    priority
+                    className="object-contain select-none group-hover:scale-105 transition-transform duration-200"
+                  />
+                </div>
+                <div className="flex lg:hidden items-center gap-2.5">
+                  <div className="relative w-8 h-[18px] shrink-0">
+                    <Image
+                      src="/logo-mark-tight.webp"
+                      alt="AutoNexa Emblem"
+                      fill
+                      priority
+                      className="object-contain select-none"
+                    />
+                  </div>
+                  <span className="font-headline font-bold text-lg text-gray-900 dark:text-white tracking-tight leading-none">
+                    Auto<span className="text-[#008C87]">Nexa</span>
+                  </span>
+                </div>
+              </>
             ) : (
               <div className="flex items-center gap-2.5">
                 <div className="relative w-8 h-[18px] shrink-0">
@@ -173,6 +200,16 @@ export function Sidebar() {
               </div>
             )}
           </Link>
+
+          {/* Mobile Dedicated Close Button */}
+          <button
+            type="button"
+            onClick={closeMobile}
+            className="lg:hidden size-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-black dark:text-neutral-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="Close navigation menu"
+          >
+            <X className="size-5" weight="bold" />
+          </button>
 
           {/* Integrated Desktop Toggle Trigger */}
           {!isCollapsed && (
@@ -249,7 +286,7 @@ export function Sidebar() {
                           isMainActive
                             ? 'bg-[#008C87]/15 text-[#008C87] border border-[#008C87]/30 shadow-xs'
                             : 'text-gray-700 hover:text-black hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.05]'
-                        } ${isCollapsed ? 'p-2.5 justify-center' : 'px-3 py-2.5'}`}
+                        } ${isCollapsed ? 'p-2.5 justify-center' : 'px-3 py-2.5 min-h-[44px]'}`}
                       >
                         {/* Direct Link to Route */}
                         <Link

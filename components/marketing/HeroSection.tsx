@@ -42,7 +42,7 @@ export function HeroSection() {
           suppressHydrationWarning
         >
           {/* Main Headline (Epilogue) with consistent font styling */}
-          <h1 className="font-headline text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] leading-[1.12] max-w-4xl">
+          <h1 className="font-headline text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] leading-[1.14] sm:leading-[1.12] max-w-4xl">
             The{" "}
             <span className=" text-secondary underline decoration-secondary/60 underline-offset-8">
               Best
@@ -51,7 +51,7 @@ export function HeroSection() {
           </h1>
 
           {/* Subheading (Plus Jakarta Sans) */}
-          <p className="mt-4 sm:mt-5 font-body text-lg sm:text-xl text-white/90 max-w-2xl font-normal leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+          <p className="mt-3.5 sm:mt-5 font-body text-base sm:text-lg md:text-xl text-white/90 max-w-2xl font-normal leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
             Unlock your best price with AutoNexa
           </p>
 

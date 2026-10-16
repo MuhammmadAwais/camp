@@ -103,7 +103,7 @@ export function MarketValuationWidget() {
         />
 
         {/* Category Tabs (Floating Text with Red Underline on Active) */}
-        <div className="relative z-20 flex items-center gap-6 sm:gap-8 border-b border-white/10 overflow-x-auto scrollbar-none">
+        <div className="relative z-20 flex items-center gap-6 sm:gap-8 border-b border-white/10 overflow-x-auto scrollbar-none touch-pan-x overscroll-x-contain pb-0.5">
           {categoryTabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -111,7 +111,7 @@ export function MarketValuationWidget() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative pb-3 pt-1 -mb-[2px] font-body text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer bg-transparent border-b-2 outline-none focus:outline-none ${
+                className={`relative pb-3 pt-1 -mb-[2px] font-body text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer bg-transparent border-b-2 outline-none focus:outline-none min-h-[40px] flex items-center ${
                   isActive
                     ? "text-white font-bold border-primary"
                     : "text-white/60 hover:text-white font-medium border-transparent"
@@ -136,7 +136,7 @@ export function MarketValuationWidget() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Enter Year, Make, Model or 17-Char VIN"
-                className="w-full pl-10 pr-4 py-3.5 bg-white/[0.08] backdrop-blur-md border border-white/20 rounded-xl font-body text-sm font-medium text-white placeholder:text-white/45 focus:outline-none focus:bg-white/[0.14] focus:border-white/45 focus:ring-1 focus:ring-white/30 transition-all shadow-inner"
+                className="w-full pl-10 pr-4 py-3.5 min-h-[48px] bg-white/[0.08] backdrop-blur-md border border-white/20 rounded-xl font-body text-sm font-medium text-white placeholder:text-white/45 focus:outline-none focus:bg-white/[0.14] focus:border-white/45 focus:ring-1 focus:ring-white/30 transition-all shadow-inner"
               />
             </div>
 
@@ -151,7 +151,7 @@ export function MarketValuationWidget() {
                 onChange={(e) => setPostalCode(e.target.value.toUpperCase())}
                 placeholder="Postal Code* (e.g. M5V)"
                 maxLength={7}
-                className="w-full pl-10 pr-4 py-3.5 bg-white/[0.08] backdrop-blur-md border border-white/20 rounded-xl font-body text-sm font-medium uppercase text-white placeholder:text-white/45 focus:outline-none focus:bg-white/[0.14] focus:border-white/45 focus:ring-1 focus:ring-white/30 transition-all tracking-wider shadow-inner"
+                className="w-full pl-10 pr-4 py-3.5 min-h-[48px] bg-white/[0.08] backdrop-blur-md border border-white/20 rounded-xl font-body text-sm font-medium uppercase text-white placeholder:text-white/45 focus:outline-none focus:bg-white/[0.14] focus:border-white/45 focus:ring-1 focus:ring-white/30 transition-all tracking-wider shadow-inner"
               />
             </div>
 
@@ -159,7 +159,7 @@ export function MarketValuationWidget() {
             <div className="sm:col-span-3">
               <button
                 type="submit"
-                className="w-full py-3.5 px-6 rounded-xl bg-primary/90 hover:bg-primary text-white font-body text-sm font-bold tracking-wide border border-white/20 backdrop-blur-md shadow-[0_4px_20px_rgba(142,34,44,0.45)] hover:shadow-[0_4px_25px_rgba(142,34,44,0.65)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                className="w-full py-3.5 px-6 min-h-[48px] rounded-xl bg-primary/90 hover:bg-primary text-white font-body text-sm font-bold tracking-wide border border-white/20 backdrop-blur-md shadow-[0_4px_20px_rgba(142,34,44,0.45)] hover:shadow-[0_4px_25px_rgba(142,34,44,0.65)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer group"
               >
                 <span>Get Offers</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

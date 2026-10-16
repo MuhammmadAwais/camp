@@ -49,7 +49,7 @@ export function AppShell({ children }: AppShellProps) {
           isCollapsed ? 'lg:pl-[72px]' : 'lg:pl-[260px]'
         }`}
       >
-        <main className="flex-1 w-full flex flex-col px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-12 overflow-x-hidden">
+        <main className="flex-1 w-full flex flex-col px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 lg:pt-8 pb-12 overflow-x-hidden">
           {children}
         </main>
       </div>

@@ -30,6 +30,16 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu on Escape key press
+  React.useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileMenuOpen]);
+
   // Initial gentle entrance animation
   React.useEffect(() => {
     if (navbarPillRef.current) {
@@ -361,7 +371,7 @@ export function Navbar() {
             ref={ctaPillRef}
             onMouseEnter={handleCtaEnter}
             onMouseLeave={handleCtaLeave}
-            className="relative px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-surface text-on-surface border border-border-card/40 font-body text-xs sm:text-sm font-bold shadow-xs flex items-center gap-2 shrink-0 cursor-pointer overflow-hidden group select-none transition-colors hover:border-primary/40"
+            className="relative px-3 sm:px-5 py-2 sm:py-2.5 min-h-[40px] sm:min-h-[44px] rounded-full bg-surface text-on-surface border border-border-card/40 font-body text-xs sm:text-sm font-bold shadow-xs flex items-center gap-1.5 sm:gap-2 shrink-0 cursor-pointer overflow-hidden group select-none transition-colors hover:border-primary/40"
           >
             {/* 3D Kinetic Roll inside CTA */}
             <div
@@ -369,7 +379,9 @@ export function Navbar() {
               style={{ perspective: "400px" }}
             >
               <span className="cta-text-top block text-on-surface whitespace-nowrap font-bold">
-                Get Free Appraisal
+                <span className="hidden sm:inline">Get Free Appraisal</span>
+                <span className="sm:inline hidden" aria-hidden="true" />
+                <span className="sm:hidden">Appraisal</span>
               </span>
               <span
                 className="cta-text-bottom absolute inset-0 flex items-center justify-center text-primary font-extrabold whitespace-nowrap"
@@ -379,7 +391,8 @@ export function Navbar() {
                   opacity: 0,
                 }}
               >
-                Instant 48h Offer ✦
+                <span className="hidden sm:inline">Instant 48h Offer ✦</span>
+                <span className="sm:hidden">48h Offer ✦</span>
               </span>
             </div>
 
@@ -396,8 +409,9 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-full text-surface/85 hover:text-white hover:bg-white/10 transition-colors"
+            className="md:hidden min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center p-2 rounded-full text-surface/85 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             aria-label="Toggle Navigation Menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? (
               <X className="w-5 h-5 text-white" />
@@ -408,40 +422,47 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Dropdown Drawer */}
+      {/* Mobile Backdrop & Dropdown Drawer */}
       {mobileMenuOpen && (
-        <div className="pointer-events-auto md:hidden fixed top-20 left-4 right-4 mx-auto max-w-sm rounded-3xl bg-[#201B11]/98 backdrop-blur-2xl border border-white/15 p-5 shadow-2xl animate-in fade-in slide-in-from-top-3 duration-250">
-          <nav className="flex flex-col gap-1.5">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-3 rounded-xl font-body text-sm font-semibold text-surface/85 hover:text-secondary hover:bg-white/5 transition-all flex items-center justify-between"
-              >
-                <span>{link.label}</span>
-                <span className="text-secondary/70 text-xs font-mono">0{navLinks.indexOf(link) + 1}</span>
-              </a>
-            ))}
-          </nav>
+        <>
+          <div
+            className="pointer-events-auto fixed inset-0 bg-black/65 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="pointer-events-auto md:hidden fixed top-20 left-4 right-4 mx-auto max-w-sm rounded-3xl bg-[#201B11]/98 backdrop-blur-2xl border border-white/15 p-5 shadow-2xl z-50 animate-in fade-in slide-in-from-top-3 duration-250">
+            <nav className="flex flex-col gap-1.5">
+              {navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-3 min-h-[44px] rounded-xl font-body text-sm font-semibold text-surface/85 hover:text-secondary hover:bg-white/5 transition-all flex items-center justify-between"
+                >
+                  <span>{link.label}</span>
+                  <span className="text-secondary/70 text-xs font-mono">0{navLinks.indexOf(link) + 1}</span>
+                </a>
+              ))}
+            </nav>
 
-          <div className="pt-4 mt-3 border-t border-white/10 flex flex-col gap-2.5">
-            <a
-              href="#valuation"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block w-full text-center py-3 rounded-full bg-surface text-on-surface font-bold text-xs uppercase tracking-wider shadow-xs hover:bg-primary hover:text-white transition-colors"
-            >
-              Get Free Appraisal ↗
-            </a>
-            <Link
-              href="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block w-full text-center py-3 rounded-full border border-white/15 text-surface font-bold text-xs uppercase tracking-wider hover:bg-white/10 transition-colors"
-            >
-              Seller sign in
-            </Link>
+            <div className="pt-4 mt-3 border-t border-white/10 flex flex-col gap-2.5">
+              <a
+                href="#valuation"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center w-full min-h-[44px] py-3 rounded-full bg-surface text-on-surface font-bold text-xs uppercase tracking-wider shadow-xs hover:bg-primary hover:text-white transition-colors"
+              >
+                Get Free Appraisal ↗
+              </a>
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center w-full min-h-[44px] py-3 rounded-full border border-white/15 text-surface font-bold text-xs uppercase tracking-wider hover:bg-white/10 transition-colors"
+              >
+                Seller sign in
+              </Link>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

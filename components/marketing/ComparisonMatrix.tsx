@@ -130,7 +130,7 @@ export function ComparisonMatrix({ id = "matrix" }: ComparisonMatrixProps) {
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="relative max-w-5xl mx-auto px-4 sm:px-6"
+          className="relative max-w-5xl mx-auto px-2 sm:px-6"
         >
           {/* Subtle cursor spotlight */}
           {isHovered && (
@@ -269,13 +269,8 @@ export function ComparisonMatrix({ id = "matrix" }: ComparisonMatrixProps) {
 
             {/* Desktop Bottom Action Row inside the AutoNexa Column */}
             <div className="hidden md:grid grid-cols-12 gap-6 pt-6 pb-2 items-center">
-          
-              <div className="col-span-3 text-center flex justify-center">
-             
-              </div>
-              <div className="col-span-4 text-right pr-2">
-         
-              </div>
+              <div className="col-span-3 text-center flex justify-center" />
+              <div className="col-span-4 text-right pr-2" />
             </div>
 
             {/* Mobile Stacked View (< 768px) */}
@@ -290,8 +285,8 @@ export function ComparisonMatrix({ id = "matrix" }: ComparisonMatrixProps) {
                   </div>
 
                   {/* AutoNexa Highlight (Clean, no clunky pill outlines) */}
-                  <div className="p-3.5 rounded-xl bg-surface-container-lowest border-2 border-primary/25 shadow-xs flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                  <div className="p-3.5 rounded-xl bg-surface-container-lowest border-2 border-primary/25 shadow-xs flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                       <div className="relative w-5 h-3 shrink-0">
                         <Image
                           src="/logo-mark.webp"
@@ -302,7 +297,7 @@ export function ComparisonMatrix({ id = "matrix" }: ComparisonMatrixProps) {
                       </div>
                       <span className="font-headline font-bold text-xs text-primary">AutoNexa</span>
                     </div>
-                    <div className="flex items-center gap-1.5 font-body text-xs font-bold text-primary">
+                    <div className="flex items-center gap-1.5 font-body text-xs font-bold text-primary text-right">
                       {row.autonexa.status === "check" && (
                         <Check weight="bold" className="w-4 h-4 text-success shrink-0" />
                       )}
@@ -331,7 +326,7 @@ export function ComparisonMatrix({ id = "matrix" }: ComparisonMatrixProps) {
               <div className="pt-4 text-center">
                 <a
                   href="#valuation"
-                  className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-full bg-primary hover:bg-primary-hover text-white font-body text-sm font-bold shadow-xs transition-colors"
+                  className="inline-flex items-center justify-center gap-2 w-full py-3.5 min-h-[48px] rounded-xl bg-primary hover:bg-primary-hover text-white font-body text-sm font-bold shadow-xs transition-colors"
                 >
                   <span>Start 24h Auction</span>
                   <ArrowRight weight="bold" className="w-4 h-4" />

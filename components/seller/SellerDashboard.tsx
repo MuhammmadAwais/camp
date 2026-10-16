@@ -23,7 +23,7 @@ export function SellerDashboard({ user }: Props) {
         <h1 className="font-headline text-2xl sm:text-3xl font-bold tracking-tight text-portal-text">
           Welcome, {user.firstName}
         </h1>
-        <p className="mt-1.5 flex items-center gap-2 font-body text-sm text-portal-text-muted">
+        <p className="mt-1.5 flex flex-wrap items-center gap-2 font-body text-sm text-portal-text-muted">
           <span>Selling from</span>
           <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-[#008C87]/10 text-[#008C87] border border-[#008C87]/25 font-semibold">
             {user.postalCode}
@@ -38,17 +38,17 @@ export function SellerDashboard({ user }: Props) {
         <div className="lg:col-span-2 space-y-6">
           <ListingStartCard initialKycStatus={user.kycStatus} />
 
-          <dl className="grid grid-cols-3 gap-3 sm:gap-4">
+          <dl className="grid grid-cols-3 gap-2 sm:gap-4">
             {stats.map(({ label, value, icon: Icon }) => (
               <div
                 key={label}
-                className="rounded-xl border border-portal-border bg-portal-surface p-4 transition-colors hover:border-[#008C87]/40"
+                className="rounded-xl border border-portal-border bg-portal-surface p-3 sm:p-4 transition-colors hover:border-[#008C87]/40"
               >
-                <dt className="flex items-center gap-1.5 font-body text-xs text-portal-text-muted">
-                  <Icon className="w-3.5 h-3.5 text-[#008C87]" aria-hidden />
+                <dt className="flex items-center gap-1 sm:gap-1.5 font-body text-[11px] sm:text-xs text-portal-text-muted">
+                  <Icon className="w-3.5 h-3.5 text-[#008C87] shrink-0" aria-hidden />
                   <span className="truncate">{label}</span>
                 </dt>
-                <dd className="mt-2.5 font-mono text-2xl sm:text-3xl font-bold tabular-nums text-portal-text">
+                <dd className="mt-1.5 sm:mt-2.5 font-mono text-xl sm:text-3xl font-bold tabular-nums text-portal-text">
                   {value}
                 </dd>
               </div>

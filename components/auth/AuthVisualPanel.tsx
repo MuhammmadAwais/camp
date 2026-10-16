@@ -86,9 +86,9 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
           className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/55 to-black/25" aria-hidden />
-        <div className="relative z-10 flex h-full flex-col justify-end p-5 text-white">
+        <div className="relative z-10 flex h-full flex-col justify-end p-4 sm:p-5 text-white">
           <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#33BFBC]">{panel.tagline}</p>
-          <p className="mt-1 font-headline text-base sm:text-lg font-bold leading-snug text-white">{panel.title}</p>
+          <p className="mt-0.5 sm:mt-1 font-headline text-sm sm:text-base font-bold leading-snug text-white line-clamp-2">{panel.title}</p>
         </div>
       </div>
     );

@@ -215,7 +215,7 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
             <div
               onMouseMove={handleTraditionalMouseMove}
               onMouseLeave={handleTraditionalMouseLeave}
-              className="relative flex-1 flex flex-col justify-between rounded-3xl bg-surface-container-low border border-border-card/90 p-7 sm:p-9 lg:p-10 shadow-xs transition-transform ease-out will-change-transform overflow-hidden"
+              className="relative flex-1 flex flex-col justify-between rounded-3xl bg-surface-container-low border border-border-card/90 p-5 sm:p-8 lg:p-10 shadow-xs transition-transform ease-out will-change-transform overflow-hidden"
               style={{
                 transform: `perspective(1000px) rotateX(${traditionalTilt.rotateX}deg) rotateY(${traditionalTilt.rotateY}deg) ${
                   traditionalTilt.isHovered ? "scale3d(1.02, 1.02, 1.02)" : "scale3d(1, 1, 1)"
@@ -270,7 +270,7 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
             <div
               onMouseMove={handleAutonexaMouseMove}
               onMouseLeave={handleAutonexaMouseLeave}
-              className="relative flex-1 flex flex-col justify-between rounded-3xl bg-surface-container-lowest border-2 border-primary/25 p-7 sm:p-9 lg:p-10 shadow-[0_16px_40px_-10px_rgba(140,56,62,0.08)] transition-transform ease-out will-change-transform overflow-hidden"
+              className="relative flex-1 flex flex-col justify-between rounded-3xl bg-surface-container-lowest border-2 border-primary/25 p-5 sm:p-8 lg:p-10 shadow-[0_16px_40px_-10px_rgba(140,56,62,0.08)] transition-transform ease-out will-change-transform overflow-hidden"
               style={{
                 transform: `perspective(1000px) rotateX(${autonexaTilt.rotateX}deg) rotateY(${autonexaTilt.rotateY}deg) ${
                   autonexaTilt.isHovered ? "scale3d(1.02, 1.02, 1.02)" : "scale3d(1, 1, 1)"
@@ -311,13 +311,12 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
                 </ul>
               </div>
 
-              <div className="relative z-20 mt-8 pt-6 border-t border-border-card/60 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                </div>
+              <div className="relative z-20 mt-8 pt-6 border-t border-border-card/60 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="hidden sm:flex items-center gap-2" />
 
                 <a
                   href="#valuation"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary hover:bg-primary-hover text-white font-body text-xs sm:text-sm font-bold tracking-wide transition-all duration-200 shadow-xs hover:scale-105 active:scale-95"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 min-h-[44px] rounded-full bg-primary hover:bg-primary-hover text-white font-body text-xs sm:text-sm font-bold tracking-wide transition-all duration-200 shadow-xs hover:scale-105 active:scale-95"
                 >
                   <span>Get Instant Valuation</span>
                   <ArrowRight weight="bold" className="w-3.5 h-3.5" />

@@ -92,8 +92,8 @@ export function LoginForm({ next, notice }: Props) {
             error={errors.password?.message}
             {...register("password")}
           />
-          <div className="flex items-center justify-between pt-1">
-            <label className="flex items-center gap-2 cursor-pointer select-none">
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <label className="flex items-center gap-2 cursor-pointer select-none py-1">
               <input
                 type="checkbox"
                 checked={rememberMe}
@@ -104,7 +104,7 @@ export function LoginForm({ next, notice }: Props) {
             </label>
             <Link
               href="/forgot-password"
-              className="font-body text-xs font-semibold text-[#008C87] hover:underline underline-offset-4 transition-colors"
+              className="font-body text-xs font-semibold text-[#008C87] hover:underline underline-offset-4 transition-colors py-1"
             >
               Forgot password?
             </Link>

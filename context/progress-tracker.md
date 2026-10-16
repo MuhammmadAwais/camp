@@ -6,15 +6,12 @@ Update this file after every completed feature. Any AI agent reading this should
 
 ## Current Status
 
-**Phase:** 3 — Web App Foundation, Unified Auth Suite & Zentris Portal Shell
-**Last completed:** 07-B Split-Screen Auth Suite Refinements:
-- Permanent route isolation in `AppShell.tsx` (portal-only sidebar routing, zero leak on auth pages).
-- Relocated legal links (`Privacy`, `Terms of Use`, `Support`) to the clean white left canvas footer.
-- Prominent scaled AutoNexa brand emblem in top-right of photographic panel; animated `BID • WIN • DRIVE` tagline at bottom.
-- Dynamic breadcrumb in `FunnelSteps.tsx` (omits Vehicle step on direct cold registrations).
-- Role-based signup toggle (`Private Seller` vs `Licensed Dealer`) with progressive 2-stage sub-stepping in `RegisterForm.tsx` (Credentials &rarr; Regulatory/Contact).
-- Strict single-row stacked inputs, solid Nordic Pine Teal CTAs (`#008C87`), and zero diffuse neon glow.
-**Next:** 08 Seller Dashboard UI & KYC Verification Gate (`/seller/dashboard`)
+**Phase:** 3 — Web App Foundation, Unified Auth Suite & Wholesale Portal Shell
+**Last completed:** Full-Stack Mobile-First Responsive Architecture & Living Registry Imprint:
+- **Phase 1 (Auth Suite):** Mobile-first clean canvas with top brand bar, compact visual banner, responsive 2-stage sub-stepping forms, and touch target enforcement (`min-h-[44px]`).
+- **Phase 2 (Marketing Landing):** Capsule navbar with responsive CTA text, backdrop dismissal, fluid Epilogue headline scaling, touch-pan-x category tabs, stacked comparison matrix cards on `< 768px`, and auto-resizing physics brand telemetry canvas.
+- **Phase 3 (Wholesale Portal & Dashboard):** Viewport top clearance (`pt-16 sm:pt-20 lg:pt-8`), dual-mode adaptive floating mobile menu button, full-width mobile navigation drawer with dedicated close button and Escape dismissal, and fluid count telemetry on seller dashboard.
+**Next:** 09 Listing Wizard: VIN Auto-decode via NHTSA VPIC & Photo Upload pipeline
 
 ---
 

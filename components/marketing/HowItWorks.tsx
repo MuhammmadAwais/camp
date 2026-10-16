@@ -138,7 +138,7 @@ export function HowItWorks() {
                 className="flex flex-col group"
               >
                 {/* 1. Plain Stylish Illustration Image (No box borders, clean rounded frame) */}
-                <div className="relative h-60 sm:h-64 w-full rounded-2xl overflow-hidden bg-surface-container/60 shadow-xs group-hover:shadow-md transition-all duration-300">
+                <div className="relative h-52 sm:h-64 w-full rounded-2xl overflow-hidden bg-surface-container/60 shadow-xs group-hover:shadow-md transition-all duration-300">
                   <Image
                     src={item.image}
                     alt={item.alt}
@@ -221,10 +221,10 @@ export function HowItWorks() {
         {/* ========================================================================= */}
         {/* 4. Bottom Centered Conversion CTA Button                                   */}
         {/* ========================================================================= */}
-        <div className="mt-12 sm:mt-16 text-center flex flex-col items-center justify-center">
+        <div className="mt-12 sm:mt-16 text-center flex flex-col items-center justify-center px-4">
           <a
             href="#valuation"
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-primary hover:bg-primary-hover text-white font-body text-sm sm:text-base font-bold tracking-wide shadow-md hover:shadow-lg transition-all active:scale-[0.98] group cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 min-h-[48px] rounded-xl bg-primary hover:bg-primary-hover text-white font-body text-sm sm:text-base font-bold tracking-wide shadow-md hover:shadow-lg transition-all active:scale-[0.98] group cursor-pointer"
           >
             <span>Start Your Free Appraisal</span>
             <ArrowRight
@@ -232,8 +232,6 @@ export function HowItWorks() {
               className="w-4 h-4 transition-transform group-hover:translate-x-1"
             />
           </a>
-
-    
         </div>
       </div>
     </section>

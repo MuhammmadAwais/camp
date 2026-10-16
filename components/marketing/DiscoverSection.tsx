@@ -374,7 +374,7 @@ export function DiscoverSection() {
           </div>
 
           {/* Clean Floating Text Category Tabs (Red Underline on Active, No Bubbly Pills) */}
-          <div className="flex items-center gap-6 sm:gap-8 overflow-x-auto scrollbar-none pt-2">
+          <div className="flex items-center gap-6 sm:gap-8 overflow-x-auto scrollbar-none touch-pan-x overscroll-x-contain pt-2 pb-1">
             {categories.map((tab) => {
               const isActive = activeCategory === tab.id;
               return (
@@ -382,7 +382,7 @@ export function DiscoverSection() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveCategory(tab.id)}
-                  className={`relative pb-3 pt-1 -mb-[1px] font-body text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer bg-transparent border-b-2 outline-none focus:outline-none ${
+                  className={`relative pb-3 pt-1 -mb-[1px] font-body text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer bg-transparent border-b-2 outline-none focus:outline-none min-h-[38px] flex items-center ${
                     isActive
                       ? "text-primary font-bold border-primary"
                       : "text-on-surface-variant hover:text-on-surface font-medium border-transparent"
@@ -483,12 +483,12 @@ export function DiscoverSection() {
                     {/* 3. Bottom Row: Payout & Surplus over Trade-In */}
                     <div className="pt-2 flex items-end justify-between min-h-[60px]">
                       {/* Left: Pricing with Trade-in Comparison & Sleek Institutional Surplus Chip */}
-                      <div className="flex flex-col justify-end max-w-[calc(100%-70px)] pr-2">
-                        <div className="flex items-center gap-2.5 mb-1 flex-wrap sm:flex-nowrap">
-                          <span className="font-headline text-2xl font-black text-on-surface tracking-tight whitespace-nowrap">
+                      <div className="flex flex-col justify-end max-w-[calc(100%-72px)] pr-1">
+                        <div className="flex items-center gap-1.5 sm:gap-2.5 mb-1 flex-wrap">
+                          <span className="font-headline text-xl sm:text-2xl font-black text-on-surface tracking-tight whitespace-nowrap">
                             {car.soldPrice}
                           </span>
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#16271E] text-emerald-400 border border-emerald-500/25 font-mono text-[10.5px] font-bold tracking-tight shadow-xs whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-md bg-[#16271E] text-emerald-400 border border-emerald-500/25 font-mono text-[10px] sm:text-[10.5px] font-bold tracking-tight shadow-xs whitespace-nowrap">
                             <ArrowUpRight
                               weight="bold"
                               className="w-3 h-3 text-emerald-400 shrink-0"
@@ -496,11 +496,11 @@ export function DiscoverSection() {
                             <span>{car.surplus}</span>
                           </span>
                         </div>
-                        <div className="text-[11px] font-body text-on-surface-variant flex items-center gap-1.5 whitespace-nowrap">
-                          <span className="text-on-surface-variant/70 font-medium">
+                        <div className="text-[10.5px] sm:text-[11px] font-body text-on-surface-variant flex items-center gap-1 sm:gap-1.5 flex-wrap">
+                          <span className="text-on-surface-variant/70 font-medium whitespace-nowrap">
                             Dealer trade-in was:
                           </span>
-                          <span className="line-through font-mono text-on-surface-variant/50 font-medium">
+                          <span className="line-through font-mono text-on-surface-variant/50 font-medium whitespace-nowrap">
                             {car.tradeInOffer}
                           </span>
                         </div>
@@ -570,10 +570,10 @@ export function DiscoverSection() {
         {/* ========================================================================= */}
         {/* 4. Mid-Section Centered Conversion CTA Button (Web App Navigation)         */}
         {/* ========================================================================= */}
-        <div className="mt-16 sm:mt-20 text-center flex flex-col items-center justify-center">
+        <div className="mt-16 sm:mt-20 text-center flex flex-col items-center justify-center px-4">
           <a
             href="https://app.autonexa.ca"
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-primary hover:bg-primary-hover text-white font-body text-sm sm:text-base font-bold tracking-wide shadow-md hover:shadow-lg transition-all active:scale-[0.98] group cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 min-h-[48px] rounded-xl bg-primary hover:bg-primary-hover text-white font-body text-sm sm:text-base font-bold tracking-wide shadow-md hover:shadow-lg transition-all active:scale-[0.98] group cursor-pointer"
           >
             <span>Explore All Live Wholesale Deals</span>
             <ArrowRight

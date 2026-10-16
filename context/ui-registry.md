@@ -741,20 +741,52 @@ Mode: Porcelain (light) seller portal
 ### `AuthShell` & `AuthVisualPanel` (Asymmetric Split-Screen Auth Suite)
 
 File: `components/auth/AuthShell.tsx`, `components/auth/AuthVisualPanel.tsx`  
-Last updated: 2026-10-13  
-Mode: Light canvas (`bg-white`) left column + Photographic immersive right panel
+Last updated: 2026-10-16  
+Mode: Dual-layout Responsive Architecture (Mobile-First Touch Canvas < 1024px &rarr; 12-Column Split Desktop ≥ 1024px)
 
 | Property         | Class / CSS Rule |
 | ---------------- | ---------------- |
-| Left Canvas      | `bg-white` 5-column / 6-column grid with zero heavy container borders |
-| Left Header      | Minimalist `< Back to website` link (`text-gray-500 hover:text-gray-900`) |
-| Left Footer      | `© 2026 AutoNexa Inc.` + `Privacy`, `Terms of Use`, `Support` legal links |
-| Right Panel      | High-resolution automotive imagery with signature `rounded-bl-[80px] xl:rounded-bl-[100px]` inner curve |
-| Brand Lockup     | Scaled AutoNexa emblem (`w-10 h-[24px]`) + bold wordmark in top-right corner of visual panel |
-| Tagline          | Bottom of visual panel: Interactive dot-matrix physics canvas (`AutoNexaPhysicsCanvas` with `theme="dark"`, spring-damping repulsion physics, and telemetry indicators) |
-| Form Inputs      | First & Last Name paired in 2-col row (`grid grid-cols-2 gap-3`); Postal & Province paired in 2-col row; solid Nordic Pine Teal accents (`#008C87`) |
-| Role Switcher    | Dual-pill segmented control (`Private Seller` vs `Licensed Dealer`) in `RegisterForm.tsx` |
-| Progressive Steps| 2-stage sub-stepping in registration: Sub-Step 1 (Credentials) &rarr; Sub-Step 2 (Role-specific contact/regulatory) |
-| Optional Card    | Rounded container with dedicated `Optional` pill badge avoiding native `<legend>` strikethrough border glitches |
+| Layout Structure | Mobile (`< 1024px`): Single-column clean white canvas with top brand bar and compact visual hero banner (`h-32 sm:h-40 rounded-2xl overflow-hidden`); Desktop (`≥ 1024px`): 12-col split grid (`lg:grid-cols-12` — 5-col form canvas / 7-col sticky photographic panel) |
+| Mobile Top Bar   | `< Back to website` link + mobile brand lockup (`lg:hidden flex items-center gap-2` with official emblem) |
+| Left Canvas      | `bg-white px-4 py-5 sm:px-8 sm:py-8 lg:px-12 lg:py-10 max-w-[420px] w-full mx-auto` |
+| Touch Ergonomics | All buttons & role pills enforced with `min-h-[44px]` / `min-h-[46px]` touch boundaries and `active:scale-[0.99]` feedback |
+| Fluid Grids      | Form paired rows (First/Last name, Postal/Province) use responsive fluid wrapping `grid grid-cols-1 sm:grid-cols-2 gap-3` preventing truncation on small mobile devices (`< 400px`) |
+| Breadcrumbs      | `FunnelSteps.tsx` features `overflow-x-auto scrollbar-none` horizontal swipe protection for narrow devices |
+| Legal Footer     | Responsive stack: `flex flex-col sm:flex-row items-center justify-between gap-y-3 gap-x-4 text-center sm:text-left` |
+| Right Panel      | High-resolution imagery with signature `rounded-bl-[80px] xl:rounded-bl-[100px]` inner curve, gold emblem, and interactive dot-matrix physics canvas |
+| Accent Color     | Solid Nordic Pine Teal (`#008C87`), focus rings (`focus:ring-[#008C87]`), and text selection (`selection:bg-[#008C87] selection:text-white`) |
+
+### Marketing Landing Suite — Responsive Mobile-First Architecture
+
+File: `components/marketing/*.tsx` (`Navbar.tsx`, `HeroSection.tsx`, `MarketValuationWidget.tsx`, `BodyTypeSelector.tsx`, `WhatIsAutoNexa.tsx`, `DiscoverSection.tsx`, `HowItWorks.tsx`, `ComparisonCards.tsx`, `ComparisonMatrix.tsx`, `Footer.tsx`)  
+Last updated: 2026-10-16  
+Mode: Autumn Editorial responsive execution (from ultra-compact 320px mobile viewports to 4K displays)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Floating Navbar | Capsule pill (`top-4 sm:top-6`) with responsive CTA text (`sm:hidden`: "Appraisal" vs `sm:inline`: "Get Free Appraisal"), `min-h-[44px]` touch target, `min-w-[44px] min-h-[44px]` hamburger toggle, full-screen dismissal backdrop (`bg-black/65 backdrop-blur-xs z-40`), and `Escape` keyboard dismissal |
+| Hero Section | Fluid typography scaling `text-3xl sm:text-5xl md:text-6xl lg:text-7xl` with `pt-32 sm:pt-36 lg:pt-42` header clearance, eliminating headline collision on mobile `< 380px` |
+| Valuation Widget | `[perspective:1200px]` with subtle 3D tilt, `touch-pan-x overscroll-x-contain` category tabs, `grid-cols-1 sm:grid-cols-12` vertical input stacking, `min-h-[48px]` input/button touch targets, and `grid-cols-4 sm:grid-cols-8 gap-2 sm:gap-4` body-type icons |
+| What Is AutoNexa | Fluid stats row (`grid-cols-3 gap-2.5 sm:gap-6` with `text-2xl sm:text-3xl lg:text-4xl`) preventing text collision on narrow viewports; showcase cards with fluid glassmorphic banner padding (`p-4 sm:p-6`) and `min-h-[44px]` action buttons |
+| Discover Section | Category tabs with `touch-pan-x overscroll-x-contain pb-1`, card price row with wrap safety (`flex-wrap items-baseline gap-1.5 sm:gap-2.5 max-w-[calc(100%-72px)]`), and mobile-fluid conversion CTA (`w-full sm:w-auto min-h-[48px]`) |
+| How It Works | Responsive illustration cards (`h-52 sm:h-64 rounded-2xl`), hidden desktop flow lines (`hidden lg:block`), and responsive bottom appraisal trigger (`w-full sm:w-auto min-h-[48px]`) |
+| Comparison Cards | Adaptive card padding (`p-5 sm:p-8 lg:p-10`), stacked cards on `< 1024px`, and responsive bottom row with `flex flex-col sm:flex-row items-stretch sm:items-center` and `w-full sm:w-auto min-h-[44px]` CTA |
+| Comparison Matrix | Desktop 12-column table with continuous highlighted AutoNexa card &rarr; Mobile stacked card grid (`md:hidden space-y-4 pt-4`) with prominent AutoNexa highlight banner, comparison data rows, and full-width `min-h-[48px]` CTA |
+| Marketing Footer | Scaling headline (`text-4xl sm:text-6xl md:text-8xl lg:text-[104px]`), single-column mobile wrapping for directory links (`grid-cols-1 sm:grid-cols-2 md:grid-cols-4`), and dynamically self-resizing `AutoNexaPhysicsCanvas` |
+
+### Portal Shell & Wholesale Dashboard — Responsive Architecture
+
+File: `components/layout/*.tsx`, `components/seller/*.tsx` (`AppShell.tsx`, `MobileMenuButton.tsx`, `Sidebar.tsx`, `SellerDashboard.tsx`, `SellerHeader.tsx`, `KycStatusBanner.tsx`, `ListingStartCard.tsx`)  
+Last updated: 2026-10-16  
+Mode: Porcelain / Obsidian dual-theme responsive execution with institutional FinTech density
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Mobile Viewport Clearance | `AppShell` main container has `pt-16 sm:pt-20 lg:pt-8 px-4 sm:px-6 lg:px-8`, ensuring fixed top floating mobile triggers never obscure dashboard titles or alert banners |
+| Floating Mobile Menu Button | Dual-mode adaptive capsule (`bg-white/90 dark:bg-[#131215]/90 border border-black/10 dark:border-white/15`) with `min-w-[44px] min-h-[44px] rounded-xl shadow-md` |
+| Portal Sidebar Drawer | Fixed overlay drawer on mobile with guaranteed `w-[280px] sm:w-[290px]` width (independent of desktop rail collapse state), dedicated top mobile close trigger (`X` icon), full-screen backdrop dismissal (`bg-black/85 backdrop-blur-sm`), `Escape` keyboard dismissal, and `min-h-[44px]` touch height on all navigation rows |
+| Seller Dashboard Stats | Sealed-bid compliant count telemetry in responsive grid (`grid-cols-3 gap-2 sm:gap-4 p-3 sm:p-4`) with fluid font scaling (`text-xl sm:text-3xl font-bold tabular-nums`) preventing mobile label clipping |
+| Location Badge & Welcome | `flex-wrap items-center gap-2` preventing badge truncation on compact smartphones |
+| Status Banners & Actions | `KycStatusBanner` and `ListingStartCard` buttons upgrade to full-width mobile touch triggers (`w-full sm:w-auto min-h-[44px]`) with clear status messaging |
 
 ---
