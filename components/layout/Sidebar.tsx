@@ -67,62 +67,35 @@ export function Sidebar() {
     NAV_ITEMS = [
       {
         id: 'admin-moderation',
-        title: 'Moderation Queue',
+        title: 'Approvals',
         href: '/admin/moderation',
         icon: ShieldCheck,
-        section: 'COMPLIANCE & RISK',
+        section: 'MODERATION',
         items: [
-          { title: 'Vehicle Submissions', href: '/admin/moderation' },
-        ],
-      },
-      {
-        id: 'admin-dealers',
-        title: 'Dealer Licensing',
-        href: '/admin/dealers',
-        icon: Users,
-        section: 'COMPLIANCE & RISK',
-        items: [
-          { title: 'OMVIC / AMVIC Checks', href: '/admin/dealers' },
+          { title: 'Vehicle Queue', href: '/admin/moderation' },
+          { title: 'Dealer Licenses', href: '/admin/dealers' },
         ],
       },
       {
         id: 'admin-auctions',
-        title: 'Auction Operations',
+        title: 'Marketplace',
         href: '/admin/auctions',
         icon: Gavel,
-        section: 'MARKETPLACE',
+        section: 'MODERATION',
         items: [
-          { title: 'Active Timers & Overrides', href: '/admin/auctions' },
-        ],
-      },
-      {
-        id: 'admin-disputes',
-        title: 'Arbitration & Disputes',
-        href: '/admin/disputes',
-        icon: Scales,
-        section: 'MARKETPLACE',
-        items: [
-          { title: 'Arbitration Claims', href: '/admin/disputes' },
+          { title: 'Live Auctions', href: '/admin/auctions' },
+          { title: 'Disputes', href: '/admin/disputes' },
         ],
       },
       {
         id: 'admin-analytics',
-        title: 'Executive Analytics',
+        title: 'Analytics & Logs',
         href: '/admin/analytics',
         icon: ChartPolar,
         section: 'GOVERNANCE',
         items: [
-          { title: 'Platform Metrics (CAD)', href: '/admin/analytics' },
-        ],
-      },
-      {
-        id: 'admin-audit',
-        title: 'Compliance Audit Log',
-        href: '/admin/audit-log',
-        icon: ClipboardText,
-        section: 'GOVERNANCE',
-        items: [
-          { title: 'Immutable PIPEDA Trail', href: '/admin/audit-log' },
+          { title: 'Market Analytics', href: '/admin/analytics' },
+          { title: 'Audit Trail', href: '/admin/audit-log' },
         ],
       },
     ];
@@ -130,18 +103,18 @@ export function Sidebar() {
     NAV_ITEMS = [
       {
         id: 'dealer-floor',
-        title: 'Dealer Floor',
+        title: 'Live Inventory',
         href: '/dealer/inventory',
         icon: House,
         section: 'TRADING FLOOR',
         items: [
-          { title: 'Live Inventory Floor', href: '/dealer/inventory' },
-          { title: 'Sample Inspection', href: '/dealer/auctions/auc-porsche-macan-2022' },
+          { title: 'Wholesale Floor', href: '/dealer/inventory' },
+          { title: 'Vehicle Inspection', href: '/dealer/auctions/auc-porsche-macan-2022' },
         ],
       },
       {
         id: 'dealer-trading',
-        title: 'Sealed Bidding',
+        title: 'My Bids',
         href: '/dealer/active-bids',
         icon: Gavel,
         section: 'TRADING FLOOR',
@@ -152,14 +125,14 @@ export function Sidebar() {
       },
       {
         id: 'dealer-account',
-        title: 'Dealership & Quota',
+        title: 'Dealership',
         href: '/dealer/subscription',
         icon: CreditCard,
-        section: 'ACCOUNT & SEATS',
+        section: 'MANAGEMENT',
         items: [
-          { title: 'Tier Subscription', href: '/dealer/subscription' },
+          { title: 'Subscription Plan', href: '/dealer/subscription' },
           { title: 'Invoices & Billing', href: '/dealer/billing' },
-          { title: 'Team & Buyer Seats', href: '/dealer/team' },
+          { title: 'Team Members', href: '/dealer/team' },
         ],
       },
       {
@@ -167,11 +140,11 @@ export function Sidebar() {
         title: 'Legal & Trust',
         href: '/legal/terms',
         icon: ShieldCheck,
-        section: 'REGULATORY',
+        section: 'MANAGEMENT',
         items: [
-          { title: 'Dealer License Verification', href: '/dealer/register' },
-          { title: 'OMVIC / AMVIC Terms', href: '/legal/terms' },
-          { title: 'PIPEDA Privacy Policy', href: '/legal/privacy' },
+          { title: 'Dealer License', href: '/dealer/register' },
+          { title: 'Terms of Service', href: '/legal/terms' },
+          { title: 'Privacy Policy', href: '/legal/privacy' },
         ],
       },
     ];
@@ -183,32 +156,32 @@ export function Sidebar() {
         title: 'Dashboard',
         href: '/seller/dashboard',
         icon: House,
-        section: 'VEHICLE SALES',
+        section: 'VEHICLES',
         items: [
-          { title: 'Overview & Listings', href: '/seller/dashboard' },
-          { title: 'Sell a Vehicle', href: '/seller/list-car' },
+          { title: 'Overview', href: '/seller/dashboard' },
+          { title: 'Sell a Car', href: '/seller/list-car' },
         ],
       },
       {
         id: 'seller-auctions',
-        title: 'Live Auction',
+        title: 'Auctions',
         href: '/seller/listings/auc-porsche-macan-2022',
         icon: Gavel,
-        section: 'VEHICLE SALES',
+        section: 'VEHICLES',
         items: [
-          { title: 'Porsche Macan Auction', href: '/seller/listings/auc-porsche-macan-2022' },
-          { title: 'Select Winning Dealer', href: '/seller/listings/auc-porsche-macan-2022/select-dealer' },
+          { title: 'Live Auction', href: '/seller/listings/auc-porsche-macan-2022' },
+          { title: 'Dealer Offers', href: '/seller/listings/auc-porsche-macan-2022/select-dealer' },
           { title: 'Inspection Voucher', href: '/seller/listings/auc-porsche-macan-2022/appointment' },
         ],
       },
       {
         id: 'seller-trust',
-        title: 'Identity & Legal',
+        title: 'Account',
         href: '/verify-kyc',
         icon: ShieldCheck,
-        section: 'TRUST & VERIFICATION',
+        section: 'VERIFICATION',
         items: [
-          { title: 'Verify Identity (KYC)', href: '/verify-kyc' },
+          { title: 'ID Verification', href: '/verify-kyc' },
           { title: 'Privacy Policy', href: '/legal/privacy' },
           { title: 'Terms of Service', href: '/legal/terms' },
         ],
@@ -345,7 +318,7 @@ export function Sidebar() {
               <div className="w-8 border-t border-gray-200 dark:border-white/[0.08] mt-2.5" />
             </div>
           )}
-          {Array.from(new Set(NAV_ITEMS.map((item) => item.section || 'MENU'))).map((sectionKey) => {
+          {Array.from(new Set(NAV_ITEMS.map((item) => item.section || 'MENU'))).map((sectionKey, sectionIdx) => {
             const sectionItems = NAV_ITEMS.filter(
               (item) => (item.section || 'MENU') === sectionKey
             );
@@ -360,15 +333,19 @@ export function Sidebar() {
                   </div>
                 )}
 
-             
-
                 {/* Section Nav Items */}
                 {sectionItems.map((group) => {
                   const Icon = group.icon;
                   const isMainActive =
                     pathname === group.href ||
                     (group.href !== '/' && pathname.startsWith(group.href));
-                  const isExpanded = !!expandedGroups[group.id];
+                  
+                  // Toggle the sidebar first 2 sections into full list view as default
+                  const isDefaultOpen = sectionIdx < 2;
+                  const isExpanded =
+                    expandedGroups[group.id] !== undefined
+                      ? expandedGroups[group.id]
+                      : isDefaultOpen;
                   const hasSubItems = group.items.length > 0;
 
                   return (
@@ -418,7 +395,7 @@ export function Sidebar() {
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              toggleGroup(group.id);
+                              toggleGroup(group.id, !isExpanded);
                             }}
                             className="size-6 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/10 text-gray-400 hover:text-black dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer shrink-0 ml-1"
                             aria-label={`Toggle ${group.title} sub-menu`}
@@ -480,14 +457,8 @@ export function Sidebar() {
         </div>
 
         {/* Theme Toggle section: positioned just above profile divider */}
-        <div className={`px-3 py-2 border-t border-gray-200 dark:border-white/10 flex items-center shrink-0 ${
-          isCollapsed ? 'justify-center' : 'justify-between'
-        }`}>
-          {!isCollapsed && (
-            <span className="text-[11px] font-mono text-gray-400 dark:text-neutral-400 uppercase tracking-wider select-none font-medium">
-              Appearance
-            </span>
-          )}
+        <div className={`px-3 py-2 border-t border-gray-200 dark:border-white/10 flex items-center shrink-0 justify-center`}>
+         
           <ThemeToggle variant={isCollapsed ? 'compact' : 'segmented'} />
         </div>
 

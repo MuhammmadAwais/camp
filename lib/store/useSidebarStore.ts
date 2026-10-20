@@ -6,7 +6,7 @@ interface SidebarState {
   expandedGroups: Record<string, boolean>;
   toggleSidebar: () => void;
   setCollapsed: (collapsed: boolean) => void;
-  toggleGroup: (groupKey: string) => void;
+  toggleGroup: (groupKey: string, forcedState?: boolean) => void;
   setGroupExpanded: (groupKey: string, expanded: boolean) => void;
   toggleMobile: () => void;
   closeMobile: () => void;
@@ -15,14 +15,7 @@ interface SidebarState {
 export const useSidebarStore = create<SidebarState>((set) => ({
   isCollapsed: false,
   isMobileOpen: false,
-  expandedGroups: {
-    dashboard: true,
-    vehicles: false,
-    bids: false,
-    valuations: false,
-    compliance: false,
-    settings: false,
-  },
+  expandedGroups: {},
 
   toggleSidebar: () =>
     set((state) => ({
@@ -34,11 +27,11 @@ export const useSidebarStore = create<SidebarState>((set) => ({
       isCollapsed: collapsed,
     })),
 
-  toggleGroup: (groupKey: string) =>
+  toggleGroup: (groupKey: string, forcedState?: boolean) =>
     set((state) => ({
       expandedGroups: {
         ...state.expandedGroups,
-        [groupKey]: !state.expandedGroups[groupKey],
+        [groupKey]: forcedState !== undefined ? forcedState : !state.expandedGroups[groupKey],
       },
     })),
 
