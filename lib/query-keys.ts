@@ -13,3 +13,11 @@ export const vehicleKeys = {
   all: ["vehicle"] as const,
   decode: (vin: string) => [...vehicleKeys.all, "decode", vin] as const,
 };
+
+export const sellerKeys = {
+  all: ["seller"] as const,
+  dashboard: () => [...sellerKeys.all, "dashboard"] as const,
+  auctions: () => [...sellerKeys.all, "auctions"] as const,
+  auction: (id: string) => [...sellerKeys.auctions(), id] as const,
+};
+

@@ -1,10 +1,5 @@
-import type { Metadata } from "next";
-import { SellerPortalShell } from "@/components/seller/SellerPortalShell";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Seller dashboard | AutoNexa",
-};
-
-export default function DashboardPage() {
-  return <SellerPortalShell />;
+export default function DashboardRedirect() {
+  redirect("/seller/dashboard");
 }

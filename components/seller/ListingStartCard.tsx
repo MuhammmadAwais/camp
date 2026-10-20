@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { CarFront, Lock } from "lucide-react";
 import { useKycStatus } from "@/hooks/useKyc";
 import { useVinDecode } from "@/hooks/useVinDecode";
@@ -41,20 +42,31 @@ export function ListingStartCard({ initialKycStatus }: Props) {
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col sm:flex-row sm:items-center gap-3 border-t border-portal-border pt-5">
-        <button
-          type="button"
-          disabled
-          className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 rounded-lg bg-portal-primary px-4 py-2.5 font-body text-sm font-semibold text-white opacity-50 cursor-not-allowed"
-        >
-          {!isVerified && <Lock className="w-4 h-4" aria-hidden />}
-          Start listing
-        </button>
-        <p className="font-body text-xs text-portal-text-muted">
-          {isVerified
-            ? "The listing wizard (photos, condition, asking price) ships in the next build."
-            : "Unlocks once your identity is verified."}
-        </p>
+      <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-portal-border pt-5">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          {isVerified ? (
+            <Link
+              href="/seller/list-car"
+              className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 rounded-lg bg-[#8C383E] dark:bg-[#E59344] hover:bg-[#752B30] dark:hover:bg-[#D9822F] px-5 py-2.5 font-body text-sm font-bold text-white transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            >
+              <span>Start 5-step listing</span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              disabled
+              className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 rounded-lg bg-portal-primary px-4 py-2.5 font-body text-sm font-semibold text-white opacity-50 cursor-not-allowed"
+            >
+              <Lock className="w-4 h-4" aria-hidden />
+              Start listing
+            </button>
+          )}
+          <p className="font-body text-xs text-portal-text-muted">
+            {isVerified
+              ? "VIN decode, 2D damage pin mapper, photo uploader & reserve pricing."
+              : "Unlocks once your identity is verified."}
+          </p>
+        </div>
       </div>
     </section>
   );

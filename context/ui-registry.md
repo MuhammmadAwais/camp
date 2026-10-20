@@ -833,3 +833,140 @@ Mode: Porcelain / Obsidian dual-theme responsive execution with institutional Fi
 | Status Banners & Actions | `KycStatusBanner` and `ListingStartCard` buttons upgrade to full-width mobile touch triggers (`w-full sm:w-auto min-h-[44px]`) with clear status messaging |
 
 ---
+
+### `SellerDashboard` & Milestone 4.1 Telemetry Suite
+
+Files: `components/seller/SellerDashboard.tsx`, `components/seller/SellerAuctionCard.tsx`, `components/seller/SellerStatsGrid.tsx`, `components/seller/SellerEmptyState.tsx`, `components/seller/SellerNotificationFeed.tsx`  
+Last updated: 2026-10-17  
+Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidian `#0C0A09` Dark)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Dashboard Container | `mx-auto max-w-6xl w-full py-4 sm:py-6 space-y-6` |
+| Stats KPI Grid | `grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4`: Card `rounded-2xl border border-portal-border bg-portal-surface p-4 sm:p-5 hover:border-[#8C383E]/40 dark:hover:border-[#E59344]/40` |
+| Stats Value Typography | `font-mono text-xl sm:text-2xl lg:text-3xl font-bold tabular-nums text-portal-text` |
+| Active Auction Card | `rounded-2xl border border-portal-border bg-portal-surface overflow-hidden hover:border-[#8C383E]/40 dark:hover:border-[#E59344]/40 flex flex-col md:flex-row` |
+| Vehicle Cover Image | `w-full md:w-64 lg:w-72 h-48 md:h-auto shrink-0 bg-portal-surface-hover object-cover group-hover:scale-105` |
+| Sealed Bids Counter Pill | `px-3 py-1 rounded-lg bg-[#8C383E]/10 dark:bg-[#E59344]/15 border border-[#8C383E]/20 dark:border-[#E59344]/30 font-mono text-xs font-semibold text-[#8C383E] dark:text-[#E59344]` |
+| 24h Countdown Clock | `font-mono text-xs sm:text-sm font-bold text-portal-text tracking-wider tabular-nums` with live client interval |
+| Reserve Asking Price | `font-mono text-base sm:text-lg font-bold text-portal-text` formatted via `formatCadCents` |
+| Status Pill: Live 24h | `bg-[#E59344]/10 text-[#E59344] border-[#E59344]/30` with pulsing amber dot |
+| Status Pill: In Review | `bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25` |
+| Status Pill: Completed | `bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30` |
+| Onboarding Empty State | `rounded-3xl border border-portal-border bg-portal-surface p-6 sm:p-10 text-center` with 3-step timeline cards |
+| Notification Feed | `rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6` with type-aware icons and unread dots |
+
+**Pattern notes:**
+- **Strict Sealed-Bid Invariant:** Displays only total bid counts during active auctions (e.g. `14 Sealed Dealer Bids`). Dollar values remain sealed until auction conclusion.
+- **Strict Integer CAD Cents:** All reserve prices, gross volume, and bids are typed, stored, and sent as whole integer cents (`formatCadCents` at UI boundary only).
+- **Interactive State Switcher:** Includes high-utility view toggle (`Active Floor (3)` vs `First-Time Seller (0)`) and background telemetry refresh for end-to-end verification.
+
+
+---
+
+### `ListingWizardShell & VinDecodeStep` (Milestone 4.2 / Step 1)
+
+Files: `components/seller/wizard/ListingWizardShell.tsx`, `components/seller/wizard/VinDecodeStep.tsx`, `components/seller/wizard/ListingWizard.tsx`, `store/useListingWizardStore.ts`  
+Last updated: 2026-10-19  
+Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidian `#0C0A09` Dark)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Wizard Outer Shell | `min-h-screen bg-portal-canvas text-portal-text flex flex-col` |
+| Sticky Header | `sticky top-0 z-40 bg-portal-surface/90 backdrop-blur-md border-b border-portal-border h-16` with back navigation, step indicator title (`Step 1 of 5`), and "Save & Exit" button |
+| 5-Step Stepper Bar | Responsive 5-column track: `grid grid-cols-5 gap-2 pt-1 pb-3 max-w-3xl mx-auto px-4` with dynamic bar indicators (`h-1.5 rounded-full bg-portal-primary` for active, `bg-portal-primary/60` for completed, `bg-portal-border` for pending) and desktop checkmark icons |
+| Content Container | `max-w-2xl w-full mx-auto px-4 py-6 md:py-8` with card styling `bg-portal-surface border border-portal-border rounded-xl p-5 md:p-6 shadow-xs` |
+| 17-Char VIN Input | `w-full px-4 py-3 rounded-xl font-mono text-base tracking-wider bg-portal-surface border border-portal-border` with real-time uppercase sanitizer, character counter (`17/17`), and live ISO 3779 checksum validator |
+| Realtime Checksum Indicator | Dynamic feedback: `CheckCircle2` green checkmark when checksum passes; `AlertCircle` crimson warning with exact expected check digit at position 9 when invalid |
+| Postal Code Input | `font-mono tracking-wider` with auto-normalization (`M5V 2T6`) and automatic Canadian province detection badge (`ON`, `QC`, `BC`, etc.) |
+| Auto-Decode Action | Full-width button with `Sparkles` icon and `RefreshCw` loading spinner calling `POST /api/vin/decode` (NHTSA vPIC with 3s timeout) |
+| Decoded Vehicle Card | `border border-portal-primary/40 rounded-xl p-5 md:p-6 bg-portal-surface shadow-sm` showing headline (`Year Make Model • Trim`), "NHTSA Auto-Decoded" badge, and 6-spec pill grid (Body Class, Engine, Transmission, Drivetrain, Fuel Type, Location) |
+| Manual Override Accordion | Expandable grid allowing instant manual corrections for Year, Make, Model, Trim, Transmission, and Drivetrain if API is partial or for rare imports |
+| Navigation Flow | `router.push('/seller/list-car?step=details', { scroll: false })` keeping browser history and mobile hardware back button functional |
+| State Persistence | `useListingWizardStore` backed by `localStorage` (`autonexa-listing-wizard-draft`) ensuring unsubmitted mobile drafts are never lost on reload or tab-switch |
+
+**Pattern notes:**
+- **Zero RSC Serialization Pitfall:** Implements `SellerListCarShell.tsx` as a client component to cleanly handle `RequireSession` function children without Next.js Server Component boundary errors.
+- **Client & Server Shared VIN Rules:** Validates check-digit in browser in < 5ms before firing network requests, reducing useless backend load.
+- **Seamless Landing-to-Wizard Handoff:** Reads any existing `useSellIntentStore` from public landing page appraisals to prefill the VIN on first mount.
+
+---
+
+### `VehicleSpecsStep` (Milestone 4.2 / Step 2)
+
+Files: `components/seller/wizard/VehicleSpecsStep.tsx`, `lib/schemas/vehicle-schema.ts`, `store/useListingWizardStore.ts`  
+Last updated: 2026-10-20  
+Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidian `#0C0A09` Dark)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Step 2 Container | `space-y-6 animate-in fade-in duration-300` within `ListingWizardShell` |
+| Context Capsule | `px-2 py-0.5 rounded-md bg-portal-primary/10 text-portal-primary` displaying decoded Year, Make, Model & Trim |
+| Odometer Card | `bg-portal-surface border border-portal-border rounded-xl p-5 md:p-6 shadow-xs` with `KM` suffix badge and integer kilometer validation (`100` to `999,999` km) |
+| Powertrain Dropdowns | Controlled select inputs for Transmission (Automatic, Manual, CVT, Dual-Clutch) and Drivetrain (AWD, FWD, 4WD, RWD) pre-populated from Step 1 vPIC decode |
+| Exterior Color Swatches | Swatch palette (Black, White, Silver, Grey, Blue, Red, Brown, Green, Gold, Custom) with selected ring `border-portal-primary bg-portal-primary/10 text-portal-primary font-semibold shadow-xs` |
+| Working Keys Select | 1, 2 (Standard Pair), 3, 4+ keys with `Key` icon indicator |
+| Canadian Collision Declaration | Toggle switch revealing claim count and damage description textarea; clean title default |
+| Canadian Lien Declaration | Toggle switch with OMVIC compliance disclaimer and financing institution / payout CAD estimate field |
+| Form Validation | React Hook Form with `@hookform/resolvers/zod` + `vehicleSpecsFormSchema` validation mode `onChange` |
+| Navigation & Retention | "Back to VIN" and "Continue to Condition Map" triggers updating Zustand `specs` state and advancing step |
+
+**Pattern notes:**
+- **Canadian Metric Standard:** Exclusively enforces odometer readings in whole kilometers (`km`), preventing US-mile conversion errors.
+- **OMVIC Lien Transparency:** Educates sellers that liens are cleared transparently by the purchasing dealership upon escrow payout.
+- **Bi-Directional State Retention:** Navigating between Step 1, Step 2, and Step 3 preserves all selected values, swatches, and toggles via `useListingWizardStore`.
+
+---
+
+### `DamageMapperStep & VehicleSchematicSvg` (Milestone 4.2 / Step 3)
+
+Files: `components/seller/wizard/DamageMapperStep.tsx`, `components/seller/wizard/VehicleSchematicSvg.tsx`, `store/useListingWizardStore.ts`  
+Last updated: 2026-10-20  
+Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidian `#0C0A09` Dark)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| 5 Viewpoint Tabs | `flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none` with active state `bg-portal-primary text-white font-semibold shadow-xs` and real-time pin count badge pill |
+| Interactive SVG Canvas | `relative w-full aspect-16/9 sm:aspect-2/1 bg-portal-surface-hover/60 border border-portal-border rounded-2xl overflow-hidden cursor-crosshair` |
+| 5 Automotive Schematics | Precision architectural SVG vectors: Top/Roof (`roof`), Driver Side (`driver_side`), Passenger Side (`passenger_side`), Front Fascia (`front`), and Rear Fascia (`rear`) |
+| Hotspot Pin Indicators | Numbered pulsing badges positioned via `(x%, y%)` relative coordinates with severity color tokens (Amber `#E59344` for Minor, Orange `#EA580C` for Moderate, Crimson `#DC2626` for Severe) |
+| Configuration Modal | Fixed backdrop modal (`bg-black/60 backdrop-blur-xs flex items-center justify-center p-4`) with 3 severity selector cards, quick panel pills, and description textarea |
+| Quick Panel Tags | Context-aware area tags per viewpoint (e.g. "Driver Front Door", "Front Bumper", "Trunk / Liftgate", "Rocker Panel") |
+| Declared Hotspots Grid | Responsive card grid (`grid grid-cols-1 sm:grid-cols-2 gap-2.5`) rendering numbered hotspot pills, panel label, severity badge, description, and trash delete action |
+| Showroom Condition Action | "Clean Body" quick check allowing sellers with zero exterior damage to proceed with 0 tags |
+| State Persistence | Zustand `damageHotspots` array updated with atomic add/update/remove actions and persisted in browser storage |
+
+**Pattern notes:**
+- **Wholesale Inspection Accuracy:** Visual 2D pin mapping matches professional dealer condition grading protocols (Manheim / ADESA standards).
+- **Interactive Coordinate Normalization:** Coordinates are calculated strictly in relative percentages (`x%, y%`) bounded between 0% and 100%, ensuring pins stay aligned across mobile, tablet, and desktop viewports.
+- **Bi-Directional Step Memory:** Navigating forward to Photo Gallery and back retains all placed pins and view selections without data loss.
+
+---
+
+### `PhotoUploadStep` (Milestone 4.2 / Step 4)
+
+Files: `components/seller/wizard/PhotoUploadStep.tsx`, `lib/image-compression.ts`, `app/api/listings/media/presign/route.ts`, `app/api/mock/s3-upload/route.ts`, `store/useListingWizardStore.ts`  
+Last updated: 2026-10-20  
+Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidian `#0C0A09` Dark)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Container | `space-y-6 animate-in fade-in duration-300` within `ListingWizardShell` |
+| Quota Badge | Real-time intake counter (`X / 30 Photos`) toggling between amber (`bg-amber-500/10 text-amber-600`) and green (`bg-emerald-500/10 text-emerald-600`) upon reaching 8 photo threshold |
+| Recommended Angles | 8 quick-reference pills (`Front 3/4`, `Rear 3/4`, `Odometer Cluster`, `Front Cabin`, `Rear Seats`, `Engine Bay`, `Tires`, `Trunk`) with `Sparkles` icon |
+| Direct-to-S3 Dropzone | Drag-and-drop zone (`border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center cursor-pointer`) with active drag highlight (`border-portal-primary bg-portal-primary/10`) |
+| Client-Side Compression | `browser-image-compression` downscaling to max 1920px WebP at 80% quality in web worker thread before network dispatch |
+| Privacy Compliance | Automatic client-side EXIF stripping removing GPS coordinates, camera serials, and timestamps |
+| Presigned S3 Intake | `POST /api/listings/media/presign` returns pre-authorized S3 PUT ticket avoiding streaming heavy uploads through server memory |
+| Gallery Preview Grid | Responsive grid (`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3`) with Next.js image previews, file sizes, and status badges |
+| Cover Photo Management | Gold badge (`bg-portal-primary text-white text-[10px] font-bold`) on index 0 photo; 1-click star button to designate cover image |
+| Reorder & Removal | Left/Right shift arrows (`ChevronLeft`, `ChevronRight`) and delete trash button with clean hover action overlay |
+| Validation Guard | Minimum 8 photo enforcement blocking progression with informative error alert banner |
+| Demo Auto-Fill | `load-sample-photos-btn` populates 8 curated high-resolution vehicle showcase photos with all recommended angles for instant previewing |
+
+**Pattern notes:**
+- **Zero Server Memory Overhead:** Directly uploads to cloud storage (S3/R2) via client-side signed tickets rather than streaming multipart payloads through Next.js server memory.
+- **Privacy Standard (PIPEDA / Law 25):** Cleans location EXIF metadata client-side before any byte leaves the seller's device.
+- **Bi-Directional Navigation State:** Photos and cover preferences stay cached in `useListingWizardStore` across step navigation.
+
+

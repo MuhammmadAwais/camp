@@ -6,9 +6,10 @@ Update this file after completing each page/component. Any AI agent reading this
 
 ## Current Status
 
-**Active Phase:** Phase 3 — Unified Authentication, KYC Verification & RBAC Route Infrastructure  
-**Next Page to Build:** Phase 4.1: `/seller/dashboard` (Seller Dashboard Shell, Active Auction Cards & Telemetry)  
-**Workspace State:** Professional Directory Structure established (`docs/specifications/`, `docs/references/`, `docs/designs/`). Clean git status and zero TypeScript compilation errors.
+**Active Phase:** Phase 4 — Seller Portal & 5-Step Listing Wizard (Mobile-First Priority)  
+**Completed:** Milestone 4.2 / Page 4.2.3: Step 3 — Interactive 2D Damage Hotspot Mapper (`/seller/list-car?step=condition`)  
+**Next Page to Build:** Milestone 4.2 / Page 4.2.4: Step 4 — Media Gallery & Direct-to-S3 Upload (`/seller/list-car?step=media`)  
+**Workspace State:** Steps 1, 2, and 3 (Damage Mapper) verified via browser subagent. Zero TypeScript compilation errors.
 
 ---
 
@@ -61,33 +62,33 @@ Update this file after completing each page/component. Any AI agent reading this
 *Primary Canvas: Mobile Viewport (`375px` to `640px`) scalable to Desktop. Light porcelain theme (`#FAFBFC`).*
 
 #### Milestone 4.1: Seller Dashboard
-- [ ] **Page 4.1: Seller Dashboard Shell**
+- [x] **Page 4.1: Seller Dashboard Shell**
   - **Route:** `/seller/dashboard`
   - **Component:** `SellerDashboard.tsx`
-  - **Features:** KYC Status Banner, active vehicle cards, sealed-bid count telemetry (`N sealed dealer bids`), "List New Car" CTA, empty-state placeholder.
+  - **Features:** KYC Status Banner, active vehicle cards, sealed-bid count telemetry (`N sealed dealer bids`), "List New Car" CTA, empty-state placeholder, demo view switcher.
   - **API Contract:** `GET /api/seller/dashboard`, `GET /api/kyc/status`.
 
 #### Milestone 4.2: 5-Step Listing Wizard (`/seller/list-car`)
-- [ ] **Page 4.2.1: Step 1 — VIN Auto-Decode**
-  - **Route:** `/seller/list-car/vin` (or Step 1 in `ListingWizard.tsx`)
+- [x] **Page 4.2.1: Step 1 — VIN Auto-Decode**
+  - **Route:** `/seller/list-car` (Step 1 in `ListingWizard.tsx`)
   - **Component:** `VinDecodeStep.tsx`
   - **Features:** 17-character VIN mask, ISO 3779 checksum validator, NHTSA vPIC auto-decode hook, manual specification fallback override.
   - **API Contract:** `POST /api/vin/decode`.
-- [ ] **Page 4.2.2: Step 2 — Vehicle Specs & History**
-  - **Route:** `/seller/list-car/details`
+- [x] **Page 4.2.2: Step 2 — Vehicle Specs & History**
+  - **Route:** `/seller/list-car?step=details`
   - **Component:** `VehicleSpecsStep.tsx`
   - **Features:** Odometer mileage in km, transmission, drivetrain, exterior/interior colour, number of keys, accident declaration, lien status.
   - **API Contract:** Controlled inputs via React Hook Form + Zod validation.
-- [ ] **Page 4.2.3: Step 3 — Interactive 2D Damage Hotspot Mapper**
-  - **Route:** `/seller/list-car/condition`
+- [x] **Page 4.2.3: Step 3 — Interactive 2D Damage Hotspot Mapper**
+  - **Route:** `/seller/list-car?step=condition`
   - **Component:** `DamageMapperStep.tsx`
   - **Features:** Interactive SVG vehicle schematics (front, sides, rear, roof). Tap to place pins, select severity (Minor, Moderate, Severe), add description and photo attachments.
   - **API Contract:** `DamageHotspot[]` saved to `useListingWizardStore`.
-- [ ] **Page 4.2.4: Step 4 — Media Gallery & Direct-to-S3 Upload**
-  - **Route:** `/seller/list-car/media`
+- [x] **Page 4.2.4: Step 4 — Media Gallery & Direct-to-S3 Upload**
+  - **Route:** `/seller/list-car?step=media`
   - **Component:** `PhotoUploadStep.tsx`
-  - **Features:** 8 to 30 photo intake, drag-to-reorder grid, client-side downscaling to 1920px (`browser-image-compression`), EXIF metadata scrubbing, presigned S3 upload progress bar.
-  - **API Contract:** `POST /api/listings/media/presign`.
+  - **Features:** 8 to 30 photo intake, drag-and-drop zone, client-side downscaling to 1920px WebP (`browser-image-compression`), EXIF metadata scrubbing, presigned S3 upload, cover photo selection, reorder controls, quota tracker, and demo auto-fill.
+  - **API Contract:** `POST /api/listings/media/presign` -> Direct S3 PUT.
 - [ ] **Page 4.2.5: Step 5 — Reserve Price & Legal Submission**
   - **Route:** `/seller/list-car/pricing`
   - **Component:** `PriceReviewStep.tsx`

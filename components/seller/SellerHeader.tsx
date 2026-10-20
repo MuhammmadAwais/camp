@@ -17,7 +17,7 @@ export function SellerHeader({ user }: Props) {
   return (
     <header className="sticky top-0 z-30 border-b border-portal-border bg-portal-surface/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/dashboard" className="flex items-center gap-2.5" aria-label="AutoNexa seller dashboard">
+        <Link href="/seller/dashboard" className="flex items-center gap-2.5" aria-label="AutoNexa seller dashboard">
           <span className="relative w-9 h-5">
             <Image src="/logo-mark.webp" alt="" fill sizes="36px" className="object-contain" />
           </span>
