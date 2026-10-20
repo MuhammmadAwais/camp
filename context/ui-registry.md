@@ -969,4 +969,181 @@ Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidi
 - **Privacy Standard (PIPEDA / Law 25):** Cleans location EXIF metadata client-side before any byte leaves the seller's device.
 - **Bi-Directional Navigation State:** Photos and cover preferences stay cached in `useListingWizardStore` across step navigation.
 
+---
+
+### `PriceReviewStep` (Milestone 4.2 / Step 5)
+
+Files: `components/seller/wizard/PriceReviewStep.tsx`, `app/api/listings/route.ts`, `store/useListingWizardStore.ts`  
+Last updated: 2026-10-20  
+Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidian `#0C0A09` Dark)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Container | `space-y-6 animate-in fade-in duration-300` within `ListingWizardShell` |
+| Vehicle Recap Card | Top summary block displaying cover thumbnail, title (`Year Make Model Trim`), masked VIN, postal location, and 4-pill spec audit bar |
+| Wholesale Corridor Engine | Dynamic wholesale valuation corridor (`$XX,XXX – $YY,YYY CAD`) derived from year, mileage degradation, and damage penalties with 1-click median applicator |
+| Reserve Currency Mask | Masked integer CAD cents input enforcing integer cents invariant with sealed-bid privacy assurance pill |
+| No-Reserve Auction Mode | Segmented pill toggle allowing sellers to list without reserve, informing of 3x dealer bid engagement |
+| Canadian Legal Disclosures | OMVIC, AMVIC, and VSA mandatory affirmations: Registered Ownership Attestation, Accurate Condition Disclosure, and Lien Escrow Settlement Authorization |
+| 1-Click Accept All | `btn-accept-all-declarations` allowing instant validation of all 3 disclosures with bubble event prevention |
+| Moderation Submission | `POST /api/listings` dispatching complete validated listing draft, rendering celebratory success modal with listing ID, status, and dashboard return action |
+
+---
+
+### `SellerActiveAuctionView` (Milestone 4.3 / Page 4.3)
+
+Files: `components/seller/SellerActiveAuctionView.tsx`, `app/api/listings/[id]/route.ts`, `app/(seller)/seller/listings/[id]/page.tsx`  
+Last updated: 2026-10-20  
+Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidian `#0C0A09` Dark)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Hero Telemetry | 24-hour countdown digital clock with hours/minutes/seconds tabular numerals, status badge, and sealed dealer bid count pill |
+| Sealed Invariant Guard | Zero dollar bid values exposed while `ACTIVE` — counts only (`N Sealed Dealer Bids`) |
+| Simulation Stage Switcher | 3-pill toggle (`Live (24h)`, `Unsealed (Bids Open)`, `Accepted (Voucher)`) allowing instant state previewing during demos |
+| High-Res Showcase Strip | Aspect 16:10 primary image canvas with gold Cover Photo badge and clickable horizontal thumbnail ribbon |
+| Condition Inspection Panel | Verified damage hotspots audit list detailing panel location, severity tag, and seller notes |
+| Verified Specs Matrix | Two-column specifications grid covering transmission, drivetrain, exterior/interior colors, master key count, collision declaration, and lien status |
+| Dynamic State CTAs | Contextual transitions: directs to `select-dealer` when unsealed or `appointment` when accepted |
+
+---
+
+### `DealerSelectionView` (Milestone 4.3 / Page 4.4)
+
+Files: `components/seller/DealerSelectionView.tsx`, `app/(seller)/seller/listings/[id]/select-dealer/page.tsx`  
+Last updated: 2026-10-20  
+Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidian `#0C0A09` Dark)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Outcome Header | Summary banner highlighting top unsealed dealer offer in CAD cents and surplus above reserve asking price (`+$X,XXX CAD above reserve`) |
+| Faceted Sort Switcher | Sort ladder by "Highest Bid" or "Nearest Dealership (km)" |
+| Dealer Credential Cards | Card per unsealed offer rendering dealership name, OMVIC registration badge, star rating, verified reviews, distance in km, and wire payout speed (`1-Day Direct Wire`) |
+| Top Offer Badge | Highlighted `#1 Top Certified Offer` ribbon with primary border accent |
+| Legal Acceptance Modal | Confirmation modal clarifying legally binding transfer and outlining the subsequent 48-hour physical inspection handover |
+
+---
+
+### `AppointmentVoucherCard` (Milestone 4.3 / Page 4.5)
+
+Files: `components/seller/AppointmentVoucherCard.tsx`, `app/(seller)/seller/listings/[id]/appointment/page.tsx`  
+Last updated: 2026-10-20  
+Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidian `#0C0A09` Dark)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Official Voucher Shell | `border-2 border-portal-primary/40 rounded-3xl p-6 sm:p-10 shadow-xl` with unique alphanumeric pass code (`AN-2026-XXXX-ON`) |
+| QR Verification Block | High-contrast QR pass code badge for dealership staff to scan upon vehicle arrival |
+| Deal Terms Matrix | 3-card key metrics display: Accepted Purchase Offer in CAD cents, vehicle summary, and 48-hour expiration timestamp |
+| Dealership Contact Dossier | Full purchasing desk dossier: physical address, phone, direct email, business hours, and Google Maps directions link |
+| Interactive Handover Checklist | Interactive checklist of required physical documents (Ownership green slip, 2 keys, Photo ID, Void cheque for wire disbursement) |
+| Print & Export Support | Print stylesheet styles (`no-print` utilities) supporting 1-click clean PDF export or paper printing |
+
+---
+
+### `DealerInventoryFeed` (Milestone 5.2 / Page 5.3)
+
+Files: `components/dealer/DealerInventoryFeed.tsx`, `app/(dealer)/dealer/inventory/page.tsx`, `app/api/dealer/inventory/route.ts`  
+Last updated: 2026-10-20  
+Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Trading Floor Grid | Responsive 3-column inventory grid with high data density (`grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5`) |
+| Urgency State | Server-synced 24h countdown clocks; sub-15min triggers Canadian Crimson urgency state (`bg-red-600 text-white animate-pulse`) |
+| Sealed Invariant | Renders total sealed bids count (`N bids`) with zero live dollar exposure to competitors |
+| Faceted Filters | Search query, Make filter, Max Mileage, Max Distance radius, Damage Grade (A/B/C/D), and Sort By options |
+| Direct Bid Placement | Integrated 1-click trigger to open `SealedBidSlip` modal with upward revision rule |
+| Direct Vehicle Inspection | Link to `/dealer/auctions/[id]` on card image, title, and dedicated Inspect button |
+
+---
+
+### `VehicleInspectionView` (Milestone 5.2 / Page 5.4)
+
+Files: `components/dealer/VehicleInspectionView.tsx`, `app/(dealer)/dealer/auctions/[id]/page.tsx`, `app/api/dealer/inventory/[id]/route.ts`  
+Last updated: 2026-10-20  
+Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| High-Res Gallery | Aspect 16:9 primary viewport with interactive chevrons, thumbnail strip, and full-screen lightbox zoom mode |
+| Condition Hotspots | Disclosed damage hotspot panel list displaying panel names, severity tags (Minor, Moderate, Severe), and photo attachments |
+| Decoded NHTSA Specs | 17-char VIN with 1-click clipboard copy, Engine spec, Drivetrain, Transmission, Odometer in KM, Paint codes, Key fobs count |
+| Carfax Canadian Title | Accident-free badge, documented service records count, previous owners count, and lien-free disclosure status |
+| Sticky Bid Telemetry | Active placed dealer bid in integer CAD cents, sealed total bid count, reserve status, and 1-click trigger for `SealedBidSlip` |
+
+---
+
+### `DealerActiveBidsView` (Milestone 5.3 / Page 5.6)
+
+Files: `components/dealer/DealerActiveBidsView.tsx`, `app/(dealer)/dealer/active-bids/page.tsx`  
+Last updated: 2026-10-20  
+Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Exposure Summary | Committed bid volume calculated from integer CAD cents (`formatCadCents`) and active lots count |
+| Status Badges | `LEAD_ESTIMATE` (Green leading corridor) vs `OUTBID_ESTIMATE` (Amber/Crimson alert) |
+| Urgency Timers | Sub-15min red countdown pulse alerting dealer to raise bid before auction closing |
+| 1-Click Upward Revision | "Raise Bid" action directly opening `SealedBidSlip` with upward revision enforcement |
+| Filter Tabs | All Placed, Leading Corridor, and Outbid Attention segmented filter pills |
+
+---
+
+### `DealerWonMatchesView` (Milestone 5.3 / Page 5.7)
+
+Files: `components/dealer/DealerWonMatchesView.tsx`, `app/(dealer)/dealer/won-matches/page.tsx`  
+Last updated: 2026-10-20  
+Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Unsealed Seller Contact | Full contact dossier: Seller legal name, verified phone number with `tel:` link, email with `mailto:`, and city/province |
+| QR Intake Pass | QR code display with voucher pass code for dealership intake desk scanning |
+| Handover Outcome Logger | Interactive settlement modal supporting `COMPLETED`, `RENEGOTIATED_LOWER`, `NO_SHOW`, and `DECLINED_AFTER_INSPECTION` |
+| Financial Finality | Settlement price stored and displayed in integer CAD cents (`formatCadCents`) with technician inspection notes |
+
+---
+
+### `ListingModerationView` (Milestone 6.1 / Page 6.1)
+
+Files: `components/admin/ListingModerationView.tsx`, `app/(admin)/admin/moderation/page.tsx`  
+Last updated: 2026-10-20  
+Mode: Super Admin Obsidian / Porcelain Operations Theme
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Queue Split View | Left pending queue cards with live count; right deep-dive moderation inspector |
+| Verification Checklist | VIN decode match, minimum 8 photos check, damage hotspots disclosure review, seller reserve validation |
+| Operations Actions | 1-click "Approve & Start 24h Auction", "Request Edits" (with seller SMS/email note modal), or "Reject" (with regulatory code) |
+
+---
+
+### `AdminAuctionsView` (Milestone 6.3 / Page 6.3)
+
+Files: `components/admin/AdminAuctionsView.tsx`, `app/(admin)/admin/auctions/page.tsx`  
+Last updated: 2026-10-20  
+Mode: Super Admin Obsidian / Porcelain Operations Theme
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Master Operations Table | Filterable table across `ACTIVE`, `ACCEPTED`, `CANCELLED` auction states with real-time countdown clocks |
+| Emergency Time Extensions | Privileged action adding +1h, +2h, +6h, or +24h with mandatory compliance audit note requirement |
+| Emergency Lot Kill | Emergency termination button requiring audit trail justification |
+
+---
+
+### `AdminAnalyticsView` (Milestone 6.5 / Page 6.5)
+
+Files: `components/admin/AdminAnalyticsView.tsx`, `app/(admin)/admin/analytics/page.tsx`  
+Last updated: 2026-10-20  
+Mode: Super Admin Obsidian / Porcelain Operations Theme
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Executive KPIs | Gross Merchandise Value (GMV in CAD cents), Auction Clearance Rate %, Bidding Velocity (bids/lot), and Consumer Surplus |
+| Provincial Breakdown | Ontario (OMVIC), Alberta (AMVIC), British Columbia (VSA), Quebec (OPC) volume bars and dealer counts |
+| Real-Time Settlements Feed | Live feed of settled wholesale transactions, buyer dealer groups, and consumer surplus above dealer trade-in |
+
+
 

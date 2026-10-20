@@ -50,3 +50,57 @@ export type SellerDashboardData = {
   auctions: SellerAuctionItem[];
   notifications: SellerNotificationItem[];
 };
+
+export type UnsealedDealerBid = {
+  id: string;
+  dealershipId: string;
+  dealershipName: string;
+  omvicNumber: string;
+  province: string;
+  city: string;
+  rating: number;
+  reviewCount: number;
+  bidAmountCents: number; // Integer CAD cents invariant
+  distanceKm: number;
+  placedAt: string;
+  payoutSpeedDays: number;
+  certifiedPreInspection: boolean;
+};
+
+export type AppointmentVoucher = {
+  voucherCode: string;
+  dealershipName: string;
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  contactPhone: string;
+  contactEmail: string;
+  operatingHours: string;
+  acceptedOfferCents: number; // Integer CAD cents invariant
+  expiresAt: string;
+  checklist: string[];
+};
+
+export type ListingDetailData = {
+  auction: SellerAuctionItem;
+  photos: Array<{ id: string; url: string; isCover: boolean }>;
+  damageHotspots: Array<{
+    id: string;
+    panel: string;
+    severity: "MINOR" | "MODERATE" | "SEVERE";
+    description?: string;
+  }>;
+  specs: {
+    transmission?: string;
+    drivetrain?: string;
+    exteriorColor?: string;
+    interiorColor?: string;
+    keysCount: number;
+    hasLien: boolean;
+    accidentDeclaration: boolean;
+  };
+  unsealedBids?: UnsealedDealerBid[];
+  selectedBid?: UnsealedDealerBid;
+  appointmentVoucher?: AppointmentVoucher;
+};
