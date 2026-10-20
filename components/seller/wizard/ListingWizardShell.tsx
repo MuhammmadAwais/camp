@@ -140,13 +140,7 @@ export function ListingWizardShell({
       <main className="flex-1 max-w-2xl w-full mx-auto px-4 py-6 md:py-8">
         {children}
 
-        {/* Canadian Marketplace Trust Footer */}
-        <aside className="mt-8 pt-6 border-t border-portal-border flex items-center justify-center gap-2 text-xs text-portal-text-muted">
-          <ShieldCheck className="w-4 h-4 text-portal-primary shrink-0" />
-          <span>
-            Protected by AutoNexa Sealed-Bid Architecture · OMVIC & AMVIC Compliant
-          </span>
-        </aside>
+     
       </main>
     </div>
   );

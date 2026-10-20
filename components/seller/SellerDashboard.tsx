@@ -70,11 +70,11 @@ export function SellerDashboard({ user }: Props) {
       {/* 1. Modern Page Header with Notification Dropdown & Primary Action (Directly matching Athletic Clubs style) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
         <div>
-          <h1 className="font-headline text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-portal-text">
-            Welcome, {user.firstName}
+          <h1 className="font-headline text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-portal-text">
+            Welcome back, {user.firstName}
           </h1>
-          <p className="mt-1 font-body text-xs sm:text-sm text-portal-text-muted max-w-2xl">
-            Manage your personal vehicle inventory, track live sealed dealer bids, and oversee settlements.
+          <p className="mt-1.5 font-body text-xs sm:text-sm text-portal-text-muted max-w-2xl font-normal">
+            Private vehicle inventory & real-time sealed dealer auction telemetry across vetted Canadian dealer networks.
           </p>
         </div>
 
@@ -89,7 +89,7 @@ export function SellerDashboard({ user }: Props) {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#8C383E] dark:bg-[#E59344] hover:bg-[#752B30] dark:hover:bg-[#D9822F] text-white font-body text-xs sm:text-sm font-bold tracking-wide transition-all shadow-sm hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
           >
             <Plus className="w-4 h-4" weight="bold" />
-            <span>LIST NEW VEHICLE</span>
+            <span>List New Vehicle</span>
           </Link>
         </div>
       </div>
@@ -194,8 +194,8 @@ export function SellerDashboard({ user }: Props) {
       <section className="space-y-4 pt-1">
         <div className="flex items-center justify-between pb-2 border-b border-portal-border">
           <div className="flex items-center gap-2">
-            <h2 className="font-headline text-lg sm:text-xl font-bold uppercase tracking-tight text-portal-text">
-              My Listings
+            <h2 className="font-headline text-lg sm:text-xl font-bold tracking-tight text-portal-text">
+              Active Inventory & Floor Units
             </h2>
             <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-portal-surface border border-portal-border text-portal-text-muted">
               {filteredAuctions.length}
@@ -203,10 +203,10 @@ export function SellerDashboard({ user }: Props) {
           </div>
         </div>
 
-        {/* Content Rendering: Loading, Error, Empty, or Multi-Column Grid */}
+        {/* Content Rendering: Loading, Error, Empty, or Multi-Column 4-Card Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[1, 2, 3].map((i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
                 className="h-72 rounded-2xl border border-portal-border bg-portal-surface animate-pulse"
@@ -223,15 +223,15 @@ export function SellerDashboard({ user }: Props) {
             <ListingStartCard initialKycStatus={user.kycStatus} />
           </div>
         ) : layoutMode === "grid" ? (
-          <div className="max-w-[1260px] mx-auto px-2 sm:px-4 lg:px-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
+          <div className="w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
               {filteredAuctions.map((auction) => (
                 <SellerAuctionCard key={auction.id} auction={auction} layout="grid" />
               ))}
             </div>
           </div>
         ) : (
-          <div className="max-w-[1260px] mx-auto px-2 sm:px-4 lg:px-6 space-y-4">
+          <div className="w-full space-y-4">
             {filteredAuctions.map((auction) => (
               <SellerAuctionCard key={auction.id} auction={auction} layout="list" />
             ))}

@@ -12,6 +12,18 @@ import {
 import type { SellerAuctionItem } from "@/lib/types/seller";
 import { cn, formatCadCents } from "@/lib/utils";
 
+// Exact Automaker Logo Mapping to local assets in public/car-company-logos
+const CAR_BRAND_LOGOS: Record<string, string> = {
+  toyota: "/car-company-logos/image_16 - Copy.png",
+  jeep: "/car-company-logos/image_15.png",
+  ford: "/car-company-logos/image_14.svg",
+  honda: "/car-company-logos/image_12.png",
+  polestar: "/car-company-logos/image_11.png",
+  mitsubishi: "/car-company-logos/image_10.png",
+  hyundai: "/car-company-logos/image_09.png",
+  cadillac: "/car-company-logos/image_13.png",
+};
+
 interface Props {
   auction: SellerAuctionItem;
   layout?: "grid" | "list";
@@ -80,28 +92,40 @@ export function SellerAuctionCard({ auction, layout = "grid" }: Props) {
 
   // Signature Notched Card (Exact Geometry Matching Image 2 & 4Runner Reference)
   if (layout === "grid") {
-    // Automaker brand marque initial / monogram
+    // Automaker brand marque initial / monogram or authentic logo
     const brandMonogram = auction.make.slice(0, 2).toUpperCase();
+    const brandLogo = CAR_BRAND_LOGOS[auction.make.toLowerCase()];
 
     return (
-      <div className="group relative bg-white dark:bg-[#121114] rounded-[32px] p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between border border-gray-200 dark:border-white/10 hover:border-[#8C383E]/50 dark:hover:border-[#E59344]/50 hover:-translate-y-1">
+      <div className="group relative bg-white dark:bg-[#1E1E1E] rounded-tl-[32px] rounded-tr-[32px] rounded-bl-[32px] rounded-br-none p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between border border-gray-200/90 dark:border-white/10 hover:-translate-y-1">
         {/* Smooth Masked Shadow Layer: Excises bottom-right corner for clean notch transparency */}
         <div
-          className="absolute inset-0 rounded-[32px] pointer-events-none -z-10 shadow-[0_4px_20px_rgba(0,0,0,0.05)] group-hover:shadow-[0_16px_36px_rgba(0,0,0,0.12)] transition-shadow duration-300"
+          className="absolute inset-0 rounded-tl-[32px] rounded-tr-[32px] rounded-bl-[32px] rounded-br-none pointer-events-none -z-10 shadow-[0_4px_20px_rgba(0,0,0,0.05)] group-hover:shadow-[0_16px_36px_rgba(0,0,0,0.12)] transition-shadow duration-300"
           style={{
             maskImage: "radial-gradient(circle at bottom right, transparent 0, transparent 90px, black 125px)",
             WebkitMaskImage: "radial-gradient(circle at bottom right, transparent 0, transparent 90px, black 125px)",
           }}
         />
 
-        {/* 1. Top Header Row Above Photo Canvas (Matching Wireframe in Image 2) */}
+        {/* 1. Top Header Row Above Photo Canvas */}
         <div className="flex items-center justify-between gap-3 pb-3">
-          {/* Left Marque / Brand Emblem Circle */}
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-white/[0.08] border border-gray-200/90 dark:border-white/10 flex items-center justify-center shrink-0 shadow-2xs">
-              <span className="font-headline font-black text-xs tracking-wider text-gray-800 dark:text-neutral-200">
-                {brandMonogram}
-              </span>
+          {/* Left Marque / Brand Icon (Direct Icon without background bubble or border) */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 flex items-center justify-center shrink-0">
+              {brandLogo ? (
+                <div className="relative w-7 h-7">
+                  <Image
+                    src={brandLogo}
+                    alt={auction.make}
+                    fill
+                    className="object-contain dark:brightness-0 dark:invert"
+                  />
+                </div>
+              ) : (
+                <span className="font-headline font-black text-sm tracking-wider text-gray-800 dark:text-neutral-200">
+                  {brandMonogram}
+                </span>
+              )}
             </div>
 
             {/* Headline (Make/Model) & Subhead (Trim / Province) */}
@@ -219,40 +243,58 @@ export function SellerAuctionCard({ auction, layout = "grid" }: Props) {
           </div>
         </div>
 
-        {/* 4. Docked Concave Corner Notch & Action Squircle Button (Zero Line/Shadow Artifacts) */}
-        <div className="absolute -bottom-[1px] -right-[1px] w-[86px] h-[86px] z-20 pointer-events-auto">
-          <svg
-            viewBox="0 0 86 86"
-            className="w-full h-full block"
-          >
-            {/* Canvas cutout fill covering the bottom-right corner to match page background */}
-            <path
-              d="M 86,0 A 24 24 0 0 1 62,24 A 38 38 0 0 0 24,62 A 24 24 0 0 1 0,86 L 86,86 Z"
-              className="fill-white dark:fill-[#0A0A0A]"
-            />
-            {/* Seamless continuous curved border stroke */}
-            <path
-              d="M 86,0 A 24 24 0 0 1 62,24 A 38 38 0 0 0 24,62 A 24 24 0 0 1 0,86"
-              fill="none"
-              stroke="currentColor"
-              className="text-gray-200 dark:text-white/10"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
-            />
-          </svg>
+        {/* 4. Docked Concave Corner Notch & Action Squircle Button (Exact Landing Page DiscoverSection Geometry) */}
+        <div className="absolute -bottom-[1px] -right-[1px] z-20 pointer-events-auto">
+          <div className="relative w-[78px] h-[78px] bg-white dark:bg-[#121212] rounded-tl-[26px] border-t border-l border-gray-200/90 dark:border-white/10 flex items-center justify-center">
+            {/* Top Concave Fillet Curve (Smooth transition from card right edge into notch with border) */}
+            <svg
+              viewBox="0 0 20 20"
+              className="w-5 h-5 absolute -top-5 right-0 pointer-events-none overflow-visible"
+            >
+              <path
+                d="M 20,0 A 20 20 0 0 1 0,20 L 20,20 Z"
+                className="fill-white dark:fill-[#121212]"
+              />
+              <path
+                d="M 20,0 A 20 20 0 0 1 0,20"
+                fill="none"
+                stroke="currentColor"
+                className="text-gray-200/90 dark:text-white/10"
+                strokeWidth="1"
+              />
+            </svg>
 
-          {/* Docked Action Button Linking Directly to Listing Details */}
-          <Link
-            href={`/seller/listings/${auction.id}`}
-            className="absolute bottom-2.5 right-2.5 w-[50px] h-[50px] rounded-[18px] bg-white dark:bg-[#18171c] shadow-[0_4px_14px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_20px_rgba(140,56,62,0.25)] dark:hover:shadow-[0_8px_20px_rgba(229,147,68,0.25)] flex items-center justify-center text-gray-900 dark:text-white hover:text-white hover:bg-[#8C383E] dark:hover:bg-[#E59344] dark:hover:text-[#0C0A09] transition-all duration-200 cursor-pointer active:scale-95 group/btn border border-gray-200/90 dark:border-white/15"
-            aria-label={`View auction for ${auction.year} ${auction.make} ${auction.model}`}
-            title="View live auction floor"
-          >
-            <ArrowUpRight
-              weight="bold"
-              className="w-5 h-5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
-            />
-          </Link>
+            {/* Left Concave Fillet Curve (Smooth transition from card bottom edge into notch with border) */}
+            <svg
+              viewBox="0 0 20 20"
+              className="w-5 h-5 absolute bottom-0 -left-5 pointer-events-none overflow-visible"
+            >
+              <path
+                d="M 0,20 A 20 20 0 0 0 20,0 L 20,20 Z"
+                className="fill-white dark:fill-[#121212]"
+              />
+              <path
+                d="M 0,20 A 20 20 0 0 0 20,0"
+                fill="none"
+                stroke="currentColor"
+                className="text-gray-200/90 dark:text-white/10"
+                strokeWidth="1"
+              />
+            </svg>
+
+            {/* Docked Action Button Floating with Uniform Cushion inside Pocket */}
+            <Link
+              href={`/seller/listings/${auction.id}`}
+              className="w-[52px] h-[52px] rounded-[18px] bg-white dark:bg-[#202020] shadow-[0_4px_14px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(140,56,62,0.25)] dark:hover:shadow-[0_8px_24px_rgba(229,147,68,0.25)] flex items-center justify-center text-gray-900 dark:text-white hover:text-white hover:bg-[#8C383E] dark:hover:bg-[#E59344] dark:hover:text-[#121212] transition-all duration-200 cursor-pointer active:scale-95 group/btn border border-gray-200/90 dark:border-white/15"
+              aria-label={`View auction for ${auction.year} ${auction.make} ${auction.model}`}
+              title="View live auction floor"
+            >
+              <ArrowUpRight
+                weight="bold"
+                className="w-5 h-5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
+              />
+            </Link>
+          </div>
         </div>
       </div>
     );

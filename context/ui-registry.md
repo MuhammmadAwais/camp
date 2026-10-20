@@ -1191,29 +1191,35 @@ Mode: Modern Enterprise High-Contrast Portal
 
 ---
 
-### `SellerAuctionCard` Signature Notched Card (Milestone 4.1 Signature Geometry — Updated)
+### `SellerAuctionCard` Signature Notched Card (Milestone 4.1 Signature Geometry & Brand Logos)
 
 File: `components/seller/SellerAuctionCard.tsx`  
 Last updated: 2026-10-20  
-Mode: Signature Architectural Portal Card (Top Header Bar + Taller Slender Aspect Ratio + Seamless Concave Notch)
+Mode: Signature Architectural Portal Card (Naked Brand Icons + Pure White `#FFFFFF` Light Canvas / `#121212` Dark Canvas + DiscoverSection Pocket Notch)
 
 | Property | Class / Implementation Pattern |
 | --- | --- |
-| Card Geometry | `rounded-[32px] p-4 sm:p-5 flex flex-col justify-between relative` with masked shadow layer (`maskImage: radial-gradient(circle at bottom right...)`); outer box shadow removed from parent to prevent corner bleed |
-| Background | `bg-white dark:bg-[#121114] border border-gray-200 dark:border-white/10 hover:border-[#8C383E]/50 dark:hover:border-[#E59344]/50 hover:-translate-y-1` |
-| Top Header Row | Flex row above photo canvas: left automaker marque circle (`w-10 h-10 rounded-full bg-neutral-100 dark:bg-white/[0.08] border border-gray-200/90 dark:border-white/10` with brand monogram), middle headline (`font-headline text-[15px] sm:text-base font-bold`) & subhead (`font-body text-[11px] text-portal-text-muted`), and right status beacon pill |
-| Telemetry Status Pill | Compact institutional pill: Active: emerald beacon pulse + `X Bids`; Completed: neutral chip + `Sold`; Review: amber chip + `Review` (replaces clunky floating badges over the photo) |
+| Card Geometry | `rounded-tl-[32px] rounded-tr-[32px] rounded-bl-[32px] rounded-br-none p-4 sm:p-5 flex flex-col justify-between relative` with masked shadow layer (`maskImage: radial-gradient(circle at bottom right...)`); square bottom-right corner completely housed under pocket |
+| Background | Light: `bg-white` card on `bg-white` canvas; Dark: `dark:bg-[#1E1E1E]` card on `dark:bg-[#121212]` canvas |
+| Border | `border border-gray-200/90 dark:border-white/10 hover:-translate-y-1` (zero conflicting colored borders on hover) |
+| Top Header Row | Flex row above photo canvas: left direct automaker logo icon (`w-8 h-8 flex items-center justify-center shrink-0` with authentic brand emblem, zero separate background bubble or border), middle headline (`font-headline text-[15px] sm:text-base font-bold`) & subhead (`font-body text-[11px] text-portal-text-muted`), and right status beacon pill |
+| Automaker Brand Logos | Direct naked icons mapped from `public/car-company-logos/` (Toyota: `image_16 - Copy.png`, Jeep: `image_15.png`, Ford: `image_14.svg`, Honda: `image_12.png`, Polestar: `image_11.png`, Mitsubishi: `image_10.png`, Hyundai: `image_09.png`, Cadillac: `image_13.png`) with `dark:brightness-0 dark:invert` |
+| Telemetry Status Pill | Compact institutional pill: Active: emerald beacon pulse + `X Bids`; Completed: neutral chip + `Sold`; Review: amber chip + `Review` |
 | Photo Canvas | `rounded-[24px] overflow-hidden relative h-60 sm:h-64 w-full bg-neutral-100 dark:bg-white/[0.04]` (clean, unencumbered, unobstructed hero car photography) |
 | Card Body & Specs | Stacked specs: mileage, transmission, fuel type, VIN, and verified Carfax badge (`CheckCircle`) |
 | Bottom Pricing | Bold reserve asking CAD (`font-headline text-xl sm:text-2xl font-black`) + institutional status chip (`ArrowUpRight`) |
-| Seamless Concave Notch | Unified mathematical 3-arc SVG path (`M 86,0 A 24 24 0 0 1 62,24 A 38 38 0 0 0 24,62 A 24 24 0 0 1 0,86 L 86,86 Z`) with canvas background fill (`fill-white dark:fill-[#0A0A0A]`) and 1px stroke (`text-gray-200 dark:text-white/10`). Zero seam lines, zero double borders, zero shadow bleed |
-| Docked Action Squircle | `w-[50px] h-[50px] rounded-[18px] bg-white dark:bg-[#18171c] border border-gray-200/90 dark:border-white/15 shadow-[0_4px_14px_rgba(0,0,0,0.08)] hover:shadow-lg` |
-| Action Button Hover | `hover:bg-[#8C383E] hover:text-white dark:hover:bg-[#E59344] dark:hover:text-[#0C0A09] active:scale-95` with `ArrowUpRight` translation |
-| Grid Container Layout | `max-w-[1260px] mx-auto px-2 sm:px-4 lg:px-6` — gives extreme outer cards generous empty side breathing room while keeping clean `gap-6 lg:gap-7` between middle cards |
+| Docked Concave Notch | Exact DiscoverSection landing page pocket: `w-[78px] h-[78px] bg-white dark:bg-[#121212] rounded-tl-[26px] border-t border-l border-gray-200/90 dark:border-white/10` with two 20×20px fillet curve SVGs (`fill-white dark:fill-[#121212]`) smoothly transitioning from card right and bottom walls into pocket |
+| Docked Action Squircle | `w-[52px] h-[52px] rounded-[18px] bg-white dark:bg-[#202020] border border-gray-200/90 dark:border-white/15 shadow-[0_4px_14px_rgba(0,0,0,0.08)]` centered in pocket with uniform 13px channel cushion |
+| Action Button Hover | `hover:bg-[#8C383E] hover:text-white dark:hover:bg-[#E59344] dark:hover:text-[#121212] active:scale-95` with `ArrowUpRight` translation |
+| Grid Container Layout | `w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6` — accommodates 4 cards per row across full desktop width with balanced spacing |
 
 **Pattern notes:**
-- Wireframe Header Pattern: Elevates vehicle brand marque, model headline, and telemetry above the photo, eliminating visual obstruction on vehicle rooflines.
-- Single-Path SVG Notch: Employs a mathematically G1-continuous 3-arc path (concave 24px -> convex 38px -> concave 24px) for the docked corner notch, ensuring flawless rendering on all DPI display scalings with no subpixel seam lines or shadow leaks.
+- **Naked Automaker Icons:** Direct automaker logo icons without enclosing circular bubble borders or background tints, keeping the header clean and modern.
+- **Pure White Light Canvas (`#FFFFFF`):** High-clarity white background requested for light mode across web app layouts.
+- **Sophisticated Charcoal Dark Canvas (`#121212`):** Modern `#121212` dark background paired with `#1E1E1E` elevated cards and matching `#121212` pocket cutout fills.
+- **Clean Hover Mechanics:** Removed conflicting `hover:border-...` on the card perimeter so the bottom-right notch maintains seamless corner alignment during mouseover without amber border lines leaking through.
+
+
 
 
 

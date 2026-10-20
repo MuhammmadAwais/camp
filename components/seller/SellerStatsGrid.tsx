@@ -60,11 +60,11 @@ export function SellerStatsGrid({ stats, onRefresh, isRefreshing }: Props) {
       {/* Overview Header with clean Refresh Data action matching reference */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h2 className="font-headline text-lg sm:text-xl font-bold uppercase tracking-tight text-portal-text">
-            Financial & Auction Overview
+          <h2 className="font-headline text-lg sm:text-xl font-bold tracking-tight text-portal-text">
+            Financial & Auction Performance
           </h2>
-          <p className="font-body text-xs sm:text-sm text-portal-text-muted">
-            Track your live listings, competitive dealer bids, and verified transaction settlements.
+          <p className="font-body text-xs sm:text-sm text-portal-text-muted mt-0.5">
+            Aggregated sealed dealer bids, live floor status, and verified transaction settlement volume.
           </p>
         </div>
 

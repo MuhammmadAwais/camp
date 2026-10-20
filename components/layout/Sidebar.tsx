@@ -57,13 +57,17 @@ export function Sidebar() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMobileOpen, closeMobile]);
 
-  // Dynamic Navigation items tailored to active role with ZERO 404s
+  // Dynamic Navigation items strictly scoped to active route / domain to prevent leaks
+  const isSellerRoute = pathname.startsWith('/seller');
+  const isDealerRoute = pathname.startsWith('/dealer');
+  const isAdminRoute = pathname.startsWith('/admin');
+
   const isDealer = role === 'DEALER_ADMIN' || role === 'DEALER_AGENT';
   const isAdmin = role === 'ADMIN';
 
   let NAV_ITEMS: NavGroup[] = [];
 
-  if (isAdmin) {
+  if (isAdminRoute || (isAdmin && !isSellerRoute && !isDealerRoute)) {
     NAV_ITEMS = [
       {
         id: 'admin-moderation',
@@ -99,7 +103,7 @@ export function Sidebar() {
         ],
       },
     ];
-  } else if (isDealer) {
+  } else if (isDealerRoute || (isDealer && !isSellerRoute)) {
     NAV_ITEMS = [
       {
         id: 'dealer-floor',
@@ -201,7 +205,7 @@ export function Sidebar() {
 
       {/* 2. Main Sidebar Aside */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-white dark:bg-[#0A0A0A] border-r border-gray-200 dark:border-white/10 text-gray-900 dark:text-white transition-all duration-300 ease-in-out font-body w-[280px] sm:w-[290px] ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-white dark:bg-[#121212] border-r border-gray-200 dark:border-white/10 text-gray-900 dark:text-white transition-all duration-300 ease-in-out font-body w-[280px] sm:w-[290px] ${
           isCollapsed ? 'lg:w-[72px]' : 'lg:w-[260px]'
         } ${
           isMobileOpen
@@ -474,7 +478,7 @@ export function Sidebar() {
         </div>
 
         {/* Bottom User Profile Section */}
-        <div className="p-3 border-t border-gray-200 dark:border-white/10 shrink-0 bg-gray-50/80 dark:bg-[#0A0A0A]">
+        <div className="p-3 border-t border-gray-200 dark:border-white/10 shrink-0 bg-gray-50/80 dark:bg-[#121212]">
           <UserProfileCard isCollapsed={isCollapsed} />
         </div>
       </aside>

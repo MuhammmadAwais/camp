@@ -46,24 +46,42 @@ export async function GET(request: NextRequest) {
 
   const payload: SellerDashboardData = {
     stats: {
-      activeAuctionsCount: 1,
-      totalBidsReceived: 36, // Aggregate across active + past auctions
+      activeAuctionsCount: 2,
+      totalBidsReceived: 54, // Aggregate across active + past auctions
       completedSalesCount: 1,
       totalValueEarnedCents: 3650000, // $36,500.00 CAD integer cents
     },
     auctions: [
       {
-        id: "auc-porsche-macan-2022",
-        vin: "WP1AF2AY5NL128491",
-        year: 2022,
-        make: "Porsche",
-        model: "Macan",
-        trim: "GTS All-Wheel Drive",
-        mileageKm: 42500,
+        id: "auc-toyota-4runner-2025",
+        vin: "JTEBU5JR8R5091823",
+        year: 2025,
+        make: "Toyota",
+        model: "4Runner",
+        trim: "TRD Pro 4WD",
+        mileageKm: 8450,
         status: "ACTIVE",
-        thumbnailUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
-        reservePriceCents: 6850000, // $68,500.00 CAD
-        bidCount: 14, // Sealed-bid invariant: strictly count only
+        thumbnailUrl: "/showcase-cars-with-bg/2025-Toyota-4runner.png",
+        reservePriceCents: 5890000, // $58,900.00 CAD
+        bidCount: 18, // Sealed-bid invariant: count only
+        auctionStartedAt: startedAtIso,
+        auctionEndsAt: endsAtIso,
+        province: userProvince,
+        city: "Brampton",
+        createdAt: startedAtIso,
+      },
+      {
+        id: "auc-honda-civic-2024",
+        vin: "2HGFL1H87RH512940",
+        year: 2024,
+        make: "Honda",
+        model: "Civic",
+        trim: "Touring Sedan",
+        mileageKm: 14200,
+        status: "ACTIVE",
+        thumbnailUrl: "/showcase-cars-with-bg/2024-Honda-Civic.webp",
+        reservePriceCents: 2740000, // $27,400.00 CAD
+        bidCount: 14,
         auctionStartedAt: startedAtIso,
         auctionEndsAt: endsAtIso,
         province: userProvince,
@@ -71,35 +89,35 @@ export async function GET(request: NextRequest) {
         createdAt: startedAtIso,
       },
       {
-        id: "auc-bmw-m340i-2021",
-        vin: "3MW5R7J07M8B99124",
-        year: 2021,
-        make: "BMW",
-        model: "3 Series",
-        trim: "M340i xDrive Sedan",
-        mileageKm: 38100,
+        id: "auc-ford-bronco-2024",
+        vin: "1FMEE5DP6PLA89124",
+        year: 2024,
+        make: "Ford",
+        model: "Bronco",
+        trim: "Badlands Sasquatch",
+        mileageKm: 26100,
         status: "PENDING_MODERATION",
-        thumbnailUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80",
-        reservePriceCents: 4900000, // $49,000.00 CAD
+        thumbnailUrl: "/showcase-cars-with-bg/2022-Ford-Bronco.webp",
+        reservePriceCents: 5150000, // $51,500.00 CAD
         bidCount: 0,
         province: userProvince,
-        city: "Mississauga",
+        city: "Vancouver",
         createdAt: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
       },
       {
-        id: "auc-audi-q5-2020",
-        vin: "WA1ANAFY7L2048123",
-        year: 2020,
-        make: "Audi",
-        model: "Q5",
-        trim: "45 TFSI quattro Technik",
-        mileageKm: 64200,
+        id: "auc-jeep-wrangler-2024",
+        vin: "1C4HJXFN8MW204812",
+        year: 2024,
+        make: "Jeep",
+        model: "Wrangler",
+        trim: "Rubicon 4xe PHEV",
+        mileageKm: 19800,
         status: "COMPLETED",
-        thumbnailUrl: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=800&q=80",
-        reservePriceCents: 3400000, // $34,000.00 CAD
-        bidCount: 22,
+        thumbnailUrl: "/plain-cars-images/image_38.webp",
+        reservePriceCents: 4680000, // $46,800.00 CAD
+        bidCount: 21,
         province: userProvince,
-        city: "Oakville",
+        city: "Montreal",
         createdAt: new Date(now - 14 * 24 * 60 * 60 * 1000).toISOString(),
       },
     ],

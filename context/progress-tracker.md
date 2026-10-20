@@ -70,7 +70,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 4.1: Seller Dashboard Shell**
   - **Route:** `/seller/dashboard`
   - **Component:** `SellerDashboard.tsx`
-  - **Features:** KYC Status Banner, active vehicle cards, sealed-bid count telemetry (`N sealed dealer bids`), "List New Car" CTA, empty-state placeholder, demo view switcher.
+  - **Features:** KYC Status Banner, 4-column active vehicle cards with authentic automaker brand logos (Toyota, Honda, Ford, Jeep, Polestar, Mitsubishi, Hyundai, Cadillac), warm oat `#FFF8F2` light canvas & solid pure black `#000000` dark canvas (zero `#0A0A0A` artifacts), DiscoverSection pocket notch with 13px channel cushion, sealed-bid count telemetry (`N sealed dealer bids`), "List New Vehicle" CTA, empty-state placeholder, strict route-aware RBAC sidebar navigation.
   - **API Contract:** `GET /api/seller/dashboard`, `GET /api/kyc/status`.
 
 #### Milestone 4.2: 5-Step Listing Wizard (`/seller/list-car`)

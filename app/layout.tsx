@@ -68,7 +68,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="min-h-screen bg-white dark:bg-[#0A0A0A] font-body text-[#201B11] dark:text-white flex flex-col selection:bg-[#8C383E] selection:text-white dark:selection:bg-[#E59344] dark:selection:text-[#0A0A0A]"
+        className="min-h-screen bg-white dark:bg-[#121212] font-body text-[#201B11] dark:text-white flex flex-col selection:bg-[#8C383E] selection:text-white dark:selection:bg-[#E59344] dark:selection:text-[#121212]"
         suppressHydrationWarning
       >
         <Providers>

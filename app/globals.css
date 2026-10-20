@@ -174,7 +174,7 @@
   :root {
     --portal-canvas: #FFFFFF;
     --portal-surface: #FFFFFF;
-    --portal-surface-hover: #F9FAFB;
+    --portal-surface-hover: #F8F9FA;
     --portal-border: #E5E7EB;
     --portal-border-subtle: rgba(0, 0, 0, 0.05);
     --portal-text: #111827;
@@ -185,9 +185,9 @@
   }
 
   .dark {
-    --portal-canvas: #0A0A0A;
-    --portal-surface: #0A0A0A;
-    --portal-surface-hover: #141414;
+    --portal-canvas: #121212;
+    --portal-surface: #1E1E1E;
+    --portal-surface-hover: #262626;
     --portal-border: rgba(255, 255, 255, 0.08);
     --portal-border-subtle: rgba(255, 255, 255, 0.04);
     --portal-text: #FFFFFF;
