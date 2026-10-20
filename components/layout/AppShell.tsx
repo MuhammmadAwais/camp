@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useSidebarStore } from '@/lib/store/useSidebarStore';
 import { Sidebar } from './Sidebar';
 import { MobileMenuButton } from './MobileMenuButton';
-import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -51,12 +50,7 @@ export function AppShell({ children }: AppShellProps) {
       {/* 1. Floating Mobile Menu Button (lg:hidden) */}
       <MobileMenuButton />
 
-      {/* 2. Floating Top-Right Theme Toggle (Clean, never cut off, zero in-flow distortion) */}
-      <div className="fixed top-4 right-4 sm:top-5 sm:right-6 z-40">
-        <ThemeToggle />
-      </div>
-
-      {/* 3. Persistent Sidebar Navigation */}
+      {/* 2. Persistent Sidebar Navigation */}
       <Sidebar />
 
       {/* 4. Main Viewport Container */}

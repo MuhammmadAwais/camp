@@ -27,6 +27,7 @@ import { useSidebarStore } from '@/lib/store/useSidebarStore';
 import { SidebarFlyout, type SubNavItem } from './SidebarFlyout';
 import { UserProfileCard } from './UserProfileCard';
 import { useAuth } from '@/lib/auth-context';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 interface NavGroup {
   id: string;
@@ -476,6 +477,18 @@ export function Sidebar() {
               </div>
             );
           })}
+        </div>
+
+        {/* Theme Toggle section: positioned just above profile divider */}
+        <div className={`px-3 py-2 border-t border-gray-200 dark:border-white/10 flex items-center shrink-0 ${
+          isCollapsed ? 'justify-center' : 'justify-between'
+        }`}>
+          {!isCollapsed && (
+            <span className="text-[11px] font-mono text-gray-400 dark:text-neutral-400 uppercase tracking-wider select-none font-medium">
+              Appearance
+            </span>
+          )}
+          <ThemeToggle variant={isCollapsed ? 'compact' : 'segmented'} />
         </div>
 
         {/* Bottom User Profile Section */}
