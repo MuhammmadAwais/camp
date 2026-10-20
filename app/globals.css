@@ -172,13 +172,13 @@
 
 @layer base {
   :root {
-    --portal-canvas: #FFF8F2;
+    --portal-canvas: #FFFFFF;
     --portal-surface: #FFFFFF;
-    --portal-surface-hover: #F8ECDB;
-    --portal-border: #EADDCB;
-    --portal-border-subtle: rgba(140, 56, 62, 0.08);
-    --portal-text: #201B11;
-    --portal-text-muted: #554242;
+    --portal-surface-hover: #F9FAFB;
+    --portal-border: #E5E7EB;
+    --portal-border-subtle: rgba(0, 0, 0, 0.05);
+    --portal-text: #111827;
+    --portal-text-muted: #6B7280;
     --portal-accent: #8C383E;
     --portal-accent-hover: #752B30;
     --portal-accent-tint: rgba(140, 56, 62, 0.08);

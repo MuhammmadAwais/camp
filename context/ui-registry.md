@@ -1143,7 +1143,33 @@ Mode: Super Admin Obsidian / Porcelain Operations Theme
 | --- | --- |
 | Executive KPIs | Gross Merchandise Value (GMV in CAD cents), Auction Clearance Rate %, Bidding Velocity (bids/lot), and Consumer Surplus |
 | Provincial Breakdown | Ontario (OMVIC), Alberta (AMVIC), British Columbia (VSA), Quebec (OPC) volume bars and dealer counts |
-| Real-Time Settlements Feed | Live feed of settled wholesale transactions, buyer dealer groups, and consumer surplus above dealer trade-in |
+---
+
+### `SellerStatsGrid & SellerDashboard` (Milestone 4.1 UI/UX Polish)
+
+File: `components/seller/SellerStatsGrid.tsx`, `components/seller/SellerDashboard.tsx`  
+Last updated: 2026-10-20  
+Mode: Modern High-Value Portal Dual-Theme (Unified `#FFFFFF` Light Canvas / `#0C0A09` Dark Canvas)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Canvas Background | `bg-white dark:bg-[#0C0A09]` (single color background; `#FFF8F2` outer border framing removed) |
+| Container Width | `w-full max-w-[1600px] mx-auto py-2 sm:py-4 space-y-7` (expansive layout, zero wasted side space) |
+| Top Stats Bar | Unified container `rounded-2xl border border-portal-border bg-portal-surface p-4 sm:p-6 shadow-xs` |
+| Stats Grid Columns | `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:divide-x divide-portal-border` |
+| Stats Content Layout | Side-by-side flex row `flex items-center justify-between gap-4`: text on left, big icon on right |
+| Phosphor Icons | Large `w-8 h-8 sm:w-9 sm:h-9` (`CurrencyDollar`, `Gavel`, `CheckCircle`, `Clock`) in amber/orange `#E59344` |
+| Icon Background | **Zero rounded background circle** — clean, naked large icons directly adjacent to telemetry |
+| Metric Telemetry | Label: `font-mono text-[11px] font-bold uppercase tracking-wider text-portal-text-muted`; Value: `font-headline text-2xl sm:text-3xl font-bold text-portal-text` |
+| Trend Subtitles | Green indicator with `TrendUp` icon: `text-emerald-600 dark:text-emerald-400 font-medium text-xs` |
+| Primary CTA Button | Vibrant amber/wine pill `bg-[#8C383E] dark:bg-[#E59344] text-white px-5 py-2.5 rounded-xl font-bold` (`+ LIST NEW VEHICLE`) |
+| Search & Filter Bar | Full-width search input with `MagnifyingGlass` + filter pills (`All Listings`, `Live 24h Floor`, `Under Review`, `Sold`) |
+| View Mode Toggle | Dual layout toggle: Grid view (`SquaresFour`) vs List view (`List`) with responsive cards |
+| Collapsed Rail Hover | Clean naked icons with active left accent bar (`absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[#8C383E] dark:bg-[#E59344]`), zero circular bubble backgrounds, and dual-theme `SidebarFlyout` |
+
+**Pattern notes:**
+- Single color background invariant: `--portal-canvas` set to `#FFFFFF` in light mode, ensuring seamless continuity with cards and sidebar with zero `#FFF8F2` double-borders.
+- Side-by-side metric layout with naked large Phosphor icons establishes the modern financial dashboard aesthetic.
 
 
 

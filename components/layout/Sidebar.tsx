@@ -361,12 +361,21 @@ export function Sidebar() {
                     >
                       {/* Main Navigation Item */}
                       <div
-                        className={`group/item flex items-center justify-between rounded-xl transition-all cursor-pointer ${
-                          isMainActive
-                            ? 'bg-[#8C383E]/10 text-[#8C383E] border border-[#8C383E]/25 dark:bg-[#E59344]/15 dark:text-[#E59344] dark:border-[#E59344]/30 shadow-xs'
-                            : 'text-gray-700 hover:text-black hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.05]'
-                        } ${isCollapsed ? 'p-2.5 justify-center' : 'px-3 py-2.5 min-h-[44px]'}`}
+                        className={
+                          isCollapsed
+                            ? 'group/item relative flex items-center justify-center py-2.5 px-2 cursor-pointer transition-colors'
+                            : `group/item flex items-center justify-between rounded-xl px-3 py-2.5 min-h-[44px] transition-all cursor-pointer ${
+                                isMainActive
+                                  ? 'bg-[#8C383E]/10 text-[#8C383E] border border-[#8C383E]/20 dark:bg-[#E59344]/15 dark:text-[#E59344] dark:border-[#E59344]/30 shadow-xs'
+                                  : 'text-gray-700 hover:text-black hover:bg-gray-100/70 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.04]'
+                              }`
+                        }
                       >
+                        {/* Collapsed Rail Active Left Indicator Bar (Clean, no rounded bg behind icon) */}
+                        {isCollapsed && isMainActive && (
+                          <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[#8C383E] dark:bg-[#E59344]" />
+                        )}
+
                         {/* Direct Link to Route */}
                         <Link
                           href={group.href}
@@ -376,8 +385,10 @@ export function Sidebar() {
                           }`}
                         >
                           <Icon
-                            className={`size-5 shrink-0 transition-transform group-hover/item:scale-105 ${
-                              isMainActive ? 'text-[#8C383E] dark:text-[#E59344]' : 'text-gray-400 dark:text-neutral-400'
+                            className={`size-5 shrink-0 transition-all duration-200 group-hover/item:scale-110 ${
+                              isMainActive
+                                ? 'text-[#8C383E] dark:text-[#E59344]'
+                                : 'text-gray-400 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white'
                             }`}
                             weight={isMainActive ? 'duotone' : 'regular'}
                           />
