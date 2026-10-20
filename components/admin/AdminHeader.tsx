@@ -68,6 +68,28 @@ export function AdminHeader() {
               <span>Auction Overrides</span>
             </Link>
             <Link
+              href="/admin/dealers"
+              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+                pathname === "/admin/dealers"
+                  ? "bg-portal-surface-hover text-portal-primary font-semibold"
+                  : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover/60"
+              }`}
+            >
+              <Building className="w-3.5 h-3.5" />
+              <span>Dealer Licenses</span>
+            </Link>
+            <Link
+              href="/admin/disputes"
+              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+                pathname === "/admin/disputes"
+                  ? "bg-portal-surface-hover text-portal-primary font-semibold"
+                  : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover/60"
+              }`}
+            >
+              <ShieldAlert className="w-3.5 h-3.5" />
+              <span>Disputes</span>
+            </Link>
+            <Link
               href="/admin/analytics"
               className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
                 pathname === "/admin/analytics"
@@ -76,7 +98,18 @@ export function AdminHeader() {
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5" />
-              <span>Market Analytics</span>
+              <span>Analytics</span>
+            </Link>
+            <Link
+              href="/admin/audit-log"
+              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+                pathname === "/admin/audit-log"
+                  ? "bg-portal-surface-hover text-portal-primary font-semibold"
+                  : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover/60"
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Audit Log</span>
             </Link>
           </nav>
         </div>

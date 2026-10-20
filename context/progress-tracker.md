@@ -6,15 +6,15 @@ Update this file after completing each page/component. Any AI agent reading this
 
 ## Current Status
 
-**Active Phase:** All Core Portals & Marketplace End-to-End Loop (100% Operational)  
+**Active Phase:** All Platform Portals & End-to-End Workflows (100% Operational)  
 **Completed:** 
-- Phase 1: Security, Auth & RBAC Foundation
-- Phase 2: Public Marketing Funnel & Appraisal Engine
-- Phase 3: Unified Authentication Suite
+- Phase 1: Security, Auth & RBAC Foundation (100% Complete)
+- Phase 2: Public Marketing Funnel & Legal Pages (100% Complete)
+- Phase 3: Unified Authentication & Canadian KYC Suite (100% Complete)
 - Phase 4: Full Seller Portal & 5-Step Listing Wizard (100% Complete)
-- Phase 5: Dealership Wholesale Trading Terminal (Trading Floor, Inspection Sheet, Active Bids, Won Matches)
-- Phase 6: Platform Administrator Backoffice (Moderation Queue, Auction Overrides, Market Analytics)
-**Workspace State:** 15/15 routes passing HTTP 200. TypeScript compiler 0 errors. Sealed-bid secrecy & Integer CAD cents strictly enforced.
+- Phase 5: Dealership Wholesale Trading Terminal (100% Complete: Trading Floor, Inspection Sheet, Bids, Won Matches, Registration, Subscriptions, Invoices, Team)
+- Phase 6: Platform Administrator Backoffice (100% Complete: Moderation Queue, Dealer Verification, Auction Overrides, Dispute Management, Market Analytics, Immutable Audit Log)
+**Workspace State:** 26/26 routes passing HTTP 200 OK. TypeScript compiler 0 errors. Sealed-bid secrecy & Integer CAD cents strictly enforced.
 
 ---
 
@@ -48,7 +48,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **10-H Interactive FAQs Accordion** (`FaqSection.tsx` high-intent Q&A)
 - [x] **10-I Pre-Footer Conversion Banner** (`CtaBanner.tsx` valuation trigger banner)
 - [x] **10-J Regulatory Footer** (`Footer.tsx` OMVIC, AMVIC, VSA compliance seals & legal notices)
-- [ ] **11 Legal Pages** (`/legal/privacy` and `/legal/terms` PIPEDA & Quebec Law 25 compliant)
+- [x] **11 Legal Pages** (`/legal/privacy` and `/legal/terms` PIPEDA & Quebec Law 25 compliant)
 
 ---
 
@@ -59,7 +59,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **13 Seller Registration** (`/register` — `RegisterForm.tsx` FR-EU-01 fields, CASL opt-in, PIPEDA consent, postal auto-lookup)
 - [x] **14 Contact OTP Verification** (`/verify` — `VerifyOtpForm.tsx` SMS + Email two-channel verification with resend cooldown)
 - [x] **15 Password Recovery Suite** (`/forgot-password` & `/reset-password` — email verification token mock)
-- [ ] **16 Automated Identity KYC Verification** (`/verify-kyc` — `KycVerificationView.tsx`: Government ID capture [Driver's License / Passport] + liveness selfie stub, `PENDING` → `VERIFIED` state engine)
+- [x] **16 Automated Identity KYC Verification** (`/verify-kyc` — `KycVerificationView.tsx`: Government ID capture [Driver's License / Passport] + liveness selfie stub, `PENDING` → `VERIFIED` state engine)
 
 ---
 
@@ -120,11 +120,11 @@ Update this file after completing each page/component. Any AI agent reading this
 *Primary Canvas: Desktop Monitor (`1280px` to `1920px`). High-density FinTech Obsidian Dark theme (`#0C0A09`, `#131215`, `#E59344` amber, `#8C383E` wine, `#10B981` emerald checkmarks).*
 
 #### Milestone 5.1: Dealer Onboarding & Subscription
-- [ ] **Page 5.1: Dealership Registration & Licensing**
+- [x] **Page 5.1: Dealership Registration & Licensing**
   - **Route:** `/dealer/register`
   - **Component:** `DealerRegisterView.tsx`
   - **Features:** Business name, OMVIC / AMVIC / VSA license intake, operating address, geographic service radius (25km–150km).
-- [ ] **Page 5.2: Subscription Tier Gate**
+- [x] **Page 5.2: Subscription Tier Gate**
   - **Route:** `/dealer/subscription`
   - **Component:** `DealerSubscriptionView.tsx`
   - **Features:** Stripe CAD billing tiers (Basic, Pro, Enterprise), monthly/annual toggle, bid quota monitor, past-due billing banner.
@@ -152,11 +152,11 @@ Update this file after completing each page/component. Any AI agent reading this
   - **Route:** `/dealer/won-matches`
   - **Component:** `DealerWonMatchesView.tsx`
   - **Features:** Seller contact unsealed, 24h appointment countdown clock, appointment outcome logger (`COMPLETED` with final transaction price, `NO_SHOW`, or `DECLINED_AFTER_INSPECTION` with reason).
-- [ ] **Page 5.8: Dealership Team Management** (`DEALER_ADMIN` role only)
+- [x] **Page 5.8: Dealership Team Management** (`DEALER_ADMIN` role only)
   - **Route:** `/dealer/team`
   - **Component:** `DealerTeamView.tsx`
-  - **Features:** Invite staff members, assign roles (`DEALER_ADMIN` vs `DEALER_AGENT`), revoke access.
-- [ ] **Page 5.9: Dealership Invoices & Quotas** (`DEALER_ADMIN` role only)
+  - **Features:** Invite staff members, assign roles (`DEALER_ADMIN`, `DEALER_BUYER`, `DEALER_INSPECTOR`), revoke access.
+- [x] **Page 5.9: Dealership Invoices & Quotas** (`DEALER_ADMIN` role only)
   - **Route:** `/dealer/billing`
   - **Component:** `DealerBillingView.tsx`
   - **Features:** Stripe billing portal launcher, invoice history download, monthly bid quota gauge.
@@ -170,7 +170,7 @@ Update this file after completing each page/component. Any AI agent reading this
   - **Route:** `/admin/moderation`
   - **Component:** `ListingModerationView.tsx`
   - **Features:** Review pending seller submissions before the 24h auction opens. Decoded VIN specs vs. photos check, damage inspection check. 1-click "Approve & Start 24h Auction", "Request Edits", or "Reject with Reason".
-- [ ] **Page 6.2: Dealer Regulatory License Verification Queue**
+- [x] **Page 6.2: Dealer Regulatory License Verification Queue**
   - **Route:** `/admin/dealers`
   - **Component:** `DealerVerificationView.tsx`
   - **Features:** Pending dealership registrations, validation against provincial registries (OMVIC, AMVIC, VSA), approve/suspend dealer accounts.
@@ -178,7 +178,7 @@ Update this file after completing each page/component. Any AI agent reading this
   - **Route:** `/admin/auctions`
   - **Component:** `AdminAuctionsView.tsx`
   - **Features:** Filter auctions by state (`PENDING_REVIEW`, `ACTIVE`, `UNSEALED`, `ACCEPTED`, `COMPLETED`, `CANCELLED`). Manual 24h time extension, emergency cancellation with mandatory audit log note.
-- [ ] **Page 6.4: Dispute Resolution Case Management**
+- [x] **Page 6.4: Dispute Resolution Case Management**
   - **Route:** `/admin/disputes`
   - **Component:** `DisputeManagementView.tsx`
   - **Features:** Case management for post-inspection disputes between seller and dealer. Status tracking (`OPEN`, `INVESTIGATING`, `RESOLVED`, `CLOSED`), resolution notes logger.
@@ -186,7 +186,7 @@ Update this file after completing each page/component. Any AI agent reading this
   - **Route:** `/admin/analytics`
   - **Component:** `AdminAnalyticsView.tsx`
   - **Features:** Gross Merchandise Value (GMV), auction success rate, average bids per listing, provincial volume heat map (Ontario, Alberta, BC, Quebec), subscription MRR.
-- [ ] **Page 6.6: Immutable Platform Audit Trail**
+- [x] **Page 6.6: Immutable Platform Audit Trail**
   - **Route:** `/admin/audit-log`
   - **Component:** `AdminAuditLogView.tsx`
   - **Features:** Non-repudiation audit table recording every administrative action, actor ID, entity modified, timestamp, and before/after JSON diffs.

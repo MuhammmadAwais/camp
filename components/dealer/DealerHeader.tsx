@@ -74,6 +74,26 @@ export function DealerHeader() {
               Won Matches
             </Link>
             <Link
+              href="/dealer/team"
+              className={`px-3 py-1.5 rounded-lg transition-colors ${
+                pathname === "/dealer/team"
+                  ? "bg-portal-surface-hover text-portal-primary font-semibold"
+                  : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover/60"
+              }`}
+            >
+              Team
+            </Link>
+            <Link
+              href="/dealer/billing"
+              className={`px-3 py-1.5 rounded-lg transition-colors ${
+                pathname === "/dealer/billing"
+                  ? "bg-portal-surface-hover text-portal-primary font-semibold"
+                  : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover/60"
+              }`}
+            >
+              Billing
+            </Link>
+            <Link
               href="/admin/moderation"
               className={`px-3 py-1.5 rounded-lg transition-colors ${
                 pathname.startsWith("/admin")
