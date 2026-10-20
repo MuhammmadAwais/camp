@@ -344,9 +344,9 @@ export function Sidebar() {
               <div className="w-8 border-t border-gray-200 dark:border-white/[0.08] mt-2.5" />
             </div>
           )}
-          {['PORTAL', 'TRANSACTIONS', 'COMPLIANCE', 'PREFERENCES'].map((sectionKey) => {
+          {Array.from(new Set(NAV_ITEMS.map((item) => item.section || 'MENU'))).map((sectionKey) => {
             const sectionItems = NAV_ITEMS.filter(
-              (item) => item.section === sectionKey
+              (item) => (item.section || 'MENU') === sectionKey
             );
             if (sectionItems.length === 0) return null;
 
