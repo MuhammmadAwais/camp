@@ -112,15 +112,15 @@ export function DamageMapperStep({ onNext, onBack }: DamageMapperStepProps) {
           </span>
           <span className="text-xs text-portal-text-muted">
             {damageHotspots.length === 0
-              ? "0 damage spots tagged"
+              ? "No damage spots tagged"
               : `${damageHotspots.length} damage spot${damageHotspots.length > 1 ? "s" : ""} declared`}
           </span>
         </div>
         <h2 className="text-xl md:text-2xl font-bold font-headline text-portal-text">
-          Interactive Damage Hotspot Mapper
+          Mark Any Scratches or Dents
         </h2>
         <p className="text-sm text-portal-text-muted mt-1">
-          Tap anywhere on the schematic to place pins for scratches, dings, or dents. Transparency helps Canadian wholesale dealers bid with confidence.
+          Tap anywhere on the car diagram to place pins for scratches, dings, or dents. Accurate condition details help dealers give you their highest offers.
         </p>
       </div>
 
@@ -176,9 +176,9 @@ export function DamageMapperStep({ onNext, onBack }: DamageMapperStepProps) {
         {/* Quick No-Damage Affirmation */}
         <div className="flex items-center justify-between p-3 rounded-lg bg-portal-surface-hover border border-portal-border-subtle text-xs">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-portal-primary shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-portal-primary shrink-0" />
             <span className="text-portal-text">
-              No cosmetic flaws on your car? You can proceed with 0 tags for showroom condition.
+              No cosmetic flaws on your car? You can proceed with 0 tags for clean showroom condition.
             </span>
           </div>
           {damageHotspots.length === 0 && (

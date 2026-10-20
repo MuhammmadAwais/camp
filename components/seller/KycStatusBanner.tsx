@@ -17,14 +17,14 @@ export function KycStatusBanner({ initialStatus }: Props) {
 
   if (status === "VERIFIED") {
     return (
-      <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.04] dark:bg-emerald-500/[0.06] px-4 py-3 font-body text-xs sm:text-sm text-emerald-900 dark:text-emerald-300 transition-colors">
-        <div className="w-7 h-7 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
-          <BadgeCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
+      <div className="flex items-center gap-3 rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-[#1E1E1E] px-4 py-3 font-body text-xs sm:text-sm text-gray-900 dark:text-neutral-100 shadow-2xs transition-colors">
+        <div className="w-7 h-7 rounded-full bg-neutral-100 dark:bg-white/[0.08] border border-gray-200 dark:border-white/10 flex items-center justify-center shrink-0">
+          <BadgeCheck className="w-4 h-4 text-portal-primary" aria-hidden />
         </div>
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span className="font-semibold text-emerald-950 dark:text-emerald-200">Government Identity Verified</span>
-          <span className="text-gray-400 dark:text-white/20 hidden sm:inline">•</span>
-          <span className="text-emerald-800/80 dark:text-emerald-300/80 text-xs">Cleared for 24h wholesale dealer bidding and transaction settlement under OMVIC / Law 25 guidelines.</span>
+          <span className="font-semibold text-gray-900 dark:text-white">Government Identity Verified</span>
+          <span className="text-gray-300 dark:text-white/20 hidden sm:inline">•</span>
+          <span className="text-gray-500 dark:text-neutral-400 text-xs">Cleared for 24h wholesale dealer bidding and transaction settlement under OMVIC / Law 25 guidelines.</span>
         </div>
       </div>
     );

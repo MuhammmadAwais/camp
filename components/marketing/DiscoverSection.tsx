@@ -488,10 +488,10 @@ export function DiscoverSection() {
                           <span className="font-headline text-xl sm:text-2xl font-black text-on-surface tracking-tight whitespace-nowrap">
                             {car.soldPrice}
                           </span>
-                          <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-md bg-[#16271E] text-emerald-400 border border-emerald-500/25 font-mono text-[10px] sm:text-[10.5px] font-bold tracking-tight shadow-xs whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-md bg-neutral-100 dark:bg-white/[0.08] text-neutral-800 dark:text-neutral-200 border border-gray-200 dark:border-white/10 font-mono text-[10px] sm:text-[10.5px] font-bold tracking-tight shadow-xs whitespace-nowrap">
                             <ArrowUpRight
                               weight="bold"
-                              className="w-3 h-3 text-emerald-400 shrink-0"
+                              className="w-3 h-3 text-neutral-800 dark:text-neutral-200 shrink-0"
                             />
                             <span>{car.surplus}</span>
                           </span>

@@ -41,7 +41,7 @@ export function ListingWizardShell({
     <div className="min-h-screen bg-portal-canvas text-portal-text flex flex-col">
       {/* Top Navigation Bar */}
       <header className="sticky top-0 z-40 bg-portal-surface/90 backdrop-blur-md border-b border-portal-border">
-        <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Back button */}
           <button
             type="button"
@@ -78,7 +78,7 @@ export function ListingWizardShell({
         </div>
 
         {/* Linear Stepper Progress Bar */}
-        <div className="max-w-3xl mx-auto px-4 pb-3">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-3">
           {/* Progress track */}
           <div className="grid grid-cols-5 gap-2 pt-1">
             {WIZARD_STEPS.map((step, idx) => {
@@ -137,10 +137,8 @@ export function ListingWizardShell({
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-2xl w-full mx-auto px-4 py-6 md:py-8">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 md:py-8">
         {children}
-
-     
       </main>
     </div>
   );

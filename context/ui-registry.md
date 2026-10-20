@@ -1219,9 +1219,78 @@ Mode: Signature Architectural Portal Card (Naked Brand Icons + Pure White `#FFFF
 - **Sophisticated Charcoal Dark Canvas (`#121212`):** Modern `#121212` dark background paired with `#1E1E1E` elevated cards and matching `#121212` pocket cutout fills.
 - **Clean Hover Mechanics:** Removed conflicting `hover:border-...` on the card perimeter so the bottom-right notch maintains seamless corner alignment during mouseover without amber border lines leaking through.
 
+---
 
+### `SellerAuctionCard Status Chip` (Milestone 4.1 Neutral Invariant — Zero Green Backgrounds)
 
+Files: `components/seller/SellerAuctionCard.tsx`, `components/marketing/DiscoverSection.tsx`, `components/seller/KycStatusBanner.tsx`  
+Last updated: 2026-10-20  
+Mode: Institutional Modern High-Contrast Neutral
 
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Status Countdown Chip | `bg-neutral-100 dark:bg-white/[0.08] text-neutral-800 dark:text-neutral-200 border-gray-200 dark:border-white/10` (Strictly eliminated `bg-[#16271E]` and saturated green backgrounds) |
+| Active Telemetry Pill | `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-white/[0.08] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-neutral-100` with subtle brand pulse indicator (`bg-[#8C383E] dark:bg-[#E59344]`) |
+| Verification Banner | `rounded-2xl border border-gray-200/90 dark:border-white/10 bg-white dark:bg-[#1E1E1E] px-4 py-3 font-body text-xs sm:text-sm text-gray-900 dark:text-neutral-100 shadow-2xs` (neutral container with subtle check icon) |
 
+---
 
+### `ListingWizardShell & Stepper` (Milestone 4.1 Expansive Container Architecture)
 
+File: `components/seller/wizard/ListingWizardShell.tsx`  
+Last updated: 2026-10-20  
+Mode: Modern Enterprise Wizard Shell
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Max Width Boundary | Expanded from narrow `max-w-2xl` to modern expansive `max-w-5xl` (`px-4 sm:px-6 py-6 md:py-8`) across header, progress track, and `<main>` content |
+| Header Navigation | Sticky top header with blurred background (`bg-portal-surface/90 backdrop-blur-md border-b border-portal-border`), back button, step metadata, and save-and-exit trigger |
+| Linear Stepper Track | 5-step grid (`grid grid-cols-5 gap-2`) with active bar indicator (`bg-portal-primary shadow-sm`), completed bar (`bg-portal-primary/60`), and step labels with `Check` icons |
+| Side Spacing Parity | Eliminates excessive negative side gutters on wide desktop monitors, providing optimal breathing room for car schematics and multi-column photo galleries |
+
+---
+
+### `VinDecodeStep & Vehicle Summary` (Milestone 4.1 Human-Centered Copy & Vertical Flow)
+
+File: `components/seller/wizard/VinDecodeStep.tsx`  
+Last updated: 2026-10-20  
+Mode: Friendly Non-Technical Intake Flow
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Copy Tone | Plain, approachable language ("Vehicle Details", "Find Vehicle Details", "Vehicle Identified") without developer jargon like "NHTSA vPIC auto-decode" or "ISO 3779 checksum test" |
+| Icons | Automotive and action icons (`Car`, `MapPin`, `CheckCircle2`, `HelpCircle`); zero AI sparkle icons |
+| Vehicle Specs Summary | Vertical specification list (`divide-y divide-portal-border-subtle border-t border-b border-portal-border-subtle text-xs`) replacing 6 repetitive boxed cards; eliminates truncated card text |
+| Form Controls | Clean monospaced inputs with clear counter (`17/17`), real-time check indicator, and unobtrusive location helper |
+
+---
+
+### `DamageMapperStep` (Milestone 4.1 Simplified Vehicle Condition Flow)
+
+File: `components/seller/wizard/DamageMapperStep.tsx`  
+Last updated: 2026-10-20  
+Mode: Intuitive Condition Tagging
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Title & Instructions | "Mark Any Scratches or Dents" — clear, concise instructions for regular car owners |
+| Clean Body Banner | Subtle container with `CheckCircle2` ("No cosmetic flaws on your car? You can proceed with 0 tags for clean showroom condition") — completely replaced AI sparkles |
+| Interactive Schematic | 5 perspective views (`roof`, `driver_side`, `passenger_side`, `front`, `rear`) with pin placing, severity selection, and damage area labeling |
+
+---
+
+### `PhotoUploadStep` (Milestone 4.1 Asymmetric Hero Gallery & Wireframe Architecture)
+
+File: `components/seller/wizard/PhotoUploadStep.tsx`  
+Last updated: 2026-10-20  
+Mode: Asymmetrical Hero + Secondary Thumbnail Grid
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Recommended Angles Checklist | Clean 4-column checklist (`grid grid-cols-2 sm:grid-cols-4 gap-2 text-portal-text-muted text-[11px]`) with subtle bullets, replacing nested chips and AI sparkle icons |
+| Hero Asymmetric Split | 12-column desktop grid: Left column (`lg:col-span-7`) hosts Big Cover Photo (`h-72 sm:h-80 md:h-[370px]`); Right column (`lg:col-span-5`) hosts 2-column secondary thumbnail grid |
+| Extreme Top-Right Upload Slot | Slot #2 in right-side grid is the interactive `+ Upload More` dropzone tile (`border-2 border-dashed border-portal-primary/50 bg-portal-primary/5 hover:bg-portal-primary/10`) |
+| Secondary Thumbnails | Numbered thumbnail cards (`#2`, `#3`, `#4`) with star (set as cover) and delete hover actions |
+| Lower Photo Grid | Additional photos (`#5`, `#6`, `#7`, etc.) flow cleanly in a grid directly underneath the left cover photo |
+| Empty Wireframe Frame | When 0 photos are uploaded, renders the exact same split geometry: Large left Cover Photo dropzone (`Main Cover Photo`) + right 2-column placeholder slots with `+ Upload More` in extreme top right |
+| Non-Technical Reassurance | Friendly copy: "Photos are securely protected. Location data is removed for your privacy." |

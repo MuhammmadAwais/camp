@@ -62,15 +62,15 @@ export function SellerAuctionCard({ auction, layout = "grid" }: Props) {
       case "ACTIVE":
         return {
           text: `Live 24h • ${auction.bidCount} ${auction.bidCount === 1 ? "Bid" : "Bids"}`,
-          beaconColor: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
-          chipClass: "bg-[#16271E] text-emerald-400 border-emerald-500/25",
+          beaconColor: "bg-portal-primary shadow-[0_0_8px_rgba(140,56,62,0.8)]",
+          chipClass: "bg-neutral-100 dark:bg-white/[0.08] text-neutral-800 dark:text-neutral-200 border-gray-200 dark:border-white/10",
           chipText: isClient && timeLeft ? `${timeLeft.hours}h ${timeLeft.minutes}m left` : "24h Floor",
         };
       case "COMPLETED":
         return {
           text: `Sold & Finalized • ${auction.bidCount} Bids`,
-          beaconColor: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
-          chipClass: "bg-[#16271E] text-emerald-400 border-emerald-500/25",
+          beaconColor: "bg-gray-400",
+          chipClass: "bg-neutral-100 dark:bg-white/[0.08] text-neutral-700 dark:text-neutral-300 border-gray-200 dark:border-white/10",
           chipText: "Settled",
         };
       case "PENDING_MODERATION":
@@ -142,8 +142,8 @@ export function SellerAuctionCard({ auction, layout = "grid" }: Props) {
           {/* Right Status Beacon / Telemetry Pill (Replacing Image 1 Floating Badge) */}
           <div className="shrink-0">
             {auction.status === "ACTIVE" ? (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-white/[0.08] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-neutral-100">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#8C383E] dark:bg-[#E59344] animate-pulse shrink-0 shadow-[0_0_6px_rgba(140,56,62,0.6)]" />
                 <span className="font-mono text-[11px] font-bold tracking-tight">
                   {auction.bidCount} {auction.bidCount === 1 ? "Bid" : "Bids"}
                 </span>

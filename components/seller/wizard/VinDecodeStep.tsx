@@ -145,11 +145,11 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
       {/* Intro Header */}
       <div>
         <h2 className="text-xl md:text-2xl font-bold font-headline text-portal-text">
-          Vehicle Identification & Origin
+          Vehicle Details
         </h2>
         <p className="text-sm text-portal-text-muted mt-1">
-          Enter your 17-character VIN. We’ll automatically decode the year, make, model,
-          and factory specs to build your 24h auction listing.
+          Enter your 17-character VIN. We’ll find your vehicle's make, model,
+          and factory specifications to build your 24-hour auction listing.
         </p>
       </div>
 
@@ -183,8 +183,8 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
               </p>
               <ul className="list-disc list-inside space-y-0.5 text-xs">
                 <li>Driver&apos;s side door jamb on the manufacturer sticker</li>
-                <li>Lower-left corner of the dashboard/windshield (visible from outside)</li>
-                <li>Canadian vehicle registration/ownership slip</li>
+                <li>Lower-left corner of the windshield (visible from outside)</li>
+                <li>Vehicle registration / ownership slip</li>
               </ul>
             </div>
           )}
@@ -208,7 +208,7 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
                   : "border-portal-border focus:border-portal-primary focus:ring-2 focus:ring-portal-primary/20"
               }`}
             />
-            {/* Character counter & check-digit status */}
+            {/* Character counter & check status */}
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               <span
                 className={`text-xs font-mono font-medium ${
@@ -232,7 +232,7 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
             <p className="text-xs text-error mt-1.5 flex items-center gap-1">
               <AlertCircle className="w-3.5 h-3.5 shrink-0" />
               <span>
-                Checksum invalid (expected check digit &apos;{checkDigit}&apos; at position 9). Please re-check characters.
+                Please check the characters on your vehicle ownership slip to ensure this matches.
               </span>
             </p>
           )}
@@ -268,7 +268,7 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
             )}
           </div>
           <p className="text-[11px] text-portal-text-muted mt-1">
-            Helps verified local dealers within your 25km–150km radius match your auction.
+            Connects your listing with verified local dealers in your region.
           </p>
         </div>
 
@@ -277,7 +277,7 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
           <div className="p-3 bg-portal-surface-hover border border-error/30 rounded-xl flex items-start gap-2.5 text-xs text-error">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold">Unable to automatically verify VIN</p>
+              <p className="font-semibold">Unable to verify VIN</p>
               <p className="mt-0.5">{validationError}</p>
             </div>
           </div>
@@ -294,19 +294,19 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
             {decodeMutation.isPending ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Decoding with NHTSA vPIC...</span>
+                <span>Looking up vehicle details...</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" />
-                <span>Decode Vehicle Specifications</span>
+                <Car className="w-4 h-4" />
+                <span>Find Vehicle Details</span>
               </>
             )}
           </button>
         )}
       </div>
 
-      {/* Verified Vehicle Preview Card (Appears once decoded) */}
+      {/* Verified Vehicle Preview Card (Vertical Flow, Clean Layout) */}
       {decodedVehicle && (
         <div className="bg-portal-surface border border-portal-primary/40 rounded-xl p-5 md:p-6 shadow-sm space-y-4 animate-in fade-in-50 duration-300">
           <div className="flex items-start justify-between">
@@ -314,7 +314,7 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-portal-primary bg-portal-primary/10 px-2 py-0.5 rounded-md">
                   <CheckCircle2 className="w-3 h-3" />
-                  {decodedVehicle.source === "VPIC" ? "NHTSA Auto-Decoded" : "Manual Specification"}
+                  Vehicle Identified
                 </span>
                 <span className="text-xs text-portal-text-muted font-mono">{decodedVehicle.vin}</span>
               </div>
@@ -329,48 +329,36 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
               onClick={() => decodeMutation.mutate(sanitizedVin)}
               disabled={decodeMutation.isPending}
               className="text-xs text-portal-text-muted hover:text-portal-primary flex items-center gap-1 transition-colors p-1"
-              title="Re-decode VIN"
+              title="Re-check vehicle details"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${decodeMutation.isPending ? "animate-spin" : ""}`} />
               <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
 
-          {/* Vehicle Spec Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-2 border-t border-portal-border-subtle text-xs">
-            <div className="bg-portal-surface-hover p-2.5 rounded-lg">
-              <span className="text-portal-text-muted block text-[11px]">Body Class</span>
-              <span className="font-semibold text-portal-text truncate block">
-                {decodedVehicle.bodyStyle ?? "Standard"}
+          {/* Vehicle Spec Summary (Vertical Flow without multiple clunky cards) */}
+          <div className="divide-y divide-portal-border-subtle border-t border-b border-portal-border-subtle text-xs">
+            <div className="py-2.5 flex items-center justify-between">
+              <span className="text-portal-text-muted">Body Type</span>
+              <span className="font-semibold text-portal-text">{decodedVehicle.bodyStyle ?? "Standard"}</span>
+            </div>
+            <div className="py-2.5 flex items-center justify-between">
+              <span className="text-portal-text-muted">Engine & Fuel</span>
+              <span className="font-semibold text-portal-text">
+                {decodedVehicle.engine ?? "Factory Engine"}
+                {decodedVehicle.fuelType ? ` • ${decodedVehicle.fuelType}` : ""}
               </span>
             </div>
-            <div className="bg-portal-surface-hover p-2.5 rounded-lg">
-              <span className="text-portal-text-muted block text-[11px]">Engine</span>
-              <span className="font-semibold text-portal-text truncate block">
-                {decodedVehicle.engine ?? "Factory Spec"}
-              </span>
-            </div>
-            <div className="bg-portal-surface-hover p-2.5 rounded-lg">
-              <span className="text-portal-text-muted block text-[11px]">Transmission</span>
-              <span className="font-semibold text-portal-text truncate block">
+            <div className="py-2.5 flex items-center justify-between">
+              <span className="text-portal-text-muted">Transmission & Drivetrain</span>
+              <span className="font-semibold text-portal-text">
                 {decodedVehicle.transmission ?? "Automatic"}
+                {decodedVehicle.drivetrain ? ` • ${decodedVehicle.drivetrain}` : ""}
               </span>
             </div>
-            <div className="bg-portal-surface-hover p-2.5 rounded-lg">
-              <span className="text-portal-text-muted block text-[11px]">Drivetrain</span>
-              <span className="font-semibold text-portal-text truncate block">
-                {decodedVehicle.drivetrain ?? "Front-Wheel Drive"}
-              </span>
-            </div>
-            <div className="bg-portal-surface-hover p-2.5 rounded-lg">
-              <span className="text-portal-text-muted block text-[11px]">Fuel Type</span>
-              <span className="font-semibold text-portal-text truncate block">
-                {decodedVehicle.fuelType ?? "Gasoline"}
-              </span>
-            </div>
-            <div className="bg-portal-surface-hover p-2.5 rounded-lg">
-              <span className="text-portal-text-muted block text-[11px]">Location</span>
-              <span className="font-semibold text-portal-text truncate block">
+            <div className="py-2.5 flex items-center justify-between">
+              <span className="text-portal-text-muted">Location</span>
+              <span className="font-semibold text-portal-text">
                 {detectedProvince ? `${detectedProvince}, Canada` : "Canada"}
               </span>
             </div>
