@@ -1171,5 +1171,23 @@ Mode: Modern High-Value Portal Dual-Theme (Unified `#FFFFFF` Light Canvas / `#0C
 - Single color background invariant: `--portal-canvas` set to `#FFFFFF` in light mode, ensuring seamless continuity with cards and sidebar with zero `#FFF8F2` double-borders.
 - Side-by-side metric layout with naked large Phosphor icons establishes the modern financial dashboard aesthetic.
 
+---
+
+### `SellerNotifications & Professional Navigation` (Milestone 4.1 UI/UX Polish #2)
+
+Files: `components/seller/SellerNotificationDropdown.tsx`, `app/(seller)/seller/notifications/page.tsx`, `components/layout/Sidebar.tsx`, `app/layout.tsx`  
+Last updated: 2026-10-20  
+Mode: Modern Enterprise High-Contrast Portal
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Typography Engine | `next/font/google` with `Epilogue` (`--font-headline`), `Plus Jakarta Sans` (`--font-body`), `JetBrains Mono` (`--font-mono`) |
+| Sidebar Active Route | `bg-neutral-100 dark:bg-white/[0.08] text-neutral-900 dark:text-white font-semibold rounded-lg px-3 py-2` (zero pink sausage bubbles) |
+| Sidebar Sub-Item Active | `text-[#8C383E] dark:text-[#E59344] font-semibold bg-[#8C383E]/5 dark:bg-[#E59344]/10 rounded-md px-2.5 py-1.5` |
+| Notification Bell Button | Header icon button with animated unread badge ping (`SellerNotificationDropdown`) above the search bar |
+| Notification Popover | Floating card `w-80 sm:w-96 rounded-2xl bg-white dark:bg-[#131215] border border-portal-border shadow-2xl` |
+| Dedicated Alert Center | Full-page management at `/seller/notifications` with filter pills (`All`, `Unread`, `Bids`, `System`), bulk mark as read, and clear actions |
+| Clean Listings Floor | Full-width 3-column responsive grid (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`); side cards removed for an uncluttered, valued layout |
+
 
 

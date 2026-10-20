@@ -7,9 +7,9 @@
   /* ========================================================
      TYPOGRAPHY FONTS
      ======================================================== */
-  --font-headline: "Epilogue", serif;
-  --font-body: "Plus Jakarta Sans", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-headline: var(--font-headline), "Epilogue", serif;
+  --font-body: var(--font-body), "Plus Jakarta Sans", sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", monospace;
 
   /* ========================================================
      AUTUMN EDITORIAL PALETTE (AutoNexa Landing & Marketing)
@@ -185,9 +185,9 @@
   }
 
   .dark {
-    --portal-canvas: #0C0A09;
-    --portal-surface: #131215;
-    --portal-surface-hover: #1D1C21;
+    --portal-canvas: #0A0A0A;
+    --portal-surface: #0A0A0A;
+    --portal-surface-hover: #141414;
     --portal-border: rgba(255, 255, 255, 0.08);
     --portal-border-subtle: rgba(255, 255, 255, 0.04);
     --portal-text: #FFFFFF;
@@ -241,19 +241,24 @@
   }
 
   /* ========================================================
-     WEB APP & PORTAL SCROLLBAR (Autumn Editorial Dual-Theme Adaptive)
-     Light: Terracotta Wine #8C383E thumb
-     Dark: Honey Amber #E59344 thumb
+     WEB APP & PORTAL SCROLLBAR (Subtle, sleek, transparent)
+     Eliminates bright orange scrollbar strip on the screen edge
      ======================================================== */
-  html[data-app-theme="webapp"],
-  html[data-app-theme="webapp"] * {
+  html[data-app-theme="webapp"].dark,
+  html[data-app-theme="webapp"].dark * {
     scrollbar-width: thin;
-    scrollbar-color: var(--portal-accent) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  }
+
+  html[data-app-theme="webapp"]:not(.dark),
+  html[data-app-theme="webapp"]:not(.dark) * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
   }
 
   html[data-app-theme="webapp"] ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   html[data-app-theme="webapp"] ::-webkit-scrollbar-track {
@@ -261,31 +266,30 @@
   }
 
   html[data-app-theme="webapp"].dark ::-webkit-scrollbar-track {
-    background: #0C0A09;
+    background: transparent;
   }
 
   html[data-app-theme="webapp"]:not(.dark) ::-webkit-scrollbar-track {
-    background: #F8ECDB;
+    background: transparent;
   }
 
   html[data-app-theme="webapp"] ::-webkit-scrollbar-thumb {
-    background-color: var(--portal-accent);
+    background-color: rgba(255, 255, 255, 0.15);
     background-clip: padding-box;
-    border: 2px solid transparent;
     border-radius: 9999px;
     transition: background-color 0.2s ease;
   }
 
+  html[data-app-theme="webapp"]:not(.dark) ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+
+  html[data-app-theme="webapp"] ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
   html[data-app-theme="webapp"]:not(.dark) ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--portal-accent-hover);
-  }
-
-  html[data-app-theme="webapp"].dark ::-webkit-scrollbar-thumb:hover {
-    background-color: #FEA857;
-  }
-
-  html[data-app-theme="webapp"] ::-webkit-scrollbar-thumb:active {
-    background-color: var(--portal-accent-hover);
+    background-color: rgba(0, 0, 0, 0.3);
   }
 
   html[data-app-theme="webapp"] ::-webkit-scrollbar-corner {

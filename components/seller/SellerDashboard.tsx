@@ -6,19 +6,13 @@ import {
   MagnifyingGlass,
   SquaresFour,
   List,
-  Funnel,
   Plus,
-  ShieldCheck,
-  ArrowsClockwise,
-  CheckCircle,
-  Car,
-  CaretDown,
 } from "@phosphor-icons/react";
 import { KycStatusBanner } from "@/components/seller/KycStatusBanner";
 import { ListingStartCard } from "@/components/seller/ListingStartCard";
 import { SellerAuctionCard } from "@/components/seller/SellerAuctionCard";
 import { SellerEmptyState } from "@/components/seller/SellerEmptyState";
-import { SellerNotificationFeed } from "@/components/seller/SellerNotificationFeed";
+import { SellerNotificationDropdown } from "@/components/seller/SellerNotificationDropdown";
 import { SellerStatsGrid } from "@/components/seller/SellerStatsGrid";
 import { useSellerDashboard } from "@/hooks/useSellerDashboard";
 import type { SessionUser } from "@/lib/types/auth";
@@ -32,12 +26,11 @@ interface Props {
 type TabFilter = "ALL" | "ACTIVE" | "PENDING_MODERATION" | "COMPLETED";
 
 export function SellerDashboard({ user }: Props) {
-  const [viewMode, setViewMode] = React.useState<"default" | "empty">("default");
   const [activeTab, setActiveTab] = React.useState<TabFilter>("ALL");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [layoutMode, setLayoutMode] = React.useState<"grid" | "list">("grid");
 
-  const { data, isLoading, isError, refetch, isFetching } = useSellerDashboard(viewMode);
+  const { data, isLoading, isError, refetch, isFetching } = useSellerDashboard("default");
 
   const auctions = data?.auctions ?? [];
   const stats = data?.stats ?? {
@@ -74,8 +67,8 @@ export function SellerDashboard({ user }: Props) {
 
   return (
     <div className="w-full max-w-[1600px] mx-auto py-2 sm:py-4 space-y-7">
-      {/* 1. Modern Page Header & Primary Action CTA (Inspired by reference Image 5) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+      {/* 1. Modern Page Header with Notification Dropdown & Primary Action (Directly matching Athletic Clubs style) */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
         <div>
           <h1 className="font-headline text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-portal-text">
             Welcome, {user.firstName}
@@ -85,37 +78,12 @@ export function SellerDashboard({ user }: Props) {
           </p>
         </div>
 
-        {/* Action Controls: Primary + LIST VEHICLE Button & Simulation Mode Switcher */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Test State Toggle (Active Floor vs First-Time Onboarding) */}
-          <div className="inline-flex items-center p-1 rounded-xl bg-portal-surface border border-portal-border text-xs font-medium">
-            <button
-              type="button"
-              onClick={() => setViewMode("default")}
-              className={cn(
-                "px-3 py-1.5 rounded-lg transition-all font-body cursor-pointer text-xs font-semibold",
-                viewMode === "default"
-                  ? "bg-[#8C383E] dark:bg-[#E59344] text-white shadow-xs"
-                  : "text-portal-text-muted hover:text-portal-text"
-              )}
-            >
-              Active Floor ({auctions.length || 3})
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("empty")}
-              className={cn(
-                "px-3 py-1.5 rounded-lg transition-all font-body cursor-pointer text-xs font-semibold",
-                viewMode === "empty"
-                  ? "bg-[#8C383E] dark:bg-[#E59344] text-white shadow-xs"
-                  : "text-portal-text-muted hover:text-portal-text"
-              )}
-            >
-              First-Time (0)
-            </button>
-          </div>
+        {/* Top Actions: Notification Bell + LIST NEW VEHICLE CTA Button */}
+        <div className="flex items-center gap-3">
+          {/* Notification Icon Button with Interactive Popover & Unread Indicator */}
+          <SellerNotificationDropdown notifications={notifications} />
 
-          {/* Primary High-Value Action Button matching Image 5 + CREATE CLUB style */}
+          {/* Primary High-Value Action Button */}
           <Link
             href="/seller/list-car"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#8C383E] dark:bg-[#E59344] hover:bg-[#752B30] dark:hover:bg-[#D9822F] text-white font-body text-xs sm:text-sm font-bold tracking-wide transition-all shadow-sm hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
@@ -129,14 +97,14 @@ export function SellerDashboard({ user }: Props) {
       {/* 2. KYC Verification Notice Gate Banner */}
       <KycStatusBanner initialStatus={user.kycStatus} />
 
-      {/* 3. Top 4 Overview Metrics Bar (Inspired by reference Image 4) */}
+      {/* 3. Top 4 Overview Metrics Bar */}
       <SellerStatsGrid
         stats={stats}
         onRefresh={() => refetch()}
         isRefreshing={isFetching}
       />
 
-      {/* 4. Full-Width Search & Filter Toolbar (Directly matching Image 5) */}
+      {/* 4. Full-Width Search & Filter Toolbar */}
       <div className="space-y-3.5">
         <div className="relative w-full">
           <MagnifyingGlass
@@ -222,94 +190,52 @@ export function SellerDashboard({ user }: Props) {
         </div>
       </div>
 
-      {/* 5. Main 2-Column Responsive Floor */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-1">
-        {/* Left Column (col-span-2): Vehicle Cards & Listing Wizard Trigger */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Quick-Action Onboarding Card */}
-          <ListingStartCard initialKycStatus={user.kycStatus} />
-
-          {/* Listings Management Section */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-portal-border">
-              <div className="flex items-center gap-2">
-                <h2 className="font-headline text-lg sm:text-xl font-bold uppercase tracking-tight text-portal-text">
-                  My Listings
-                </h2>
-                <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-portal-surface border border-portal-border text-portal-text-muted">
-                  {filteredAuctions.length}
-                </span>
-              </div>
-            </div>
-
-            {/* Content Rendering: Loading, Error, Empty, or Cards */}
-            {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="h-64 rounded-2xl border border-portal-border bg-portal-surface animate-pulse"
-                  />
-                ))}
-              </div>
-            ) : isError ? (
-              <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-center text-sm text-red-600 dark:text-red-400">
-                Failed to load auction telemetry. Click refresh to retry.
-              </div>
-            ) : filteredAuctions.length === 0 ? (
-              <SellerEmptyState kycStatus={user.kycStatus} />
-            ) : layoutMode === "grid" ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {filteredAuctions.map((auction) => (
-                  <SellerAuctionCard key={auction.id} auction={auction} layout="grid" />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredAuctions.map((auction) => (
-                  <SellerAuctionCard key={auction.id} auction={auction} layout="list" />
-                ))}
-              </div>
-            )}
-          </section>
+      {/* 5. Clean, Expansive Full-Width Listings Section (Zero Clutter, 100% Focused) */}
+      <section className="space-y-4 pt-1">
+        <div className="flex items-center justify-between pb-2 border-b border-portal-border">
+          <div className="flex items-center gap-2">
+            <h2 className="font-headline text-lg sm:text-xl font-bold uppercase tracking-tight text-portal-text">
+              My Listings
+            </h2>
+            <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-portal-surface border border-portal-border text-portal-text-muted">
+              {filteredAuctions.length}
+            </span>
+          </div>
         </div>
 
-        {/* Right Column (col-span-1): Activity Notifications & Seller Protections */}
-        <div className="space-y-6">
-          <SellerNotificationFeed notifications={notifications} />
-
-          {/* Canadian Seller Safeguards Callout Card */}
-          <aside className="rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 transition-colors hover:border-[#8C383E]/30 dark:hover:border-[#E59344]/30 space-y-4 shadow-xs">
-            <div className="flex items-center gap-2.5 pb-2 border-b border-portal-border">
-              <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" weight="bold" />
-              <h3 className="font-headline text-base font-bold text-portal-text">
-                Canadian Seller Guarantees
-              </h3>
-            </div>
-
-            <ul className="space-y-3 font-body text-xs text-portal-text-muted">
-              <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8C383E] dark:bg-[#E59344] mt-1.5 shrink-0" />
-                <span>
-                  <strong className="text-portal-text">100% Sealed Blind Bids:</strong> Competing dealers never see rival offers, ensuring maximum payout.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8C383E] dark:bg-[#E59344] mt-1.5 shrink-0" />
-                <span>
-                  <strong className="text-portal-text">OMVIC & AMVIC Certified:</strong> Only licensed, insured retail dealerships are eligible to bid.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8C383E] dark:bg-[#E59344] mt-1.5 shrink-0" />
-                <span>
-                  <strong className="text-portal-text">Guaranteed Funds:</strong> All transactions settle via verified bank drafts with zero buyer default risk.
-                </span>
-              </li>
-            </ul>
-          </aside>
-        </div>
-      </div>
+        {/* Content Rendering: Loading, Error, Empty, or Multi-Column Grid */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-72 rounded-2xl border border-portal-border bg-portal-surface animate-pulse"
+              />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-center text-sm text-red-600 dark:text-red-400">
+            Failed to load auction telemetry. Click refresh to retry.
+          </div>
+        ) : filteredAuctions.length === 0 ? (
+          <div className="space-y-6">
+            <SellerEmptyState kycStatus={user.kycStatus} />
+            <ListingStartCard initialKycStatus={user.kycStatus} />
+          </div>
+        ) : layoutMode === "grid" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredAuctions.map((auction) => (
+              <SellerAuctionCard key={auction.id} auction={auction} layout="grid" />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredAuctions.map((auction) => (
+              <SellerAuctionCard key={auction.id} auction={auction} layout="list" />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
