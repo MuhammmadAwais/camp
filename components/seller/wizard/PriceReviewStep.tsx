@@ -11,15 +11,8 @@ import {
   Lock,
   ArrowLeft,
   Car,
-  Camera,
-  MapPin,
-  Sparkles,
+  Tag,
   RefreshCw,
-  FileText,
-  Check,
-  Scale,
-  Gavel,
-  Clock,
   ArrowRight,
   TrendingUp,
 } from "lucide-react";
@@ -139,19 +132,13 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
       }
     }
 
-    // Validate attestations
-    if (!declarationOwnerAttested) {
-      setErrorMsg("Please attest to legal registered vehicle ownership to proceed.");
-      return;
-    }
-
-    if (!declarationAccurateCondition) {
-      setErrorMsg("Please declare that vehicle condition disclosures and damage hotspots are accurate.");
-      return;
-    }
-
-    if (!declarationNoUnpaidFines) {
-      setErrorMsg("Please confirm lien and escrow discharge agreement.");
+    // Validate declarations
+    if (
+      !declarationOwnerAttested ||
+      !declarationAccurateCondition ||
+      !declarationNoUnpaidFines
+    ) {
+      setErrorMsg("Please accept all three ownership and condition declarations to proceed.");
       return;
     }
 
@@ -160,41 +147,23 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
     try {
       const payload = {
         vin,
-        postalCode: postalCode || "M5V 2T6",
-        decodedVehicle: decodedVehicle || {
-          year: 2022,
-          make: "Toyota",
-          model: "RAV4",
-          trim: "XLE AWD",
-        },
-        specs: {
-          mileageKm: specs.mileageKm || 45000,
-          transmission: specs.transmission || "Automatic",
-          drivetrain: specs.drivetrain || "AWD",
-          exteriorColor: specs.exteriorColor || "Silver",
-          interiorColor: specs.interiorColor || "Black",
-          keysCount: specs.keysCount || 2,
-          accidentDeclaration: specs.accidentDeclaration,
-          accidentCount: specs.accidentCount,
-          accidentDetails: specs.accidentDetails,
-          hasLien: specs.hasLien,
-          lienDetails: specs.lienDetails,
-        },
-        damageHotspots,
-        photos: photos.map((p) => ({
-          id: p.id,
-          previewUrl: p.previewUrl,
-          s3Key: p.s3Key || `listings/mock/${p.fileName}`,
-          fileName: p.fileName,
-          fileSizeBytes: p.fileSizeBytes,
-          isCover: p.isCover,
-          status: p.status,
-          progress: p.progress,
-        })),
+        postalCode,
+        year: decodedVehicle?.year,
+        make: decodedVehicle?.make,
+        model: decodedVehicle?.model,
+        trim: decodedVehicle?.trim || "",
+        bodyStyle: decodedVehicle?.bodyStyle || "",
+        transmission: specs.transmission || decodedVehicle?.transmission || "Automatic",
+        drivetrain: specs.drivetrain || decodedVehicle?.drivetrain || "AWD",
+        fuelType: decodedVehicle?.fuelType || "Gasoline",
+        mileageKm: specs.mileageKm || 0,
         reservePriceCents: isNoReserve ? 0 : reservePriceCents,
-        declarationOwnerAttested: true,
-        declarationAccurateCondition: true,
-        declarationNoUnpaidFines: true,
+        damageHotspots,
+        photoUrls: photos.map((p) => p.previewUrl),
+        coverPhotoUrl: coverPhoto?.previewUrl || photos[0]?.previewUrl || "",
+        declarationOwnerAttested,
+        declarationAccurateCondition,
+        declarationNoUnpaidFines,
       };
 
       const res = await apiClient.api.post<{
@@ -228,31 +197,22 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
 
   return (
     <div className="space-y-6">
-      {/* Step Header */}
+      {/* 1. Header (Clean, concise, no clutter pills) */}
       <div>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-portal-primary/10 text-portal-primary flex items-center gap-1">
-            <Gavel className="w-3 h-3" />
-            <span>Final Step 5: Pricing & Review</span>
-          </span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-portal-surface border border-portal-border text-portal-text-muted">
-            Ontario & Canadian Exchange
-          </span>
-        </div>
         <h2 className="text-xl md:text-2xl font-bold font-headline text-portal-text">
-          Reserve Asking Price & Legal Attestation
+          Price & Review Your Listing
         </h2>
         <p className="text-sm text-portal-text-muted mt-1">
-          Specify your minimum reserve asking price in CAD cents and review mandatory Canadian regulatory declarations.
+          Set your minimum reserve price and confirm your vehicle details to launch your 24-hour dealer auction.
         </p>
       </div>
 
-      {/* Vehicle Summary Recap Card */}
-      <div className="bg-portal-surface border border-portal-border rounded-2xl p-5 md:p-6 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-portal-border">
-          <div className="flex items-center gap-3.5">
+      {/* 2. Unified Vehicle Summary Bar (Single cohesive card, no separate mini-boxes) */}
+      <div className="bg-portal-surface border border-portal-border rounded-xl p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
             {coverPhoto ? (
-              <div className="relative w-16 h-12 rounded-xl overflow-hidden shrink-0 border border-portal-border bg-portal-surface-hover">
+              <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border border-portal-border bg-portal-surface-hover">
                 <Image
                   src={coverPhoto.previewUrl}
                   alt="Vehicle cover preview"
@@ -262,113 +222,66 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
                 />
               </div>
             ) : (
-              <div className="w-16 h-12 rounded-xl bg-portal-primary/10 text-portal-primary flex items-center justify-center shrink-0">
+              <div className="w-16 h-12 rounded-lg bg-portal-primary/10 text-portal-primary flex items-center justify-center shrink-0">
                 <Car className="w-6 h-6" />
               </div>
             )}
-            <div>
-              <h3 className="text-base font-bold font-headline text-portal-text">
+            <div className="min-w-0">
+              <h3 className="text-base font-bold font-headline text-portal-text truncate">
                 {decodedVehicle
                   ? `${decodedVehicle.year} ${decodedVehicle.make} ${decodedVehicle.model} ${decodedVehicle.trim || ""}`
                   : "Vehicle Under Appraisal"}
               </h3>
-              <div className="flex flex-wrap items-center gap-2 mt-1">
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-portal-surface-hover border border-portal-border text-portal-text font-medium">
-                  VIN: {vin ? `${vin.slice(0, 8)}••••••••` : "UNVERIFIED"}
-                </span>
-                <span className="text-xs px-2 py-0.5 rounded bg-portal-primary/10 text-portal-primary font-medium flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  <span>{postalCode || "M5V 2T6"}</span>
-                </span>
+              <div className="flex flex-wrap items-center gap-2 mt-0.5 text-xs text-portal-text-muted">
+                <span className="font-mono">VIN: {vin ? `${vin.slice(0, 8)}••••••••` : "UNVERIFIED"}</span>
+                <span>•</span>
+                <span>{postalCode || "M5V 2T6"}</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Inspection Ready</span>
-            </span>
-          </div>
-        </div>
-
-        {/* 4-Pill Specs Recap Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-          <div className="p-2.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border">
-            <span className="text-portal-text-muted block text-[11px]">Odometer</span>
-            <span className="font-semibold text-portal-text mt-0.5 block font-mono">
-              {specs.mileageKm ? `${specs.mileageKm.toLocaleString()} km` : "Not provided"}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border">
-            <span className="text-portal-text-muted block text-[11px]">Powertrain</span>
-            <span className="font-semibold text-portal-text mt-0.5 block truncate">
-              {specs.drivetrain || "AWD"} • {specs.transmission || "Automatic"}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border">
-            <span className="text-portal-text-muted block text-[11px]">Condition Hotspots</span>
-            <span className="font-semibold text-portal-text mt-0.5 block">
-              {damageHotspots.length === 0
-                ? "0 Declared (Clean)"
-                : `${damageHotspots.length} Hotspot${damageHotspots.length > 1 ? "s" : ""}`}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border">
-            <span className="text-portal-text-muted block text-[11px]">Photos Uploaded</span>
-            <span className="font-semibold text-portal-text mt-0.5 block font-mono">
-              {photos.length} Verified Photos
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Wholesale Market Intelligence Corridor */}
-      <div className="bg-portal-surface border border-portal-border rounded-2xl p-5 md:p-6 shadow-xs relative overflow-hidden">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <TrendingUp className="w-4 h-4 text-portal-primary" />
-              <span className="text-xs font-semibold text-portal-text uppercase tracking-wider">
-                Wholesale Dealer Corridor (Est.)
+          {/* Quick Specs Inline Row */}
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs text-portal-text border-t sm:border-t-0 pt-3 sm:pt-0 border-portal-border-subtle w-full sm:w-auto">
+            <div className="flex items-center gap-1.5">
+              <span className="text-portal-text-muted">Odometer:</span>
+              <span className="font-semibold font-mono">{specs.mileageKm ? `${specs.mileageKm.toLocaleString()} km` : "N/A"}</span>
+            </div>
+            <span className="text-portal-border hidden sm:inline">|</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-portal-text-muted">Powertrain:</span>
+              <span className="font-semibold">{specs.drivetrain || "FWD"} • {specs.transmission || "Automatic"}</span>
+            </div>
+            <span className="text-portal-border hidden sm:inline">|</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-portal-text-muted">Condition:</span>
+              <span className="font-semibold">
+                {damageHotspots.length === 0 ? "Clean Body" : `${damageHotspots.length} Tagged`}
               </span>
             </div>
-            <p className="text-xs text-portal-text-muted max-w-lg">
-              Based on recent Ontario wholesale exchange sales for comparable mileage and grade.
-            </p>
-          </div>
-
-          <div className="text-right">
-            <div className="text-lg font-bold font-mono text-portal-primary">
-              {formatCadCents(wholesaleCorridor.lowCents, false)} – {formatCadCents(wholesaleCorridor.highCents)}
+            <span className="text-portal-border hidden sm:inline">|</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-portal-text-muted">Photos:</span>
+              <span className="font-semibold font-mono">{photos.length} Photos</span>
             </div>
-            <button
-              type="button"
-              id="btn-apply-corridor"
-              onClick={applyCorridorMedian}
-              className="text-[11px] text-portal-primary hover:underline font-medium mt-0.5 inline-flex items-center gap-1 cursor-pointer"
-            >
-              <Sparkles className="w-3 h-3" />
-              <span>Use Recommended Reserve ({formatCadCents(wholesaleCorridor.midCents)})</span>
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Reserve Price Input Card */}
-      <div className="bg-portal-surface border border-portal-border rounded-2xl p-5 md:p-6 shadow-xs space-y-5">
+      {/* 3. Unified Pricing Card (Integrated Wholesale Estimate + Reserve Input) */}
+      <div className="bg-portal-surface border border-portal-border rounded-xl p-5 md:p-6 shadow-xs space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-semibold text-portal-text">
-              Minimum Reserve Asking Price
+            <h3 className="text-base font-semibold text-portal-text flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-portal-primary" />
+              <span>Minimum Reserve Price</span>
             </h3>
             <p className="text-xs text-portal-text-muted mt-0.5">
-              The lowest dollar amount you are willing to accept. Hidden from competing dealerships until unsealed.
+              The lowest offer you&apos;re willing to accept. Competing dealers cannot see this number.
             </p>
           </div>
 
           {/* Reserve / No Reserve Toggle */}
-          <div className="flex items-center gap-2 bg-portal-surface-hover p-1 rounded-xl border border-portal-border shrink-0 self-start sm:self-auto">
+          <div className="flex items-center gap-1 bg-portal-surface-hover p-1 rounded-xl border border-portal-border shrink-0 self-start sm:self-auto">
             <button
               type="button"
               id="btn-mode-reserve"
@@ -406,10 +319,32 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
           </div>
         </div>
 
-        {/* Currency Input or No-Reserve Banner */}
+        {/* Integrated Wholesale Corridor Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border text-xs">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-portal-primary shrink-0" />
+            <div>
+              <span className="text-portal-text-muted">Estimated Wholesale Range: </span>
+              <span className="font-bold font-mono text-portal-text">
+                {formatCadCents(wholesaleCorridor.lowCents, false)} – {formatCadCents(wholesaleCorridor.highCents)}
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            id="btn-apply-corridor"
+            onClick={applyCorridorMedian}
+            className="text-xs font-semibold text-portal-primary hover:underline inline-flex items-center gap-1 cursor-pointer self-start sm:self-auto"
+          >
+            <Tag className="w-3.5 h-3.5" />
+            <span>Use Recommended ({formatCadCents(wholesaleCorridor.midCents)})</span>
+          </button>
+        </div>
+
+        {/* Currency Input or No-Reserve Notice */}
         {!isNoReserve ? (
           <div className="space-y-2">
-            <div className="relative max-w-md">
+            <div className="relative max-w-xs">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold font-mono text-portal-text-muted">
                 $
               </span>
@@ -420,43 +355,40 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
                 value={displayPrice}
                 onChange={handlePriceChange}
                 placeholder="22,500"
-                className="w-full pl-9 pr-16 py-3.5 rounded-xl bg-portal-surface-hover border border-portal-border text-xl font-bold font-mono text-portal-text focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent transition-all shadow-inner"
+                className="w-full pl-9 pr-14 py-3 rounded-xl bg-portal-surface border border-portal-border text-xl font-bold font-mono text-portal-text focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent transition-all shadow-inner"
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-portal-text-muted uppercase">
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-portal-text-muted">
                 CAD
               </span>
             </div>
-            <p className="text-[11px] text-portal-text-muted flex items-center gap-1.5">
-              <Lock className="w-3 h-3 text-portal-primary shrink-0" />
-              <span>
-                Protected by AutoNexa sealed-bid invariant: zero dealer participants can see this reserve asking price.
-              </span>
+            <p className="text-xs text-portal-text-muted flex items-center gap-1.5 pt-0.5">
+              <Lock className="w-3.5 h-3.5 text-portal-primary shrink-0" />
+              <span>100% Private: Dealers cannot see your reserve price during bidding.</span>
             </p>
           </div>
         ) : (
-          <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-700 dark:text-amber-400 space-y-1">
+          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-700 dark:text-amber-400 space-y-1">
             <div className="font-semibold flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <span>No-Reserve Wholesale Auction Selected</span>
+              <CheckCircle2 className="w-4 h-4 text-amber-500" />
+              <span>No-Reserve Auction Selected</span>
             </div>
             <p className="text-[11px] leading-relaxed">
-              Your vehicle will be awarded to the highest licensed dealer bid placed within the 24-hour auction window.
-              No-reserve listings attract up to 3x more competitive dealership offers across Ontario and Quebec.
+              Your vehicle will sell to the highest certified dealer bid at the end of the 24-hour auction.
             </p>
           </div>
         )}
       </div>
 
-      {/* Mandatory Canadian Regulatory Declarations */}
-      <div className="bg-portal-surface border border-portal-border rounded-2xl p-5 md:p-6 shadow-xs space-y-4">
+      {/* 4. Declarations (Single clean container with checklist, no separate inner cards) */}
+      <div className="bg-portal-surface border border-portal-border rounded-xl p-5 md:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-base font-semibold text-portal-text flex items-center gap-2">
-              <Scale className="w-4 h-4 text-portal-primary" />
-              <span>Canadian Legal Disclosures & Attestation</span>
+              <ShieldCheck className="w-4 h-4 text-portal-primary" />
+              <span>Owner Declarations</span>
             </h3>
             <p className="text-xs text-portal-text-muted mt-0.5">
-              Mandatory affirmations under OMVIC (Ontario), AMVIC (Alberta), and VSA (British Columbia) regulations.
+              Standard compliance affirmations under Canadian wholesale regulations.
             </p>
           </div>
 
@@ -467,112 +399,65 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
             className="text-xs px-3 py-1.5 rounded-lg bg-portal-primary/10 hover:bg-portal-primary/20 text-portal-primary border border-portal-primary/30 font-medium flex items-center gap-1.5 transition-colors cursor-pointer self-start sm:self-auto"
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Accept All 3 Declarations (1-Click)</span>
+            <span>Accept All (1-Click)</span>
           </button>
         </div>
 
-        <div className="space-y-3 pt-2">
-          {/* Declaration 1: Legal Ownership */}
-          <div
-            onClick={() =>
-              setPricingAndDeclarations({
-                declarationOwnerAttested: !declarationOwnerAttested,
-              })
-            }
-            className={`flex items-start gap-3 p-3.5 rounded-xl border transition-colors cursor-pointer ${
-              declarationOwnerAttested
-                ? "bg-portal-primary/5 border-portal-primary/50"
-                : "bg-portal-surface-hover/70 border-portal-border hover:border-portal-primary/30"
-            }`}
-          >
+        {/* Clean Checklist (Divided rows instead of 3 nested cards) */}
+        <div className="divide-y divide-portal-border-subtle border-t border-portal-border-subtle pt-1">
+          <label className="flex items-start gap-3 py-3 cursor-pointer group">
             <input
               type="checkbox"
               id="declaration-owner-checkbox"
               checked={declarationOwnerAttested}
-              onClick={(e) => e.stopPropagation()}
-              onChange={(e) =>
-                setPricingAndDeclarations({ declarationOwnerAttested: e.target.checked })
-              }
+              onChange={(e) => setPricingAndDeclarations({ declarationOwnerAttested: e.target.checked })}
               className="mt-0.5 w-4 h-4 rounded text-portal-primary focus:ring-portal-primary border-portal-border accent-portal-primary cursor-pointer shrink-0"
             />
             <div className="text-xs select-none">
-              <span className="font-semibold text-portal-text block">
-                1. Registered Vehicle Ownership Attestation
+              <span className="font-semibold text-portal-text block group-hover:text-portal-primary transition-colors">
+                1. Registered Vehicle Ownership
               </span>
               <span className="text-portal-text-muted text-[11px] leading-relaxed">
-                I attest under penalty of Canadian law that I am the registered legal owner (or authorized corporate agent)
-                possessing legal authority to transfer this vehicle title to a licensed dealership.
+                I confirm that I am the registered legal owner (or authorized corporate agent) with authority to transfer vehicle ownership.
               </span>
             </div>
-          </div>
+          </label>
 
-          {/* Declaration 2: Honest Condition */}
-          <div
-            onClick={() =>
-              setPricingAndDeclarations({
-                declarationAccurateCondition: !declarationAccurateCondition,
-              })
-            }
-            className={`flex items-start gap-3 p-3.5 rounded-xl border transition-colors cursor-pointer ${
-              declarationAccurateCondition
-                ? "bg-portal-primary/5 border-portal-primary/50"
-                : "bg-portal-surface-hover/70 border-portal-border hover:border-portal-primary/30"
-            }`}
-          >
+          <label className="flex items-start gap-3 py-3 cursor-pointer group">
             <input
               type="checkbox"
               id="declaration-condition-checkbox"
               checked={declarationAccurateCondition}
-              onClick={(e) => e.stopPropagation()}
-              onChange={(e) =>
-                setPricingAndDeclarations({ declarationAccurateCondition: e.target.checked })
-              }
+              onChange={(e) => setPricingAndDeclarations({ declarationAccurateCondition: e.target.checked })}
               className="mt-0.5 w-4 h-4 rounded text-portal-primary focus:ring-portal-primary border-portal-border accent-portal-primary cursor-pointer shrink-0"
             />
             <div className="text-xs select-none">
-              <span className="font-semibold text-portal-text block">
-                2. Complete & Accurate Vehicle Condition Disclosure
+              <span className="font-semibold text-portal-text block group-hover:text-portal-primary transition-colors">
+                2. Accurate Vehicle Condition
               </span>
               <span className="text-portal-text-muted text-[11px] leading-relaxed">
-                I certify that all odometer readings in kilometers, collision histories, frame/mechanical defects,
-                and condition map pins declared are truthful, accurate, and without intentional omission.
+                I certify that all declared mileage, mechanical history, and condition marks are accurate and complete.
               </span>
             </div>
-          </div>
+          </label>
 
-          {/* Declaration 3: Lien Discharge & Sealed Bid Rules */}
-          <div
-            onClick={() =>
-              setPricingAndDeclarations({
-                declarationNoUnpaidFines: !declarationNoUnpaidFines,
-              })
-            }
-            className={`flex items-start gap-3 p-3.5 rounded-xl border transition-colors cursor-pointer ${
-              declarationNoUnpaidFines
-                ? "bg-portal-primary/5 border-portal-primary/50"
-                : "bg-portal-surface-hover/70 border-portal-border hover:border-portal-primary/30"
-            }`}
-          >
+          <label className="flex items-start gap-3 py-3 cursor-pointer group">
             <input
               type="checkbox"
               id="declaration-lien-checkbox"
               checked={declarationNoUnpaidFines}
-              onClick={(e) => e.stopPropagation()}
-              onChange={(e) =>
-                setPricingAndDeclarations({ declarationNoUnpaidFines: e.target.checked })
-              }
+              onChange={(e) => setPricingAndDeclarations({ declarationNoUnpaidFines: e.target.checked })}
               className="mt-0.5 w-4 h-4 rounded text-portal-primary focus:ring-portal-primary border-portal-border accent-portal-primary cursor-pointer shrink-0"
             />
             <div className="text-xs select-none">
-              <span className="font-semibold text-portal-text block">
-                3. Lien Escrow Settlement & Sealed-Bid Rules
+              <span className="font-semibold text-portal-text block group-hover:text-portal-primary transition-colors">
+                3. Clear Title & Lien Settlement
               </span>
               <span className="text-portal-text-muted text-[11px] leading-relaxed">
-                I acknowledge that registered financing liens will be verified via PPSA and settled directly from escrow proceeds.
-                I agree that the 24-hour sealed-bid auction format is binding upon dealer offer acceptance.
+                I acknowledge that active financing liens will be verified and settled directly through escrow upon sale.
               </span>
             </div>
-          </div>
+          </label>
         </div>
       </div>
 
@@ -611,12 +496,12 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
           {isSubmitting ? (
             <>
               <RefreshCw className="w-4 h-4 animate-spin" />
-              <span>Verifying & Submitting Listing...</span>
+              <span>Submitting Listing...</span>
             </>
           ) : (
             <>
-              <Gavel className="w-4 h-4" />
               <span>Submit Listing & Launch Auction</span>
+              <ArrowRight className="w-4 h-4" />
             </>
           )}
         </button>
@@ -626,7 +511,7 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
       {submittedData && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-portal-surface border border-portal-border rounded-2xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl relative">
-            <div className="w-14 h-14 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
+            <div className="w-14 h-14 rounded-full bg-portal-primary/10 text-portal-primary flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 

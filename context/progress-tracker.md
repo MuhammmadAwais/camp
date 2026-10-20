@@ -104,7 +104,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 4.3: Active Auction Live Tracker**
   - **Route:** `/seller/listings/[id]`
   - **Component:** `SellerActiveAuctionView.tsx`
-  - **Features:** 24h digital countdown timer clock, real-time sealed-bid count telemetry via SSE / polling simulation *(Strict invariant: zero dollar amounts exposed while ACTIVE)*, photo strip, condition disclosure sheet, specs recap.
+  - **Features:** Dashboard-style horizontal 4-metric bar (Reserve Price, Dealer Activity, Live Countdown, Dealer Protection) with vertical dividers & side icons, 24h digital countdown timer clock, real-time sealed-bid count telemetry *(Strict invariant: zero dollar amounts exposed while ACTIVE)*, photo strip with cover showcase, condition disclosure sheet, specs recap, plain-language non-technical copy, and seamless header canvas continuity.
 - [x] **Page 4.4: Post-Auction Unsealed Dealer Selection**
   - **Route:** `/seller/listings/[id]/select-dealer`
   - **Component:** `DealerSelectionView.tsx`

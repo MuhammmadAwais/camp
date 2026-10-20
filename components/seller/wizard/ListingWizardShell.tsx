@@ -40,7 +40,7 @@ export function ListingWizardShell({
   return (
     <div className="min-h-screen bg-portal-canvas text-portal-text flex flex-col">
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-40 bg-portal-surface/90 backdrop-blur-md border-b border-portal-border">
+      <header className="sticky top-0 z-40 bg-portal-canvas/90 backdrop-blur-md border-b border-portal-border">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Back button */}
           <button

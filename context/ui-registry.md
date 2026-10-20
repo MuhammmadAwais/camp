@@ -1294,3 +1294,53 @@ Mode: Asymmetrical Hero + Secondary Thumbnail Grid
 | Lower Photo Grid | Additional photos (`#5`, `#6`, `#7`, etc.) flow cleanly in a grid directly underneath the left cover photo |
 | Empty Wireframe Frame | When 0 photos are uploaded, renders the exact same split geometry: Large left Cover Photo dropzone (`Main Cover Photo`) + right 2-column placeholder slots with `+ Upload More` in extreme top right |
 | Non-Technical Reassurance | Friendly copy: "Photos are securely protected. Location data is removed for your privacy." |
+
+---
+
+### `PriceReviewStep` (Milestone 4.1 Non-Card-Heavy Pricing & Review Architecture)
+
+File: `components/seller/wizard/PriceReviewStep.tsx`  
+Last updated: 2026-10-20  
+Mode: Streamlined, Unified Pricing & Declarations Flow
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Page Header | Title: "Price & Review Your Listing", friendly subtitle. Redundant pills ("Final Step 5", "Ontario Exchange") completely removed |
+| Compact Vehicle Summary Bar | Unified single bar (`bg-portal-surface border border-portal-border rounded-xl p-4 sm:p-5`) with thumbnail, make/model/trim, VIN, and inline specs (`Odometer | Powertrain | Condition | Photos`); eliminated 4 bulky inner card boxes and green inspection pill |
+| Integrated Pricing Card | Combines Wholesale Corridor Market Estimate and Reserve Price input in ONE cohesive container (`rounded-xl p-5 md:p-6 space-y-5`) |
+| Wholesale Market Corridor | Built-in helper bar (`p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border`) with `TrendingUp` icon, currency range, and `Tag` icon action button ("Use Recommended"); zero AI sparkles |
+| Private Reserve Assurance | Clean `Lock` icon with reassuring plain language: "100% Private: Dealers cannot see your reserve price during bidding." (eliminated "sealed-bid invariant" developer jargon) |
+| Non-Card-Heavy Declarations | Single clean container with divided checklist (`divide-y divide-portal-border-subtle`) replacing 3 separate bulky card boxes; concise, plain-English legal affirmations |
+| Submission Action | Primary button with `ArrowRight` icon and active state loader |
+
+---
+
+### `SellerActiveAuctionView` (Milestone 4.1 Dashboard-Style 4-Metric Bar & Jargon-Free Architecture)
+
+File: `components/seller/SellerActiveAuctionView.tsx`  
+Last updated: 2026-10-20  
+Mode: High-Contrast Executive Vehicle Auction Telemetry
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| 4-Metric Performance Bar | Exact dashboard-style horizontal container (`grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle`) with vertical dividers (`divide-portal-border-subtle`) and icons placed on the right of each number in subtle squircle containers |
+| Column 1 (Reserve Price) | `RESERVE ASKING PRICE`: CAD format (`font-headline text-lg sm:text-xl font-black`), confidential minimum sub-label, and `DollarSign` icon |
+| Column 2 (Dealer Activity) | `DEALER ACTIVITY`: `X Bids Placed`, `Lock` icon with "Private sealed bids" label, and `Gavel` icon |
+| Column 3 (Time Remaining) | `TIME REMAINING`: Live tabular countdown (`font-mono text-lg sm:text-xl font-black`), 24h floor sub-label, and `Clock` icon |
+| Column 4 (Dealer Protection) | `DEALER PROTECTION`: Regulated Escrow, OMVIC & AMVIC compliant sub-label, and `ShieldCheck` icon |
+| Jargon Elimination | Replaced developer/internal phrases ("sealed-bid invariant active", "cryptographically sealed", "telemetry") with clear, professional language ("Private sealed bids", "Confidential minimum", "Verified dealers") |
+| Header Badges & Actions | Clean neutral status pill (`Live 24h Auction`) + VIN; status-based CTA buttons (`Review & Select Winning Dealer` for UNSEALED, `View Dealership Voucher` for ACCEPTED) |
+| Layout Structure | Expansive 12-column layout: Left column (`lg:col-span-7`) hosts hero photo carousel and condition disclosures; Right column (`lg:col-span-5`) hosts verified specs and bidding guide |
+
+---
+
+### `ListingWizardShell Header Canvas Invariant` (Milestone 4.1 Header-Page Seamless Continuity)
+
+File: `components/seller/wizard/ListingWizardShell.tsx`  
+Last updated: 2026-10-20  
+Mode: Unified Background Continuity
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Background Invariant | `sticky top-0 z-40 bg-portal-canvas/90 backdrop-blur-md border-b border-portal-border` |
+| Seamless Matching | Header background strictly uses `--portal-canvas` instead of elevated `--portal-surface`, ensuring the header seamlessly matches the page canvas (`#FFFFFF` in light mode, `#121212` in dark mode) without mismatched colored bands |
