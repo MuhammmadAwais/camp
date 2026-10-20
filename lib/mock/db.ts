@@ -70,8 +70,38 @@ export function verifyPassword(password: string, stored: string): boolean {
 
 // ---------- Store (kept on globalThis so it survives dev hot reloads) ----------
 
+function syncDemoUser(
+  database: MockDb,
+  id: string,
+  seed: { email: string; password: string; firstName: string; lastName: string; phone: string; postalCode: string; province: string; dealershipName?: string; licenseNumber?: string },
+  role: UserRole
+) {
+  const emailKey = seed.email.toLowerCase();
+  const existingId = database.userIdByEmail.get(emailKey) ?? id;
+  const user: MockUser = {
+    id: existingId,
+    email: seed.email,
+    passwordHash: hashPassword(seed.password),
+    firstName: seed.firstName,
+    lastName: seed.lastName,
+    phoneE164: seed.phone,
+    postalCode: seed.postalCode,
+    province: seed.province as any,
+    emailVerified: true,
+    phoneVerified: true,
+    marketingOptIn: false,
+    role,
+    dealershipName: seed.dealershipName,
+    licenseNumber: seed.licenseNumber,
+    kyc: { status: "VERIFIED", idDocType: role === "SELLER" ? "DRIVERS_LICENCE" : null, submittedAt: Date.now() - 86400000, rejectReason: null },
+    createdAt: Date.now() - 86400000,
+  };
+  database.users.set(user.id, user);
+  database.userIdByEmail.set(emailKey, user.id);
+}
+
 function createDb(): MockDb {
-  const db: MockDb = {
+  const database: MockDb = {
     users: new Map(),
     userIdByEmail: new Map(),
     registrations: new Map(),
@@ -80,124 +110,24 @@ function createDb(): MockDb {
     resetTokens: new Map(),
   };
 
-  const sellerUser: MockUser = {
-    id: "usr_mock_seller_001",
-    email: MOCK_DEMO_SELLER.email,
-    passwordHash: hashPassword(MOCK_DEMO_SELLER.password),
-    firstName: MOCK_DEMO_SELLER.firstName,
-    lastName: MOCK_DEMO_SELLER.lastName,
-    phoneE164: MOCK_DEMO_SELLER.phone,
-    postalCode: MOCK_DEMO_SELLER.postalCode,
-    province: MOCK_DEMO_SELLER.province,
-    emailVerified: true,
-    phoneVerified: true,
-    marketingOptIn: false,
-    role: "SELLER",
-    kyc: { status: "VERIFIED", idDocType: "DRIVERS_LICENCE", submittedAt: Date.now() - 86400000, rejectReason: null },
-    createdAt: Date.now() - 86400000,
-  };
-  db.users.set(sellerUser.id, sellerUser);
-  db.userIdByEmail.set(sellerUser.email, sellerUser.id);
+  syncDemoUser(database, "usr_mock_seller_001", MOCK_DEMO_SELLER, "SELLER");
+  syncDemoUser(database, "usr_mock_dealer_001", MOCK_DEMO_DEALER, "DEALER_ADMIN");
+  syncDemoUser(database, "usr_mock_admin_001", MOCK_DEMO_ADMIN, "ADMIN");
 
-  const dealerUser: MockUser = {
-    id: "usr_mock_dealer_001",
-    email: MOCK_DEMO_DEALER.email,
-    passwordHash: hashPassword(MOCK_DEMO_DEALER.password),
-    firstName: MOCK_DEMO_DEALER.firstName,
-    lastName: MOCK_DEMO_DEALER.lastName,
-    phoneE164: MOCK_DEMO_DEALER.phone,
-    postalCode: MOCK_DEMO_DEALER.postalCode,
-    province: MOCK_DEMO_DEALER.province,
-    emailVerified: true,
-    phoneVerified: true,
-    marketingOptIn: false,
-    role: "DEALER_ADMIN",
-    dealershipName: MOCK_DEMO_DEALER.dealershipName,
-    licenseNumber: MOCK_DEMO_DEALER.licenseNumber,
-    kyc: { status: "VERIFIED", idDocType: null, submittedAt: Date.now() - 86400000, rejectReason: null },
-    createdAt: Date.now() - 86400000,
-  };
-  db.users.set(dealerUser.id, dealerUser);
-  db.userIdByEmail.set(dealerUser.email, dealerUser.id);
-
-  const adminUser: MockUser = {
-    id: "usr_mock_admin_001",
-    email: MOCK_DEMO_ADMIN.email,
-    passwordHash: hashPassword(MOCK_DEMO_ADMIN.password),
-    firstName: MOCK_DEMO_ADMIN.firstName,
-    lastName: MOCK_DEMO_ADMIN.lastName,
-    phoneE164: MOCK_DEMO_ADMIN.phone,
-    postalCode: MOCK_DEMO_ADMIN.postalCode,
-    province: MOCK_DEMO_ADMIN.province,
-    emailVerified: true,
-    phoneVerified: true,
-    marketingOptIn: false,
-    role: "ADMIN",
-    kyc: { status: "VERIFIED", idDocType: null, submittedAt: null, rejectReason: null },
-    createdAt: Date.now() - 86400000,
-  };
-  db.users.set(adminUser.id, adminUser);
-  db.userIdByEmail.set(adminUser.email, adminUser.id);
-
-  return db;
+  return database;
 }
 
 function getOrCreateDb(): MockDb {
-  const existing = (globalThis as typeof globalThis & { __autonexaMockDb?: MockDb }).__autonexaMockDb;
-  if (existing) {
-    // Ensure all demo users exist even across hot-reloads with VERIFIED kyc
-    const sellerId = existing.userIdByEmail.get(MOCK_DEMO_SELLER.email.toLowerCase());
-    if (sellerId) {
-      const seller = existing.users.get(sellerId);
-      if (seller) seller.kyc.status = "VERIFIED";
-    }
-    if (!existing.userIdByEmail.has(MOCK_DEMO_DEALER.email.toLowerCase())) {
-      const dealerUser: MockUser = {
-        id: "usr_mock_dealer_001",
-        email: MOCK_DEMO_DEALER.email,
-        passwordHash: hashPassword(MOCK_DEMO_DEALER.password),
-        firstName: MOCK_DEMO_DEALER.firstName,
-        lastName: MOCK_DEMO_DEALER.lastName,
-        phoneE164: MOCK_DEMO_DEALER.phone,
-        postalCode: MOCK_DEMO_DEALER.postalCode,
-        province: MOCK_DEMO_DEALER.province,
-        emailVerified: true,
-        phoneVerified: true,
-        marketingOptIn: false,
-        role: "DEALER_ADMIN",
-        dealershipName: MOCK_DEMO_DEALER.dealershipName,
-        licenseNumber: MOCK_DEMO_DEALER.licenseNumber,
-        kyc: { status: "VERIFIED", idDocType: null, submittedAt: Date.now() - 86400000, rejectReason: null },
-        createdAt: Date.now() - 86400000,
-      };
-      existing.users.set(dealerUser.id, dealerUser);
-      existing.userIdByEmail.set(dealerUser.email.toLowerCase(), dealerUser.id);
-    }
-    if (!existing.userIdByEmail.has(MOCK_DEMO_ADMIN.email.toLowerCase())) {
-      const adminUser: MockUser = {
-        id: "usr_mock_admin_001",
-        email: MOCK_DEMO_ADMIN.email,
-        passwordHash: hashPassword(MOCK_DEMO_ADMIN.password),
-        firstName: MOCK_DEMO_ADMIN.firstName,
-        lastName: MOCK_DEMO_ADMIN.lastName,
-        phoneE164: MOCK_DEMO_ADMIN.phone,
-        postalCode: MOCK_DEMO_ADMIN.postalCode,
-        province: MOCK_DEMO_ADMIN.province,
-        emailVerified: true,
-        phoneVerified: true,
-        marketingOptIn: false,
-        role: "ADMIN",
-        kyc: { status: "VERIFIED", idDocType: null, submittedAt: null, rejectReason: null },
-        createdAt: Date.now() - 86400000,
-      };
-      existing.users.set(adminUser.id, adminUser);
-      existing.userIdByEmail.set(adminUser.email.toLowerCase(), adminUser.id);
-    }
-    return existing;
+  const globalRef = globalThis as typeof globalThis & { __autonexaMockDb?: MockDb };
+  if (!globalRef.__autonexaMockDb) {
+    globalRef.__autonexaMockDb = createDb();
   }
-  const fresh = createDb();
-  (globalThis as typeof globalThis & { __autonexaMockDb?: MockDb }).__autonexaMockDb = fresh;
-  return fresh;
+  const database = globalRef.__autonexaMockDb;
+  // Always update credentials and kyc to match current seed on any module evaluation
+  syncDemoUser(database, "usr_mock_seller_001", MOCK_DEMO_SELLER, "SELLER");
+  syncDemoUser(database, "usr_mock_dealer_001", MOCK_DEMO_DEALER, "DEALER_ADMIN");
+  syncDemoUser(database, "usr_mock_admin_001", MOCK_DEMO_ADMIN, "ADMIN");
+  return database;
 }
 
 export const db: MockDb = getOrCreateDb();

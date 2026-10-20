@@ -106,7 +106,10 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-bl-[80px] xl:rounded-bl-[100px] bg-[#0C0A09] shadow-2xl">
+    <div
+      className="relative h-full w-full overflow-hidden rounded-bl-[80px] xl:rounded-bl-[100px] bg-[#0C0A09] shadow-2xl"
+      suppressHydrationWarning
+    >
       <Image
         key={imgSrc}
         src={imgSrc}

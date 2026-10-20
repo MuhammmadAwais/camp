@@ -11,7 +11,10 @@ interface Props {
 
 export function AuthShell({ children }: Props) {
   return (
-    <div className="min-h-screen w-full bg-white text-gray-900 lg:grid lg:grid-cols-12 selection:bg-[#8C383E] selection:text-white dark:selection:bg-[#E59344] dark:selection:text-[#0C0A09]">
+    <div
+      className="min-h-screen w-full bg-white text-gray-900 lg:grid lg:grid-cols-12 selection:bg-[#8C383E] selection:text-white dark:selection:bg-[#E59344] dark:selection:text-[#0C0A09]"
+      suppressHydrationWarning
+    >
       {/* LEFT COLUMN: Clean White Form Canvas */}
       <div className="lg:col-span-6 xl:col-span-5 flex min-h-screen flex-col justify-between px-4 py-5 sm:px-8 sm:py-8 lg:px-12 lg:py-10 bg-white">
         {/* Top Header: Back Link + Mobile-Visible Logo */}

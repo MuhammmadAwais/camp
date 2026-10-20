@@ -1,7 +1,7 @@
 // Demo accounts for exercising the login flow against the mock API.
 export const MOCK_DEMO_SELLER = {
-  email: "demo.seller@autonexa.test",
-  password: "Maple-Leaf-2026",
+  email: "seller@autonexa.ca",
+  password: "password123",
   firstName: "Jordan",
   lastName: "Tremblay",
   phone: "+14165550142",
@@ -10,8 +10,8 @@ export const MOCK_DEMO_SELLER = {
 } as const;
 
 export const MOCK_DEMO_DEALER = {
-  email: "demo.dealer@pfaffauto.test",
-  password: "Pfaff-Porsche-2026",
+  email: "dealer@autonexa.ca",
+  password: "password123",
   firstName: "Christopher",
   lastName: "Evans",
   phone: "+19055558291",
@@ -22,8 +22,8 @@ export const MOCK_DEMO_DEALER = {
 } as const;
 
 export const MOCK_DEMO_ADMIN = {
-  email: "demo.admin@autonexa.test",
-  password: "Super-Admin-2026",
+  email: "admin@autonexa.ca",
+  password: "password123",
   firstName: "Sarah",
   lastName: "Tremblay",
   phone: "+14165559981",

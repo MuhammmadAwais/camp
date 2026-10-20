@@ -11,7 +11,7 @@ const STORAGE_KEY = 'autonexa_active_user';
 export const SEED_USERS: Record<UserRole, User> = {
   SELLER: {
     id: 'usr_seller_001',
-    email: 'demo.seller@autonexa.test',
+    email: 'seller@autonexa.ca',
     name: 'Jordan Tremblay',
     phone: '+1 (416) 555-0142',
     postalCode: 'M5V 2T6',
@@ -22,7 +22,7 @@ export const SEED_USERS: Record<UserRole, User> = {
   },
   DEALER_ADMIN: {
     id: 'usr_dealer_admin_001',
-    email: 'demo.dealer@pfaffauto.test',
+    email: 'dealer@autonexa.ca',
     name: 'Christopher Evans',
     phone: '+1 (905) 555-8291',
     postalCode: 'L6M 4W9',
@@ -36,7 +36,7 @@ export const SEED_USERS: Record<UserRole, User> = {
   },
   DEALER_AGENT: {
     id: 'usr_dealer_agent_001',
-    email: 'agent@pfaffauto.test',
+    email: 'agent@autonexa.ca',
     name: 'Marcus Vance',
     phone: '+1 (416) 555-0912',
     postalCode: 'M3C 1H5',
@@ -49,7 +49,7 @@ export const SEED_USERS: Record<UserRole, User> = {
   },
   ADMIN: {
     id: 'usr_admin_001',
-    email: 'demo.admin@autonexa.test',
+    email: 'admin@autonexa.ca',
     name: 'Sarah Tremblay (Lead Compliance)',
     role: 'ADMIN',
     kycStatus: 'VERIFIED',
