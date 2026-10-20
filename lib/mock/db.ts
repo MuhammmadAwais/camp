@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
 import type { ProvinceCode } from "@/lib/canada";
 import type { IdDocumentType, KycStatus, PendingVerification, SessionUser, UserRole } from "@/lib/types/auth";
-import { MOCK_DEMO_SELLER, MOCK_KYC_REVIEW_MS, MOCK_OTP_CODE } from "@/lib/mock/seed";
+import { MOCK_DEMO_SELLER, MOCK_DEMO_DEALER, MOCK_DEMO_ADMIN, MOCK_KYC_REVIEW_MS, MOCK_OTP_CODE } from "@/lib/mock/seed";
 
 // In-memory stand-in for the Express + MySQL backend. Resets when the dev server restarts.
 
@@ -80,8 +80,8 @@ function createDb(): MockDb {
     resetTokens: new Map(),
   };
 
-  const demo: MockUser = {
-    id: randomUUID(),
+  const sellerUser: MockUser = {
+    id: "usr_mock_seller_001",
     email: MOCK_DEMO_SELLER.email,
     passwordHash: hashPassword(MOCK_DEMO_SELLER.password),
     firstName: MOCK_DEMO_SELLER.firstName,
@@ -92,16 +92,115 @@ function createDb(): MockDb {
     emailVerified: true,
     phoneVerified: true,
     marketingOptIn: false,
-    kyc: { status: "NOT_STARTED", idDocType: null, submittedAt: null, rejectReason: null },
-    createdAt: Date.now(),
+    role: "SELLER",
+    kyc: { status: "VERIFIED", idDocType: "DRIVERS_LICENCE", submittedAt: Date.now() - 86400000, rejectReason: null },
+    createdAt: Date.now() - 86400000,
   };
-  db.users.set(demo.id, demo);
-  db.userIdByEmail.set(demo.email, demo.id);
+  db.users.set(sellerUser.id, sellerUser);
+  db.userIdByEmail.set(sellerUser.email, sellerUser.id);
+
+  const dealerUser: MockUser = {
+    id: "usr_mock_dealer_001",
+    email: MOCK_DEMO_DEALER.email,
+    passwordHash: hashPassword(MOCK_DEMO_DEALER.password),
+    firstName: MOCK_DEMO_DEALER.firstName,
+    lastName: MOCK_DEMO_DEALER.lastName,
+    phoneE164: MOCK_DEMO_DEALER.phone,
+    postalCode: MOCK_DEMO_DEALER.postalCode,
+    province: MOCK_DEMO_DEALER.province,
+    emailVerified: true,
+    phoneVerified: true,
+    marketingOptIn: false,
+    role: "DEALER_ADMIN",
+    dealershipName: MOCK_DEMO_DEALER.dealershipName,
+    licenseNumber: MOCK_DEMO_DEALER.licenseNumber,
+    kyc: { status: "VERIFIED", idDocType: null, submittedAt: Date.now() - 86400000, rejectReason: null },
+    createdAt: Date.now() - 86400000,
+  };
+  db.users.set(dealerUser.id, dealerUser);
+  db.userIdByEmail.set(dealerUser.email, dealerUser.id);
+
+  const adminUser: MockUser = {
+    id: "usr_mock_admin_001",
+    email: MOCK_DEMO_ADMIN.email,
+    passwordHash: hashPassword(MOCK_DEMO_ADMIN.password),
+    firstName: MOCK_DEMO_ADMIN.firstName,
+    lastName: MOCK_DEMO_ADMIN.lastName,
+    phoneE164: MOCK_DEMO_ADMIN.phone,
+    postalCode: MOCK_DEMO_ADMIN.postalCode,
+    province: MOCK_DEMO_ADMIN.province,
+    emailVerified: true,
+    phoneVerified: true,
+    marketingOptIn: false,
+    role: "ADMIN",
+    kyc: { status: "VERIFIED", idDocType: null, submittedAt: null, rejectReason: null },
+    createdAt: Date.now() - 86400000,
+  };
+  db.users.set(adminUser.id, adminUser);
+  db.userIdByEmail.set(adminUser.email, adminUser.id);
+
   return db;
 }
 
-const globalForMock = globalThis as typeof globalThis & { __autonexaMockDb?: MockDb };
-export const db: MockDb = (globalForMock.__autonexaMockDb ??= createDb());
+function getOrCreateDb(): MockDb {
+  const existing = (globalThis as typeof globalThis & { __autonexaMockDb?: MockDb }).__autonexaMockDb;
+  if (existing) {
+    // Ensure all demo users exist even across hot-reloads with VERIFIED kyc
+    const sellerId = existing.userIdByEmail.get(MOCK_DEMO_SELLER.email.toLowerCase());
+    if (sellerId) {
+      const seller = existing.users.get(sellerId);
+      if (seller) seller.kyc.status = "VERIFIED";
+    }
+    if (!existing.userIdByEmail.has(MOCK_DEMO_DEALER.email.toLowerCase())) {
+      const dealerUser: MockUser = {
+        id: "usr_mock_dealer_001",
+        email: MOCK_DEMO_DEALER.email,
+        passwordHash: hashPassword(MOCK_DEMO_DEALER.password),
+        firstName: MOCK_DEMO_DEALER.firstName,
+        lastName: MOCK_DEMO_DEALER.lastName,
+        phoneE164: MOCK_DEMO_DEALER.phone,
+        postalCode: MOCK_DEMO_DEALER.postalCode,
+        province: MOCK_DEMO_DEALER.province,
+        emailVerified: true,
+        phoneVerified: true,
+        marketingOptIn: false,
+        role: "DEALER_ADMIN",
+        dealershipName: MOCK_DEMO_DEALER.dealershipName,
+        licenseNumber: MOCK_DEMO_DEALER.licenseNumber,
+        kyc: { status: "VERIFIED", idDocType: null, submittedAt: Date.now() - 86400000, rejectReason: null },
+        createdAt: Date.now() - 86400000,
+      };
+      existing.users.set(dealerUser.id, dealerUser);
+      existing.userIdByEmail.set(dealerUser.email.toLowerCase(), dealerUser.id);
+    }
+    if (!existing.userIdByEmail.has(MOCK_DEMO_ADMIN.email.toLowerCase())) {
+      const adminUser: MockUser = {
+        id: "usr_mock_admin_001",
+        email: MOCK_DEMO_ADMIN.email,
+        passwordHash: hashPassword(MOCK_DEMO_ADMIN.password),
+        firstName: MOCK_DEMO_ADMIN.firstName,
+        lastName: MOCK_DEMO_ADMIN.lastName,
+        phoneE164: MOCK_DEMO_ADMIN.phone,
+        postalCode: MOCK_DEMO_ADMIN.postalCode,
+        province: MOCK_DEMO_ADMIN.province,
+        emailVerified: true,
+        phoneVerified: true,
+        marketingOptIn: false,
+        role: "ADMIN",
+        kyc: { status: "VERIFIED", idDocType: null, submittedAt: null, rejectReason: null },
+        createdAt: Date.now() - 86400000,
+      };
+      existing.users.set(adminUser.id, adminUser);
+      existing.userIdByEmail.set(adminUser.email.toLowerCase(), adminUser.id);
+    }
+    return existing;
+  }
+  const fresh = createDb();
+  (globalThis as typeof globalThis & { __autonexaMockDb?: MockDb }).__autonexaMockDb = fresh;
+  return fresh;
+}
+
+export const db: MockDb = getOrCreateDb();
 
 // ---------- Helpers ----------
 

@@ -51,9 +51,41 @@ export function LoginForm({ next, notice }: Props) {
     defaultValues: { email: "", password: "" },
   });
 
-  const handleSignIn = (e: React.FormEvent) => {
-    e.preventDefault();
-    router.push("/dashboard");
+  const onSubmit = async (values: LoginPayload) => {
+    try {
+      const result = await login.mutateAsync({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (isPendingVerification(result)) {
+        router.push(`/verify?id=${encodeURIComponent(result.registrationId)}`);
+        return;
+      }
+
+      applySession(result);
+
+      // Sync with localStorage authService so client components like Header/Sidebar know the user immediately
+      if (typeof window !== "undefined") {
+        const storedUser = {
+          id: result.user.id,
+          email: result.user.email,
+          name: `${result.user.firstName} ${result.user.lastName}`.trim(),
+          phone: result.user.phoneMasked,
+          postalCode: result.user.postalCode,
+          province: result.user.province,
+          role: result.user.role,
+          kycStatus: result.user.kycStatus,
+          createdAt: new Date().toISOString(),
+        };
+        localStorage.setItem("autonexa_active_user", JSON.stringify(storedUser));
+      }
+
+      const destination = getPostAuthRoute(result.user, next);
+      router.push(destination);
+    } catch (err) {
+      applyFieldErrors(err, setError, ["email", "password"]);
+    }
   };
 
   const noticeEntry = notice ? NOTICES[notice] : undefined;
@@ -72,7 +104,7 @@ export function LoginForm({ next, notice }: Props) {
         <span className="h-px flex-1 bg-gray-200" />
       </div>
 
-      <form onSubmit={handleSignIn} noValidate className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         <AuthField
           label="Email"
           type="email"

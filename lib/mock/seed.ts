@@ -1,5 +1,4 @@
-// Demo account for exercising the login flow against the mock API.
-// Fully verified email/phone, KYC not started — logs in straight into /verify-kyc.
+// Demo accounts for exercising the login flow against the mock API.
 export const MOCK_DEMO_SELLER = {
   email: "demo.seller@autonexa.test",
   password: "Maple-Leaf-2026",
@@ -7,6 +6,28 @@ export const MOCK_DEMO_SELLER = {
   lastName: "Tremblay",
   phone: "+14165550142",
   postalCode: "M5V 2T6",
+  province: "ON",
+} as const;
+
+export const MOCK_DEMO_DEALER = {
+  email: "demo.dealer@pfaffauto.test",
+  password: "Pfaff-Porsche-2026",
+  firstName: "Christopher",
+  lastName: "Evans",
+  phone: "+19055558291",
+  postalCode: "L6M 4W9",
+  province: "ON",
+  dealershipName: "Pfaff Porsche Markham",
+  licenseNumber: "OMVIC-481920",
+} as const;
+
+export const MOCK_DEMO_ADMIN = {
+  email: "demo.admin@autonexa.test",
+  password: "Super-Admin-2026",
+  firstName: "Sarah",
+  lastName: "Tremblay",
+  phone: "+14165559981",
+  postalCode: "M5J 2Y1",
   province: "ON",
 } as const;
 

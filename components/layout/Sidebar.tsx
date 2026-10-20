@@ -16,6 +16,12 @@ import {
   CaretLeft,
   SidebarSimple,
   X,
+  Car,
+  Users,
+  ClipboardText,
+  Scales,
+  FileText,
+  CreditCard,
 } from '@phosphor-icons/react';
 import { useSidebarStore } from '@/lib/store/useSidebarStore';
 import { SidebarFlyout, type SubNavItem } from './SidebarFlyout';
@@ -50,80 +56,164 @@ export function Sidebar() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMobileOpen, closeMobile]);
 
-  // Dynamic Navigation items tailored to AutoNexa Canadian Marketplace
+  // Dynamic Navigation items tailored to active role with ZERO 404s
   const isDealer = role === 'DEALER_ADMIN' || role === 'DEALER_AGENT';
-  const dashboardHref = isDealer ? '/dealer/inventory' : '/seller/dashboard';
-  const listingsHref = isDealer ? '/dealer/live-auctions' : '/seller/listings';
-  const bidsHref = isDealer ? '/dealer/my-bids' : '/seller/bids';
+  const isAdmin = role === 'ADMIN';
 
-  const NAV_ITEMS: NavGroup[] = [
-    {
-      id: 'dashboard',
-      title: 'Dashboard',
-      href: dashboardHref,
-      icon: House,
-      section: 'PORTAL',
-      items: [
-        { title: 'Overview', href: dashboardHref },
-        { title: 'Live Activity', href: `${dashboardHref}/activity` },
-      ],
-    },
-    {
-      id: 'vehicles',
-      title: isDealer ? 'Live Inventory' : 'My Vehicles',
-      href: listingsHref,
-      icon: Gavel,
-      section: 'PORTAL',
-      items: [
-        { title: 'Active Exchange', href: listingsHref },
-        { title: 'Vehicle History', href: `${listingsHref}/history` },
-      ],
-    },
-    {
-      id: 'bids',
-      title: 'Bids & Offers',
-      href: bidsHref,
-      icon: CurrencyCircleDollar,
-      section: 'TRANSACTIONS',
-      items: [
-        { title: 'Sealed Bids', href: bidsHref },
-        { title: 'Settlement Payouts', href: `${bidsHref}/settlements` },
-      ],
-    },
-    {
-      id: 'valuations',
-      title: 'Market Intelligence',
-      href: '/valuation',
-      icon: ChartPolar,
-      section: 'TRANSACTIONS',
-      items: [
-        { title: 'Real-time Valuation', href: '/valuation' },
-        { title: 'Depreciation Curves', href: '/valuation/analytics' },
-      ],
-    },
-    {
-      id: 'compliance',
-      title: 'Verification & Trust',
-      href: isDealer ? '/dealer/verification' : '/seller/kyc',
-      icon: ShieldCheck,
-      section: 'COMPLIANCE',
-      items: [
-        { title: 'ID Verification', href: isDealer ? '/dealer/verification' : '/seller/kyc' },
-        { title: 'Regulatory Compliance', href: '/legal/terms' },
-      ],
-    },
-    {
-      id: 'settings',
-      title: 'Settings',
-      href: '/settings/account',
-      icon: GearSix,
-      section: 'PREFERENCES',
-      items: [
-        { title: 'Account Settings', href: '/settings/account' },
-        { title: 'Notifications', href: '/settings/notifications' },
-      ],
-    },
-  ];
+  let NAV_ITEMS: NavGroup[] = [];
+
+  if (isAdmin) {
+    NAV_ITEMS = [
+      {
+        id: 'admin-moderation',
+        title: 'Moderation Queue',
+        href: '/admin/moderation',
+        icon: ShieldCheck,
+        section: 'COMPLIANCE & RISK',
+        items: [
+          { title: 'Vehicle Submissions', href: '/admin/moderation' },
+        ],
+      },
+      {
+        id: 'admin-dealers',
+        title: 'Dealer Licensing',
+        href: '/admin/dealers',
+        icon: Users,
+        section: 'COMPLIANCE & RISK',
+        items: [
+          { title: 'OMVIC / AMVIC Checks', href: '/admin/dealers' },
+        ],
+      },
+      {
+        id: 'admin-auctions',
+        title: 'Auction Operations',
+        href: '/admin/auctions',
+        icon: Gavel,
+        section: 'MARKETPLACE',
+        items: [
+          { title: 'Active Timers & Overrides', href: '/admin/auctions' },
+        ],
+      },
+      {
+        id: 'admin-disputes',
+        title: 'Arbitration & Disputes',
+        href: '/admin/disputes',
+        icon: Scales,
+        section: 'MARKETPLACE',
+        items: [
+          { title: 'Arbitration Claims', href: '/admin/disputes' },
+        ],
+      },
+      {
+        id: 'admin-analytics',
+        title: 'Executive Analytics',
+        href: '/admin/analytics',
+        icon: ChartPolar,
+        section: 'GOVERNANCE',
+        items: [
+          { title: 'Platform Metrics (CAD)', href: '/admin/analytics' },
+        ],
+      },
+      {
+        id: 'admin-audit',
+        title: 'Compliance Audit Log',
+        href: '/admin/audit-log',
+        icon: ClipboardText,
+        section: 'GOVERNANCE',
+        items: [
+          { title: 'Immutable PIPEDA Trail', href: '/admin/audit-log' },
+        ],
+      },
+    ];
+  } else if (isDealer) {
+    NAV_ITEMS = [
+      {
+        id: 'dealer-floor',
+        title: 'Dealer Floor',
+        href: '/dealer/inventory',
+        icon: House,
+        section: 'TRADING FLOOR',
+        items: [
+          { title: 'Live Inventory Floor', href: '/dealer/inventory' },
+          { title: 'Sample Inspection', href: '/dealer/auctions/auc-porsche-macan-2022' },
+        ],
+      },
+      {
+        id: 'dealer-trading',
+        title: 'Sealed Bidding',
+        href: '/dealer/active-bids',
+        icon: Gavel,
+        section: 'TRADING FLOOR',
+        items: [
+          { title: 'Active Bids', href: '/dealer/active-bids' },
+          { title: 'Won Matches', href: '/dealer/won-matches' },
+        ],
+      },
+      {
+        id: 'dealer-account',
+        title: 'Dealership & Quota',
+        href: '/dealer/subscription',
+        icon: CreditCard,
+        section: 'ACCOUNT & SEATS',
+        items: [
+          { title: 'Tier Subscription', href: '/dealer/subscription' },
+          { title: 'Invoices & Billing', href: '/dealer/billing' },
+          { title: 'Team & Buyer Seats', href: '/dealer/team' },
+        ],
+      },
+      {
+        id: 'dealer-compliance',
+        title: 'Legal & Trust',
+        href: '/legal/terms',
+        icon: ShieldCheck,
+        section: 'REGULATORY',
+        items: [
+          { title: 'Dealer License Verification', href: '/dealer/register' },
+          { title: 'OMVIC / AMVIC Terms', href: '/legal/terms' },
+          { title: 'PIPEDA Privacy Policy', href: '/legal/privacy' },
+        ],
+      },
+    ];
+  } else {
+    // Default: Private Seller
+    NAV_ITEMS = [
+      {
+        id: 'seller-dashboard',
+        title: 'Dashboard',
+        href: '/seller/dashboard',
+        icon: House,
+        section: 'VEHICLE SALES',
+        items: [
+          { title: 'Overview & Listings', href: '/seller/dashboard' },
+          { title: 'Sell a Vehicle', href: '/seller/list-car' },
+        ],
+      },
+      {
+        id: 'seller-auctions',
+        title: 'Live Auction',
+        href: '/seller/listings/auc-porsche-macan-2022',
+        icon: Gavel,
+        section: 'VEHICLE SALES',
+        items: [
+          { title: 'Porsche Macan Auction', href: '/seller/listings/auc-porsche-macan-2022' },
+          { title: 'Select Winning Dealer', href: '/seller/listings/auc-porsche-macan-2022/select-dealer' },
+          { title: 'Inspection Voucher', href: '/seller/listings/auc-porsche-macan-2022/appointment' },
+        ],
+      },
+      {
+        id: 'seller-trust',
+        title: 'Identity & Legal',
+        href: '/verify-kyc',
+        icon: ShieldCheck,
+        section: 'TRUST & VERIFICATION',
+        items: [
+          { title: 'Verify Identity (KYC)', href: '/verify-kyc' },
+          { title: 'Privacy Policy', href: '/legal/privacy' },
+          { title: 'Terms of Service', href: '/legal/terms' },
+        ],
+      },
+    ];
+  }
 
   return (
     <>

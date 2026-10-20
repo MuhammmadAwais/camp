@@ -90,14 +90,14 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
                 <Swap className="size-3" />
                 <span>Switch Portal Mode</span>
               </div>
-              <div className="grid grid-cols-2 gap-1 p-1">
+              <div className="grid grid-cols-3 gap-1 p-1">
                 <button
                   type="button"
                   onClick={async () => {
                     await devSwitchRole('SELLER');
                     setIsOpen(false);
                   }}
-                  className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer ${
+                  className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer text-center ${
                     role === 'SELLER'
                       ? 'bg-[#8C383E]/15 text-[#8C383E] font-semibold border border-[#8C383E]/30 dark:bg-[#E59344]/20 dark:text-[#E59344] dark:border-[#E59344]/40'
                       : 'text-gray-500 hover:bg-gray-100 hover:text-black dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white'
@@ -111,13 +111,27 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
                     await devSwitchRole('DEALER_ADMIN');
                     setIsOpen(false);
                   }}
-                  className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer ${
+                  className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer text-center ${
                     isDealer
                       ? 'bg-[#8C383E]/15 text-[#8C383E] font-semibold border border-[#8C383E]/30 dark:bg-[#E59344]/20 dark:text-[#E59344] dark:border-[#E59344]/40'
                       : 'text-gray-500 hover:bg-gray-100 hover:text-black dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white'
                   }`}
                 >
                   Dealer
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await devSwitchRole('ADMIN');
+                    setIsOpen(false);
+                  }}
+                  className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer text-center ${
+                    role === 'ADMIN'
+                      ? 'bg-[#8C383E]/15 text-[#8C383E] font-semibold border border-[#8C383E]/30 dark:bg-[#E59344]/20 dark:text-[#E59344] dark:border-[#E59344]/40'
+                      : 'text-gray-500 hover:bg-gray-100 hover:text-black dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white'
+                  }`}
+                >
+                  Admin
                 </button>
               </div>
             </div>
