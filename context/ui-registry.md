@@ -1189,5 +1189,33 @@ Mode: Modern Enterprise High-Contrast Portal
 | Dedicated Alert Center | Full-page management at `/seller/notifications` with filter pills (`All`, `Unread`, `Bids`, `System`), bulk mark as read, and clear actions |
 | Clean Listings Floor | Full-width 3-column responsive grid (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`); side cards removed for an uncluttered, valued layout |
 
+---
+
+### `SellerAuctionCard` Signature Notched Card (Milestone 4.1 Signature Geometry — Updated)
+
+File: `components/seller/SellerAuctionCard.tsx`  
+Last updated: 2026-10-20  
+Mode: Signature Architectural Portal Card (Top Header Bar + Taller Slender Aspect Ratio + Seamless Concave Notch)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Card Geometry | `rounded-[32px] p-4 sm:p-5 flex flex-col justify-between relative` with masked shadow layer (`maskImage: radial-gradient(circle at bottom right...)`); outer box shadow removed from parent to prevent corner bleed |
+| Background | `bg-white dark:bg-[#121114] border border-gray-200 dark:border-white/10 hover:border-[#8C383E]/50 dark:hover:border-[#E59344]/50 hover:-translate-y-1` |
+| Top Header Row | Flex row above photo canvas: left automaker marque circle (`w-10 h-10 rounded-full bg-neutral-100 dark:bg-white/[0.08] border border-gray-200/90 dark:border-white/10` with brand monogram), middle headline (`font-headline text-[15px] sm:text-base font-bold`) & subhead (`font-body text-[11px] text-portal-text-muted`), and right status beacon pill |
+| Telemetry Status Pill | Compact institutional pill: Active: emerald beacon pulse + `X Bids`; Completed: neutral chip + `Sold`; Review: amber chip + `Review` (replaces clunky floating badges over the photo) |
+| Photo Canvas | `rounded-[24px] overflow-hidden relative h-60 sm:h-64 w-full bg-neutral-100 dark:bg-white/[0.04]` (clean, unencumbered, unobstructed hero car photography) |
+| Card Body & Specs | Stacked specs: mileage, transmission, fuel type, VIN, and verified Carfax badge (`CheckCircle`) |
+| Bottom Pricing | Bold reserve asking CAD (`font-headline text-xl sm:text-2xl font-black`) + institutional status chip (`ArrowUpRight`) |
+| Seamless Concave Notch | Unified mathematical 3-arc SVG path (`M 86,0 A 24 24 0 0 1 62,24 A 38 38 0 0 0 24,62 A 24 24 0 0 1 0,86 L 86,86 Z`) with canvas background fill (`fill-white dark:fill-[#0A0A0A]`) and 1px stroke (`text-gray-200 dark:text-white/10`). Zero seam lines, zero double borders, zero shadow bleed |
+| Docked Action Squircle | `w-[50px] h-[50px] rounded-[18px] bg-white dark:bg-[#18171c] border border-gray-200/90 dark:border-white/15 shadow-[0_4px_14px_rgba(0,0,0,0.08)] hover:shadow-lg` |
+| Action Button Hover | `hover:bg-[#8C383E] hover:text-white dark:hover:bg-[#E59344] dark:hover:text-[#0C0A09] active:scale-95` with `ArrowUpRight` translation |
+| Grid Container Layout | `max-w-[1260px] mx-auto px-2 sm:px-4 lg:px-6` — gives extreme outer cards generous empty side breathing room while keeping clean `gap-6 lg:gap-7` between middle cards |
+
+**Pattern notes:**
+- Wireframe Header Pattern: Elevates vehicle brand marque, model headline, and telemetry above the photo, eliminating visual obstruction on vehicle rooflines.
+- Single-Path SVG Notch: Employs a mathematically G1-continuous 3-arc path (concave 24px -> convex 38px -> concave 24px) for the docked corner notch, ensuring flawless rendering on all DPI display scalings with no subpixel seam lines or shadow leaks.
+
+
+
 
 

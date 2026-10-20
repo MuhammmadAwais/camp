@@ -6,10 +6,7 @@ import Link from "next/link";
 import {
   ArrowUpRight,
   Clock,
-  Lock,
   Car,
-  MapPin,
-  GasPump,
   CheckCircle,
 } from "@phosphor-icons/react";
 import type { SellerAuctionItem } from "@/lib/types/seller";
@@ -47,160 +44,225 @@ export function SellerAuctionCard({ auction, layout = "grid" }: Props) {
     return () => clearInterval(interval);
   }, [auction.auctionEndsAt, auction.status]);
 
-  const statusConfig = {
-    ACTIVE: {
-      label: "Live 24h Auction",
-      badgeClass: "bg-[#E59344]/15 text-[#E59344] border-[#E59344]/30",
-      dotClass: "bg-[#E59344] animate-pulse",
-    },
-    PENDING_MODERATION: {
-      label: "Appraisal Review",
-      badgeClass: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
-      dotClass: "bg-amber-500",
-    },
-    COMPLETED: {
-      label: "Sold & Finalized",
-      badgeClass: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-      dotClass: "bg-emerald-500",
-    },
-    DRAFT: {
-      label: "Draft Listing",
-      badgeClass: "bg-gray-500/15 text-gray-500 border-gray-500/25",
-      dotClass: "bg-gray-400",
-    },
-    UNSEALED: {
-      label: "Auction Unsealed",
-      badgeClass: "bg-blue-500/15 text-blue-500 border-blue-500/30",
-      dotClass: "bg-blue-500",
-    },
-    ACCEPTED: {
-      label: "Bid Accepted",
-      badgeClass: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-      dotClass: "bg-emerald-500",
-    },
-    CANCELLED: {
-      label: "Cancelled",
-      badgeClass: "bg-red-500/15 text-red-500 border-red-500/30",
-      dotClass: "bg-red-500",
-    },
-  }[auction.status];
+  // Telemetry configuration for the frosted top-left badge
+  const badgeConfig = React.useMemo(() => {
+    switch (auction.status) {
+      case "ACTIVE":
+        return {
+          text: `Live 24h • ${auction.bidCount} ${auction.bidCount === 1 ? "Bid" : "Bids"}`,
+          beaconColor: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
+          chipClass: "bg-[#16271E] text-emerald-400 border-emerald-500/25",
+          chipText: isClient && timeLeft ? `${timeLeft.hours}h ${timeLeft.minutes}m left` : "24h Floor",
+        };
+      case "COMPLETED":
+        return {
+          text: `Sold & Finalized • ${auction.bidCount} Bids`,
+          beaconColor: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
+          chipClass: "bg-[#16271E] text-emerald-400 border-emerald-500/25",
+          chipText: "Settled",
+        };
+      case "PENDING_MODERATION":
+        return {
+          text: "Appraisal Review • AutoNexa",
+          beaconColor: "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]",
+          chipClass: "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/25",
+          chipText: "Review in progress",
+        };
+      default:
+        return {
+          text: `Draft • ${auction.bidCount} Bids`,
+          beaconColor: "bg-gray-400",
+          chipClass: "bg-gray-500/10 text-gray-400 border-gray-500/20",
+          chipText: "Draft Listing",
+        };
+    }
+  }, [auction.status, auction.bidCount, isClient, timeLeft]);
 
-  // Grid layout (Clean, high-value card matching Image 5 aesthetics)
+  // Signature Notched Card (Exact Geometry Matching Image 2 & 4Runner Reference)
   if (layout === "grid") {
+    // Automaker brand marque initial / monogram
+    const brandMonogram = auction.make.slice(0, 2).toUpperCase();
+
     return (
-      <article className="group relative rounded-2xl border border-portal-border bg-portal-surface overflow-hidden transition-all duration-300 hover:border-[#8C383E]/40 dark:hover:border-[#E59344]/40 hover:shadow-lg flex flex-col justify-between">
-        {/* Top: Rich Imagery Area */}
-        <div className="relative w-full h-52 sm:h-56 bg-portal-surface-hover overflow-hidden">
+      <div className="group relative bg-white dark:bg-[#121114] rounded-[32px] p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between border border-gray-200 dark:border-white/10 hover:border-[#8C383E]/50 dark:hover:border-[#E59344]/50 hover:-translate-y-1">
+        {/* Smooth Masked Shadow Layer: Excises bottom-right corner for clean notch transparency */}
+        <div
+          className="absolute inset-0 rounded-[32px] pointer-events-none -z-10 shadow-[0_4px_20px_rgba(0,0,0,0.05)] group-hover:shadow-[0_16px_36px_rgba(0,0,0,0.12)] transition-shadow duration-300"
+          style={{
+            maskImage: "radial-gradient(circle at bottom right, transparent 0, transparent 90px, black 125px)",
+            WebkitMaskImage: "radial-gradient(circle at bottom right, transparent 0, transparent 90px, black 125px)",
+          }}
+        />
+
+        {/* 1. Top Header Row Above Photo Canvas (Matching Wireframe in Image 2) */}
+        <div className="flex items-center justify-between gap-3 pb-3">
+          {/* Left Marque / Brand Emblem Circle */}
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-white/[0.08] border border-gray-200/90 dark:border-white/10 flex items-center justify-center shrink-0 shadow-2xs">
+              <span className="font-headline font-black text-xs tracking-wider text-gray-800 dark:text-neutral-200">
+                {brandMonogram}
+              </span>
+            </div>
+
+            {/* Headline (Make/Model) & Subhead (Trim / Province) */}
+            <div className="min-w-0">
+              <h3 className="font-headline text-[15px] sm:text-base font-bold text-gray-900 dark:text-white tracking-tight truncate group-hover:text-[#8C383E] dark:group-hover:text-[#E59344] transition-colors leading-snug">
+                {auction.year} {auction.make} {auction.model}
+              </h3>
+              <p className="font-body text-[11px] text-gray-500 dark:text-neutral-400 truncate mt-0.5 font-normal">
+                {auction.trim ? `${auction.trim} • ` : ""}{auction.city}, {auction.province}
+              </p>
+            </div>
+          </div>
+
+          {/* Right Status Beacon / Telemetry Pill (Replacing Image 1 Floating Badge) */}
+          <div className="shrink-0">
+            {auction.status === "ACTIVE" ? (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+                <span className="font-mono text-[11px] font-bold tracking-tight">
+                  {auction.bidCount} {auction.bidCount === 1 ? "Bid" : "Bids"}
+                </span>
+              </div>
+            ) : auction.status === "COMPLETED" ? (
+              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-white/[0.08] border border-gray-200 dark:border-white/10 text-gray-700 dark:text-neutral-300">
+                <CheckCircle weight="fill" className="w-3 h-3 text-emerald-500" />
+                <span className="font-mono text-[11px] font-semibold">Sold</span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400">
+                <Clock weight="bold" className="w-3 h-3" />
+                <span className="font-mono text-[11px] font-semibold">Review</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 2. Vehicle Photo Canvas (Clean, Unencumbered, Taller Proportion) */}
+        <div className="relative h-60 sm:h-64 w-full rounded-[24px] overflow-hidden bg-neutral-100 dark:bg-white/[0.04] shrink-0">
           {auction.thumbnailUrl ? (
             <Image
               src={auction.thumbnailUrl}
               alt={`${auction.year} ${auction.make} ${auction.model}`}
               fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 380px"
+              className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
               unoptimized
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-portal-text-muted gap-2">
-              <Car className="w-10 h-10 opacity-40" weight="duotone" />
-              <span className="text-xs font-mono">No imagery uploaded</span>
+              <Car className="w-10 h-10 opacity-30" weight="duotone" />
+              <span className="text-xs font-mono">No imagery</span>
             </div>
           )}
+        </div>
 
-          {/* Vignette Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        {/* 3. Card Content Body */}
+        <div className="pt-4 flex-1 flex flex-col justify-between">
+          <div>
+            {/* Specs & Location Rows */}
+            <div className="space-y-1.5 text-xs font-body">
+              {/* Line 1: Specs */}
+              <div className="flex items-center gap-2 font-semibold text-gray-800 dark:text-neutral-200 whitespace-nowrap overflow-hidden">
+                <span>{auction.mileageKm.toLocaleString()} km</span>
+                <span className="text-gray-300 dark:text-white/20 font-normal">•</span>
+                <span>Automatic</span>
+                <span className="text-gray-300 dark:text-white/20 font-normal">•</span>
+                <span>Gasoline</span>
+              </div>
 
-          {/* Top Floating Status Badge */}
-          <div className="absolute top-3 left-3 z-10">
-            <span
-              className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-md shadow-xs",
-                statusConfig.badgeClass
-              )}
-            >
-              <span className={cn("w-1.5 h-1.5 rounded-full", statusConfig.dotClass)} />
-              {statusConfig.label}
-            </span>
+              {/* Line 2: Dealer Location & VIN with Carfax badge */}
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-gray-500 dark:text-neutral-400 truncate">
+                <span className="opacity-70">VIN:</span>
+                <span className="font-mono font-semibold text-gray-700 dark:text-neutral-300">
+                  ···{auction.vin.slice(-6)}
+                </span>
+                <span className="text-gray-300 dark:text-white/20 font-normal">•</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-semibold font-body inline-flex items-center gap-0.5">
+                  <CheckCircle weight="bold" className="w-3 h-3 shrink-0" />
+                  Verified Carfax
+                </span>
+              </div>
+            </div>
+
+            {/* Divider Line */}
+            <div className="border-t border-gray-100 dark:border-white/10 my-3" />
           </div>
 
-          {/* Sealed Bid Count Tag */}
-          <div className="absolute top-3 right-3 z-10">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white text-[11px] font-mono font-medium">
-              <Lock className="w-3 h-3 text-[#E59344]" weight="bold" />
-              <span>{auction.bidCount} Bids</span>
-            </span>
-          </div>
+          {/* Bottom Pricing & Status Pill */}
+          <div className="pt-1 flex items-end justify-between min-h-[58px]">
+            <div className="flex flex-col justify-end max-w-[calc(100%-78px)] pr-1">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                {/* Large Bold Price */}
+                <span className="font-headline text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight whitespace-nowrap">
+                  {formatCadCents(auction.reservePriceCents)}
+                </span>
 
-          {/* Bottom Photo Title Pill */}
-          <div className="absolute bottom-3 left-3 right-3 z-10">
-            <h3 className="font-headline text-lg font-bold text-white tracking-tight drop-shadow-sm truncate">
-              {auction.year} {auction.make} {auction.model}
-            </h3>
-            {auction.trim && (
-              <p className="font-body text-xs text-white/80 truncate drop-shadow-xs">{auction.trim}</p>
-            )}
+                {/* Sleek Institutional Status Chip */}
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md border font-mono text-[10px] sm:text-[10.5px] font-bold tracking-tight shadow-2xs whitespace-nowrap",
+                    badgeConfig.chipClass
+                  )}
+                >
+                  <ArrowUpRight weight="bold" className="w-3 h-3 shrink-0" />
+                  <span>{badgeConfig.chipText}</span>
+                </span>
+              </div>
+
+              {/* Sub-label */}
+              <div className="text-[10.5px] sm:text-[11px] font-body text-gray-500 dark:text-neutral-400 flex items-center gap-1 flex-wrap">
+                <span className="opacity-75">Reserve asking:</span>
+                <span className="font-mono text-gray-400 dark:text-neutral-500 font-medium">CAD</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Content Body */}
-        <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
-          {/* Metadata Specs Row */}
-          <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] text-portal-text-muted">
-            <span className="px-2 py-0.5 rounded-md bg-portal-surface-hover border border-portal-border">
-              {auction.mileageKm.toLocaleString()} km
-            </span>
-            <span className="px-2 py-0.5 rounded-md bg-portal-surface-hover border border-portal-border">
-              VIN ···{auction.vin.slice(-6)}
-            </span>
-            <span className="px-2 py-0.5 rounded-md bg-portal-surface-hover border border-portal-border">
-              {auction.city}, {auction.province}
-            </span>
-          </div>
+        {/* 4. Docked Concave Corner Notch & Action Squircle Button (Zero Line/Shadow Artifacts) */}
+        <div className="absolute -bottom-[1px] -right-[1px] w-[86px] h-[86px] z-20 pointer-events-auto">
+          <svg
+            viewBox="0 0 86 86"
+            className="w-full h-full block"
+          >
+            {/* Canvas cutout fill covering the bottom-right corner to match page background */}
+            <path
+              d="M 86,0 A 24 24 0 0 1 62,24 A 38 38 0 0 0 24,62 A 24 24 0 0 1 0,86 L 86,86 Z"
+              className="fill-white dark:fill-[#0A0A0A]"
+            />
+            {/* Seamless continuous curved border stroke */}
+            <path
+              d="M 86,0 A 24 24 0 0 1 62,24 A 38 38 0 0 0 24,62 A 24 24 0 0 1 0,86"
+              fill="none"
+              stroke="currentColor"
+              className="text-gray-200 dark:text-white/10"
+              strokeWidth="1"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
 
-          {/* 24h Countdown Telemetry */}
-          {auction.status === "ACTIVE" && (
-            <div className="flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-portal-surface-hover/60 border border-portal-border">
-              <span className="flex items-center gap-1.5 font-body text-portal-text-muted">
-                <Clock className="w-4 h-4 text-[#8C383E] dark:text-[#E59344]" weight="bold" />
-                <span>Closes in:</span>
-              </span>
-              <span className="font-mono font-bold text-portal-text tabular-nums">
-                {isClient && timeLeft
-                  ? `${String(timeLeft.hours).padStart(2, "0")}h ${String(timeLeft.minutes).padStart(2, "0")}m ${String(timeLeft.seconds).padStart(2, "0")}s`
-                  : "17h 42m 00s"}
-              </span>
-            </div>
-          )}
-
-          {/* Footer: Reserve Price & Primary Action Button (Matching reference Image 5 button style) */}
-          <div className="pt-3 border-t border-portal-border flex items-center justify-between gap-3">
-            <div>
-              <span className="block font-body text-[10px] uppercase tracking-wider text-portal-text-muted">
-                Reserve Asking
-              </span>
-              <span className="font-mono text-base sm:text-lg font-bold text-portal-text">
-                {formatCadCents(auction.reservePriceCents)}
-              </span>
-            </div>
-
-            <Link
-              href={`/seller/listings/${auction.id}`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#8C383E] dark:bg-[#E59344] hover:bg-[#752B30] dark:hover:bg-[#D9822F] text-white text-xs font-bold transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-            >
-              <span>{auction.status === "ACTIVE" ? "Live Floor" : "View"}</span>
-              <ArrowUpRight className="w-3.5 h-3.5" weight="bold" />
-            </Link>
-          </div>
+          {/* Docked Action Button Linking Directly to Listing Details */}
+          <Link
+            href={`/seller/listings/${auction.id}`}
+            className="absolute bottom-2.5 right-2.5 w-[50px] h-[50px] rounded-[18px] bg-white dark:bg-[#18171c] shadow-[0_4px_14px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_20px_rgba(140,56,62,0.25)] dark:hover:shadow-[0_8px_20px_rgba(229,147,68,0.25)] flex items-center justify-center text-gray-900 dark:text-white hover:text-white hover:bg-[#8C383E] dark:hover:bg-[#E59344] dark:hover:text-[#0C0A09] transition-all duration-200 cursor-pointer active:scale-95 group/btn border border-gray-200/90 dark:border-white/15"
+            aria-label={`View auction for ${auction.year} ${auction.make} ${auction.model}`}
+            title="View live auction floor"
+          >
+            <ArrowUpRight
+              weight="bold"
+              className="w-5 h-5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
+            />
+          </Link>
         </div>
-      </article>
+      </div>
     );
   }
 
   // Horizontal List Layout
   return (
-    <article className="group relative rounded-2xl border border-portal-border bg-portal-surface overflow-hidden transition-all duration-200 hover:border-[#8C383E]/40 dark:hover:border-[#E59344]/40 hover:shadow-md flex flex-col md:flex-row">
+    <div className="group relative bg-white dark:bg-[#121114] rounded-[28px] p-4 sm:p-5 transition-all duration-300 flex flex-col md:flex-row gap-5 border border-gray-200 dark:border-white/10 hover:border-[#8C383E]/50 dark:hover:border-[#E59344]/50 shadow-sm hover:shadow-md">
       {/* Thumbnail Area */}
-      <div className="relative w-full md:w-64 lg:w-72 h-48 md:h-auto shrink-0 bg-portal-surface-hover overflow-hidden">
+      <div className="relative w-full md:w-72 h-48 md:h-auto rounded-[20px] overflow-hidden bg-neutral-100 dark:bg-white/[0.04] shrink-0">
         {auction.thumbnailUrl ? (
           <Image
             src={auction.thumbnailUrl}
@@ -212,100 +274,75 @@ export function SellerAuctionCard({ auction, layout = "grid" }: Props) {
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center text-portal-text-muted gap-2">
-            <Car className="w-10 h-10 opacity-40" weight="duotone" />
-            <span className="text-xs font-mono">No imagery uploaded</span>
+            <Car className="w-10 h-10 opacity-30" weight="duotone" />
+            <span className="text-xs font-mono">No imagery</span>
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:hidden" />
-
-        {/* Status Badge */}
-        <div className="absolute top-3 left-3 z-10">
-          <span
-            className={cn(
-              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border backdrop-blur-md shadow-xs",
-              statusConfig.badgeClass
-            )}
-          >
-            <span className={cn("w-1.5 h-1.5 rounded-full", statusConfig.dotClass)} />
-            {statusConfig.label}
-          </span>
+        <div className="absolute top-3 left-3 z-10 flex items-center gap-2 bg-black/65 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[11px] font-semibold border border-white/15">
+          <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", badgeConfig.beaconColor)} />
+          <span>{badgeConfig.text}</span>
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between">
+      <div className="flex-1 flex flex-col justify-between py-1">
         <div>
-          {/* Header Row: Title & Reserve Price */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
             <div>
-              <h3 className="font-headline text-lg sm:text-xl font-bold tracking-tight text-portal-text group-hover:text-[#8C383E] dark:group-hover:text-[#E59344] transition-colors">
+              <h3 className="font-headline text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-white group-hover:text-[#8C383E] dark:group-hover:text-[#E59344] transition-colors">
                 {auction.year} {auction.make} {auction.model}
               </h3>
               {auction.trim && (
-                <p className="font-body text-xs sm:text-sm text-portal-text-muted mt-0.5">{auction.trim}</p>
+                <p className="font-body text-xs text-gray-500 dark:text-neutral-400 mt-0.5">{auction.trim}</p>
               )}
             </div>
 
             <div className="text-left sm:text-right">
-              <span className="block font-body text-[11px] uppercase tracking-wider text-portal-text-muted">
+              <span className="block font-body text-[10px] uppercase tracking-wider text-gray-500 dark:text-neutral-400">
                 Reserve Asking
               </span>
-              <span className="font-mono text-base sm:text-lg font-bold text-portal-text">
+              <span className="font-headline text-xl font-bold text-gray-900 dark:text-white">
                 {formatCadCents(auction.reservePriceCents)}
               </span>
             </div>
           </div>
 
-          {/* Vehicle Metadata Badges */}
-          <div className="mt-3 flex flex-wrap items-center gap-2 font-mono text-xs text-portal-text-muted">
-            <span className="px-2 py-0.5 rounded-md bg-portal-surface-hover border border-portal-border">
+          <div className="mt-3 flex flex-wrap items-center gap-2 font-mono text-xs text-gray-600 dark:text-neutral-400">
+            <span className="px-2.5 py-0.5 rounded-md bg-neutral-100 dark:bg-white/[0.06] border border-gray-200 dark:border-white/10">
               {auction.mileageKm.toLocaleString()} km
             </span>
-            <span className="px-2 py-0.5 rounded-md bg-portal-surface-hover border border-portal-border">
+            <span className="px-2.5 py-0.5 rounded-md bg-neutral-100 dark:bg-white/[0.06] border border-gray-200 dark:border-white/10">
               VIN ···{auction.vin.slice(-6)}
             </span>
-            <span className="px-2 py-0.5 rounded-md bg-portal-surface-hover border border-portal-border">
+            <span className="px-2.5 py-0.5 rounded-md bg-neutral-100 dark:bg-white/[0.06] border border-gray-200 dark:border-white/10">
               {auction.city}, {auction.province}
             </span>
           </div>
         </div>
 
-        {/* Telemetry Bar: Live 24h Clock & Sealed Bid Pill */}
-        <div className="mt-5 pt-4 border-t border-portal-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-4">
-            {auction.status === "ACTIVE" && (
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#8C383E] dark:text-[#E59344] shrink-0" weight="bold" />
-                <span className="font-body text-xs text-portal-text-muted">Closes in:</span>
-                <span className="font-mono text-xs sm:text-sm font-bold text-portal-text tracking-wider tabular-nums">
-                  {isClient && timeLeft
-                    ? `${String(timeLeft.hours).padStart(2, "0")}h ${String(timeLeft.minutes).padStart(2, "0")}m ${String(timeLeft.seconds).padStart(2, "0")}s`
-                    : "17h 42m 00s"}
-                </span>
-              </div>
-            )}
-
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#8C383E]/10 dark:bg-[#E59344]/15 border border-[#8C383E]/20 dark:border-[#E59344]/30">
-              <Lock className="w-3.5 h-3.5 text-[#8C383E] dark:text-[#E59344]" weight="bold" />
-              <span className="font-mono text-xs font-semibold text-[#8C383E] dark:text-[#E59344]">
-                {auction.bidCount} {auction.bidCount === 1 ? "Sealed Dealer Bid" : "Sealed Dealer Bids"}
-              </span>
-            </div>
-          </div>
-
-          {/* Action CTAs */}
+        <div className="mt-4 pt-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Link
-              href={`/seller/listings/${auction.id}`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#8C383E] dark:bg-[#E59344] hover:bg-[#752B30] dark:hover:bg-[#D9822F] text-white text-xs sm:text-sm font-bold transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md border font-mono text-xs font-bold",
+                badgeConfig.chipClass
+              )}
             >
-              <span>{auction.status === "ACTIVE" ? "Live Floor" : "View Details"}</span>
-              <ArrowUpRight className="w-3.5 h-3.5" weight="bold" />
-            </Link>
+              <ArrowUpRight weight="bold" className="w-3.5 h-3.5 shrink-0" />
+              <span>{badgeConfig.chipText}</span>
+            </span>
           </div>
+
+          <Link
+            href={`/seller/listings/${auction.id}`}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#8C383E] dark:bg-[#E59344] hover:bg-[#752B30] dark:hover:bg-[#D9822F] text-white text-xs font-bold transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          >
+            <span>View Details</span>
+            <ArrowUpRight className="w-3.5 h-3.5" weight="bold" />
+          </Link>
         </div>
       </div>
-    </article>
+    </div>
   );
 }
