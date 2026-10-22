@@ -1099,16 +1099,17 @@ Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
 ### `DealerActiveBidsView` (Milestone 5.3 / Page 5.6)
 
 Files: `components/dealer/DealerActiveBidsView.tsx`, `app/(dealer)/dealer/active-bids/page.tsx`  
-Last updated: 2026-10-20  
+Last updated: 2026-10-22  
 Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
 
 | Property | Class / Implementation Pattern |
 | --- | --- |
-| Exposure Summary | Committed bid volume calculated from integer CAD cents (`formatCadCents`) and active lots count |
-| Status Badges | `LEAD_ESTIMATE` (Green leading corridor) vs `OUTBID_ESTIMATE` (Amber/Crimson alert) |
-| Urgency Timers | Sub-15min red countdown pulse alerting dealer to raise bid before auction closing |
-| 1-Click Upward Revision | "Raise Bid" action directly opening `SealedBidSlip` with upward revision enforcement |
-| Filter Tabs | All Placed, Leading Corridor, and Outbid Attention segmented filter pills |
+| Page Header | Clean, open, borderless FinTech header: direct typography, clean subtitle, and "Explore Wholesale Floor" quick link (removed redundant badge chips) |
+| Unified Stats Bar | Single rounded-2xl container with vertical dividing rules (`lg:divide-x divide-portal-border`) matching Seller Overview: Committed Bid Volume (`$141,250 CAD`), Total Dealer Bids (`4`), Leading Corridor (`2`), and Active Auctions (`4` with `LIVE` chip) |
+| Filter & Search Bar | Segmented status pills with counter chips (`All Placed`, `Leading`, `Attention Needed`) + live instant search input |
+| Active Bid Row Cards | 16/10 thumbnail with Grade badge & brand watermark logo, VIN/km/city metadata, title, competitive rank badge, and closing countdown |
+| Urgency Styling | Sub-15m pulse indicator with sleek top gradient accent bar (`bg-gradient-to-r from-red-500 via-amber-500 to-red-500`) replacing harsh border outlines |
+| Modern Action Buttons | Dual action group: `Inspect` dossier link and `Raise Bid` with `ArrowUpRight` icon matching card background with brand hover accent |
 
 ---
 
