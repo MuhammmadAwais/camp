@@ -151,7 +151,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 5.7: Won Matches & Offline Inspection Logger**
   - **Route:** `/dealer/won-matches`
   - **Component:** `DealerWonMatchesView.tsx`
-  - **Features:** Seller contact unsealed, 24h appointment countdown clock, appointment outcome logger (`COMPLETED` with final transaction price, `NO_SHOW`, or `DECLINED_AFTER_INSPECTION` with reason).
+  - **Features:** Unified 4-metric executive overview bar, 2-column dossier and seller communication stream, portaled `z-[9999]` inspection & settlement modal with body scroll lock, dark backdrop dimming persistent sidebar, 4-status interactive cards, live CAD variance comparison against agreed winning bid, one-click technician inspection findings tags, and portaled printable digital QR intake pass.
 - [x] **Page 5.8: Dealership Team Management** (`DEALER_ADMIN` role only)
   - **Route:** `/dealer/team`
   - **Component:** `DealerTeamView.tsx`

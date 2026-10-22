@@ -1116,15 +1116,18 @@ Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
 ### `DealerWonMatchesView` (Milestone 5.3 / Page 5.7)
 
 Files: `components/dealer/DealerWonMatchesView.tsx`, `app/(dealer)/dealer/won-matches/page.tsx`  
-Last updated: 2026-10-20  
+Last updated: 2026-10-22  
 Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
 
 | Property | Class / Implementation Pattern |
 | --- | --- |
-| Unsealed Seller Contact | Full contact dossier: Seller legal name, verified phone number with `tel:` link, email with `mailto:`, and city/province |
-| QR Intake Pass | QR code display with voucher pass code for dealership intake desk scanning |
-| Handover Outcome Logger | Interactive settlement modal supporting `COMPLETED`, `RENEGOTIATED_LOWER`, `NO_SHOW`, and `DECLINED_AFTER_INSPECTION` |
-| Financial Finality | Settlement price stored and displayed in integer CAD cents (`formatCadCents`) with technician inspection notes |
+| Page Header | Open, borderless FinTech header: direct typography, clean subtitle, and "Explore Wholesale Floor" quick link (removed redundant badge chips) |
+| Unified Stats Bar | Single rounded-2xl container with vertical dividing rules (`lg:divide-x divide-portal-border`) matching Seller Overview: Total Won Value (`$79,750 CAD`), Total Won Lots (`2 Lots`), Confirmed Intake (`1 Scheduled`), and Settled Handovers (`$41,500 CAD` with `VERIFIED` chip) |
+| Status Filters | Segmented filter pills with count chips: `All Won Matches`, `Scheduled Intake` (blue pulse), and `Settled & Paid` (emerald check) |
+| Won Match Cards | Anti-boxy, single-level `rounded-2xl` card: eliminates nested card-in-card boxes. Integrates vehicle identity, specs, verified seller contacts, and agreed wholesale price into a clean 2-column flow |
+| Interactive Digital Pass | Compact QR pass trigger button (`#btn-view-qr-pass`) launching a full digital intake scanner modal with QR graphic for service drive intake |
+| Handover Outcome Logger | Interactive settlement modal supporting `COMPLETED`, `RENEGOTIATED_LOWER`, `NO_SHOW`, and `DECLINED_AFTER_INSPECTION` with integer CAD cents tracking and technician notes |
+| Action Button Styling | `Log Outcome` action button matching card background with subtle border, brand hover state, and `FileCheck2` + `ArrowUpRight` icons |
 
 ---
 
@@ -1418,6 +1421,21 @@ Mode: Borderless Background Continuity
 | Metric Bar Dividers | Subtly softened horizontal and vertical dividers (`border-portal-border-subtle/60`) for clean executive telemetry presentation without boxed container borders. |
 | In-Context Vehicle Switcher | Top breadcrumb integrates `#btn-switch-vehicle-auction` opening `VehicleSwitcherModal` for fast multi-car switching directly from the live auction telemetry screen. |
 
+---
 
+### `DealerWonMatches Inspection & Settlement Modal` (Portaled FinTech Modal System)
 
+File: `components/dealer/DealerWonMatchesView.tsx`  
+Last updated: 2026-10-22  
+Mode: Dealership Intake & Settlement Modal (Portaled `z-[9999]`)
 
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Root Portal Stacking | Portaled directly to `document.body` via `createPortal(modal, document.body)` with `z-[9999]`. Covers the persistent app sidebar (`z-50`) and header, eliminating sidebar bleed-through and preventing sidebar interaction while modal is open. |
+| Background Scroll Lock | `useEffect` monitors `editingMatch` and `selectedQrMatch`. Sets `document.body.style.overflow = "hidden"` on mount and cleanly restores on close or unmount. Supports `Escape` key dismissal. |
+| Backdrop & Container | `fixed inset-0 z-[9999] bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto`. Modal card: `w-full max-w-2xl rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 shadow-2xl space-y-5 my-auto max-h-[92vh] overflow-y-auto`. |
+| Vehicle Dossier Context Strip | Displays vehicle thumbnail, Year/Make/Model/Trim, VIN, mileage in km, and agreed winning offer in CAD integer format. |
+| 4-Card Status Selector | Replaced native `<select>` with 4 interactive cards: `COMPLETED` (Emerald `CheckCircle2`), `APPOINTMENT_CONFIRMED` (Sky `Calendar`), `RENEGOTIATED_LOWER` (Amber `AlertTriangle`), and `DECLINED_AFTER_INSPECTION` (Rose `XCircle`). |
+| Dynamic Settlement Price & Delta | Live CAD variance computation against original accepted offer. Displays real-time delta badges (e.g. `✓ 100% of Agreed Offer` or `▼ -$1,000 CAD (-2.6% deduction)`). When renegotiated lower is chosen, provides quick deduction chips (`-$500`, `-$1,000`, `-$1,500`, `-$2,500`). If declined, automatically voids payout ($0.00 CAD). |
+| Technician Quick Rationale Chips | 1-click inspection finding tags (`+ Hoist check complete`, `+ OBD-II scan 0 DTCs`, `+ Paint depth verified`, `+ Brake wear matched photos`, `+ Both key fobs received`, `+ Bill of Sale signed`) that append directly into the notes textarea with proper punctuation. |
+| Digital Intake Pass Modal | Also portaled to `document.body` with `z-[9999]`, background scroll lock, QR intake scanner graphic, print voucher trigger, and seller contact details. |
