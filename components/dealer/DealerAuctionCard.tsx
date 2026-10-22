@@ -7,9 +7,8 @@ import {
   Clock,
   Car,
   CheckCircle2,
-  Gavel,
   ArrowRight,
-  MapPin,
+  ArrowUpRight,
   Lock,
 } from "lucide-react";
 import type { WholesaleAuctionItem } from "@/lib/types/dealer";
@@ -53,7 +52,7 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
     setTimeLeft(calculateRemaining());
     const interval = setInterval(() => {
       setTimeLeft(calculateRemaining());
-    }, 60000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [item.auctionEndsAt]);
@@ -61,8 +60,36 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
   const msLeft = Math.max(0, new Date(item.auctionEndsAt).getTime() - Date.now());
   const isUrgent = msLeft > 0 && msLeft < 15 * 60 * 1000;
 
-  const brandMonogram = item.make.slice(0, 2).toUpperCase();
+  // Clean brand logo or crisp typographic marque
   const brandLogo = CAR_BRAND_LOGOS[item.make.toLowerCase()];
+  const brandMonogram = item.make.length <= 4 ? item.make.toUpperCase() : item.make.slice(0, 3).toUpperCase();
+
+  // Normalized human-friendly specs
+  const normalizedTransmission = item.transmission
+    ? item.transmission.toLowerCase().includes("man")
+      ? "Manual"
+      : "Automatic"
+    : "Automatic";
+
+  const normalizedDrivetrain = item.drivetrain
+    ? item.drivetrain.toLowerCase().includes("all") || item.drivetrain.toLowerCase().includes("awd")
+      ? "AWD"
+      : item.drivetrain.toLowerCase().includes("4x4") || item.drivetrain.toLowerCase().includes("4wd")
+      ? "4WD"
+      : item.drivetrain.toLowerCase().includes("fwd")
+      ? "FWD"
+      : item.drivetrain.toLowerCase().includes("rwd")
+      ? "RWD"
+      : item.drivetrain
+    : "AWD";
+
+  // Formatted countdown label without redundant "0h"
+  const formattedCountdown = React.useMemo(() => {
+    if (!isClient || !timeLeft) return "Floor Open";
+    if (timeLeft.hours === 0 && timeLeft.minutes === 0) return "Ending now";
+    if (timeLeft.hours === 0) return `${timeLeft.minutes}m left`;
+    return `${timeLeft.hours}h ${timeLeft.minutes}m left`;
+  }, [isClient, timeLeft]);
 
   return (
     <div className="group relative bg-white dark:bg-[#1E1E1E] rounded-tl-[32px] rounded-tr-[32px] rounded-bl-[32px] rounded-br-none p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between border border-gray-200/90 dark:border-white/10 hover:-translate-y-1">
@@ -75,13 +102,13 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
         }}
       />
 
-      {/* 1. Top Header Row Above Photo Canvas */}
+      {/* 1. Top Header Row: Balanced & Roomy Layout */}
       <div className="flex items-center justify-between gap-3 pb-3">
-        {/* Left Marque / Brand Icon & Vehicle Identity */}
+        {/* Left: Brand Icon & Vehicle Identity */}
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-neutral-100 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 flex items-center justify-center shrink-0 shadow-2xs">
             {brandLogo ? (
-              <div className="relative w-7 h-7">
+              <div className="relative w-6 h-6">
                 <Image
                   src={brandLogo}
                   alt={item.make}
@@ -90,7 +117,7 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
                 />
               </div>
             ) : (
-              <span className="font-headline font-black text-sm tracking-wider text-gray-800 dark:text-neutral-200">
+              <span className="font-headline font-black text-xs tracking-wider text-gray-800 dark:text-neutral-200">
                 {brandMonogram}
               </span>
             )}
@@ -106,25 +133,31 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
           </div>
         </div>
 
-        {/* Right Status Beacon / Urgency Pill */}
-        <div className="shrink-0 flex items-center gap-1.5">
+        {/* Right: Unified Single Telemetry Pill */}
+        <div className="shrink-0 flex items-center">
           <div
             className={cn(
-              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold tracking-tight border",
+              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold tracking-tight border shadow-2xs whitespace-nowrap",
               isUrgent
-                ? "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30 animate-pulse"
-                : "bg-neutral-100 dark:bg-white/[0.08] text-gray-800 dark:text-neutral-200 border-gray-200 dark:border-white/10"
+                ? "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30"
+                : "bg-neutral-100 dark:bg-white/[0.06] text-gray-800 dark:text-neutral-200 border-gray-200/80 dark:border-white/10"
             )}
           >
-            <Clock className={cn("w-3 h-3", isUrgent ? "text-red-500" : "text-portal-primary")} />
+            <span
+              className={cn(
+                "w-1.5 h-1.5 rounded-full shrink-0",
+                isUrgent
+                  ? "bg-red-500 animate-pulse"
+                  : "bg-[#8C383E] dark:bg-[#E59344] animate-pulse shadow-[0_0_6px_rgba(140,56,62,0.6)] dark:shadow-[0_0_6px_rgba(229,147,68,0.6)]"
+              )}
+            />
             <span>
-              {isClient && timeLeft ? `${timeLeft.hours}h ${timeLeft.minutes}m left` : "Floor Open"}
+              {item.totalBidsPlaced} {item.totalBidsPlaced === 1 ? "bid" : "bids"}
             </span>
-          </div>
-
-          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-neutral-100 dark:bg-white/[0.08] text-gray-700 dark:text-neutral-300 border border-gray-200 dark:border-white/10 text-[11px] font-mono">
-            <Lock className="w-2.5 h-2.5 text-portal-text-muted" />
-            <span>{item.totalBidsPlaced} bids</span>
+            <span className="text-gray-300 dark:text-white/20 font-normal">•</span>
+            <span className={cn(isUrgent ? "text-red-600 dark:text-red-400" : "text-gray-600 dark:text-neutral-300")}>
+              {formattedCountdown}
+            </span>
           </div>
         </div>
       </div>
@@ -132,7 +165,7 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
       {/* 2. Vehicle Photo Canvas (Clean & Tall, links to Inspection) */}
       <Link
         href={`/dealer/auctions/${item.id}`}
-        className="relative h-56 sm:h-60 w-full rounded-[24px] overflow-hidden bg-neutral-100 dark:bg-white/[0.04] shrink-0 block cursor-pointer"
+        className="relative h-56 sm:h-60 w-full rounded-[24px] overflow-hidden bg-neutral-100 dark:bg-white/[0.04] shrink-0 block cursor-pointer group/photo"
         aria-label={`View details for ${item.year} ${item.make} ${item.model}`}
       >
         {item.thumbnailUrl ? (
@@ -141,7 +174,7 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
             alt={`${item.year} ${item.make} ${item.model}`}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 380px"
-            className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+            className="object-cover object-center transition-transform duration-700 ease-out group-hover/photo:scale-105"
             unoptimized
           />
         ) : (
@@ -160,9 +193,9 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
             <div className="flex items-center gap-2 font-semibold text-gray-800 dark:text-neutral-200 whitespace-nowrap overflow-hidden">
               <span>{item.mileageKm.toLocaleString()} km</span>
               <span className="text-gray-300 dark:text-white/20 font-normal">•</span>
-              <span>{item.transmission || "Automatic"}</span>
+              <span>{normalizedTransmission}</span>
               <span className="text-gray-300 dark:text-white/20 font-normal">•</span>
-              <span>{item.drivetrain || "AWD"}</span>
+              <span>{normalizedDrivetrain}</span>
             </div>
 
             {/* VIN & Carfax Status */}
@@ -172,8 +205,8 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
                 ···{item.vin.slice(-6)}
               </span>
               <span className="text-gray-300 dark:text-white/20 font-normal">•</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-semibold inline-flex items-center gap-0.5">
-                <CheckCircle2 className="w-3 h-3 shrink-0" />
+              <span className="text-emerald-700 dark:text-emerald-400 font-semibold inline-flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                 Verified Carfax
               </span>
             </div>
@@ -185,35 +218,36 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
 
         {/* Bottom Bid Telemetry & Direct Actions */}
         <div className="pt-1 flex items-end justify-between min-h-[58px]">
-          <div className="flex flex-col justify-end max-w-[calc(100%-84px)] pr-2">
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
+          <div className="flex flex-col justify-end max-w-[calc(100%-80px)] pr-2">
+            <div className="flex items-center gap-2 mb-1 flex-nowrap">
               {item.myCurrentBidCents ? (
                 <>
-                  <span className="font-headline text-lg sm:text-xl font-black text-gray-900 dark:text-white tracking-tight whitespace-nowrap">
+                  <span className="font-headline text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight whitespace-nowrap">
                     {formatCadCents(item.myCurrentBidCents)}
                   </span>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md border font-mono text-[10px] font-bold bg-portal-primary/10 text-portal-primary border-portal-primary/25 whitespace-nowrap">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border font-mono text-[10.5px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25 shrink-0 whitespace-nowrap">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     Active Bid
                   </span>
                 </>
               ) : (
                 <>
-                  <span className="font-headline text-base sm:text-lg font-bold text-gray-500 dark:text-neutral-400 tracking-tight whitespace-nowrap">
+                  <span className="font-headline text-lg sm:text-xl font-bold text-gray-900 dark:text-white tracking-tight whitespace-nowrap">
                     No Bid Placed
                   </span>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md border font-mono text-[10px] font-semibold bg-neutral-100 dark:bg-white/[0.08] text-gray-600 dark:text-neutral-300 border-gray-200 dark:border-white/10 whitespace-nowrap">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md border font-mono text-[10.5px] font-semibold bg-neutral-100 dark:bg-white/[0.08] text-gray-600 dark:text-neutral-300 border-gray-200 dark:border-white/10 shrink-0 whitespace-nowrap">
                     Floor Open
                   </span>
                 </>
               )}
             </div>
 
-            <div className="flex items-center gap-2 pt-0.5">
+            <div className="pt-1">
               <Link
                 href={`/dealer/auctions/${item.id}`}
-                className="inline-flex items-center gap-1 text-[11px] font-semibold text-portal-text-muted hover:text-portal-primary transition-colors group/inspect"
+                className="inline-flex items-center gap-1 text-[11px] font-medium text-portal-text-muted hover:text-portal-primary transition-colors group/inspect"
               >
-                <span>Inspect details</span>
+                <span>Inspect details & specs</span>
                 <ArrowRight className="w-3 h-3 transition-transform group-hover/inspect:translate-x-0.5" />
               </Link>
             </div>
@@ -221,7 +255,7 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
         </div>
       </div>
 
-      {/* 4. Docked Concave Corner Notch & Sealed Bid Action Squircle Button */}
+      {/* 4. Docked Concave Corner Notch & Action Squircle Button (Card background with accent hover) */}
       <div className="absolute -bottom-[1px] -right-[1px] z-20 pointer-events-auto">
         <div className="relative w-[78px] h-[78px] bg-white dark:bg-[#121212] rounded-tl-[26px] border-t border-l border-gray-200/90 dark:border-white/10 flex items-center justify-center">
           {/* Top Concave Fillet Curve */}
@@ -260,15 +294,15 @@ export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
             />
           </svg>
 
-          {/* Docked Action Button: Launches Sealed Bid Slip Modal */}
+          {/* Docked Action Button: Card-matched background with accent hover color and sleek ArrowUpRight icon */}
           <button
             type="button"
             onClick={() => onOpenBid(item)}
-            className="w-[52px] h-[52px] rounded-[18px] bg-[#8C383E] dark:bg-[#E59344] hover:bg-[#752B30] dark:hover:bg-[#D9822F] text-white shadow-[0_4px_14px_rgba(140,56,62,0.3)] dark:shadow-[0_4px_14px_rgba(229,147,68,0.3)] flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 group/btn"
+            className="w-[52px] h-[52px] rounded-[18px] bg-white dark:bg-[#202020] text-gray-900 dark:text-white border border-gray-200/90 dark:border-white/15 shadow-[0_4px_14px_rgba(0,0,0,0.06)] hover:bg-[#8C383E] hover:text-white dark:hover:bg-[#E59344] dark:hover:text-[#121212] hover:border-transparent dark:hover:border-transparent hover:shadow-[0_8px_24px_rgba(140,56,62,0.3)] dark:hover:shadow-[0_8px_24px_rgba(229,147,68,0.3)] flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 group/btn"
             aria-label={item.myCurrentBidCents ? `Raise bid on ${item.model}` : `Place sealed bid on ${item.model}`}
             title={item.myCurrentBidCents ? "Raise Sealed Bid" : "Place Sealed Bid"}
           >
-            <Gavel className="w-5 h-5 transition-transform group-hover/btn:scale-110" />
+            <ArrowUpRight className="w-5 h-5 transition-transform duration-200 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
           </button>
         </div>
       </div>

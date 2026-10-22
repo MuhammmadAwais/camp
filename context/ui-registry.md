@@ -1045,38 +1045,38 @@ Mode: Autumn Editorial Dual-Theme (Porcelain Ivory Light / Deep Obsidian Dark)
 
 ### `DealerInventoryFeed` & `DealerAuctionCard` (Milestone 5.2 / Page 5.3)
 
-Files: `components/dealer/DealerInventoryFeed.tsx`, `components/dealer/DealerAuctionCard.tsx`, `components/dealer/DealerHeader.tsx`, `app/(dealer)/dealer/inventory/page.tsx`  
+Files: `components/dealer/DealerInventoryFeed.tsx`, `components/dealer/DealerAuctionCard.tsx`, `app/(dealer)/layout.tsx`, `app/(dealer)/dealer/inventory/page.tsx`  
 Last updated: 2026-10-22  
 Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
 
 | Property | Class / Implementation Pattern |
 | --- | --- |
-| Streamlined Header | Removed monthly quota, admin center, and seller portal clutter from `DealerHeader.tsx`. Clean brand mark + Dealership identity (`Pfaff Porsche OMVIC-481920`) |
-| Open Page Header | Removed heavy dark box banner. Replaced with open title, friendly subline, and 2 metric counter chips (`X Available`, `Y Active Bids`) |
-| Signature Notched Card | Reuses `SellerAuctionCard` notched-corner geometry with smooth concave SVG fillets (`w-[78px] h-[78px]` pocket) and shadow excision mask |
-| Automaker Marque | Authentic brand logos (`toyota`, `ford`, `honda`, `polestar`, `mitsubishi`, `hyundai`, `cadillac`, `jeep`) with clean monogram fallback |
-| Clean Photo Canvas | `rounded-[24px]` tall photo canvas without intrusive overlay chips; direct click navigation to `/dealer/auctions/[id]` |
-| Key Specs & Carfax | Mileage in km, Transmission, Drivetrain, truncated VIN (`···123456`), and green `Verified Carfax` badge |
-| Sealed Bid Telemetry | Clear display of placed sealed bid (`$32,500 CAD` with `Active Bid` chip) or `No Bid Placed` (`Floor Open` chip) |
-| Docked Squircle Action | `w-[52px] h-[52px]` squircle button with `Gavel` icon in the docked bottom-right notch triggering `SealedBidSlip` modal immediately |
-| Direct Inspect Link | Subtle `Inspect details` link with arrow icon next to bid telemetry |
-| Streamlined Filter Bar | Clean floating search input and 3 select dropdowns (Manufacturer, Max Mileage, Sort) without bulky nested boxes |
+| Top Navbar Removed | Eliminated redundant `<DealerHeader />` from `DealerLayout`; navigation is handled cleanly by persistent `<Sidebar />` with integrated ThemeToggle |
+| Open Page Header | Open title, friendly subline, and 2 metric counter chips (`X Available`, `Y Active Bids`) |
+| Signature Notched Card | Exact signature notched geometry preserved (`w-[78px] h-[78px]` concave fillet pocket, SVG corner curves, masked shadow excision) |
+| Automaker Marque Badge | Polished `w-9 h-9 rounded-xl` container with authentic brand logo or crisp typographic marque (`BMW`, `TSLA`, `POR`) |
+| Single Telemetry Pill | Consolidated live bid count & clean countdown (`● 23 bids • 11m left`) into one compact pill to prevent title truncation |
+| Clean Normalized Specs | Normalized human-readable specs (`19,800 km • Automatic • AWD`) preventing long-string overflow, plus `Verified Carfax` & VIN |
+| Unbroken Bid Telemetry | Non-wrapping status chips (`No Bid Placed` + `Floor Open` or `$32,500 CAD` + `● Active Bid`) with subtle `Inspect details & specs` link |
+| Card-Matched Docked Button | Docked squircle button uses card background (`bg-white dark:bg-[#202020]`) with border; features `ArrowUpRight` action icon and vibrant brand hover color (`hover:bg-[#8C383E] dark:hover:bg-[#E59344]`) |
 
 ---
 
 ### `VehicleInspectionView` (Milestone 5.2 / Page 5.4)
 
 Files: `components/dealer/VehicleInspectionView.tsx`, `app/(dealer)/dealer/auctions/[id]/page.tsx`, `app/api/dealer/inventory/[id]/route.ts`  
-Last updated: 2026-10-20  
+Last updated: 2026-10-22  
 Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
 
 | Property | Class / Implementation Pattern |
 | --- | --- |
-| High-Res Gallery | Aspect 16:9 primary viewport with interactive chevrons, thumbnail strip, and full-screen lightbox zoom mode |
-| Condition Hotspots | Disclosed damage hotspot panel list displaying panel names, severity tags (Minor, Moderate, Severe), and photo attachments |
-| Decoded NHTSA Specs | 17-char VIN with 1-click clipboard copy, Engine spec, Drivetrain, Transmission, Odometer in KM, Paint codes, Key fobs count |
-| Carfax Canadian Title | Accident-free badge, documented service records count, previous owners count, and lien-free disclosure status |
-| Sticky Bid Telemetry | Active placed dealer bid in integer CAD cents, sealed total bid count, reserve status, and 1-click trigger for `SealedBidSlip` |
+| Top Breadcrumb & VIN | `← Back to Inventory • VIN: {vin}` with 1-click VIN copy button |
+| Main Header Banner | Borderless canvas gradient dissolve (`bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent`), vehicle title, mileage, distance, live pulse badge |
+| Signature 4-Metric Bar | 4-column scannable bar with dividers: `Your Sealed Bid`, `Dealer Activity` (private sealed bids), `Time Remaining` (countdown), and `Wholesale Protection` (OMVIC & AMVIC regulated escrow) |
+| High-Res Gallery | Direct-canvas 16/10 rounded-2xl media viewport with chevrons, thumbnail strip, and lightbox zoom |
+| Condition & Disclosures | Seamless condition section (zero card nesting): numbered imperfection rows with severity badges, descriptions, flaw photos, and an authentic italicized seller notes quote block |
+| Unified Dealership Console | Sticky right console integrating 3 prioritized appraisal tiers into ONE container: (1) Bidding station & action CTA; (2) 2x2 scannable Vehicle Vitals; (3) Carfax Title & provenance verification |
+| Anti-Card-Soup Pattern | Eliminated 6 separate nested bordered card containers in favor of an open narrative flow on the left and a unified action console on the right |
 
 ---
 

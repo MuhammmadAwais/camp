@@ -13,17 +13,14 @@ import {
   AlertTriangle,
   FileText,
   MapPin,
-  Calendar,
-  Gauge,
-  Key,
-  Car,
   Maximize2,
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
   Copy,
   Check,
-  Share2,
+  DollarSign,
+  ArrowUpRight,
+  Sparkles,
 } from "lucide-react";
 import type { WholesaleAuctionItem } from "@/lib/types/dealer";
 import { SealedBidSlip } from "@/components/dealer/SealedBidSlip";
@@ -68,7 +65,7 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
     totalMs: number;
   }>({ hours: 0, minutes: 0, seconds: 0, totalMs: 0 });
 
-  // Update countdown clock
+  // Update live countdown clock
   useEffect(() => {
     const updateCountdown = () => {
       const diff = new Date(vehicle.auctionEndsAt).getTime() - Date.now();
@@ -106,27 +103,35 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
   const photos = vehicle.photos && vehicle.photos.length > 0 ? vehicle.photos : [vehicle.thumbnailUrl];
 
   return (
-    <div className="space-y-6 pb-16">
-      {/* Top Breadcrumb & Quick Actions Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <Link
-          href="/dealer/inventory"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-portal-text-muted hover:text-portal-text transition-colors group"
-        >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          <span>Back to Wholesale Trading Floor</span>
-        </Link>
+    <div className="space-y-6 pb-16 animate-in fade-in duration-300">
+      {/* 1. Top Breadcrumb & Quick Actions Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dealer/inventory"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-portal-text-muted hover:text-portal-text transition-colors group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <span>Back to Inventory</span>
+          </Link>
+          <span className="text-portal-border hidden sm:inline">•</span>
+          <span className="text-xs font-mono text-portal-text-muted hidden sm:inline">
+            VIN: {vehicle.vin}
+          </span>
+        </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          {/* Quick Copy VIN Pill */}
           <button
             type="button"
             onClick={handleCopyVin}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text text-xs font-mono transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text text-xs font-mono transition-colors cursor-pointer shadow-2xs"
+            title="Copy full 17-digit VIN"
           >
             {copiedVin ? (
               <>
                 <Check className="w-3.5 h-3.5 text-emerald-500" />
-                <span>VIN Copied</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">VIN Copied</span>
               </>
             ) : (
               <>
@@ -138,106 +143,167 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
         </div>
       </div>
 
-      {/* Hero Title & Live Auction Status Bar */}
-      <div className="rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-md bg-portal-primary/10 text-portal-primary text-xs font-bold font-mono tracking-wider uppercase border border-portal-primary/20">
-              Grade {vehicle.damageGrade} Condition
-            </span>
-            <span
-              className={`px-2.5 py-0.5 rounded-md text-xs font-bold font-mono tracking-wider uppercase border ${
-                vehicle.reserveStatus === "RESERVE_MET"
-                  ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/25"
-                  : vehicle.reserveStatus === "NO_RESERVE"
-                  ? "bg-amber-500/10 text-amber-500 border-amber-500/25"
-                  : "bg-portal-surface-hover text-portal-text-muted border-portal-border"
-              }`}
-            >
-              {vehicle.reserveStatus.replace("_", " ")}
-            </span>
-            <span className="px-2.5 py-0.5 rounded-md bg-portal-surface-hover text-portal-text-muted text-xs font-mono border border-portal-border flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-portal-primary" />
-              {vehicle.city}, {vehicle.province} ({vehicle.distanceKm} km away)
-            </span>
+      {/* 2. Main Vehicle Header Banner (Sleek, Open, Non-Boxy) */}
+      <div className="bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent backdrop-blur-xs rounded-2xl p-5 sm:p-6 space-y-6 border-0 shadow-none">
+        {/* Title & Live Status Row */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Live 24h Auction</span>
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium font-mono uppercase bg-portal-surface-hover text-portal-text-muted border border-portal-border/60">
+                Grade {vehicle.damageGrade} Condition
+              </span>
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-headline text-portal-text tracking-tight">
+              {vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}
+            </h1>
+            <p className="text-xs sm:text-sm text-portal-text-muted mt-1.5 flex flex-wrap items-center gap-2">
+              <span className="font-mono font-medium text-portal-text">{vehicle.mileageKm.toLocaleString()} km</span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-portal-primary" />
+                <span>{vehicle.city}, {vehicle.province} ({vehicle.distanceKm} km away)</span>
+              </span>
+              <span>•</span>
+              <span>{vehicle.drivetrain}</span>
+            </p>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline tracking-tight">
-            {vehicle.year} {vehicle.make} {vehicle.model}
-          </h1>
-          <p className="text-sm font-medium text-portal-text-muted">{vehicle.trim}</p>
-        </div>
-
-        {/* Right Auction Urgency Clock & Bid CTA */}
-        <div className="flex flex-wrap items-center gap-4 lg:self-center">
-          {/* Digital Timer */}
-          <div
-            className={`px-4 py-3 rounded-xl border text-center font-mono ${
-              isUrgent
-                ? "bg-red-600 text-white border-red-700 animate-pulse"
-                : "bg-portal-surface-hover border-portal-border text-portal-text"
-            }`}
-          >
-            <div className="flex items-center justify-center gap-1.5 text-[10px] uppercase font-bold tracking-wider opacity-90 mb-0.5">
-              <Clock className="w-3.5 h-3.5" />
-              <span>Auction Closes In</span>
-            </div>
-            <div className="text-xl sm:text-2xl font-bold tracking-tight">
-              {String(timeLeft.hours).padStart(2, "0")}:{String(timeLeft.minutes).padStart(2, "0")}:
-              {String(timeLeft.seconds).padStart(2, "0")}
-            </div>
-          </div>
-
-          {/* Place / Revise Bid Action */}
-          <div className="flex flex-col gap-1">
+          {/* Quick Header CTA */}
+          <div className="flex flex-col items-start lg:items-end gap-1.5">
             <button
               type="button"
               onClick={() => setIsBidSlipOpen(true)}
-              className="px-6 py-3.5 rounded-xl font-bold text-sm bg-portal-primary hover:bg-portal-primary-hover text-white transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-portal-primary hover:bg-portal-primary-hover text-white shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
             >
-              <Gavel className="w-4 h-4" />
+              <ArrowUpRight className="w-4 h-4" />
               <span>{vehicle.myCurrentBidCents ? "Revise Sealed Bid" : "Place Sealed Bid"}</span>
             </button>
-            <span className="text-[10px] text-portal-text-muted text-center font-mono">
-              OMVIC / AMVIC Binding
+            <span className="text-[10px] text-portal-text-muted font-mono">
+              OMVIC & AMVIC Wholesale Binding
             </span>
+          </div>
+        </div>
+
+        {/* 4-Metric Appraisal Bar */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle/60">
+          {/* Metric 1: Your Dealership Bid */}
+          <div className="flex items-center justify-between pr-0 sm:pr-4">
+            <div>
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
+                Your Sealed Bid
+              </span>
+              <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
+                {vehicle.myCurrentBidCents
+                  ? formatCadCents(vehicle.myCurrentBidCents)
+                  : "No Bid Placed"}
+              </span>
+              <span className="text-[11px] text-portal-text-muted mt-0.5 block">
+                {vehicle.myCurrentBidCents ? "Active • Confidential to you" : "Open wholesale floor"}
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
+              <DollarSign className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Metric 2: Dealer Competition */}
+          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4 pr-0 sm:pr-4">
+            <div>
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
+                Dealer Activity
+              </span>
+              <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
+                {vehicle.totalBidsPlaced} {vehicle.totalBidsPlaced === 1 ? "Bid Placed" : "Bids Placed"}
+              </span>
+              <span className="text-[11px] text-portal-text-muted mt-0.5 block flex items-center gap-1">
+                <Lock className="w-3 h-3 text-portal-primary" />
+                <span>Encrypted sealed bids</span>
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
+              <Gavel className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Metric 3: Time Remaining */}
+          <div className="flex items-center justify-between lg:border-l border-portal-border-subtle/60 lg:pl-4 pr-0 sm:pr-4">
+            <div>
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
+                Time Remaining
+              </span>
+              <span className="font-mono text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block tabular-nums">
+                {String(timeLeft.hours).padStart(2, "0")}h {String(timeLeft.minutes).padStart(2, "0")}m {String(timeLeft.seconds).padStart(2, "0")}s
+              </span>
+              <span className="text-[11px] text-portal-text-muted mt-0.5 block">
+                {isUrgent ? "Closing soon" : "24-hour closing floor"}
+              </span>
+            </div>
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                isUrgent
+                  ? "bg-red-500/10 text-red-600 dark:text-red-400 animate-pulse"
+                  : "bg-portal-surface-hover text-portal-primary"
+              }`}
+            >
+              <Clock className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Metric 4: Title & Escrow */}
+          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4">
+            <div>
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
+                Wholesale Protection
+              </span>
+              <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
+                Verified Escrow
+              </span>
+              <span className="text-[11px] text-portal-text-muted mt-0.5 block">
+                OMVIC & AMVIC regulated
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main 2-Column Inspection Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column (8 cols): Photo Gallery & Damage Inspector */}
-        <div className="lg:col-span-8 space-y-6">
-          {/* High-Resolution Media Gallery */}
-          <div className="rounded-2xl border border-portal-border bg-portal-surface p-4 sm:p-5 shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-1">
-              <div className="flex items-center gap-2">
-                <Car className="w-4 h-4 text-portal-primary" />
-                <h2 className="text-sm font-bold text-portal-text uppercase tracking-wider font-mono">
-                  Vehicle Gallery ({photos.length} High-Res Photos)
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsLightboxOpen(true)}
-                className="inline-flex items-center gap-1.5 text-xs text-portal-text-muted hover:text-portal-text font-mono transition-colors cursor-pointer"
-              >
-                <Maximize2 className="w-3.5 h-3.5" />
-                <span>Full-Screen Lightbox</span>
-              </button>
-            </div>
-
-            {/* Main Stage Viewport */}
-            <div className="relative aspect-16/9 w-full rounded-xl overflow-hidden bg-black/90 border border-portal-border group">
+      {/* 3. Main 2-Column Inspection Grid (Streamlined & Hierarchy-Driven) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Column (7 cols): Immersive Gallery & Unified Condition Dossier */}
+        <div className="lg:col-span-7 space-y-6">
+          {/* High-Resolution Media Gallery (Direct Canvas) */}
+          <div className="space-y-3">
+            <div className="relative aspect-16/10 w-full rounded-2xl overflow-hidden bg-black/90 border border-portal-border group shadow-sm">
               <Image
                 src={photos[selectedPhotoIndex]}
                 alt={`${vehicle.make} ${vehicle.model} - Photo ${selectedPhotoIndex + 1}`}
                 fill
                 priority
                 className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 65vw"
+                sizes="(max-width: 1024px) 100vw, 60vw"
               />
+
+              {/* Top Controls Overlay */}
+              <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                <span className="px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-white text-[11px] font-mono font-medium pointer-events-auto">
+                  {selectedPhotoIndex + 1} / {photos.length} Photos
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsLightboxOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-black/70 hover:bg-black/90 text-white text-[11px] font-mono backdrop-blur-md transition-colors cursor-pointer pointer-events-auto"
+                >
+                  <Maximize2 className="w-3.5 h-3.5" />
+                  <span>Lightbox</span>
+                </button>
+              </div>
 
               {/* Prev / Next Chevrons */}
               {photos.length > 1 && (
@@ -264,24 +330,19 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
                   </button>
                 </>
               )}
-
-              {/* Bottom Photo Index Indicator */}
-              <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-xs text-white text-xs font-mono font-medium">
-                {selectedPhotoIndex + 1} / {photos.length}
-              </div>
             </div>
 
             {/* Thumbnail Strip */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 no-scrollbar">
+            <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
               {photos.map((url, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => setSelectedPhotoIndex(idx)}
-                  className={`relative w-20 h-14 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                  className={`relative w-20 h-14 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
                     selectedPhotoIndex === idx
-                      ? "border-portal-primary scale-102 ring-2 ring-portal-primary/20"
-                      : "border-transparent opacity-70 hover:opacity-100"
+                      ? "border-portal-primary scale-102 ring-2 ring-portal-primary/20 shadow-xs"
+                      : "border-transparent opacity-65 hover:opacity-100"
                   }`}
                 >
                   <Image src={url} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" sizes="80px" />
@@ -290,28 +351,27 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
             </div>
           </div>
 
-          {/* Declared Damage Hotspots Inspector */}
-          <div className="rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+          {/* Unified Condition & Disclosures Section (Seamless Flow) */}
+          <div className="pt-2 space-y-4">
+            <div className="flex items-center justify-between border-b border-portal-border pb-2.5">
+              <h2 className="text-sm font-bold text-portal-text font-headline tracking-tight flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-portal-primary" />
-                <h2 className="text-sm font-bold text-portal-text uppercase tracking-wider font-mono">
-                  Condition & Declared Imperfections
-                </h2>
-              </div>
+                <span>Condition & Seller Disclosures</span>
+              </h2>
               <span className="text-xs font-mono text-portal-text-muted">
                 {vehicle.damageHotspots && vehicle.damageHotspots.length > 0
-                  ? `${vehicle.damageHotspots.length} Disclosed by Seller`
-                  : "0 Imperfections Disclosed"}
+                  ? `${vehicle.damageHotspots.length} declared imperfection`
+                  : "Clean body declared"}
               </span>
             </div>
 
+            {/* Disclosed Imperfections */}
             {vehicle.damageHotspots && vehicle.damageHotspots.length > 0 ? (
               <div className="space-y-3">
                 {vehicle.damageHotspots.map((dmg, idx) => (
                   <div
                     key={dmg.id || idx}
-                    className="p-4 rounded-xl border border-portal-border bg-portal-surface-hover/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                    className="p-4 rounded-2xl border border-portal-border bg-portal-surface flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs"
                   >
                     <div className="space-y-1.5 flex-1">
                       <div className="flex items-center gap-2">
@@ -322,10 +382,10 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${
                             dmg.severity === "MINOR"
-                              ? "bg-amber-500/10 text-amber-500"
+                              ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
                               : dmg.severity === "MODERATE"
-                              ? "bg-orange-500/10 text-orange-500"
-                              : "bg-red-500/10 text-red-500"
+                              ? "bg-orange-500/10 text-orange-500 border border-orange-500/20"
+                              : "bg-red-500/10 text-red-500 border border-red-500/20"
                           }`}
                         >
                           {dmg.severity}
@@ -337,7 +397,7 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
                     </div>
 
                     {dmg.imageUrl && (
-                      <div className="relative w-24 h-16 rounded-lg overflow-hidden border border-portal-border shrink-0 self-center sm:self-auto">
+                      <div className="relative w-24 h-16 rounded-xl overflow-hidden border border-portal-border shrink-0 self-center sm:self-auto shadow-2xs">
                         <Image
                           src={dmg.imageUrl}
                           alt={dmg.panel}
@@ -351,193 +411,167 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
                 ))}
               </div>
             ) : (
-              <div className="p-6 rounded-xl border border-dashed border-portal-border text-center space-y-2">
-                <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto" />
-                <h4 className="text-sm font-bold text-portal-text">Pristine Condition Declared</h4>
-                <p className="text-xs text-portal-text-muted max-w-md mx-auto">
-                  The seller declared no dents, paint chips, or structural scratches on any of the
-                  exterior panels. Covered by AutoNexa inaccurate description protection.
+              <div className="p-4 rounded-2xl border border-portal-border bg-portal-surface flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                <div>
+                  <h4 className="text-xs font-bold text-portal-text">Pristine Condition Declared</h4>
+                  <p className="text-xs text-portal-text-muted">
+                    No structural, cosmetic, or paint damage declared on any exterior panel.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Seller Notes Quote Block */}
+            {vehicle.sellerNotes && (
+              <div className="p-4 rounded-2xl border-l-3 border-portal-primary bg-portal-surface/80 border-y border-r border-portal-border space-y-2">
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider font-mono text-portal-text-muted">
+                  <FileText className="w-3.5 h-3.5 text-portal-primary" />
+                  <span>Seller Notes & Vehicle Provenance</span>
+                </div>
+                <p className="text-xs sm:text-sm text-portal-text-muted leading-relaxed whitespace-pre-line italic">
+                  &ldquo;{vehicle.sellerNotes}&rdquo;
                 </p>
               </div>
             )}
           </div>
-
-          {/* Seller Verified Notes */}
-          {vehicle.sellerNotes && (
-            <div className="rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 shadow-xs space-y-3">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-portal-primary" />
-                <h2 className="text-sm font-bold text-portal-text uppercase tracking-wider font-mono">
-                  Seller Notes & Included Accessories
-                </h2>
-              </div>
-              <p className="text-xs sm:text-sm text-portal-text-muted leading-relaxed whitespace-pre-line p-4 rounded-xl bg-portal-surface-hover/60 border border-portal-border">
-                {vehicle.sellerNotes}
-              </p>
-            </div>
-          )}
         </div>
 
-        {/* Right Column (4 cols): Sticky Telemetry, Bidding Slip & Spec Sheet */}
-        <div className="lg:col-span-4 space-y-6">
-          {/* Dealer Sealed-Bid Status Card */}
-          <div className="rounded-2xl border border-portal-border bg-portal-surface p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-portal-border">
-              <span className="text-xs font-bold uppercase tracking-wider font-mono text-portal-text">
-                Your Dealership Bid
-              </span>
-              <span className="px-2 py-0.5 rounded bg-portal-primary/10 text-portal-primary font-mono text-xs font-bold">
-                Pfaff Porsche
-              </span>
-            </div>
+        {/* Right Column (5 cols): Single Unified Dealership Console */}
+        <div className="lg:col-span-5">
+          <div className="rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-sm space-y-6 sticky top-6">
+            {/* Tier 1: Action Console */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold uppercase tracking-wider font-mono text-portal-text-muted">
+                  Your Dealership Bid
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full bg-portal-surface-hover text-portal-text-muted font-mono text-[11px]">
+                  Pfaff Porsche • Verified Dealer
+                </span>
+              </div>
 
-            <div className="space-y-1">
-              <span className="text-[11px] text-portal-text-muted font-mono uppercase">
-                Active Placed Amount
-              </span>
-              <div className="text-2xl font-black font-mono text-portal-text">
-                {vehicle.myCurrentBidCents
-                  ? formatCadCents(vehicle.myCurrentBidCents)
-                  : "No Bid Submitted"}
+              <div>
+                <div className="text-2xl sm:text-3xl font-black font-headline text-portal-text tracking-tight">
+                  {vehicle.myCurrentBidCents
+                    ? formatCadCents(vehicle.myCurrentBidCents)
+                    : "No Bid Placed"}
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  {vehicle.myCurrentBidCents ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10.5px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Active Sealed Bid
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md font-mono text-[10.5px] font-medium bg-portal-surface-hover text-portal-text-muted border border-portal-border">
+                      Floor Open
+                    </span>
+                  )}
+                  <span className="text-xs text-portal-text-muted font-mono">
+                    • {vehicle.totalBidsPlaced} bids placed
+                  </span>
+                </div>
               </div>
-            </div>
 
-            {/* Invariant Sealed-Bid Telemetry */}
-            <div className="p-3.5 rounded-xl bg-portal-surface-hover/80 border border-portal-border space-y-2 text-xs">
-              <div className="flex items-center justify-between font-mono">
-                <span className="text-portal-text-muted flex items-center gap-1">
-                  <Lock className="w-3.5 h-3.5 text-portal-primary" />
-                  <span>Total Sealed Bids</span>
-                </span>
-                <span className="font-bold text-portal-text">
-                  {vehicle.totalBidsPlaced} Registered
-                </span>
-              </div>
-              <div className="flex items-center justify-between font-mono">
-                <span className="text-portal-text-muted">Reserve Status</span>
-                <span
-                  className={`font-bold ${
-                    vehicle.reserveStatus === "RESERVE_MET"
-                      ? "text-emerald-500"
-                      : "text-amber-500"
-                  }`}
-                >
-                  {vehicle.reserveStatus.replace("_", " ")}
-                </span>
-              </div>
-              <p className="text-[10px] text-portal-text-muted leading-tight pt-1 border-t border-portal-border/60">
-                Sealed-Bid Secrecy Rule: Individual competitor dollar amounts remain encrypted until
-                the 24h auction countdown elapses.
+              <button
+                type="button"
+                onClick={() => setIsBidSlipOpen(true)}
+                className="w-full py-3.5 rounded-xl font-bold text-sm bg-portal-primary hover:bg-portal-primary-hover text-white transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              >
+                <ArrowUpRight className="w-4 h-4" />
+                <span>{vehicle.myCurrentBidCents ? "Revise Bid Higher" : "Submit Sealed Bid"}</span>
+              </button>
+
+              <p className="text-[11px] text-center text-portal-text-muted font-mono">
+                Sealed & private to your dealership until countdown elapses
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsBidSlipOpen(true)}
-              className="w-full py-3 rounded-xl font-bold text-xs bg-portal-primary hover:bg-portal-primary-hover text-white transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Gavel className="w-4 h-4" />
-              <span>{vehicle.myCurrentBidCents ? "Revise Bid Higher" : "Submit Sealed Bid"}</span>
-            </button>
-          </div>
+            {/* Divider */}
+            <div className="border-t border-portal-border/60" />
 
-          {/* Carfax Clean & Title Summary */}
-          <div className="rounded-2xl border border-portal-border bg-portal-surface p-5 shadow-xs space-y-3">
-            <div className="flex items-center gap-2 pb-1 border-b border-portal-border">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-portal-text">
-                Carfax Canadian Title Verification
-              </h3>
+            {/* Tier 2: Vehicle Vitals Grid (High-Value Appraisal Data) */}
+            <div className="space-y-3">
+              <span className="text-[11px] font-semibold uppercase tracking-wider font-mono text-portal-text-muted block">
+                Appraisal Vitals
+              </span>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
+                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Odometer</span>
+                  <span className="font-mono font-bold text-portal-text text-sm">
+                    {vehicle.mileageKm.toLocaleString()} km
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
+                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Powertrain</span>
+                  <span className="font-semibold text-portal-text text-sm truncate block" title={vehicle.engineSpec}>
+                    {vehicle.engineSpec ?? "2.9L Twin-Turbo"}
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
+                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Transmission</span>
+                  <span className="font-semibold text-portal-text text-sm truncate block" title={vehicle.transmission}>
+                    {vehicle.transmission}
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
+                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Drivetrain</span>
+                  <span className="font-semibold text-portal-text text-sm truncate block" title={vehicle.drivetrain}>
+                    {vehicle.drivetrain}
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
+                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Exterior Paint</span>
+                  <span className="font-semibold text-portal-text text-sm truncate block" title={vehicle.exteriorColor}>
+                    {vehicle.exteriorColor}
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
+                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Interior Trim</span>
+                  <span className="font-semibold text-portal-text text-sm truncate block" title={vehicle.interiorColor}>
+                    {vehicle.interiorColor}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-2.5 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-portal-text-muted">Accident History:</span>
-                <span className="font-bold text-emerald-500 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Accident-Free
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-portal-text-muted">Previous Owners:</span>
-                <span className="font-mono font-bold text-portal-text">
-                  {vehicle.carfaxReport?.ownersCount ?? 1} Owner
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-portal-text-muted">Documented Service Records:</span>
-                <span className="font-mono font-bold text-portal-text">
-                  {vehicle.carfaxReport?.serviceRecordsCount ?? 6} Events
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-portal-text-muted">Canadian Lien Status:</span>
-                <span className="font-bold text-emerald-500">Lien-Free Disclosed</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-portal-text-muted">Provincial Registration:</span>
-                <span className="font-mono font-bold text-portal-text">
-                  {vehicle.carfaxReport?.registrationProvince ?? "Ontario"}
-                </span>
-              </div>
-            </div>
-          </div>
+            {/* Divider */}
+            <div className="border-t border-portal-border/60" />
 
-          {/* Decoded Specifications Matrix */}
-          <div className="rounded-2xl border border-portal-border bg-portal-surface p-5 shadow-xs space-y-3">
-            <div className="flex items-center gap-2 pb-1 border-b border-portal-border">
-              <Gauge className="w-4 h-4 text-portal-primary" />
-              <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-portal-text">
-                Decoded Technical Specifications
-              </h3>
-            </div>
+            {/* Tier 3: Verified Title & Provenance (Clean, High-Trust Signals) */}
+            <div className="space-y-3">
+              <span className="text-[11px] font-semibold uppercase tracking-wider font-mono text-portal-text-muted flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Title & History Verification</span>
+              </span>
 
-            <div className="space-y-2.5 text-xs font-mono">
-              <div className="flex items-center justify-between py-1 border-b border-portal-border/50">
-                <span className="text-portal-text-muted">Odometer</span>
-                <span className="font-bold text-portal-text">
-                  {vehicle.mileageKm.toLocaleString()} km
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-1 border-b border-portal-border/50">
-                <span className="text-portal-text-muted">Engine</span>
-                <span className="font-bold text-portal-text truncate max-w-[180px]">
-                  {vehicle.engineSpec ?? "2.9L Twin-Turbo"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-1 border-b border-portal-border/50">
-                <span className="text-portal-text-muted">Drivetrain</span>
-                <span className="font-bold text-portal-text truncate max-w-[180px]">
-                  {vehicle.drivetrain}
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-1 border-b border-portal-border/50">
-                <span className="text-portal-text-muted">Transmission</span>
-                <span className="font-bold text-portal-text truncate max-w-[180px]">
-                  {vehicle.transmission}
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-1 border-b border-portal-border/50">
-                <span className="text-portal-text-muted">Exterior Paint</span>
-                <span className="font-bold text-portal-text truncate max-w-[180px]">
-                  {vehicle.exteriorColor}
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-1 border-b border-portal-border/50">
-                <span className="text-portal-text-muted">Interior Trim</span>
-                <span className="font-bold text-portal-text truncate max-w-[180px]">
-                  {vehicle.interiorColor}
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-1 border-b border-portal-border/50">
-                <span className="text-portal-text-muted">Key Fobs</span>
-                <span className="font-bold text-portal-text">{vehicle.keysCount} OEM Sets</span>
-              </div>
-              <div className="flex items-center justify-between py-1">
-                <span className="text-portal-text-muted">Fuel Requirement</span>
-                <span className="font-bold text-portal-text">
-                  {vehicle.fuelType ?? "Premium 91+"}
-                </span>
+              <div className="space-y-2.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-portal-text-muted">Accident History:</span>
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Accident-Free
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-portal-text-muted">Ownership:</span>
+                  <span className="font-mono font-semibold text-portal-text">
+                    {vehicle.carfaxReport?.ownersCount ?? 1} Owner (Lease Return)
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-portal-text-muted">Title & Lien:</span>
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                    Lien-Free Disclosed
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-portal-text-muted">Registration:</span>
+                  <span className="font-mono font-medium text-portal-text">
+                    {vehicle.carfaxReport?.registrationProvince ?? "Ontario (OMVIC Clean)"}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
