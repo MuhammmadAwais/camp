@@ -19,6 +19,8 @@ import {
   Zap,
   RefreshCw,
   Award,
+  Trophy,
+  Medal,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
 import type { ListingDetailData, UnsealedDealerBid } from "@/lib/types/seller";
@@ -117,68 +119,140 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
 
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
-      {/* Back Link & Header */}
+      {/* Top Breadcrumb & Clean Header */}
       <div className="flex items-center justify-between">
         <Link
           href={`/seller/listings/${listingId}`}
           className="inline-flex items-center gap-1.5 text-xs font-medium text-portal-text-muted hover:text-portal-text transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Live Auction Floor</span>
+          <span>Back to {auction.year} {auction.make} {auction.model} Auction</span>
         </Link>
+        <span className="text-xs font-mono text-portal-text-muted">
+          VIN: {auction.vin}
+        </span>
       </div>
 
-      {/* Outcome Header Banner */}
-      <div className="bg-portal-surface border border-portal-border rounded-2xl p-6 sm:p-8 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>24-Hour Auction Concluded</span>
-              </span>
-              <span className="text-xs font-mono text-portal-text-muted">
-                {unsealedBids.length} Certified Bids Unsealed
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold font-headline text-portal-text">
-              Select Winning Dealership Offer
-            </h1>
-            <p className="text-xs sm:text-sm text-portal-text-muted mt-1">
-              Review and select your preferred buyer for the {auction.year} {auction.make} {auction.model}.
-              You have 24 hours to lock in your accepted offer.
-            </p>
-          </div>
+      {/* Main Header Card with Dashboard-Style 4-Metric Bar (Zero Unnecessary Text) */}
+      <div className="bg-portal-surface border border-portal-border rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+        <h1 className="text-2xl sm:text-3xl font-bold font-headline text-portal-text tracking-tight">
+          Select Winning Dealership Offer
+        </h1>
 
-          {/* Highest Offer Highlight */}
-          <div className="text-left sm:text-right bg-portal-surface-hover/70 p-4 rounded-xl border border-portal-border shrink-0">
-            <span className="block text-[11px] font-semibold text-portal-text-muted uppercase tracking-wider">
-              Top Unsealed Dealer Offer
-            </span>
-            <span className="font-mono text-2xl font-black text-portal-primary block">
-              {formatCadCents(highestBid)}
-            </span>
-            {surplusAboveReserveCents > 0 && (
-              <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center sm:justify-end gap-1 mt-0.5">
+        {/* 4-Metric Performance Bar (Executive Dashboard Style with Vertical Dividers) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle">
+          {/* Col 1: Top Dealer Offer */}
+          <div className="flex items-center justify-between pr-0 sm:pr-4">
+            <div>
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
+                Top Dealer Offer
+              </span>
+              <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
+                {formatCadCents(highestBid)}
+              </span>
+              <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-0.5 block flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
                 <span>+{formatCadCents(surplusAboveReserveCents)} above reserve</span>
               </span>
-            )}
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 border border-amber-500/20">
+              <Trophy className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Col 2: Total Dealer Competition */}
+          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle sm:pl-4 pr-0 sm:pr-4">
+            <div>
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
+                Dealer Activity
+              </span>
+              <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
+                {unsealedBids.length} Verified Bids
+              </span>
+              <span className="text-[11px] text-portal-text-muted mt-0.5 block">
+                100% meet reserve floor
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
+              <Gavel className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Col 3: Acceptance Window Countdown */}
+          <div className="flex items-center justify-between lg:border-l border-portal-border-subtle lg:pl-4 pr-0 sm:pr-4">
+            <div>
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
+                Decision Window
+              </span>
+              <span className="font-mono text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block tabular-nums">
+                23h 58m Left
+              </span>
+              <span className="text-[11px] text-portal-text-muted mt-0.5 block">
+                Guaranteed price lock
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
+              <Clock className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Col 4: Regulated Dealer Escrow */}
+          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle sm:pl-4">
+            <div>
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
+                Escrow Protection
+              </span>
+              <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
+                Regulated Payout
+              </span>
+              <span className="text-[11px] text-portal-text-muted mt-0.5 block">
+                OMVIC & AMVIC compliant
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Filter / Sort Switcher */}
-        <div className="pt-2 flex items-center justify-between border-t border-portal-border">
-          <span className="text-xs text-portal-text-muted font-medium">Ranked Dealer Offers</span>
-          <div className="flex items-center gap-2">
+      {/* 3D STAGE ARENA CONTAINER WITH GRID FLOOR */}
+      <div className="relative rounded-3xl border border-portal-border bg-portal-surface/60 p-4 sm:p-6 md:p-8 space-y-6 overflow-hidden">
+        {/* Subtle Architectural Grid Pattern Overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-40 dark:opacity-20"
+          style={{
+            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+            backgroundSize: "28px 28px",
+            maskImage: "radial-gradient(ellipse 90% 70% at 50% 60%, black 50%, transparent 100%)",
+            color: "var(--portal-border)",
+          }}
+        />
+
+        {/* Section Header & Sort Switcher */}
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-portal-border-subtle">
+          <div>
+            <h2 className="text-lg font-bold font-headline text-portal-text flex items-center gap-2">
+              <span>Dealership Leaderboard</span>
+              <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-portal-surface-hover border border-portal-border text-portal-text-muted">
+                {sortedBids.length} Offers
+              </span>
+            </h2>
+            <p className="text-xs text-portal-text-muted mt-0.5">
+              Verified Canadian licensed automotive wholesale bids
+            </p>
+          </div>
+
+          {/* Sort Switcher */}
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             <span className="text-xs text-portal-text-muted">Sort by:</span>
-            <div className="inline-flex rounded-lg bg-portal-surface-hover border border-portal-border p-0.5 text-xs">
+            <div className="inline-flex rounded-xl bg-portal-surface border border-portal-border p-1 text-xs shadow-2xs">
               <button
                 type="button"
                 onClick={() => setSortBy("price")}
-                className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
                   sortBy === "price"
-                    ? "bg-portal-primary text-white shadow-xs"
+                    ? "bg-portal-primary text-white shadow-xs font-semibold"
                     : "text-portal-text-muted hover:text-portal-text"
                 }`}
               >
@@ -187,9 +261,9 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
               <button
                 type="button"
                 onClick={() => setSortBy("distance")}
-                className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
                   sortBy === "distance"
-                    ? "bg-portal-primary text-white shadow-xs"
+                    ? "bg-portal-primary text-white shadow-xs font-semibold"
                     : "text-portal-text-muted hover:text-portal-text"
                 }`}
               >
@@ -198,92 +272,439 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
             </div>
           </div>
         </div>
+
+        {/* TOP 3 3D STAGE & PEDESTALS */}
+        {sortedBids.length >= 3 ? (
+          <div className="relative z-10 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-4 lg:gap-6 items-end">
+              {/* 2ND PLACE STAGE COLUMN (Left on desktop) */}
+              {(() => {
+                const bid = sortedBids[1];
+                return (
+                  <div key={bid.id} className="order-2 md:order-1 flex flex-col">
+                    {/* Offer Card */}
+                    <div className="bg-portal-surface border border-neutral-300 dark:border-white/10 rounded-t-2xl p-5 shadow-xs relative flex flex-col justify-between border-t-2 border-t-slate-400">
+                      <div className="space-y-3.5">
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-slate-500/15 text-slate-500 dark:text-slate-300 border border-slate-500/30 flex items-center justify-center font-black font-mono shadow-xs">
+                              <Medal className="w-4 h-4 text-slate-500 dark:text-slate-300" />
+                            </div>
+                            <span className="font-headline text-sm font-bold text-portal-text">
+                              2nd Place
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-portal-surface-hover border border-portal-border text-portal-text-muted font-medium">
+                            {bid.omvicNumber}
+                          </span>
+                        </div>
+
+                        {/* Dealership Name */}
+                        <h3 className="font-headline text-base font-bold text-portal-text line-clamp-1">
+                          {bid.dealershipName}
+                        </h3>
+
+                        {/* Mini 2x2 Specs Grid */}
+                        <div className="grid grid-cols-2 gap-2 text-[11px] p-2.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border-subtle">
+                          <div className="flex items-center gap-1 text-amber-500 font-semibold">
+                            <Star className="w-3 h-3 fill-current" />
+                            <span>{bid.rating.toFixed(1)} <span className="text-portal-text-muted font-normal">({bid.reviewCount})</span></span>
+                          </div>
+                          <div className="flex items-center gap-1 text-portal-text-muted truncate">
+                            <MapPin className="w-3 h-3 text-portal-primary shrink-0" />
+                            <span className="truncate">{bid.city} ({bid.distanceKm} km)</span>
+                          </div>
+                          <div className="col-span-2 flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                            <Zap className="w-3 h-3 shrink-0" />
+                            <span>{bid.payoutSpeedDays}-Day Direct Wire Payout</span>
+                          </div>
+                        </div>
+
+                        {/* Price Block */}
+                        <div className="pt-2">
+                          <span className="font-mono text-2xl font-black text-portal-text block">
+                            {formatCadCents(bid.bidAmountCents)}
+                          </span>
+                          <span className="text-[11px] text-portal-text-muted block mt-0.5">
+                            Meets Reserve Floor
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Action Button */}
+                      <div className="pt-3 mt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedBid(bid);
+                            setConfirmModalOpen(true);
+                          }}
+                          className="w-full py-2 px-3 rounded-xl font-semibold text-xs border border-portal-border hover:bg-portal-surface-hover text-portal-text transition-colors cursor-pointer"
+                        >
+                          Accept Offer
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* 3D Stage Pedestal Base #2 */}
+                    <div className="border border-t-0 border-neutral-300 dark:border-white/10 rounded-b-2xl bg-gradient-to-b from-neutral-200/50 dark:from-white/5 to-portal-surface/60 h-20 sm:h-24 relative overflow-hidden flex flex-col items-center justify-center select-none">
+                      {/* Geometric grid lines */}
+                      <div
+                        className="absolute inset-0 opacity-20 pointer-events-none"
+                        style={{
+                          backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+                          backgroundSize: "16px 16px",
+                          color: "var(--portal-text)",
+                        }}
+                      />
+                      <span className="font-mono font-black text-5xl text-neutral-400/25 dark:text-white/10 tracking-tighter">
+                        02
+                      </span>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-portal-text-muted font-bold -mt-1 z-10">
+                        RUNNER-UP
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* 1ST PLACE STAGE COLUMN (Center on desktop - Elevated Tallest) */}
+              {(() => {
+                const bid = sortedBids[0];
+                return (
+                  <div key={bid.id} className="order-1 md:order-2 flex flex-col md:-translate-y-3 z-10">
+                    {/* Offer Card */}
+                    <div className="bg-portal-surface border-2 border-amber-500/70 dark:border-amber-400/60 rounded-t-2xl p-5 sm:p-6 shadow-sm relative flex flex-col justify-between">
+                      {/* Top Crown Ribbon */}
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+                        <Trophy className="w-3 h-3" />
+                        <span>TOP CERTIFIED OFFER</span>
+                      </div>
+
+                      <div className="space-y-4 pt-1">
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-500 border border-amber-500/30 flex items-center justify-center font-black font-mono shadow-xs">
+                              <Trophy className="w-5 h-5 text-amber-500" />
+                            </div>
+                            <div>
+                              <span className="font-headline text-base font-black text-portal-text block">
+                                1st Place Winner
+                              </span>
+                              <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 block font-mono">
+                                {sortBy === "price" ? "HIGHEST BID" : "NEAREST DEALER"}
+                              </span>
+                            </div>
+                          </div>
+                          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 font-semibold">
+                            {bid.omvicNumber}
+                          </span>
+                        </div>
+
+                        {/* Dealership Name */}
+                        <h3 className="font-headline text-lg font-bold text-portal-text">
+                          {bid.dealershipName}
+                        </h3>
+
+                        {/* Mini 2x2 Specs Grid */}
+                        <div className="grid grid-cols-2 gap-2 text-[11px] p-2.5 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                          <div className="flex items-center gap-1 text-amber-500 font-semibold">
+                            <Star className="w-3.5 h-3.5 fill-current" />
+                            <span>{bid.rating.toFixed(1)} <span className="text-portal-text-muted font-normal">({bid.reviewCount})</span></span>
+                          </div>
+                          <div className="flex items-center gap-1 text-portal-text-muted truncate">
+                            <MapPin className="w-3.5 h-3.5 text-portal-primary shrink-0" />
+                            <span className="truncate">{bid.city} ({bid.distanceKm} km)</span>
+                          </div>
+                          <div className="col-span-2 flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                            <Zap className="w-3.5 h-3.5 shrink-0" />
+                            <span>{bid.payoutSpeedDays}-Day Direct Wire Transfer</span>
+                          </div>
+                        </div>
+
+                        {/* Price Block */}
+                        <div className="pt-2">
+                          <span className="font-mono text-3xl font-black text-portal-text block tracking-tight">
+                            {formatCadCents(bid.bidAmountCents)}
+                          </span>
+                          {surplusAboveReserveCents > 0 && sortBy === "price" ? (
+                            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 block flex items-center gap-1">
+                              <TrendingUp className="w-3.5 h-3.5" />
+                              <span>+{formatCadCents(surplusAboveReserveCents)} above reserve floor</span>
+                            </span>
+                          ) : (
+                            <span className="text-xs text-portal-text-muted mt-0.5 block">
+                              Meets Reserve Floor
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Primary Action Button */}
+                      <div className="pt-4 mt-1">
+                        <button
+                          type="button"
+                          id="btn-accept-top-offer"
+                          onClick={() => {
+                            setSelectedBid(bid);
+                            setConfirmModalOpen(true);
+                          }}
+                          className="w-full py-2.5 px-4 rounded-xl font-bold text-xs text-white bg-portal-primary hover:bg-portal-primary-hover shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2 group"
+                        >
+                          <span>Accept Offer & Lock Dealer</span>
+                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* 3D Stage Pedestal Base #1 (Tallest Champion Pedestal) */}
+                    <div className="border-2 border-t-0 border-amber-500/70 dark:border-amber-400/60 rounded-b-2xl bg-gradient-to-b from-amber-500/15 via-portal-surface-hover to-portal-surface/80 h-28 sm:h-32 relative overflow-hidden flex flex-col items-center justify-center select-none">
+                      {/* Geometric grid lines */}
+                      <div
+                        className="absolute inset-0 opacity-25 pointer-events-none"
+                        style={{
+                          backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+                          backgroundSize: "16px 16px",
+                          color: "var(--portal-accent)",
+                        }}
+                      />
+                      <span className="font-mono font-black text-6xl text-amber-500/25 dark:text-amber-400/20 tracking-tighter">
+                        01
+                      </span>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-amber-600 dark:text-amber-400 font-extrabold -mt-1 z-10 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+                        WINNING OFFER
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* 3RD PLACE STAGE COLUMN (Right on desktop) */}
+              {(() => {
+                const bid = sortedBids[2];
+                return (
+                  <div key={bid.id} className="order-3 md:order-3 flex flex-col">
+                    {/* Offer Card */}
+                    <div className="bg-portal-surface border border-neutral-300 dark:border-white/10 rounded-t-2xl p-5 shadow-xs relative flex flex-col justify-between border-t-2 border-t-orange-600/70">
+                      <div className="space-y-3.5">
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-orange-700/15 text-orange-600 dark:text-orange-400 border border-orange-700/30 flex items-center justify-center font-black font-mono shadow-xs">
+                              <Award className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                            </div>
+                            <span className="font-headline text-sm font-bold text-portal-text">
+                              3rd Place
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-portal-surface-hover border border-portal-border text-portal-text-muted font-medium">
+                            {bid.omvicNumber}
+                          </span>
+                        </div>
+
+                        {/* Dealership Name */}
+                        <h3 className="font-headline text-base font-bold text-portal-text line-clamp-1">
+                          {bid.dealershipName}
+                        </h3>
+
+                        {/* Mini 2x2 Specs Grid */}
+                        <div className="grid grid-cols-2 gap-2 text-[11px] p-2.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border-subtle">
+                          <div className="flex items-center gap-1 text-amber-500 font-semibold">
+                            <Star className="w-3 h-3 fill-current" />
+                            <span>{bid.rating.toFixed(1)} <span className="text-portal-text-muted font-normal">({bid.reviewCount})</span></span>
+                          </div>
+                          <div className="flex items-center gap-1 text-portal-text-muted truncate">
+                            <MapPin className="w-3 h-3 text-portal-primary shrink-0" />
+                            <span className="truncate">{bid.city} ({bid.distanceKm} km)</span>
+                          </div>
+                          <div className="col-span-2 flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                            <Zap className="w-3 h-3 shrink-0" />
+                            <span>{bid.payoutSpeedDays}-Day Direct Wire Payout</span>
+                          </div>
+                        </div>
+
+                        {/* Price Block */}
+                        <div className="pt-2">
+                          <span className="font-mono text-2xl font-black text-portal-text block">
+                            {formatCadCents(bid.bidAmountCents)}
+                          </span>
+                          <span className="text-[11px] text-portal-text-muted block mt-0.5">
+                            Meets Reserve Floor
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Action Button */}
+                      <div className="pt-3 mt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedBid(bid);
+                            setConfirmModalOpen(true);
+                          }}
+                          className="w-full py-2 px-3 rounded-xl font-semibold text-xs border border-portal-border hover:bg-portal-surface-hover text-portal-text transition-colors cursor-pointer"
+                        >
+                          Accept Offer
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* 3D Stage Pedestal Base #3 */}
+                    <div className="border border-t-0 border-neutral-300 dark:border-white/10 rounded-b-2xl bg-gradient-to-b from-neutral-200/50 dark:from-white/5 to-portal-surface/60 h-16 sm:h-18 relative overflow-hidden flex flex-col items-center justify-center select-none">
+                      {/* Geometric grid lines */}
+                      <div
+                        className="absolute inset-0 opacity-20 pointer-events-none"
+                        style={{
+                          backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+                          backgroundSize: "16px 16px",
+                          color: "var(--portal-text)",
+                        }}
+                      />
+                      <span className="font-mono font-black text-4xl text-neutral-400/25 dark:text-white/10 tracking-tighter">
+                        03
+                      </span>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-portal-text-muted font-bold -mt-1 z-10">
+                        CONTENDER
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Connecting Stage Baseline Floor */}
+            <div className="border-t border-portal-border pt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-portal-text-muted">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-portal-primary" />
+                <span>3D LEADERBOARD STAGE // SECTOR 1</span>
+              </span>
+              <span>CANADIAN REGULATED DEALER FLOOR</span>
+              <span>ALL OFFERS IRREVOCABLE FOR 24H</span>
+            </div>
+          </div>
+        ) : (
+          /* Fallback for when there are fewer than 3 bids */
+          <div className="space-y-3.5">
+            {sortedBids.map((bid, index) => {
+              const isHighest = bid.bidAmountCents === highestBid;
+              return (
+                <div
+                  key={bid.id}
+                  className={`bg-portal-surface border rounded-2xl p-5 sm:p-6 transition-all shadow-xs relative ${
+                    isHighest ? "border-amber-500/50 shadow-md" : "border-portal-border"
+                  }`}
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="w-7 h-7 rounded-lg bg-portal-surface-hover border border-portal-border flex items-center justify-center font-mono text-xs font-bold text-portal-text">
+                          #{index + 1}
+                        </span>
+                        <h3 className="text-base font-bold text-portal-text">
+                          {bid.dealershipName}
+                        </h3>
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-portal-surface-hover border border-portal-border text-portal-text-muted">
+                          {bid.omvicNumber}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-portal-text-muted">
+                        <span className="flex items-center gap-1 text-amber-500 font-semibold">
+                          <Star className="w-3.5 h-3.5 fill-current" />
+                          <span>{bid.rating.toFixed(1)}</span>
+                        </span>
+                        <span>•</span>
+                        <span>{bid.city} ({bid.distanceKm} km away)</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="font-mono text-2xl font-black text-portal-text">
+                        {formatCadCents(bid.bidAmountCents)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedBid(bid);
+                          setConfirmModalOpen(true);
+                        }}
+                        className="px-5 py-2.5 rounded-xl font-semibold text-xs text-white bg-portal-primary hover:bg-portal-primary-hover shadow-sm"
+                      >
+                        Accept Offer
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* Ranked Bids Ladder */}
-      <div className="space-y-3.5">
-        {sortedBids.map((bid, index) => {
-          const isHighest = bid.bidAmountCents === highestBid;
-
-          return (
-            <div
-              key={bid.id}
-              className={`bg-portal-surface border rounded-2xl p-5 sm:p-6 transition-all hover:border-portal-primary/50 shadow-xs relative ${
-                isHighest
-                  ? "border-portal-primary/60 ring-1 ring-portal-primary/20"
-                  : "border-portal-border"
-              }`}
-            >
-              {isHighest && (
-                <div className="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-portal-primary text-white text-[10px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1">
-                  <Award className="w-3 h-3" />
-                  <span>Top Certified Offer</span>
-                </div>
-              )}
-
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                {/* Left: Dealer Information */}
-                <div className="space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-portal-surface-hover border border-portal-border flex items-center justify-center font-mono text-xs font-bold text-portal-text">
-                      #{index + 1}
+      {/* REMAINING RANKED OFFERS (Rank 4+) */}
+      {sortedBids.length > 3 && (
+        <div className="pt-2 space-y-3">
+          <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-portal-text-muted flex items-center gap-2">
+            <span>Additional Verified Offers</span>
+            <span className="px-1.5 py-0.2 rounded bg-portal-surface-hover border border-portal-border">
+              {sortedBids.length - 3}
+            </span>
+          </h3>
+          <div className="space-y-2.5">
+            {sortedBids.slice(3).map((bid, index) => {
+              const rank = index + 4;
+              return (
+                <div
+                  key={bid.id}
+                  className="bg-portal-surface border border-portal-border rounded-xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-portal-primary/40 transition-colors shadow-2xs"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-7 h-7 rounded-lg bg-portal-surface-hover border border-portal-border flex items-center justify-center font-mono text-xs font-bold text-portal-text-muted shrink-0">
+                      #{rank}
                     </span>
-                    <h3 className="text-base font-bold text-portal-text">
-                      {bid.dealershipName}
-                    </h3>
-                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-portal-surface-hover border border-portal-border text-portal-text-muted">
-                      {bid.omvicNumber}
-                    </span>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h4 className="font-bold text-sm text-portal-text">
+                          {bid.dealershipName}
+                        </h4>
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-portal-surface-hover border border-portal-border text-portal-text-muted">
+                          {bid.omvicNumber}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-portal-text-muted mt-0.5">
+                        <span className="flex items-center gap-1 text-amber-500 font-semibold">
+                          <Star className="w-3 h-3 fill-current" />
+                          <span>{bid.rating.toFixed(1)}</span>
+                        </span>
+                        <span>•</span>
+                        <span>{bid.city} ({bid.distanceKm} km)</span>
+                        <span>•</span>
+                        <span>{bid.payoutSpeedDays}-Day Wire</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-portal-text-muted">
-                    <span className="flex items-center gap-1 text-amber-500 font-semibold">
-                      <Star className="w-3.5 h-3.5 fill-current" />
-                      <span>{bid.rating.toFixed(1)}</span>
-                      <span className="text-portal-text-muted font-normal">({bid.reviewCount} reviews)</span>
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-portal-primary" />
-                      <span>{bid.city}, {bid.province} ({bid.distanceKm} km away)</span>
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-                      <Zap className="w-3.5 h-3.5" />
-                      <span>{bid.payoutSpeedDays}-Day Direct Wire</span>
-                    </span>
-                  </div>
-                </div>
-
-                {/* Right: Dollar Amount & Acceptance Button */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 lg:text-right">
-                  <div>
-                    <span className="font-mono text-2xl font-black text-portal-text block">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-portal-border-subtle">
+                    <span className="font-mono text-lg font-bold text-portal-text">
                       {formatCadCents(bid.bidAmountCents)}
                     </span>
-                    <span className="text-[11px] text-portal-text-muted">
-                      {bid.bidAmountCents >= auction.reservePriceCents
-                        ? "Meets Reserve Floor"
-                        : "Below Reserve Asking"}
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedBid(bid);
+                        setConfirmModalOpen(true);
+                      }}
+                      className="px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-portal-border hover:bg-portal-surface-hover text-portal-text transition-colors cursor-pointer"
+                    >
+                      Accept
+                    </button>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedBid(bid);
-                      setConfirmModalOpen(true);
-                    }}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl font-semibold text-xs text-white bg-portal-primary hover:bg-portal-primary-hover shadow-sm transition-all cursor-pointer whitespace-nowrap"
-                  >
-                    Accept Offer & Lock Dealer
-                  </button>
                 </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Confirmation Modal */}
       {confirmModalOpen && selectedBid && (

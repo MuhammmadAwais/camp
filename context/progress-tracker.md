@@ -108,7 +108,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 4.4: Post-Auction Unsealed Dealer Selection**
   - **Route:** `/seller/listings/[id]/select-dealer`
   - **Component:** `DealerSelectionView.tsx`
-  - **Features:** Unsealed bid ladder ranked by CAD amount or dealer proximity (km), dealer OMVIC/AMVIC ratings, 24h decision countdown, "Select Dealership" acceptance action.
+  - **Features:** De-cluttered clean header with breadcrumb vehicle context, unified 4-metric executive bar, 3D showroom stage arena with perspective grid floor, 3-column physical stepped pedestals with engraved numerals (`01`, `02`, `03`) & mini 2x2 specs grids, zero glow/shadow bloat, high-density rows for remaining ranks 4+, dual sort switch (Highest Bid / Nearest Dealership), and 1-click binding offer acceptance modal.
 - [x] **Page 4.5: Offline Appointment & Dealership Voucher**
   - **Route:** `/seller/listings/[id]/appointment`
   - **Component:** `AppointmentVoucherCard.tsx`

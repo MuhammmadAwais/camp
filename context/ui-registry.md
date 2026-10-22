@@ -1344,3 +1344,24 @@ Mode: Unified Background Continuity
 | --- | --- |
 | Background Invariant | `sticky top-0 z-40 bg-portal-canvas/90 backdrop-blur-md border-b border-portal-border` |
 | Seamless Matching | Header background strictly uses `--portal-canvas` instead of elevated `--portal-surface`, ensuring the header seamlessly matches the page canvas (`#FFFFFF` in light mode, `#121212` in dark mode) without mismatched colored bands |
+
+---
+
+### `DealerSelectionView` (Milestone 4.4 Executive Leaderboard 3D Stage & Telemetry Architecture)
+
+File: `components/seller/DealerSelectionView.tsx`  
+Last updated: 2026-10-22  
+Mode: Executive Automotive Showroom 3D Stage & Podium Selection
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Simplified Clean Header | Header is stripped of redundant paragraphs, pills, and duplicate specs. Context is placed cleanly in breadcrumb (`Back to 2022 Porsche Macan Auction`) and VIN label. |
+| 4-Metric Performance Bar | Horizontal grid (`grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle`) featuring Top Dealer Offer, Dealer Activity (Verified Bids count), Decision Window (live countdown), and Escrow Protection (OMVIC/AMVIC compliant regulated payout) |
+| 3D Stage Arena & Grids | Arena container (`relative rounded-3xl border border-portal-border bg-portal-surface/60 p-4 sm:p-6 md:p-8`) with an architectural 28px coordinate grid floor overlay (`mask-image: radial-gradient(ellipse 90% 70% at 50% 60%, black 50%, transparent 100%)`). |
+| 3D Pedestal Bases (Top 3) | 3-column physical stage with architectural bases:<br>• **Podium 2 (Left, `order-2 md:order-1`):** Metallic silver top border, 2x2 mini specs grid, attached 3D pedestal base (`h-20 sm:h-24`) with engraved `02` numeral and `RUNNER-UP` label.<br>• **Podium 1 (Center & Elevated, `order-1 md:order-2`):** Elevated taller (`md:-translate-y-3`), gold border (`border-2 border-amber-500/70 dark:border-amber-400/60`), top crown ribbon (`TOP CERTIFIED OFFER`), 2x2 specs grid, attached tallest 3D pedestal base (`h-28 sm:h-32`) with engraved `01` numeral and gold `WINNING OFFER` plaque.<br>• **Podium 3 (Right, `order-3 md:order-3`):** Bronze top border, 2x2 mini specs grid, attached 3D pedestal base (`h-16 sm:h-18`) with engraved `03` numeral and `CONTENDER` label. |
+| Zero Glow / Shadow Clutter | Eliminates heavy neon glows and diffuse drop shadows in favor of crisp 1px borders, precision 3D beveled edges, and structured geometric grids without visual emptiness. |
+| Stage Baseline Floor | Connecting grounded stage platform bar with coordinate grid ticks: `3D LEADERBOARD STAGE // SECTOR 1`, `CANADIAN REGULATED DEALER FLOOR`, `ALL OFFERS IRREVOCABLE FOR 24H`. |
+| Additional Ranked Offers | Ranks 4+ render in clean, high-density horizontal list rows below the stage with rank badges, dealership license pills, review ratings, payout speed, price, and individual acceptance action. |
+| Dynamic Sorting Controls | Dual-toggle switcher (`Highest Bid` vs. `Nearest Dealership`) dynamically re-ranks the podium and updates tier subtitles (`HIGHEST BID` vs. `NEAREST DEALER`). |
+
+
