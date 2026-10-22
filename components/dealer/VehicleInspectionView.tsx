@@ -21,9 +21,11 @@ import {
   DollarSign,
   ArrowUpRight,
   Sparkles,
+  ChevronsUpDown,
 } from "lucide-react";
 import type { WholesaleAuctionItem } from "@/lib/types/dealer";
 import { SealedBidSlip } from "@/components/dealer/SealedBidSlip";
+import { DealerBidSwitcherModal } from "@/components/dealer/DealerBidSwitcherModal";
 import { formatCadCents } from "@/lib/utils";
 
 export type VehicleInspectionDetails = WholesaleAuctionItem & {
@@ -57,7 +59,14 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isBidSlipOpen, setIsBidSlipOpen] = useState(false);
+  const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
   const [copiedVin, setCopiedVin] = useState(false);
+
+  // Sync state if initialVehicle prop updates
+  useEffect(() => {
+    setVehicle(initialVehicle);
+    setSelectedPhotoIndex(0);
+  }, [initialVehicle]);
   const [timeLeft, setTimeLeft] = useState<{
     hours: number;
     minutes: number;
@@ -120,7 +129,22 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
           </span>
         </div>
 
-        <div className="flex items-center gap-2.5 self-start sm:self-auto">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          {/* Prominent Active Bids Switcher Pill Button (Matching Seller Auction View) */}
+          <button
+            type="button"
+            id="btn-switch-dealer-bids"
+            onClick={() => setIsSwitcherOpen(true)}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-portal-surface border border-portal-border hover:border-portal-primary/50 text-xs font-medium text-portal-text shadow-2xs hover:bg-portal-surface-hover transition-all cursor-pointer group"
+          >
+            <Gavel className="w-3.5 h-3.5 text-portal-primary" />
+            <span className="font-semibold">{vehicle.year} {vehicle.make} {vehicle.model}</span>
+            <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-bold">
+              {vehicle.myCurrentBidCents ? `Your Bid: ${formatCadCents(vehicle.myCurrentBidCents)}` : `${vehicle.totalBidsPlaced} Bids`}
+            </span>
+            <ChevronsUpDown className="w-3.5 h-3.5 text-portal-text-muted group-hover:text-portal-text transition-colors" />
+          </button>
+
           {/* Quick Copy VIN Pill */}
           <button
             type="button"
@@ -577,6 +601,17 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
           </div>
         </div>
       </div>
+
+      {/* Dealer Bids / Vehicle Switcher Modal */}
+      <DealerBidSwitcherModal
+        isOpen={isSwitcherOpen}
+        onClose={() => setIsSwitcherOpen(false)}
+        currentAuctionId={vehicle.id}
+        onSelectVehicle={(newVehicle) => {
+          setVehicle(newVehicle);
+          setSelectedPhotoIndex(0);
+        }}
+      />
 
       {/* Sealed Bid Placement Slip Modal */}
       {isBidSlipOpen && (

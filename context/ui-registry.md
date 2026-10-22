@@ -1077,8 +1077,24 @@ Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
 | Condition & Disclosures | Seamless condition section (zero card nesting): numbered imperfection rows with severity badges, descriptions, flaw photos, and an authentic italicized seller notes quote block |
 | Unified Dealership Console | Sticky right console integrating 3 prioritized appraisal tiers into ONE container: (1) Bidding station & action CTA; (2) 2x2 scannable Vehicle Vitals; (3) Carfax Title & provenance verification |
 | Anti-Card-Soup Pattern | Eliminated 6 separate nested bordered card containers in favor of an open narrative flow on the left and a unified action console on the right |
+| Vehicle & Bids Switcher | Quick top bar trigger pill (`#btn-switch-dealer-bids`) launching `DealerBidSwitcherModal` to switch between active bids and floor lots |
 
 ---
+
+### `DealerBidSwitcherModal` (Milestone 5.2 / Page 5.4 Utility)
+
+Files: `components/dealer/DealerBidSwitcherModal.tsx`, `lib/mock/dealer-inventory.ts`  
+Last updated: 2026-10-22  
+Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Backdrop & Accessibility | `fixed inset-0 z-50 bg-black/80 backdrop-blur-xs`, body overflow lock, Escape key listener |
+| Segmented Tabs | Toggle between "My Active Bids" (lots with dealership bids placed) and "Live Floor Inventory" |
+| Auction Cards in List | 16x12 thumbnail, Year/Make/Model, mileage, location, and condition grade |
+| Bid Telemetry | Placed bid in CAD cents, `LEAD_ESTIMATE` (green pulse) vs `OUTBID_ESTIMATE` (amber warning), and time remaining |
+| Current Selection Highlight | Active vehicle highlighted with `border-portal-primary/50`, `Current` chip, and `CheckCircle2` |
+| Instant Routing | 1-click switch navigating to `/dealer/auctions/[id]` while syncing state |
 
 ### `DealerActiveBidsView` (Milestone 5.3 / Page 5.6)
 
