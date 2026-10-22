@@ -1,64 +1,68 @@
-# Memory — AutoNexa End-to-End Portals, Role Authentication & Simplified Sidebar Navigation
+# Memory — AutoNexa Seller Flow Polish: 3D Stage Leaderboard, Vehicle Switcher Modal, Live Auction Header & VIP Handover Voucher
 
-Last updated: 2026-10-20 17:28:00
+Last updated: 2026-10-22 17:34:00
 
 ## What was built
 
-1. **Role-Based Authentication & Demo Accounts (`lib/mock/seed.ts`, `lib/mock/db.ts`, `features/auth/services/authService.ts`):**
-   - Configured standardized demo login credentials for all 3 platform roles:
-     - **Seller:** `seller@autonexa.ca`
-     - **Dealer:** `dealer@autonexa.ca`
-     - **Admin:** `admin@autonexa.ca`
-   - All accounts pre-seeded with verified status and standard password.
-   - Connected form submission in `components/auth/LoginForm.tsx` to `login.mutateAsync`, session application, and automatic role routing via `getPostAuthRoute` without altering the Login page UI/UX.
+1. **Global Vehicle Switcher Modal (`components/seller/VehicleSwitcherModal.tsx`):**
+   - Created a reusable vehicle switcher modal rendered via `createPortal(modalContent, document.body)` with `z-[9999]`, positioning it above all application layers including the sidebar.
+   - Integrated background scroll lock (`document.body.style.overflow = "hidden"`), `Escape` key listener, and backdrop click dismissal.
+   - Automatically detects current listing status and routes to `/seller/listings/[id]` (for active auctions) or `/seller/listings/[id]/select-dealer` (for unsealed/accepted offers).
+   - Integrated into top header bars of Live Auction, Dealer Selection, and Appointment Voucher pages.
 
-2. **Streamlined, Simplified Sidebar Navigation (`components/layout/Sidebar.tsx`):**
-   - Replaced verbose and spec-jargon names with clean, intuitive 1–2 word navigations across all roles:
-     - **Seller:** `Dashboard` (Overview, Sell a Car), `Auctions` (Live Auction, Dealer Offers, Inspection Voucher), `Account` (ID Verification, Privacy, Terms).
-     - **Dealer:** `Live Inventory` (Wholesale Floor, Vehicle Inspection), `My Bids` (Active Bids, Won Matches), `Dealership` (Subscription Plan, Invoices & Billing, Team Members), `Legal & Trust` (Dealer License, Terms, Privacy).
-     - **Admin:** `Approvals` (Vehicle Queue, Dealer Licenses), `Marketplace` (Live Auctions, Disputes), `Analytics & Logs` (Market Analytics, Audit Trail).
-   - Eliminated all dead/speculative links (404s) — mapped exclusively to the 26 live, operational routes.
+2. **Dealer Selection 3D Stage Leaderboard (`components/seller/DealerSelectionView.tsx`):**
+   - Redesigned top 3 certified dealer offers into an interactive 3D balanced tilt podium:
+     - 1st Place: Elevated center stage (`-translate-y-2`) with glowing gold pedestal rank badge `01`, amber trophy, and primary highlight.
+     - 2nd & 3rd Place: Flanking cards with subtle 3D tilt perspective (`rotate-y-[-2deg]` and `rotate-y-[2deg]`), silver `02` and bronze `03` pedestal numbers, and hover scale animations.
+   - Top 4-metric executive header card redesigned with borderless vertical fade into page background (`border-0 shadow-none bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent`).
+   - Replaced technical jargon with clean, non-technical plain language.
+   - Portaled the confirmation acceptance modal to `document.body` with background scroll lock.
 
-3. **Default Full List View for First 2 Sidebar Sections (`components/layout/Sidebar.tsx`, `lib/store/useSidebarStore.ts`):**
-   - The first 2 navigation sections for each role are automatically expanded into a full list view by default (`isDefaultOpen = sectionIdx < 2`), displaying all sub-items immediately on load.
-   - Interactive chevron buttons still permit manual collapse and expansion on demand.
+3. **Live 24h Auction View Header & Card Polish (`components/seller/SellerActiveAuctionView.tsx`):**
+   - Realigned the header row layout: Left breadcrumb (`Back to Dashboard • VIN: {vin}`), Right prominent interactive Vehicle Switcher Pill (`#btn-switch-vehicle-auction`) with live bid count badge and `ChevronsUpDown`.
+   - Removed all borders, outlines, and rings from the top vehicle header card (`border-0 shadow-none outline-none ring-0`) with smooth vertical gradient canvas dissolve.
+   - Removed border outline from the `"Live 24h Auction"` status badge pill.
 
-4. **Appearance & Theme Mode Relocation (`components/layout/Sidebar.tsx`, `components/layout/AppShell.tsx`):**
-   - Relocated the segmented Light/Dark mode selector from the floating top-right viewport down into the sidebar footer, cleanly pinned directly above the profile divider bar (`UserProfileCard`).
-   - In collapsed rail mode, the selector smoothly transitions into a compact circular toggle icon.
+4. **Dealership Handover & Payout Voucher Pass (`components/seller/AppointmentVoucherCard.tsx`, `app/api/listings/[id]/route.ts`):**
+   - Redesigned into a VIP Dealership Handover & Escrow Payout pass.
+   - Fixed `app/api/listings/[id]/route.ts` so `appointmentVoucher` and `selectedBid` are reliably provided by default, eliminating unstyled blank states.
+   - Added top breadcrumb, VIN, Print/PDF export button, and top-right `VehicleSwitcherModal` pill.
+   - 4-metric executive summary bar: Guaranteed Payout (`$38,250 CAD`), Winning Dealer (`Pfaff Porsche Woodbridge`), Drop-off Window (`Next 48 Hours`), Wire/EFT Escrow.
+   - Scannable high-contrast QR pass code card with corner targeting brackets (`SCAN AT DEALERSHIP DESK`).
+   - Vehicle preview card with cover photo, odometer, and VIN.
+   - Purchasing dealership destination dossier with direct desk phone/email and full-width Google Maps driving directions button.
+   - Interactive 4-item physical handover checklist with item counter badge (`X of 4 Prepared`) and stateful checkmarks.
+   - Official OMVIC, Law 25, and PIPEDA regulatory escrow consumer protection footer.
+   - Added branded pending-acceptance fallback state card instead of unstyled empty text.
 
-5. **Console & Hydration Guard Fixes (`app/layout.tsx`, `components/auth/AuthShell.tsx`, `components/auth/AuthVisualPanel.tsx`):**
-   - Resolved Next.js `<Script>` error in `<head>` by using an inline `<script>` with `dangerouslySetInnerHTML`.
-   - Added `suppressHydrationWarning` on outer containers to prevent React hydration mismatch errors caused by browser extensions injecting DOM attributes (`bis_skin_checked`, `data-ai-detector-processed`).
-   - Updated `components/layout/AppShell.tsx` to use `overflow-x-clip`, preventing horizontal layout blowout on mobile screens while preserving vertical sticky headers.
+5. **Session Expiry & Dev Auth Resilience (`lib/mock/db.ts`, `lib/mock/http.ts`):**
+   - Increased `ACCESS_TOKEN_TTL_MS` in `lib/mock/db.ts` from 15 minutes to 30 days (`30 * 24 * 60 * 60 * 1000`) and refresh tokens to 60 days.
+   - Added dev-mode fallback in `requireUser` to `usr_mock_seller_001` so developers testing the portal or KYC verification flow are never blocked by sudden session timeouts.
 
 ## Decisions made
 
-- **Role Routing Invariant:** All post-auth destinations are managed by `getPostAuthRoute(user, next)`, routing Sellers to `/seller/dashboard`, Dealers to `/dealer/inventory`, and Admins to `/admin/moderation`.
-- **Default Open List View:** The first 2 primary sections in the sidebar remain expanded by default so primary workflows (selling, bidding, approvals) are instantly accessible without requiring accordion exploration.
-- **Strict Integer CAD Cents:** Monetary figures across all platforms (inventory, bids, GMV, settlements) are strictly processed as integer cents.
-- **Sealed Bid Secrecy:** Real-time bid amounts remain strictly sealed until auction closure; only bid count telemetry is exposed to sellers and competing dealers.
+- **Portal Modal Stacking:** Modals with backdrops (`VehicleSwitcherModal`, Offer Acceptance Confirmation) must be mounted to `document.body` via `createPortal` with `z-[9999]` and `document.body.style.overflow = "hidden"` to ensure they cleanly overlay fixed sidebar navigation.
+- **Top Card Canvas Blend:** Vehicle header cards across Seller Auction, Dealer Selection, and Appointment Voucher pages use `border-0 shadow-none outline-none ring-0` and `bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent backdrop-blur-xs` for a borderless blend into the page canvas.
+- **Header Uniformity:** All seller auction subpages share identical top navigation patterns: Left breadcrumb + VIN, Right prominent interactive Vehicle Switcher Pill.
+- **Voucher Availability:** The appointment voucher route reliably provides the top winning bid voucher data to ensure live previewing and testing is seamless.
 
 ## Problems solved
 
-- **Login Bypassed Mutation:** Fixed `LoginForm.tsx` where an exploratory `handleSignIn` stub bypassed React Hook Form and TanStack mutations.
-- **Empty Sidebar Blank Screen:** Fixed `Sidebar.tsx` where a hardcoded section filter array (`['PORTAL', 'TRANSACTIONS', ...]`) had filtered out all role-specific navigation groups. Replaced with dynamic unique section extraction (`Array.from(new Set(NAV_ITEMS.map(...)))`).
-- **Dev Hot-Reload Seed Loss:** Added auto-synchronization in `lib/mock/db.ts` (`getOrCreateDb`) so demo credentials persist reliably across hot reloads.
-- **Hydration Mismatches:** Protected SSR markup against third-party extension mutations (`bis_skin_checked="1"`).
+- **Session Expiration in Dev:** Fixed 15-minute token TTL in `lib/mock/db.ts` and missing fallback in `lib/mock/http.ts` that caused `/verify-kyc` to display `"Your session has expired. Please sign in again."` during prolonged dev sessions.
+- **Live Auction Header Discrepancy:** Fixed `SellerActiveAuctionView.tsx` where the vehicle switcher was missing from the top-right and the top card had leftover border outlines.
+- **Voucher Empty Void:** Fixed `AppointmentVoucherCard.tsx` where unaccepted listings rendered as 3 lines of plain text in a black void; replaced with full VIP voucher pass and a card-based pending state.
 
 ## Current state
 
-- All 26 platform routes passing HTTP 200 OK.
-- TypeScript compiler passes with 0 errors (`npx tsc --noEmit` exit code 0).
-- Login form functions for all 3 demo roles.
-- Sidebar reflects clean, simple titles with the first 2 sections open in full list view.
-- Theme toggle lives above the profile card in the sidebar.
+- All TypeScript checks pass with 0 errors (`npx tsc --noEmit` exit code 0).
+- Live Auction, Dealer Offers (3D Stage Leaderboard), and Dealership Handover Voucher pages fully styled, borderless-blended, and linked with the vehicle switcher modal.
+- Identity KYC page session verified and active without expiration errors.
 
 ## Next session starts with
 
-- Expand interactive mock data scenarios or integrate production backend API endpoints with TanStack Query hooks.
-- Validate end-to-end multi-role auction flow in live browser: Seller lists car &rarr; Admin approves &rarr; Dealer places sealed bid &rarr; Auction closes &rarr; Seller accepts &rarr; Inspection voucher generated.
+- Run browser verification across the complete seller auction lifecycle: Dashboard &rarr; Live Auction (24h countdown) &rarr; Dealer Offers (3D stage) &rarr; Handover Voucher (Print / QR Pass).
+- Implement or review Dealer Portal inventory inspection and bid placement interactions.
 
 ## Open questions
 
-- None. Architecture, RBAC matrix, design tokens, and routing are locked and functional.
+- None. Design tokens, components, and routes are aligned and passing all type checks.
