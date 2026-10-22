@@ -122,7 +122,7 @@ export function SellerActiveAuctionView({ listingId }: SellerActiveAuctionViewPr
 
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
-      {/* Top Breadcrumb & Switch Vehicle & Demo Mode Controls */}
+      {/* Top Breadcrumb, VIN & Vehicle Switcher Pill (Matching Dealer Offers View) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link
@@ -133,65 +133,74 @@ export function SellerActiveAuctionView({ listingId }: SellerActiveAuctionViewPr
             <span>Back to Dashboard</span>
           </Link>
           <span className="text-portal-border hidden sm:inline">•</span>
+          <span className="text-xs font-mono text-portal-text-muted hidden sm:inline">
+            VIN: {auction.vin}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          {/* Prominent Vehicle Switcher Pill Button */}
           <button
             type="button"
             id="btn-switch-vehicle-auction"
             onClick={() => setVehicleModalOpen(true)}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-portal-surface border border-portal-border hover:border-portal-primary/50 text-xs font-medium text-portal-text shadow-2xs hover:bg-portal-surface-hover transition-all cursor-pointer group"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-portal-surface border border-portal-border hover:border-portal-primary/50 text-xs font-medium text-portal-text shadow-2xs hover:bg-portal-surface-hover transition-all cursor-pointer group"
           >
             <Car className="w-3.5 h-3.5 text-portal-primary" />
             <span className="font-semibold">{auction.year} {auction.make} {auction.model}</span>
-            <ChevronsUpDown className="w-3 h-3 text-portal-text-muted group-hover:text-portal-text transition-colors" />
+            <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-bold">
+              {auction.status === "ACTIVE" ? `${auction.bidCount} Bids` : "Auction"}
+            </span>
+            <ChevronsUpDown className="w-3.5 h-3.5 text-portal-text-muted group-hover:text-portal-text transition-colors" />
           </button>
-        </div>
 
-        {/* Demo Stage Switcher */}
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-portal-surface border border-portal-border text-xs">
-          <span className="text-[11px] text-portal-text-muted px-2 font-medium">Demo:</span>
-          <button
-            type="button"
-            onClick={() => fetchListing("ACTIVE")}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-              auction.status === "ACTIVE"
-                ? "bg-portal-primary text-white shadow-xs"
-                : "text-portal-text-muted hover:text-portal-text"
-            }`}
-          >
-            Live (24h)
-          </button>
-          <button
-            type="button"
-            onClick={() => fetchListing("UNSEALED")}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-              auction.status === "UNSEALED"
-                ? "bg-amber-500 text-white shadow-xs"
-                : "text-portal-text-muted hover:text-portal-text"
-            }`}
-          >
-            Bids Ready
-          </button>
-          <button
-            type="button"
-            onClick={() => fetchListing("ACCEPTED")}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-              auction.status === "ACCEPTED"
-                ? "bg-neutral-800 text-white dark:bg-white dark:text-neutral-900 shadow-xs"
-                : "text-portal-text-muted hover:text-portal-text"
-            }`}
-          >
-            Completed
-          </button>
+          {/* Compact Demo Stage Switcher */}
+          <div className="hidden lg:flex items-center gap-1 p-0.5 rounded-lg bg-portal-surface border border-portal-border-subtle/60 text-xs">
+            <button
+              type="button"
+              onClick={() => fetchListing("ACTIVE")}
+              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                auction.status === "ACTIVE"
+                  ? "bg-portal-primary text-white shadow-2xs"
+                  : "text-portal-text-muted hover:text-portal-text"
+              }`}
+            >
+              Live
+            </button>
+            <button
+              type="button"
+              onClick={() => fetchListing("UNSEALED")}
+              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                auction.status === "UNSEALED"
+                  ? "bg-amber-500 text-white shadow-2xs"
+                  : "text-portal-text-muted hover:text-portal-text"
+              }`}
+            >
+              Unsealed
+            </button>
+            <button
+              type="button"
+              onClick={() => fetchListing("ACCEPTED")}
+              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                auction.status === "ACCEPTED"
+                  ? "bg-neutral-800 text-white dark:bg-white dark:text-neutral-900 shadow-2xs"
+                  : "text-portal-text-muted hover:text-portal-text"
+              }`}
+            >
+              Accepted
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Main Vehicle Header Card with Dashboard-Style 4-Metric Bar */}
-      <div className="bg-portal-surface border border-portal-border rounded-2xl p-5 sm:p-6 shadow-xs space-y-6">
+      {/* Main Vehicle Header Card with Dashboard-Style 4-Metric Bar (Borderless, Soft Gradient Canvas Blend) */}
+      <div className="bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent backdrop-blur-xs rounded-2xl p-5 sm:p-6 space-y-6 border-0 shadow-none outline-none ring-0">
         {/* Title & Status Row */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 dark:bg-white/[0.08] text-neutral-800 dark:text-neutral-200 border border-gray-200 dark:border-white/10">
-                <span className="w-1.5 h-1.5 rounded-full bg-portal-primary animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-portal-surface-hover text-portal-text border-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span>
                   {auction.status === "ACTIVE"
                     ? "Live 24h Auction"
@@ -244,7 +253,7 @@ export function SellerActiveAuctionView({ listingId }: SellerActiveAuctionViewPr
         </div>
 
         {/* 4-Metric Bar (Exact Dashboard Top Style matching Image 3 with side icons & dividers) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle/60">
           {/* Col 1: Reserve Price */}
           <div className="flex items-center justify-between pr-0 sm:pr-4">
             <div>
@@ -264,7 +273,7 @@ export function SellerActiveAuctionView({ listingId }: SellerActiveAuctionViewPr
           </div>
 
           {/* Col 2: Dealer Activity */}
-          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle sm:pl-4 pr-0 sm:pr-4">
+          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4 pr-0 sm:pr-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
                 Dealer Activity
@@ -283,7 +292,7 @@ export function SellerActiveAuctionView({ listingId }: SellerActiveAuctionViewPr
           </div>
 
           {/* Col 3: Time Remaining */}
-          <div className="flex items-center justify-between lg:border-l border-portal-border-subtle lg:pl-4 pr-0 sm:pr-4">
+          <div className="flex items-center justify-between lg:border-l border-portal-border-subtle/60 lg:pl-4 pr-0 sm:pr-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
                 Time Remaining
@@ -305,7 +314,7 @@ export function SellerActiveAuctionView({ listingId }: SellerActiveAuctionViewPr
           </div>
 
           {/* Col 4: Consumer Protection */}
-          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle sm:pl-4">
+          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
                 Dealer Protection

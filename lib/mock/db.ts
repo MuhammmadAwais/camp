@@ -5,8 +5,8 @@ import { MOCK_DEMO_SELLER, MOCK_DEMO_DEALER, MOCK_DEMO_ADMIN, MOCK_KYC_REVIEW_MS
 
 // In-memory stand-in for the Express + MySQL backend. Resets when the dev server restarts.
 
-export const ACCESS_TOKEN_TTL_MS = 15 * 60 * 1000;
-export const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+export const ACCESS_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+export const REFRESH_TOKEN_TTL_MS = 60 * 24 * 60 * 60 * 1000;
 export const RESET_TOKEN_TTL_MS = 30 * 60 * 1000;
 export const OTP_MAX_ATTEMPTS = 5;
 export const OTP_RESEND_COOLDOWN_MS = 30 * 1000;

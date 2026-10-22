@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Car, X, Plus, CheckCircle2, Gavel, Clock, ArrowRight, ShieldCheck } from "lucide-react";
@@ -28,9 +29,32 @@ export function VehicleSwitcherModal({
   currentListingFallback,
 }: VehicleSwitcherModalProps) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const { data: dashboardData, isLoading } = useSellerDashboard("default");
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Disable behind-screen overflow while modal is open & add Escape key listener
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !mounted) return null;
 
   const dashboardAuctions = dashboardData?.auctions ?? [];
 
@@ -69,8 +93,13 @@ export function VehicleSwitcherModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+  const modalContent = (
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+    >
       <div
         className="bg-portal-surface border border-portal-border rounded-2xl max-w-lg w-full p-5 sm:p-6 space-y-5 shadow-2xl relative animate-in zoom-in-95 duration-200"
         role="dialog"
@@ -205,4 +234,6 @@ export function VehicleSwitcherModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

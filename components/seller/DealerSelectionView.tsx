@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -43,6 +44,26 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
   const [isAccepting, setIsAccepting] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [vehicleModalOpen, setVehicleModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Disable body scroll when confirmation modal is open
+  useEffect(() => {
+    if (!confirmModalOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isAccepting) setConfirmModalOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [confirmModalOpen, isAccepting]);
 
   useEffect(() => {
     const fetchBids = async () => {
@@ -738,8 +759,13 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
       )}
 
       {/* Confirmation Modal */}
-      {confirmModalOpen && selectedBid && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+      {confirmModalOpen && selectedBid && mounted && createPortal(
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isAccepting) setConfirmModalOpen(false);
+          }}
+          className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+        >
           <div className="bg-portal-surface border border-portal-border rounded-2xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl relative">
             <div className="w-12 h-12 rounded-full bg-portal-primary/10 text-portal-primary flex items-center justify-center mx-auto">
               <Gavel className="w-6 h-6" />
@@ -806,7 +832,8 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Vehicle Switcher Modal */}

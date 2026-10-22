@@ -1373,11 +1373,28 @@ Mode: High-Density Multi-Asset Selection Modal
 
 | Property | Class / Implementation Pattern |
 | --- | --- |
-| Modal Backdrop & Container | Fixed backdrop with `bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200`. Modal card: `bg-portal-surface border border-portal-border rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl`. |
+| Root Portal Stacking | Mounts directly to `document.body` via `createPortal(modalContent, document.body)` with `z-[9999]`, guaranteeing it overlays all shell elements including the persistent sidebar (`z-50`) without being trapped in `<main>` stacking context. |
+| Background Scroll Lock | Hook intercepts modal mount: saves `document.body.style.overflow` and sets it to `"hidden"`, restoring previous overflow on unmount to prevent background screen scrolling. |
+| Backdrop & Accessibility | Fixed backdrop with `bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200`. Supports backdrop click dismissal and `Escape` key capture. Modal card: `bg-portal-surface border border-portal-border rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl`. |
 | Inventory Synchronization | Integrates TanStack Query `useSellerDashboard("default")` to retrieve the seller's active, completed, or unsealed vehicles. Combines with current listing fallback for zero-delay presentation. |
 | Signature Vehicle Cards | Each listed car renders with thumbnail photo, Year/Make/Model/Trim, mileage, VIN last 6, and status badge (`Offers Ready`, `Live Auction (X bids)`, `Completed`, `In Review`). |
 | Active State & 1-Click Routing | Currently viewed car is highlighted with `bg-portal-primary/10 border-portal-primary ring-1 ring-portal-primary/30` and a `Viewing Now` tag. Selecting any other vehicle immediately routes to `/seller/listings/${car.id}/select-dealer` (if unsealed) or `/seller/listings/${car.id}` (if active). |
 | Secondary Navigation | Bottom footer includes direct link to `+ List Another Vehicle` (`/seller/list-car`). |
+
+---
+
+### `SellerActiveAuctionView Top Bar Canvas Blend` (Milestone 4.3 Borderless Header Integration)
+
+File: `components/seller/SellerActiveAuctionView.tsx`  
+Last updated: 2026-10-22  
+Mode: Borderless Background Continuity
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Borderless Canvas Blend | Replaced hard container border with smooth vertical gradient dissolve: `bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent backdrop-blur-xs rounded-2xl p-5 sm:p-6 space-y-6 border-0 shadow-none`. |
+| Metric Bar Dividers | Subtly softened horizontal and vertical dividers (`border-portal-border-subtle/60`) for clean executive telemetry presentation without boxed container borders. |
+| In-Context Vehicle Switcher | Top breadcrumb integrates `#btn-switch-vehicle-auction` opening `VehicleSwitcherModal` for fast multi-car switching directly from the live auction telemetry screen. |
+
 
 
 
