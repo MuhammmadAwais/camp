@@ -164,28 +164,26 @@ export async function GET(
       accidentDeclaration: false,
     },
     unsealedBids,
-    selectedBid: isAccepted ? selectedBid : undefined,
-    appointmentVoucher: isAccepted
-      ? {
-          voucherCode: `AN-2026-${id.slice(-4).toUpperCase()}-ON`,
-          dealershipName: selectedBid.dealershipName,
-          address: "105 Four Valley Drive",
-          city: selectedBid.city,
-          province: selectedBid.province,
-          postalCode: "L4K 4T9",
-          contactPhone: "(905) 851-0852",
-          contactEmail: "purchasing@pfaffporsche.com",
-          operatingHours: "Monday – Saturday: 9:00 AM – 6:00 PM EST",
-          acceptedOfferCents: selectedBid.bidAmountCents,
-          expiresAt: new Date(now + 48 * 60 * 60 * 1000).toISOString(),
-          checklist: [
-            "Original Vehicle Ownership Permit (Green Slip - Part 1 & 2)",
-            "Two original master vehicle smart keys",
-            "Government-issued photo identification (Driver's License)",
-            "Direct Deposit void cheque or wire payout instructions",
-          ],
-        }
-      : undefined,
+    selectedBid: selectedBid,
+    appointmentVoucher: {
+      voucherCode: `AN-2026-${id.slice(-4).toUpperCase()}-ON`,
+      dealershipName: selectedBid.dealershipName,
+      address: "105 Four Valley Drive",
+      city: selectedBid.city,
+      province: selectedBid.province,
+      postalCode: "L4K 4T9",
+      contactPhone: "(905) 851-0852",
+      contactEmail: "purchasing@pfaffporsche.com",
+      operatingHours: "Monday – Saturday: 9:00 AM – 6:00 PM EST",
+      acceptedOfferCents: selectedBid.bidAmountCents,
+      expiresAt: new Date(now + 48 * 60 * 60 * 1000).toISOString(),
+      checklist: [
+        "Original Vehicle Ownership Permit (Green Slip - Part 1 & 2)",
+        "Two original master vehicle smart keys",
+        "Government-issued photo identification (Driver's License)",
+        "Direct Deposit void cheque or wire payout instructions",
+      ],
+    },
   };
 
   return ok(payload);

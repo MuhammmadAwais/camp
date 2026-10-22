@@ -1027,17 +1027,19 @@ Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidi
 ### `AppointmentVoucherCard` (Milestone 4.3 / Page 4.5)
 
 Files: `components/seller/AppointmentVoucherCard.tsx`, `app/(seller)/seller/listings/[id]/appointment/page.tsx`  
-Last updated: 2026-10-20  
-Mode: Autumn Editorial Dual-Theme (Porcelain Ivory `#FFF8F2` Light / Deep Obsidian `#0C0A09` Dark)
+Last updated: 2026-10-22  
+Mode: Autumn Editorial Dual-Theme (Porcelain Ivory Light / Deep Obsidian Dark)
 
 | Property | Class / Implementation Pattern |
 | --- | --- |
-| Official Voucher Shell | `border-2 border-portal-primary/40 rounded-3xl p-6 sm:p-10 shadow-xl` with unique alphanumeric pass code (`AN-2026-XXXX-ON`) |
-| QR Verification Block | High-contrast QR pass code badge for dealership staff to scan upon vehicle arrival |
-| Deal Terms Matrix | 3-card key metrics display: Accepted Purchase Offer in CAD cents, vehicle summary, and 48-hour expiration timestamp |
-| Dealership Contact Dossier | Full purchasing desk dossier: physical address, phone, direct email, business hours, and Google Maps directions link |
-| Interactive Handover Checklist | Interactive checklist of required physical documents (Ownership green slip, 2 keys, Photo ID, Void cheque for wire disbursement) |
-| Print & Export Support | Print stylesheet styles (`no-print` utilities) supporting 1-click clean PDF export or paper printing |
+| Top Canvas Banner | `bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent backdrop-blur-xs rounded-2xl p-5 sm:p-6 space-y-5 border-0 shadow-none` dissolving into page background |
+| Header Navigation & Switcher | `Back to Dealer Offers` link + VIN + interactive `VehicleSwitcherModal` pill with live status badge + Print/PDF export action button |
+| 4-Metric Executive Bar | Guaranteed Payout (CAD cents), Winning Dealership, Drop-off Window (48h), and 24h Wire/EFT Escrow with subtle dividers |
+| Official VIP Voucher Pass | High-security pass document with official hologram ribbon, pass serial `AN-2026-XXXX-ON`, high-contrast targeting QR box (`SCAN AT DEALERSHIP DESK`), and vehicle photo preview |
+| Dealership Dossier | Dealership name, OMVIC registration badge, full address, Google Maps direct navigation button, phone, and direct email links |
+| Interactive Drop-off Checklist | Interactive checkboxes with counter badge (`X of 4 Prepared`), stateful checkmarks, and plain-language preparation guidance |
+| Escrow & Regulatory Trust | OMVIC, Law 25, and PIPEDA compliance badge confirming zero fee deductions and guaranteed 24h wire transfer |
+| Empty / Pending State | Rich, professional branded card with direct CTA to review dealer offers instead of an unstyled empty state |
 
 ---
 
