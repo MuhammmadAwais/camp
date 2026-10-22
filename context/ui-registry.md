@@ -1043,20 +1043,24 @@ Mode: Autumn Editorial Dual-Theme (Porcelain Ivory Light / Deep Obsidian Dark)
 
 ---
 
-### `DealerInventoryFeed` (Milestone 5.2 / Page 5.3)
+### `DealerInventoryFeed` & `DealerAuctionCard` (Milestone 5.2 / Page 5.3)
 
-Files: `components/dealer/DealerInventoryFeed.tsx`, `app/(dealer)/dealer/inventory/page.tsx`, `app/api/dealer/inventory/route.ts`  
-Last updated: 2026-10-20  
+Files: `components/dealer/DealerInventoryFeed.tsx`, `components/dealer/DealerAuctionCard.tsx`, `components/dealer/DealerHeader.tsx`, `app/(dealer)/dealer/inventory/page.tsx`  
+Last updated: 2026-10-22  
 Mode: FinTech Obsidian Dark / Porcelain Light Dual-Theme (`#0C0A09` / `#FFF8F2`)
 
 | Property | Class / Implementation Pattern |
 | --- | --- |
-| Trading Floor Grid | Responsive 3-column inventory grid with high data density (`grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5`) |
-| Urgency State | Server-synced 24h countdown clocks; sub-15min triggers Canadian Crimson urgency state (`bg-red-600 text-white animate-pulse`) |
-| Sealed Invariant | Renders total sealed bids count (`N bids`) with zero live dollar exposure to competitors |
-| Faceted Filters | Search query, Make filter, Max Mileage, Max Distance radius, Damage Grade (A/B/C/D), and Sort By options |
-| Direct Bid Placement | Integrated 1-click trigger to open `SealedBidSlip` modal with upward revision rule |
-| Direct Vehicle Inspection | Link to `/dealer/auctions/[id]` on card image, title, and dedicated Inspect button |
+| Streamlined Header | Removed monthly quota, admin center, and seller portal clutter from `DealerHeader.tsx`. Clean brand mark + Dealership identity (`Pfaff Porsche OMVIC-481920`) |
+| Open Page Header | Removed heavy dark box banner. Replaced with open title, friendly subline, and 2 metric counter chips (`X Available`, `Y Active Bids`) |
+| Signature Notched Card | Reuses `SellerAuctionCard` notched-corner geometry with smooth concave SVG fillets (`w-[78px] h-[78px]` pocket) and shadow excision mask |
+| Automaker Marque | Authentic brand logos (`toyota`, `ford`, `honda`, `polestar`, `mitsubishi`, `hyundai`, `cadillac`, `jeep`) with clean monogram fallback |
+| Clean Photo Canvas | `rounded-[24px]` tall photo canvas without intrusive overlay chips; direct click navigation to `/dealer/auctions/[id]` |
+| Key Specs & Carfax | Mileage in km, Transmission, Drivetrain, truncated VIN (`···123456`), and green `Verified Carfax` badge |
+| Sealed Bid Telemetry | Clear display of placed sealed bid (`$32,500 CAD` with `Active Bid` chip) or `No Bid Placed` (`Floor Open` chip) |
+| Docked Squircle Action | `w-[52px] h-[52px]` squircle button with `Gavel` icon in the docked bottom-right notch triggering `SealedBidSlip` modal immediately |
+| Direct Inspect Link | Subtle `Inspect details` link with arrow icon next to bid telemetry |
+| Streamlined Filter Bar | Clean floating search input and 3 select dropdowns (Manufacturer, Max Mileage, Sort) without bulky nested boxes |
 
 ---
 

@@ -132,8 +132,8 @@ Update this file after completing each page/component. Any AI agent reading this
 #### Milestone 5.2: Trading Floor & Bidding Engine
 - [x] **Page 5.3: Live Wholesale Auction Exchange (Trading Floor)**
   - **Route:** `/dealer/inventory`
-  - **Component:** `DealerInventoryFeed.tsx`
-  - **Features:** High-density vehicle card grid / matrix, faceted filters (Make, Year, Max Mileage, Radius km, Damage grade), server-synced 24h countdown clocks with sub-15min Canadian Crimson urgency state.
+  - **Component:** `DealerInventoryFeed.tsx`, `DealerAuctionCard.tsx`, `DealerHeader.tsx`
+  - **Features:** Streamlined institutional header (removed quota/admin clutter), open page header with live inventory & bid counter chips, signature notched cards with authentic automaker marques (`CAR_BRAND_LOGOS`), clean photo canvases, key specs (mileage, transmission, drivetrain, Carfax), sealed bid status, and docked concave squircle button launching `SealedBidSlip`.
 - [x] **Page 5.4: Vehicle Inspection Sheet & Photo Gallery**
   - **Route:** `/dealer/auctions/[id]`
   - **Component:** `VehicleInspectionView.tsx`
