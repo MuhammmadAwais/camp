@@ -21,10 +21,13 @@ import {
   Award,
   Trophy,
   Medal,
+  Car,
+  ChevronsUpDown,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
 import type { ListingDetailData, UnsealedDealerBid } from "@/lib/types/seller";
 import { apiClient } from "@/lib/api-client";
+import { VehicleSwitcherModal } from "@/components/seller/VehicleSwitcherModal";
 
 interface DealerSelectionViewProps {
   listingId: string;
@@ -39,6 +42,7 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
   const [selectedBid, setSelectedBid] = useState<UnsealedDealerBid | null>(null);
   const [isAccepting, setIsAccepting] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [vehicleModalOpen, setVehicleModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchBids = async () => {
@@ -119,40 +123,58 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
 
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
-      {/* Top Breadcrumb & Clean Header */}
-      <div className="flex items-center justify-between">
-        <Link
-          href={`/seller/listings/${listingId}`}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-portal-text-muted hover:text-portal-text transition-colors"
+      {/* Top Breadcrumb, VIN & Vehicle Switcher Pill */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/seller/listings/${listingId}`}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-portal-text-muted hover:text-portal-text transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Auction Floor</span>
+          </Link>
+          <span className="text-portal-border hidden sm:inline">•</span>
+          <span className="text-xs font-mono text-portal-text-muted hidden sm:inline">
+            VIN: {auction.vin}
+          </span>
+        </div>
+
+        {/* Switch Vehicle Pill Button */}
+        <button
+          type="button"
+          id="btn-switch-vehicle"
+          onClick={() => setVehicleModalOpen(true)}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-portal-surface border border-portal-border hover:border-portal-primary/50 text-xs font-medium text-portal-text shadow-2xs hover:bg-portal-surface-hover transition-all cursor-pointer group self-start sm:self-auto"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to {auction.year} {auction.make} {auction.model} Auction</span>
-        </Link>
-        <span className="text-xs font-mono text-portal-text-muted">
-          VIN: {auction.vin}
-        </span>
+          <Car className="w-3.5 h-3.5 text-portal-primary" />
+          <span className="font-semibold">{auction.year} {auction.make} {auction.model}</span>
+          <span className="px-1.5 py-0.2 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-mono font-bold">
+            {unsealedBids.length} Offers
+          </span>
+          <ChevronsUpDown className="w-3.5 h-3.5 text-portal-text-muted group-hover:text-portal-text transition-colors" />
+        </button>
       </div>
 
-      {/* Main Header Card with Dashboard-Style 4-Metric Bar (Zero Unnecessary Text) */}
-      <div className="bg-portal-surface border border-portal-border rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+      {/* Main Header Card with Dashboard-Style 4-Metric Bar (Borderless, Soft Gradient Canvas Blend) */}
+      <div className="bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent backdrop-blur-xs rounded-2xl p-5 sm:p-6 space-y-5 border-0 shadow-none">
         <h1 className="text-2xl sm:text-3xl font-bold font-headline text-portal-text tracking-tight">
-          Select Winning Dealership Offer
+          Select Your Winning Dealership Offer
         </h1>
 
         {/* 4-Metric Performance Bar (Executive Dashboard Style with Vertical Dividers) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle/60">
           {/* Col 1: Top Dealer Offer */}
           <div className="flex items-center justify-between pr-0 sm:pr-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
-                Top Dealer Offer
+                Highest Dealer Offer
               </span>
               <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
                 {formatCadCents(highestBid)}
               </span>
               <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-0.5 block flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
-                <span>+{formatCadCents(surplusAboveReserveCents)} above reserve</span>
+                <span>+{formatCadCents(surplusAboveReserveCents)} above your reserve</span>
               </span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 border border-amber-500/20">
@@ -161,16 +183,16 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
           </div>
 
           {/* Col 2: Total Dealer Competition */}
-          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle sm:pl-4 pr-0 sm:pr-4">
+          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4 pr-0 sm:pr-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
-                Dealer Activity
+                Dealer Competition
               </span>
               <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
                 {unsealedBids.length} Verified Bids
               </span>
               <span className="text-[11px] text-portal-text-muted mt-0.5 block">
-                100% meet reserve floor
+                All bids meet your minimum price
               </span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
@@ -179,16 +201,16 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
           </div>
 
           {/* Col 3: Acceptance Window Countdown */}
-          <div className="flex items-center justify-between lg:border-l border-portal-border-subtle lg:pl-4 pr-0 sm:pr-4">
+          <div className="flex items-center justify-between lg:border-l border-portal-border-subtle/60 lg:pl-4 pr-0 sm:pr-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
-                Decision Window
+                Time Remaining
               </span>
               <span className="font-mono text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block tabular-nums">
                 23h 58m Left
               </span>
               <span className="text-[11px] text-portal-text-muted mt-0.5 block">
-                Guaranteed price lock
+                Guaranteed payout price
               </span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
@@ -196,17 +218,17 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
             </div>
           </div>
 
-          {/* Col 4: Regulated Dealer Escrow */}
-          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle sm:pl-4">
+          {/* Col 4: Protected Dealer Escrow */}
+          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
-                Escrow Protection
+                Protected Payout
               </span>
               <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
-                Regulated Payout
+                Direct Wire Transfer
               </span>
               <span className="text-[11px] text-portal-text-muted mt-0.5 block">
-                OMVIC & AMVIC compliant
+                Safe, regulated & fully insured
               </span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
@@ -276,14 +298,17 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
         {/* TOP 3 3D STAGE & PEDESTALS */}
         {sortedBids.length >= 3 ? (
           <div className="relative z-10 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-4 lg:gap-6 items-end">
-              {/* 2ND PLACE STAGE COLUMN (Left on desktop) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-4 lg:gap-6 items-end [perspective:1200px]">
+              {/* 2ND PLACE STAGE COLUMN (Left on desktop - Inward Tilt) */}
               {(() => {
                 const bid = sortedBids[1];
                 return (
-                  <div key={bid.id} className="order-2 md:order-1 flex flex-col">
+                  <div
+                    key={bid.id}
+                    className="group order-2 md:order-1 flex flex-col transition-all duration-300 transform-gpu md:[transform:rotateY(5deg)_rotateZ(-0.5deg)] md:hover:[transform:rotateY(0deg)_translateY(-8px)] hover:z-20 cursor-default"
+                  >
                     {/* Offer Card */}
-                    <div className="bg-portal-surface border border-neutral-300 dark:border-white/10 rounded-t-2xl p-5 shadow-xs relative flex flex-col justify-between border-t-2 border-t-slate-400">
+                    <div className="bg-portal-surface border border-neutral-300 dark:border-white/10 rounded-t-2xl p-5 shadow-xs relative flex flex-col justify-between border-t-2 border-t-slate-400 transition-all duration-300 group-hover:shadow-md">
                       <div className="space-y-3.5">
                         {/* Header */}
                         <div className="flex items-center justify-between">
@@ -327,7 +352,7 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
                             {formatCadCents(bid.bidAmountCents)}
                           </span>
                           <span className="text-[11px] text-portal-text-muted block mt-0.5">
-                            Meets Reserve Floor
+                            Meets your reserve price
                           </span>
                         </div>
                       </div>
@@ -347,21 +372,21 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
                       </div>
                     </div>
 
-                    {/* 3D Stage Pedestal Base #2 */}
-                    <div className="border border-t-0 border-neutral-300 dark:border-white/10 rounded-b-2xl bg-gradient-to-b from-neutral-200/50 dark:from-white/5 to-portal-surface/60 h-20 sm:h-24 relative overflow-hidden flex flex-col items-center justify-center select-none">
+                    {/* 3D Stage Pedestal Base #2 (Silver / Platinum Runner-Up) */}
+                    <div className="border border-t-0 border-neutral-300 dark:border-white/10 rounded-b-2xl bg-gradient-to-b from-slate-200/50 dark:from-slate-800/40 via-portal-surface to-portal-surface/80 h-20 sm:h-24 relative overflow-hidden flex flex-col items-center justify-center select-none transition-all duration-300 group-hover:border-slate-400 dark:group-hover:border-slate-300/40">
                       {/* Geometric grid lines */}
                       <div
-                        className="absolute inset-0 opacity-20 pointer-events-none"
+                        className="absolute inset-0 opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-35"
                         style={{
                           backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
                           backgroundSize: "16px 16px",
                           color: "var(--portal-text)",
                         }}
                       />
-                      <span className="font-mono font-black text-5xl text-neutral-400/25 dark:text-white/10 tracking-tighter">
+                      <span className="font-mono font-black text-5xl text-slate-400 dark:text-slate-300 group-hover:text-slate-700 dark:group-hover:text-white group-hover:scale-110 tracking-tighter transition-all duration-300 drop-shadow-xs">
                         02
                       </span>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-portal-text-muted font-bold -mt-1 z-10">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-slate-600 dark:text-slate-400 font-bold -mt-1 z-10 px-2 py-0.5 rounded bg-slate-200/60 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700">
                         RUNNER-UP
                       </span>
                     </div>
@@ -373,9 +398,12 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
               {(() => {
                 const bid = sortedBids[0];
                 return (
-                  <div key={bid.id} className="order-1 md:order-2 flex flex-col md:-translate-y-3 z-10">
+                  <div
+                    key={bid.id}
+                    className="group order-1 md:order-2 flex flex-col md:-translate-y-4 z-10 transition-all duration-300 transform-gpu md:[transform:rotateY(0deg)] md:hover:[transform:translateY(-12px)] hover:z-20 cursor-default"
+                  >
                     {/* Offer Card */}
-                    <div className="bg-portal-surface border-2 border-amber-500/70 dark:border-amber-400/60 rounded-t-2xl p-5 sm:p-6 shadow-sm relative flex flex-col justify-between">
+                    <div className="bg-portal-surface border-2 border-amber-500/70 dark:border-amber-400/60 rounded-t-2xl p-5 sm:p-6 shadow-sm relative flex flex-col justify-between transition-all duration-300 group-hover:shadow-lg">
                       {/* Top Crown Ribbon */}
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1.5 whitespace-nowrap">
                         <Trophy className="w-3 h-3" />
@@ -432,11 +460,11 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
                           {surplusAboveReserveCents > 0 && sortBy === "price" ? (
                             <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 block flex items-center gap-1">
                               <TrendingUp className="w-3.5 h-3.5" />
-                              <span>+{formatCadCents(surplusAboveReserveCents)} above reserve floor</span>
+                              <span>+{formatCadCents(surplusAboveReserveCents)} above your reserve</span>
                             </span>
                           ) : (
                             <span className="text-xs text-portal-text-muted mt-0.5 block">
-                              Meets Reserve Floor
+                              Meets your reserve price
                             </span>
                           )}
                         </div>
@@ -459,21 +487,21 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
                       </div>
                     </div>
 
-                    {/* 3D Stage Pedestal Base #1 (Tallest Champion Pedestal) */}
-                    <div className="border-2 border-t-0 border-amber-500/70 dark:border-amber-400/60 rounded-b-2xl bg-gradient-to-b from-amber-500/15 via-portal-surface-hover to-portal-surface/80 h-28 sm:h-32 relative overflow-hidden flex flex-col items-center justify-center select-none">
+                    {/* 3D Stage Pedestal Base #1 (Radiant Gold Champion Pedestal) */}
+                    <div className="border-2 border-t-0 border-amber-500/70 dark:border-amber-400/60 rounded-b-2xl bg-gradient-to-b from-amber-500/20 via-amber-500/5 to-portal-surface/90 h-28 sm:h-32 relative overflow-hidden flex flex-col items-center justify-center select-none transition-all duration-300 group-hover:border-amber-500 group-hover:from-amber-500/30">
                       {/* Geometric grid lines */}
                       <div
-                        className="absolute inset-0 opacity-25 pointer-events-none"
+                        className="absolute inset-0 opacity-25 pointer-events-none transition-opacity duration-300 group-hover:opacity-45"
                         style={{
                           backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
                           backgroundSize: "16px 16px",
                           color: "var(--portal-accent)",
                         }}
                       />
-                      <span className="font-mono font-black text-6xl text-amber-500/25 dark:text-amber-400/20 tracking-tighter">
+                      <span className="font-mono font-black text-6xl text-amber-500 dark:text-amber-400 group-hover:scale-110 tracking-tighter transition-all duration-300 drop-shadow-sm">
                         01
                       </span>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-amber-600 dark:text-amber-400 font-extrabold -mt-1 z-10 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-amber-600 dark:text-amber-300 font-extrabold -mt-1 z-10 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 shadow-2xs">
                         WINNING OFFER
                       </span>
                     </div>
@@ -481,13 +509,16 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
                 );
               })()}
 
-              {/* 3RD PLACE STAGE COLUMN (Right on desktop) */}
+              {/* 3RD PLACE STAGE COLUMN (Right on desktop - Inward Tilt) */}
               {(() => {
                 const bid = sortedBids[2];
                 return (
-                  <div key={bid.id} className="order-3 md:order-3 flex flex-col">
+                  <div
+                    key={bid.id}
+                    className="group order-3 md:order-3 flex flex-col transition-all duration-300 transform-gpu md:[transform:rotateY(-5deg)_rotateZ(0.5deg)] md:hover:[transform:rotateY(0deg)_translateY(-8px)] hover:z-20 cursor-default"
+                  >
                     {/* Offer Card */}
-                    <div className="bg-portal-surface border border-neutral-300 dark:border-white/10 rounded-t-2xl p-5 shadow-xs relative flex flex-col justify-between border-t-2 border-t-orange-600/70">
+                    <div className="bg-portal-surface border border-neutral-300 dark:border-white/10 rounded-t-2xl p-5 shadow-xs relative flex flex-col justify-between border-t-2 border-t-orange-600/70 transition-all duration-300 group-hover:shadow-md">
                       <div className="space-y-3.5">
                         {/* Header */}
                         <div className="flex items-center justify-between">
@@ -531,7 +562,7 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
                             {formatCadCents(bid.bidAmountCents)}
                           </span>
                           <span className="text-[11px] text-portal-text-muted block mt-0.5">
-                            Meets Reserve Floor
+                            Meets your reserve price
                           </span>
                         </div>
                       </div>
@@ -551,21 +582,21 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
                       </div>
                     </div>
 
-                    {/* 3D Stage Pedestal Base #3 */}
-                    <div className="border border-t-0 border-neutral-300 dark:border-white/10 rounded-b-2xl bg-gradient-to-b from-neutral-200/50 dark:from-white/5 to-portal-surface/60 h-16 sm:h-18 relative overflow-hidden flex flex-col items-center justify-center select-none">
+                    {/* 3D Stage Pedestal Base #3 (Warm Bronze / Copper Pedestal) */}
+                    <div className="border border-t-0 border-neutral-300 dark:border-white/10 rounded-b-2xl bg-gradient-to-b from-orange-950/20 dark:from-orange-950/30 via-portal-surface to-portal-surface/80 h-16 sm:h-18 relative overflow-hidden flex flex-col items-center justify-center select-none transition-all duration-300 group-hover:border-orange-500/40">
                       {/* Geometric grid lines */}
                       <div
-                        className="absolute inset-0 opacity-20 pointer-events-none"
+                        className="absolute inset-0 opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-35"
                         style={{
                           backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
                           backgroundSize: "16px 16px",
                           color: "var(--portal-text)",
                         }}
                       />
-                      <span className="font-mono font-black text-4xl text-neutral-400/25 dark:text-white/10 tracking-tighter">
+                      <span className="font-mono font-black text-4xl text-orange-600 dark:text-orange-400 group-hover:text-orange-500 dark:group-hover:text-orange-300 group-hover:scale-110 tracking-tighter transition-all duration-300 drop-shadow-xs">
                         03
                       </span>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-portal-text-muted font-bold -mt-1 z-10">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-orange-700 dark:text-orange-400 font-bold -mt-1 z-10 px-2 py-0.5 rounded bg-orange-500/10 border border-orange-500/20">
                         CONTENDER
                       </span>
                     </div>
@@ -578,10 +609,10 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
             <div className="border-t border-portal-border pt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-portal-text-muted">
               <span className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-portal-primary" />
-                <span>3D LEADERBOARD STAGE // SECTOR 1</span>
+                <span>Top 3 Verified Dealership Offers</span>
               </span>
-              <span>CANADIAN REGULATED DEALER FLOOR</span>
-              <span>ALL OFFERS IRREVOCABLE FOR 24H</span>
+              <span>Certified Canadian Dealership Network</span>
+              <span>All offers guaranteed for 24 hours</span>
             </div>
           </div>
         ) : (
@@ -777,6 +808,21 @@ export function DealerSelectionView({ listingId }: DealerSelectionViewProps) {
           </div>
         </div>
       )}
+
+      {/* Vehicle Switcher Modal */}
+      <VehicleSwitcherModal
+        isOpen={vehicleModalOpen}
+        onClose={() => setVehicleModalOpen(false)}
+        currentListingId={listingId}
+        currentListingFallback={{
+          year: auction.year,
+          make: auction.make,
+          model: auction.model,
+          vin: auction.vin,
+          status: auction.status,
+          thumbnailUrl: data.photos?.[0]?.url,
+        }}
+      />
     </div>
   );
 }

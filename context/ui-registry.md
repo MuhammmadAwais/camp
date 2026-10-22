@@ -1351,17 +1351,33 @@ Mode: Unified Background Continuity
 
 File: `components/seller/DealerSelectionView.tsx`  
 Last updated: 2026-10-22  
-Mode: Executive Automotive Showroom 3D Stage & Podium Selection
+Mode: Executive Automotive Showroom 3D Stage & Amphitheater Podium Selection
 
 | Property | Class / Implementation Pattern |
 | --- | --- |
-| Simplified Clean Header | Header is stripped of redundant paragraphs, pills, and duplicate specs. Context is placed cleanly in breadcrumb (`Back to 2022 Porsche Macan Auction`) and VIN label. |
-| 4-Metric Performance Bar | Horizontal grid (`grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle`) featuring Top Dealer Offer, Dealer Activity (Verified Bids count), Decision Window (live countdown), and Escrow Protection (OMVIC/AMVIC compliant regulated payout) |
-| 3D Stage Arena & Grids | Arena container (`relative rounded-3xl border border-portal-border bg-portal-surface/60 p-4 sm:p-6 md:p-8`) with an architectural 28px coordinate grid floor overlay (`mask-image: radial-gradient(ellipse 90% 70% at 50% 60%, black 50%, transparent 100%)`). |
-| 3D Pedestal Bases (Top 3) | 3-column physical stage with architectural bases:<br>• **Podium 2 (Left, `order-2 md:order-1`):** Metallic silver top border, 2x2 mini specs grid, attached 3D pedestal base (`h-20 sm:h-24`) with engraved `02` numeral and `RUNNER-UP` label.<br>• **Podium 1 (Center & Elevated, `order-1 md:order-2`):** Elevated taller (`md:-translate-y-3`), gold border (`border-2 border-amber-500/70 dark:border-amber-400/60`), top crown ribbon (`TOP CERTIFIED OFFER`), 2x2 specs grid, attached tallest 3D pedestal base (`h-28 sm:h-32`) with engraved `01` numeral and gold `WINNING OFFER` plaque.<br>• **Podium 3 (Right, `order-3 md:order-3`):** Bronze top border, 2x2 mini specs grid, attached 3D pedestal base (`h-16 sm:h-18`) with engraved `03` numeral and `CONTENDER` label. |
-| Zero Glow / Shadow Clutter | Eliminates heavy neon glows and diffuse drop shadows in favor of crisp 1px borders, precision 3D beveled edges, and structured geometric grids without visual emptiness. |
-| Stage Baseline Floor | Connecting grounded stage platform bar with coordinate grid ticks: `3D LEADERBOARD STAGE // SECTOR 1`, `CANADIAN REGULATED DEALER FLOOR`, `ALL OFFERS IRREVOCABLE FOR 24H`. |
-| Additional Ranked Offers | Ranks 4+ render in clean, high-density horizontal list rows below the stage with rank badges, dealership license pills, review ratings, payout speed, price, and individual acceptance action. |
-| Dynamic Sorting Controls | Dual-toggle switcher (`Highest Bid` vs. `Nearest Dealership`) dynamically re-ranks the podium and updates tier subtitles (`HIGHEST BID` vs. `NEAREST DEALER`). |
+| Vehicle Switcher Pill | Top breadcrumb integrates an interactive vehicle switcher button (`#btn-switch-vehicle`) displaying current car, active offer count badge, and chevron, opening `VehicleSwitcherModal`. |
+| Borderless Metric Bar Canvas Blend | Top 4-metric bar card removes hard borders (`border-0 shadow-none`) and seamlessly fades into the canvas using `bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent backdrop-blur-xs`, preventing boxed container lines. |
+| Non-Technical Human Copy | Replaces all robotic jargon with clear, reassuring language: "Select Your Winning Dealership Offer", "Highest Dealer Offer", "Dealer Competition", "Time Remaining", "Protected Payout", "Direct Wire Transfer", and "All bids meet your minimum price". |
+| Balanced 3D Amphitheater Tilt | Container applies `[perspective:1200px]`. Outer columns tilt inward to form an amphitheater showroom curve (`md:[transform:rotateY(5deg)_rotateZ(-0.5deg)]` on Left #2; `md:[transform:rotateY(-5deg)_rotateZ(0.5deg)]` on Right #3; Center #1 flat and tallest `md:[transform:rotateY(0deg)] md:-translate-y-4`). |
+| Interactive Stage Tilt Hover | Hovering any column straightens the card (`md:hover:[transform:rotateY(0deg)]`), elevates it smoothly (`-translate-y-2`), and casts dynamic depth without heavy diffuse shadows. |
+| Highlighted Pedestal Numerals & Interactivity | Numerals on pedestal bases are distinctly colored and reactive on hover (`group-hover:scale-110 transition-all duration-300`):<br>• **01 (Gold):** `text-amber-500 dark:text-amber-400 drop-shadow-sm` with gold `WINNING OFFER` badge.<br>• **02 (Silver):** `text-slate-400 dark:text-slate-300 group-hover:text-slate-700 dark:group-hover:text-white drop-shadow-xs` with `RUNNER-UP` badge.<br>• **03 (Bronze):** `text-orange-600 dark:text-orange-400 group-hover:text-orange-500 dark:group-hover:text-orange-300 drop-shadow-xs` with `CONTENDER` badge. |
+| Connecting Stage Baseline Floor | Natural plain phrasing: `Top 3 Verified Dealership Offers` • `Certified Canadian Dealership Network` • `All offers guaranteed for 24 hours`. |
+
+---
+
+### `VehicleSwitcherModal` (Multi-Vehicle Context Switcher)
+
+File: `components/seller/VehicleSwitcherModal.tsx`  
+Last updated: 2026-10-22  
+Mode: High-Density Multi-Asset Selection Modal
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Modal Backdrop & Container | Fixed backdrop with `bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200`. Modal card: `bg-portal-surface border border-portal-border rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl`. |
+| Inventory Synchronization | Integrates TanStack Query `useSellerDashboard("default")` to retrieve the seller's active, completed, or unsealed vehicles. Combines with current listing fallback for zero-delay presentation. |
+| Signature Vehicle Cards | Each listed car renders with thumbnail photo, Year/Make/Model/Trim, mileage, VIN last 6, and status badge (`Offers Ready`, `Live Auction (X bids)`, `Completed`, `In Review`). |
+| Active State & 1-Click Routing | Currently viewed car is highlighted with `bg-portal-primary/10 border-portal-primary ring-1 ring-portal-primary/30` and a `Viewing Now` tag. Selecting any other vehicle immediately routes to `/seller/listings/${car.id}/select-dealer` (if unsealed) or `/seller/listings/${car.id}` (if active). |
+| Secondary Navigation | Bottom footer includes direct link to `+ List Another Vehicle` (`/seller/list-car`). |
+
 
 

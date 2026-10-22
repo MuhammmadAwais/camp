@@ -107,8 +107,8 @@ Update this file after completing each page/component. Any AI agent reading this
   - **Features:** Dashboard-style horizontal 4-metric bar (Reserve Price, Dealer Activity, Live Countdown, Dealer Protection) with vertical dividers & side icons, 24h digital countdown timer clock, real-time sealed-bid count telemetry *(Strict invariant: zero dollar amounts exposed while ACTIVE)*, photo strip with cover showcase, condition disclosure sheet, specs recap, plain-language non-technical copy, and seamless header canvas continuity.
 - [x] **Page 4.4: Post-Auction Unsealed Dealer Selection**
   - **Route:** `/seller/listings/[id]/select-dealer`
-  - **Component:** `DealerSelectionView.tsx`
-  - **Features:** De-cluttered clean header with breadcrumb vehicle context, unified 4-metric executive bar, 3D showroom stage arena with perspective grid floor, 3-column physical stepped pedestals with engraved numerals (`01`, `02`, `03`) & mini 2x2 specs grids, zero glow/shadow bloat, high-density rows for remaining ranks 4+, dual sort switch (Highest Bid / Nearest Dealership), and 1-click binding offer acceptance modal.
+  - **Component:** `DealerSelectionView.tsx` & `VehicleSwitcherModal.tsx`
+  - **Features:** Interactive vehicle switcher pill & modal for multi-car inventory, borderless 4-metric executive bar smoothly blended into the background canvas (`bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent`), balanced 3D amphitheater stage tilt (`[perspective:1200px]` with Y-axis curvature across top 3 cards), metallic highlighted pedestal numerals (`01` Gold, `02` Silver, `03` Bronze) with smooth hover scaling (`group-hover:scale-110`), plain-language non-technical phrasing, high-density rows for remaining ranks 4+, dual sort switch (Highest Bid / Nearest Dealership), and 1-click binding offer acceptance modal.
 - [x] **Page 4.5: Offline Appointment & Dealership Voucher**
   - **Route:** `/seller/listings/[id]/appointment`
   - **Component:** `AppointmentVoucherCard.tsx`

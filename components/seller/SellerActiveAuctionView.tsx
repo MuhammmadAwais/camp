@@ -18,10 +18,12 @@ import {
   Gavel,
   RefreshCw,
   Award,
+  ChevronsUpDown,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
 import type { ListingDetailData } from "@/lib/types/seller";
 import { apiClient } from "@/lib/api-client";
+import { VehicleSwitcherModal } from "@/components/seller/VehicleSwitcherModal";
 
 interface SellerActiveAuctionViewProps {
   listingId: string;
@@ -33,6 +35,7 @@ export function SellerActiveAuctionView({ listingId }: SellerActiveAuctionViewPr
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+  const [vehicleModalOpen, setVehicleModalOpen] = useState(false);
 
   // Time remaining state
   const [timeLeft, setTimeLeft] = useState<{
@@ -119,15 +122,28 @@ export function SellerActiveAuctionView({ listingId }: SellerActiveAuctionViewPr
 
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
-      {/* Top Breadcrumb & Demo Mode Controls */}
+      {/* Top Breadcrumb & Switch Vehicle & Demo Mode Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <Link
-          href="/seller/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-portal-text-muted hover:text-portal-text transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Dashboard</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/seller/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-portal-text-muted hover:text-portal-text transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Dashboard</span>
+          </Link>
+          <span className="text-portal-border hidden sm:inline">•</span>
+          <button
+            type="button"
+            id="btn-switch-vehicle-auction"
+            onClick={() => setVehicleModalOpen(true)}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-portal-surface border border-portal-border hover:border-portal-primary/50 text-xs font-medium text-portal-text shadow-2xs hover:bg-portal-surface-hover transition-all cursor-pointer group"
+          >
+            <Car className="w-3.5 h-3.5 text-portal-primary" />
+            <span className="font-semibold">{auction.year} {auction.make} {auction.model}</span>
+            <ChevronsUpDown className="w-3 h-3 text-portal-text-muted group-hover:text-portal-text transition-colors" />
+          </button>
+        </div>
 
         {/* Demo Stage Switcher */}
         <div className="flex items-center gap-1 p-1 rounded-xl bg-portal-surface border border-portal-border text-xs">
@@ -440,6 +456,21 @@ export function SellerActiveAuctionView({ listingId }: SellerActiveAuctionViewPr
           </div>
         </div>
       </div>
+
+      {/* Vehicle Switcher Modal */}
+      <VehicleSwitcherModal
+        isOpen={vehicleModalOpen}
+        onClose={() => setVehicleModalOpen(false)}
+        currentListingId={listingId}
+        currentListingFallback={{
+          year: auction.year,
+          make: auction.make,
+          model: auction.model,
+          vin: auction.vin,
+          status: auction.status,
+          thumbnailUrl: photos?.[0]?.url,
+        }}
+      />
     </div>
   );
 }
