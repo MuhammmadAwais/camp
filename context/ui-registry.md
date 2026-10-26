@@ -1439,3 +1439,32 @@ Mode: Dealership Intake & Settlement Modal (Portaled `z-[9999]`)
 | Dynamic Settlement Price & Delta | Live CAD variance computation against original accepted offer. Displays real-time delta badges (e.g. `✓ 100% of Agreed Offer` or `▼ -$1,000 CAD (-2.6% deduction)`). When renegotiated lower is chosen, provides quick deduction chips (`-$500`, `-$1,000`, `-$1,500`, `-$2,500`). If declined, automatically voids payout ($0.00 CAD). |
 | Technician Quick Rationale Chips | 1-click inspection finding tags (`+ Hoist check complete`, `+ OBD-II scan 0 DTCs`, `+ Paint depth verified`, `+ Brake wear matched photos`, `+ Both key fobs received`, `+ Bill of Sale signed`) that append directly into the notes textarea with proper punctuation. |
 | Digital Intake Pass Modal | Also portaled to `document.body` with `z-[9999]`, background scroll lock, QR intake scanner graphic, print voucher trigger, and seller contact details. |
+
+---
+
+### `DealerSubscriptionView` (Crextio Executive Pricing Replica)
+
+File: `components/dealer/DealerSubscriptionView.tsx`  
+Last updated: 2026-10-26  
+Mode: Tri-Card 3D Symmetrical Tilt Wholesale Pricing Architecture
+
+| Property         | Class / Setting |
+| ---------------- | --------------- |
+| Background       | Canvas-Direct (No outer gray box): sits directly on `bg-portal-canvas`; Standard cards: `bg-portal-surface border border-portal-border/90`; Hero Pro card: `bg-[#141215] border-2 border-[#E59344] shadow-2xl` |
+| Border           | Standard cards: `border border-portal-border/90`; Hero card: `border-2 border-[#E59344]`; Dotted dividers: `border-t border-dashed border-portal-border/80` (cards 1 & 3) / `border-white/15` (card 2) |
+| Border radius    | Cards: `rounded-[32px]`; Buttons & Toggles: `rounded-full` |
+| 3D Tilt Symmetry | Grid container: `[perspective:1400px]`; Card 1: `lg:[transform:rotateY(6deg)_rotateX(1.5deg)] lg:hover:[transform:rotateY(0deg)_rotateX(0deg)_translateY(-8px)] lg:origin-right`; Card 2: `lg:[transform:translateZ(24px)] lg:hover:[transform:translateZ(36px)_translateY(-10px)] lg:origin-center`; Card 3: `lg:[transform:rotateY(-6deg)_rotateX(1.5deg)] lg:hover:[transform:rotateY(0deg)_rotateX(0deg)_translateY(-8px)] lg:origin-left` |
+| Text — primary   | Headline: `font-headline font-extrabold text-portal-text` (hero card: `text-white`); Price numerals: `font-mono text-4xl sm:text-5xl font-black` |
+| Text — secondary | `CAD / mo` on same horizontal line as price: `font-mono text-xs text-portal-text-muted`; Annual breakdown subtitle: `font-mono text-[11px] text-portal-text-muted/70 text-center` |
+| Spacing          | Grid gap: `gap-6 sm:gap-7`; Card padding: `p-7 sm:p-8`; Feature item spacing: `space-y-3.5` |
+| Hover state      | Standard cards: `hover:border-portal-border`; Hero card: `hover:scale-[1.01] transition-all`; White pill CTA: `hover:bg-neutral-100 hover:scale-[1.02]` |
+| Shadow           | Hero card: `shadow-2xl` (no colored glow); Standard cards: `shadow-lg`; CTA pill: `shadow-xl` |
+| Accent usage     | Hero active price: `text-[#E59344]` (AutoNexa honey amber); Strikethrough price: `line-through text-neutral-500`; Diagonal striped tab: AutoNexa amber `#F59E0B` & `#D97706` stripes with bold dark text; Included checks: `w-4 h-4 rounded-full bg-emerald-500 text-white`; Excluded items: `w-4 h-4 text-portal-text-muted/40 X` |
+
+**Pattern notes:**
+- **Zero Glows & Pure FinTech Precision:** Removed all fuzzy colored radial glows and colored drop-shadows. Clean crisp borders only.
+- **Removed Boilerplate Paragraphs:** Eliminated the multi-line filler descriptions, allowing the balanced 2-line pricing blocks to transition directly into the dashed divider and feature matrix.
+- **Harmonized 2-Line Price Blocks:** Price numerals and `CAD / mo` sit on a single line, followed by the centered annual billing subtitle. Eliminates erratic multi-line wrapping across all cards.
+- **Concave 3D Triptych Symmetry:** Left and right cards tilt gently inward (6°) toward the elevated center hero card, creating an executive 3D showcase that smoothly responds to cursor hover.
+- **Institutional Status Console:** Replaced the raw bottom text line with a pulsing emerald status beacon, active tier badge, billing metadata, and an interactive payment management button.
+

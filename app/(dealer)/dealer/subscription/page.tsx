@@ -10,10 +10,8 @@ export const metadata: Metadata = {
 
 export default function DealerSubscriptionPage() {
   return (
-    <div className="min-h-screen bg-portal-canvas text-portal-text">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <DealerSubscriptionView />
-      </main>
+    <div className="w-full pb-8">
+      <DealerSubscriptionView />
     </div>
   );
 }
