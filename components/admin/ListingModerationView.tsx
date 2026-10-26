@@ -118,19 +118,20 @@ export function ListingModerationView() {
               : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
           }`}
         >
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-xs font-bold text-portal-text">
+          {/* Side-by-Side: Equalized Prominent Icon & Heading */}
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 shadow-2xs">
+              <Clock className="w-6 h-6" />
+            </div>
+            <span className="text-xs sm:text-sm font-bold text-portal-text leading-tight">
               Pending Verification
             </span>
-            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0">
-              <Clock className="w-4 h-4" />
-            </div>
           </div>
-          <div className="mt-2.5 flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-black text-amber-500">
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-amber-500">
               {counts.PENDING}
             </span>
-            <span className="text-xs font-medium text-portal-text-muted">Submissions</span>
+            <span className="text-xs font-semibold text-portal-text-muted">Submissions</span>
           </div>
           <p className="text-[11px] text-portal-text-muted mt-1 truncate">
             Awaiting initial compliance inspection
@@ -146,19 +147,20 @@ export function ListingModerationView() {
               : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
           }`}
         >
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-xs font-bold text-portal-text">
+          {/* Side-by-Side: Equalized Prominent Icon & Heading */}
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-portal-primary/10 border border-portal-primary/20 text-portal-primary flex items-center justify-center shrink-0 shadow-2xs">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <span className="text-xs sm:text-sm font-bold text-portal-text leading-tight">
               Action Required
             </span>
-            <div className="w-8 h-8 rounded-xl bg-portal-primary/10 border border-portal-primary/20 text-portal-primary flex items-center justify-center shrink-0">
-              <AlertTriangle className="w-4 h-4" />
-            </div>
           </div>
-          <div className="mt-2.5 flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-black text-portal-text">
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-portal-text">
               {counts.EDITS_REQUESTED}
             </span>
-            <span className="text-xs font-medium text-portal-text-muted">Active</span>
+            <span className="text-xs font-semibold text-portal-text-muted">Active</span>
           </div>
           <p className="text-[11px] text-portal-text-muted mt-1 truncate">
             Corrections requested from seller
@@ -174,19 +176,20 @@ export function ListingModerationView() {
               : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
           }`}
         >
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-xs font-bold text-portal-text">
+          {/* Side-by-Side: Equalized Prominent Icon & Heading */}
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-2xs">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <span className="text-xs sm:text-sm font-bold text-portal-text leading-tight">
               Approved Today
             </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
           </div>
-          <div className="mt-2.5 flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-black text-emerald-600 dark:text-emerald-400">
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
               {counts.APPROVED}
             </span>
-            <span className="text-xs font-medium text-portal-text-muted">Auctions</span>
+            <span className="text-xs font-semibold text-portal-text-muted">Auctions</span>
           </div>
           <p className="text-[11px] text-portal-text-muted mt-1 truncate">
             Live on 24h dealer wholesale floor
@@ -202,19 +205,20 @@ export function ListingModerationView() {
               : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
           }`}
         >
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-xs font-bold text-portal-text">
+          {/* Side-by-Side: Equalized Prominent Icon & Heading */}
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-portal-surface-hover border border-portal-border text-portal-text flex items-center justify-center shrink-0 shadow-2xs">
+              <Layers className="w-6 h-6" />
+            </div>
+            <span className="text-xs sm:text-sm font-bold text-portal-text leading-tight">
               Total Intake
             </span>
-            <div className="w-8 h-8 rounded-xl bg-portal-surface-hover border border-portal-border text-portal-text flex items-center justify-center shrink-0">
-              <Layers className="w-4 h-4" />
-            </div>
           </div>
-          <div className="mt-2.5 flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-black text-portal-text">
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-portal-text">
               {counts.ALL}
             </span>
-            <span className="text-xs font-medium text-portal-text-muted">Total Listings</span>
+            <span className="text-xs font-semibold text-portal-text-muted">Total Listings</span>
           </div>
           <p className="text-[11px] text-portal-text-muted mt-1 truncate">
             All consumer vehicle submissions
@@ -679,17 +683,17 @@ export function ListingModerationView() {
                       />
                     </svg>
 
-                    {/* Left Concave Fillet Curve */}
+                    {/* Left Concave Fillet Curve (Smooth Outward Pocket Transition) */}
                     <svg
                       viewBox="0 0 20 20"
                       className="w-5 h-5 absolute bottom-0 -left-5 pointer-events-none overflow-visible"
                     >
                       <path
-                        d="M 0,20 A 20 20 0 0 1 20,0 L 20,20 Z"
+                        d="M 0,20 A 20 20 0 0 0 20,0 L 20,20 Z"
                         className="fill-portal-canvas"
                       />
                       <path
-                        d="M 0,20 A 20 20 0 0 1 20,0"
+                        d="M 0,20 A 20 20 0 0 0 20,0"
                         fill="none"
                         stroke="currentColor"
                         className="text-portal-border"
@@ -700,7 +704,7 @@ export function ListingModerationView() {
                     {/* Action Squircle Button */}
                     <Link
                       href={`/admin/moderation/${item.id}`}
-                      className="w-[52px] h-[52px] rounded-2xl bg-portal-surface hover:bg-portal-primary hover:text-white border border-portal-border flex items-center justify-center transition-all group-hover:scale-105 shadow-2xs cursor-pointer text-portal-text"
+                      className="w-[52px] h-[52px] rounded-[18px] bg-portal-surface hover:bg-portal-primary hover:text-white border border-portal-border flex items-center justify-center transition-all group-hover:scale-105 shadow-2xs cursor-pointer text-portal-text"
                       aria-label={`Review ${item.vehicle.year} ${item.vehicle.make} ${item.vehicle.model}`}
                     >
                       <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

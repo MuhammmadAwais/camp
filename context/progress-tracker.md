@@ -168,7 +168,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 6.1: Seller Listing Moderation Queue**
   - **Route:** `/admin/moderation`
   - **Component:** `ListingModerationView.tsx`
-  - **Features:** Full-width high-density queue: 4-card operational metric ribbon (`Pending Verification`, `Action Required`, `Approved Today`, `Total Intake`) with equalized icons and headings, live search across VIN/Model/Seller, status filter tabs, sort dropdown, dual view modes (refined list rows with prominent review buttons & signature S-curve notched grid cards with brand logos and docked squircle buttons), and direct links to dedicated dossier review pages.
+  - **Features:** Full-width high-density queue: 4-card operational metric ribbon (`Pending Verification`, `Action Required`, `Approved Today`, `Total Intake`) with side-by-side equalized `w-12 h-12` icons and headings, live search across VIN/Model/Seller, status filter tabs, sort dropdown, dual view modes (refined list rows with prominent review buttons & signature S-curve notched grid cards with brand logos, smooth outward concave fillet transitions, and docked squircle buttons), and direct links to dedicated dossier review pages.
 - [x] **Page 6.1b: Vehicle Moderation Dossier & Decision Terminal**
   - **Route:** `/admin/moderation/[id]`
   - **Component:** `ListingModerationDetailView.tsx`
