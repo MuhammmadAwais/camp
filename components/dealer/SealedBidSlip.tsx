@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
   Gavel,
@@ -29,9 +30,8 @@ export function SealedBidSlip({
   onClose,
   onBidSuccess,
 }: SealedBidSlipProps) {
-  if (!auction) return null;
-
-  const minBidCents = auction.myCurrentBidCents
+  const [mounted, setMounted] = useState(false);
+  const minBidCents = auction?.myCurrentBidCents
     ? auction.myCurrentBidCents + 25000 // Must be at least $250 higher
     : 1500000; // $15,000 default min floor
 
@@ -43,6 +43,30 @@ export function SealedBidSlip({
   const [declaration, setDeclaration] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Disable body scroll & handle Escape key
+  useEffect(() => {
+    if (!auction) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [auction, onClose]);
+
+  if (!auction || !mounted) return null;
 
   // Handle manual input
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,8 +128,13 @@ export function SealedBidSlip({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+  const modalContent = (
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
+    >
       <div className="bg-portal-surface border border-portal-border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5 relative">
         {/* Header Bar */}
         <div className="flex items-center justify-between pb-3 border-b border-portal-border">
@@ -290,4 +319,6 @@ export function SealedBidSlip({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

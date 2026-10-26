@@ -140,8 +140,7 @@ Update this file after completing each page/component. Any AI agent reading this
   - **Features:** Re-architected with strong visual hierarchy and anti-card-soup layout: unboxed 16/10 hero media viewer, seamless condition & seller disclosure stream (no card nesting), and a single unified sticky dealership console with 3 clear tiers (Bidding CTA, 2x2 scannable Vehicle Vitals, and Carfax title trust signals). Low-value hardcoded clutter removed.
 - [x] **Page 5.5: Sealed-Bid Placement Modal / Slip**
   - **Route:** Integrated modal in `/dealer/inventory` & `/dealer/auctions/[id]`
-  - **Component:** `SealedBidSlip.tsx`
-  - **Features:** Integer CAD cents dollar input, quick-increment chips (`+$250`, `+$500`, `+$1,000`, `+$2,500`), upward-revision tracker (dealers can raise their bids, never lower them), legally binding commitment declaration.
+  - **Features:** Integer CAD cents dollar input, quick-increment chips (`+$250`, `+$500`, `+$1,000`, `+$2,500`), upward-revision tracker (dealers can raise their bids, never lower them), legally binding commitment declaration, portaled to `document.body` (`z-[9999]`) with full-viewport dimming & background scroll lock.
 - [x] **Page 5.6: Active Bids & Outbid Telemetry**
   - **Route:** `/dealer/active-bids`
   - **Component:** `DealerActiveBidsView.tsx`

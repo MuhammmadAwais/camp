@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -122,12 +123,12 @@ export function DealerBidSwitcherModal({
     router.push(`/dealer/auctions/${car.id}`);
   };
 
-  return (
+  const modalContent = (
     <div
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
     >
       <div
         className="bg-portal-surface border border-portal-border rounded-2xl max-w-xl w-full p-5 sm:p-6 space-y-4 shadow-2xl relative animate-in zoom-in-95 duration-200"
@@ -337,4 +338,6 @@ export function DealerBidSwitcherModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
