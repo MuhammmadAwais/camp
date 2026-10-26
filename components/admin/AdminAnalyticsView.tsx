@@ -903,52 +903,53 @@ export function AdminAnalyticsView() {
             </p>
           </div>
 
-          {/* Grouped Bar Chart Visual with Background Gridlines & Explicit Heights */}
-          <div className="my-4 pt-2 relative">
-            {/* Background Gridlines */}
-            <div className="absolute inset-x-0 top-0 h-[150px] flex flex-col justify-between pointer-events-none opacity-40">
-              <div className="border-b border-dashed border-portal-border/60 flex items-center justify-between text-[10px] font-mono text-portal-text-muted px-1">
-                <span>60 lots</span>
-                <span className="opacity-0">60</span>
-              </div>
-              <div className="border-b border-dashed border-portal-border/60 flex items-center justify-between text-[10px] font-mono text-portal-text-muted px-1">
-                <span>40 lots</span>
-                <span className="opacity-0">40</span>
-              </div>
-              <div className="border-b border-dashed border-portal-border/60 flex items-center justify-between text-[10px] font-mono text-portal-text-muted px-1">
-                <span>20 lots</span>
-                <span className="opacity-0">20</span>
-              </div>
-              <div className="border-b border-portal-border" />
+          {/* Grouped Bar Chart Visual with Dedicated Left Y-Axis & Explicit Heights */}
+          <div className="my-4 pt-2 flex items-stretch gap-2.5">
+            {/* Dedicated Left Y-Axis Scale (Zero Overlap with Bars) */}
+            <div className="w-11 h-[135px] flex flex-col justify-between items-end pr-1 text-[10px] font-mono text-portal-text-muted shrink-0 select-none">
+              <span>60 lots</span>
+              <span>40 lots</span>
+              <span>20 lots</span>
+              <span>0</span>
             </div>
 
-            {/* Bars Container */}
-            <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-[175px] px-2 relative z-10">
-              {CITY_VOLUME_BARS.map((hub, idx) => {
-                const maxCityLots = 70;
-                const barAreaHeight = 135; // px max height for bars
-                const intakePx = Math.round((hub.intakeLots / maxCityLots) * barAreaHeight);
-                const clearedPx = Math.round((hub.clearedLots / maxCityLots) * barAreaHeight);
-                const isHovered = hoveredCityIndex === idx;
+            {/* Bars & Gridlines Canvas */}
+            <div className="flex-1 relative">
+              {/* Background Dashed Gridlines spanning only the bars area */}
+              <div className="absolute inset-x-0 top-0 h-[135px] flex flex-col justify-between pointer-events-none opacity-40">
+                <div className="border-b border-dashed border-portal-border/60 w-full" />
+                <div className="border-b border-dashed border-portal-border/60 w-full" />
+                <div className="border-b border-dashed border-portal-border/60 w-full" />
+                <div className="border-b border-portal-border w-full" />
+              </div>
 
-                return (
-                  <div
-                    key={hub.city}
-                    className="flex flex-col items-center h-full justify-end group cursor-pointer relative"
-                    onMouseEnter={() => setHoveredCityIndex(idx)}
-                    onMouseLeave={() => setHoveredCityIndex(null)}
-                  >
-                    {/* Floating Tooltip */}
-                    {isHovered && (
-                      <div className="absolute -top-12 z-30 px-2.5 py-1 rounded-lg bg-portal-surface border border-portal-border shadow-lg text-center whitespace-nowrap animate-fadeIn pointer-events-none">
-                        <div className="text-[10px] font-bold text-portal-text font-headline">
-                          {hub.city} • <span className="text-amber-500 font-mono">{hub.clearancePercent}%</span>
+              {/* Bars Container */}
+              <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-[175px] relative z-10">
+                {CITY_VOLUME_BARS.map((hub, idx) => {
+                  const maxCityLots = 70;
+                  const barAreaHeight = 135; // px max height for bars
+                  const intakePx = Math.round((hub.intakeLots / maxCityLots) * barAreaHeight);
+                  const clearedPx = Math.round((hub.clearedLots / maxCityLots) * barAreaHeight);
+                  const isHovered = hoveredCityIndex === idx;
+
+                  return (
+                    <div
+                      key={hub.city}
+                      className="flex flex-col items-center h-full justify-end group cursor-pointer relative"
+                      onMouseEnter={() => setHoveredCityIndex(idx)}
+                      onMouseLeave={() => setHoveredCityIndex(null)}
+                    >
+                      {/* Floating Tooltip */}
+                      {isHovered && (
+                        <div className="absolute -top-12 z-30 px-2.5 py-1 rounded-lg bg-portal-surface border border-portal-border shadow-lg text-center whitespace-nowrap animate-fadeIn pointer-events-none">
+                          <div className="text-[10px] font-bold text-portal-text font-headline">
+                            {hub.city} • <span className="text-amber-500 font-mono">{hub.clearancePercent}%</span>
+                          </div>
+                          <div className="text-[9px] font-mono text-portal-text-muted">
+                            {hub.clearedLots} cleared / {hub.intakeLots} intake
+                          </div>
                         </div>
-                        <div className="text-[9px] font-mono text-portal-text-muted">
-                          {hub.clearedLots} cleared / {hub.intakeLots} intake
-                        </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* Bar Columns */}
                     <div className="flex items-end justify-center gap-1 sm:gap-1.5 w-full pb-1">
@@ -980,8 +981,9 @@ export function AdminAnalyticsView() {
               })}
             </div>
           </div>
+        </div>
 
-          <div className="pt-3 border-t border-portal-border/60 flex items-center justify-between text-xs font-mono text-portal-text-muted">
+        <div className="pt-3 border-t border-portal-border/60 flex items-center justify-between text-xs font-mono text-portal-text-muted">
             <span>Peak Clearance: <strong className="text-portal-text">Markham, ON (94.7%)</strong></span>
             <span>Total Intake: <strong className="text-portal-text">278 lots</strong></span>
           </div>

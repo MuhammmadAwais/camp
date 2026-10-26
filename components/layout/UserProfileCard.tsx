@@ -2,7 +2,17 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { CaretUpDown, User as UserIcon, GearSix, SignOut, ShieldCheck, Swap } from '@phosphor-icons/react';
+import {
+  CaretUpDown,
+  User as UserIcon,
+  GearSix,
+  SignOut,
+  ShieldCheck,
+  Swap,
+  CheckCircle,
+  FileText,
+  LockKey,
+} from '@phosphor-icons/react';
 import { useAuth } from '@/lib/auth-context';
 
 interface UserProfileCardProps {
@@ -15,16 +25,33 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
   const { user, role, logout, devSwitchRole } = useAuth();
 
   const isDealer = role === 'DEALER_ADMIN' || role === 'DEALER_AGENT';
-  const displayName = user?.name || (isDealer ? 'Licensed Dealer' : 'Verified Seller');
-  const userEmail = user?.email || (isDealer ? 'dealer@autonexa.ca' : 'seller@autonexa.ca');
+  const isAdmin = role === 'ADMIN';
 
-  // Role tag label
-  const roleLabel =
-    role === 'ADMIN'
-      ? 'Platform Admin'
+  const displayName =
+    user?.name ||
+    (isAdmin
+      ? 'Sarah Tremblay'
       : isDealer
-      ? 'OMVIC / AMVIC Dealer'
-      : 'Private Seller';
+      ? 'Pfaff Automotive Partner'
+      : 'Michael Vance');
+
+  const userEmail =
+    user?.email ||
+    (isAdmin
+      ? 'admin@autonexa.ca'
+      : isDealer
+      ? 'trading@pfaffauto.ca'
+      : 'm.vance@rogers.ca');
+
+  const roleTitle =
+    isAdmin
+      ? 'Lead Compliance Officer'
+      : isDealer
+      ? 'OMVIC Verified Dealer'
+      : 'Verified Private Seller';
+
+  const roleBadgeLabel =
+    isAdmin ? 'ADMIN' : isDealer ? 'DEALER' : 'SELLER';
 
   // Close popup menu when clicking outside
   useEffect(() => {
@@ -42,148 +69,202 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
 
   return (
     <div ref={containerRef} className="relative w-full font-body select-none">
-      {/* Popover Dropdown Menu */}
+      {/* Popover Dropdown Menu (Classic Professional SaaS Architecture) */}
       {isOpen && (
         <div
-          className={`absolute z-50 mb-2 rounded-2xl p-2 bg-white dark:bg-[#131215]/95 backdrop-blur-2xl border border-gray-200 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.9)] animate-in fade-in zoom-in-95 duration-150 ${
+          className={`absolute z-50 rounded-2xl p-3 bg-portal-surface/98 backdrop-blur-2xl border border-portal-border shadow-xl animate-in fade-in zoom-in-95 duration-150 ${
             isCollapsed
-              ? 'left-full bottom-0 ml-2.5 min-w-[240px]'
-              : 'bottom-full left-0 w-full mb-2'
+              ? 'left-full bottom-0 ml-3 w-72'
+              : 'bottom-full left-0 w-full sm:w-80 mb-2'
           }`}
         >
-          {/* User Header in Menu */}
-          <div className="px-3 py-2.5 border-b border-gray-200 dark:border-white/10 mb-1">
-            <div className="flex items-center justify-between mb-0.5">
-              <span className="text-xs font-bold text-gray-900 dark:text-white tracking-tight truncate">
-                {displayName}
-              </span>
-              <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-full bg-[#8C383E]/15 text-[#8C383E] border border-[#8C383E]/30 dark:bg-[#E59344]/20 dark:text-[#E59344] dark:border-[#E59344]/30">
-                {role || 'USER'}
-              </span>
+          {/* 1. Header Profile Card */}
+          <div className="pb-3 border-b border-portal-border/60">
+            <div className="flex items-center gap-3">
+              {/* Avatar Monogram */}
+              <div className="relative size-11 rounded-xl bg-gradient-to-br from-[#8C383E]/20 to-[#E59344]/30 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-portal-text text-sm shadow-xs">
+                {displayName.charAt(0).toUpperCase()}
+                <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-emerald-500 border-2 border-portal-surface" />
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="font-headline font-bold text-xs text-portal-text truncate">
+                    {displayName}
+                  </span>
+                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-portal-primary/10 text-portal-primary border border-portal-primary/20 shrink-0">
+                    {roleBadgeLabel}
+                  </span>
+                </div>
+                <span className="text-[11px] text-portal-text-muted font-medium truncate block">
+                  {roleTitle}
+                </span>
+                <span className="text-[10px] text-portal-text-muted font-mono truncate block mt-0.5">
+                  {userEmail}
+                </span>
+              </div>
             </div>
-            <p className="text-[11px] text-gray-500 dark:text-neutral-400 truncate">{userEmail}</p>
+
+            {/* Canadian Regulatory Assurance Pill */}
+            <div className="mt-2.5 px-2.5 py-1 rounded-lg bg-portal-surface-hover border border-portal-border/60 flex items-center justify-between text-[10px] font-mono text-portal-text-muted">
+              <span className="flex items-center gap-1">
+                <CheckCircle className="size-3 text-emerald-500" weight="fill" />
+                <span>PIPEDA / Law 25 Certified</span>
+              </span>
+              <span className="text-[9px] font-bold text-portal-text opacity-70">CAN-OPS</span>
+            </div>
           </div>
 
-          {/* Menu Items */}
-          <div className="flex flex-col gap-0.5">
+          {/* 2. Structured Action Links */}
+          <div className="py-2 space-y-0.5 border-b border-portal-border/60">
             <Link
               href="/settings/profile"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-700 hover:text-black hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.06] rounded-xl transition-colors cursor-pointer"
+              className="flex items-center justify-between px-2.5 py-2 text-xs text-portal-text hover:bg-portal-surface-hover rounded-xl transition-colors cursor-pointer group"
             >
-              <UserIcon className="size-4 text-gray-400 dark:text-neutral-400" weight="regular" />
-              <span>Profile & Verification</span>
+              <div className="flex items-center gap-2.5">
+                <UserIcon className="size-4 text-portal-text-muted group-hover:text-portal-primary transition-colors" weight="bold" />
+                <span className="font-medium">Profile & Account</span>
+              </div>
+              <span className="text-[10px] text-portal-text-muted font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+                Settings →
+              </span>
             </Link>
 
             <Link
-              href="/settings/security"
+              href="/settings/profile?tab=security"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-700 hover:text-black hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.06] rounded-xl transition-colors cursor-pointer"
+              className="flex items-center justify-between px-2.5 py-2 text-xs text-portal-text hover:bg-portal-surface-hover rounded-xl transition-colors cursor-pointer group"
             >
-              <GearSix className="size-4 text-gray-400 dark:text-neutral-400" weight="regular" />
-              <span>Account Settings</span>
+              <div className="flex items-center gap-2.5">
+                <LockKey className="size-4 text-portal-text-muted group-hover:text-portal-primary transition-colors" weight="bold" />
+                <span className="font-medium">Security & Two-Factor (2FA)</span>
+              </div>
             </Link>
 
-            {/* Quick Role Switcher for dev demo */}
-            <div className="my-1 border-t border-gray-200 dark:border-white/10 pt-1">
-              <div className="px-3 py-1 text-[10px] font-mono text-gray-400 dark:text-neutral-400 uppercase tracking-wider flex items-center gap-1">
-                <Swap className="size-3" />
-                <span>Switch Portal Mode</span>
+            <Link
+              href="/legal/privacy"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center justify-between px-2.5 py-2 text-xs text-portal-text hover:bg-portal-surface-hover rounded-xl transition-colors cursor-pointer group"
+            >
+              <div className="flex items-center gap-2.5">
+                <FileText className="size-4 text-portal-text-muted group-hover:text-portal-primary transition-colors" weight="bold" />
+                <span className="font-medium">Regulatory Disclosures</span>
               </div>
-              <div className="grid grid-cols-3 gap-1 p-1">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await devSwitchRole('SELLER');
-                    setIsOpen(false);
-                  }}
-                  className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer text-center ${
-                    role === 'SELLER'
-                      ? 'bg-[#8C383E]/15 text-[#8C383E] font-semibold border border-[#8C383E]/30 dark:bg-[#E59344]/20 dark:text-[#E59344] dark:border-[#E59344]/40'
-                      : 'text-gray-500 hover:bg-gray-100 hover:text-black dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white'
-                  }`}
-                >
-                  Seller
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await devSwitchRole('DEALER_ADMIN');
-                    setIsOpen(false);
-                  }}
-                  className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer text-center ${
-                    isDealer
-                      ? 'bg-[#8C383E]/15 text-[#8C383E] font-semibold border border-[#8C383E]/30 dark:bg-[#E59344]/20 dark:text-[#E59344] dark:border-[#E59344]/40'
-                      : 'text-gray-500 hover:bg-gray-100 hover:text-black dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white'
-                  }`}
-                >
-                  Dealer
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await devSwitchRole('ADMIN');
-                    setIsOpen(false);
-                  }}
-                  className={`text-[11px] py-1.5 px-2 rounded-lg transition-colors cursor-pointer text-center ${
-                    role === 'ADMIN'
-                      ? 'bg-[#8C383E]/15 text-[#8C383E] font-semibold border border-[#8C383E]/30 dark:bg-[#E59344]/20 dark:text-[#E59344] dark:border-[#E59344]/40'
-                      : 'text-gray-500 hover:bg-gray-100 hover:text-black dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white'
-                  }`}
-                >
-                  Admin
-                </button>
-              </div>
+            </Link>
+          </div>
+
+          {/* 3. Refined Workspace Simulation Switcher (Dev Mode) */}
+          <div className="pt-2 pb-1">
+            <div className="px-2.5 py-1 text-[10px] font-mono text-portal-text-muted uppercase tracking-wider flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Swap className="size-3" weight="bold" />
+                <span>Simulate Workspace</span>
+              </span>
+              <span className="text-[9px] opacity-60">TEST HARNESS</span>
             </div>
 
-            <div className="my-1 border-t border-gray-200 dark:border-white/10" />
+            <div className="grid grid-cols-3 gap-1 p-1 bg-portal-surface-hover/60 border border-portal-border/60 rounded-xl mt-1">
+              <button
+                type="button"
+                onClick={async () => {
+                  await devSwitchRole('SELLER');
+                  setIsOpen(false);
+                }}
+                className={`text-[11px] py-1.5 rounded-lg transition-all cursor-pointer font-semibold ${
+                  role === 'SELLER'
+                    ? 'bg-portal-surface text-portal-primary shadow-2xs font-bold'
+                    : 'text-portal-text-muted hover:text-portal-text'
+                }`}
+              >
+                Seller
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  await devSwitchRole('DEALER_ADMIN');
+                  setIsOpen(false);
+                }}
+                className={`text-[11px] py-1.5 rounded-lg transition-all cursor-pointer font-semibold ${
+                  isDealer
+                    ? 'bg-portal-surface text-portal-primary shadow-2xs font-bold'
+                    : 'text-portal-text-muted hover:text-portal-text'
+                }`}
+              >
+                Dealer
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  await devSwitchRole('ADMIN');
+                  setIsOpen(false);
+                }}
+                className={`text-[11px] py-1.5 rounded-lg transition-all cursor-pointer font-semibold ${
+                  role === 'ADMIN'
+                    ? 'bg-portal-surface text-portal-primary shadow-2xs font-bold'
+                    : 'text-portal-text-muted hover:text-portal-text'
+                }`}
+              >
+                Admin
+              </button>
+            </div>
+          </div>
 
+          {/* 4. Footer & Logout */}
+          <div className="pt-2 mt-1 border-t border-portal-border/60">
             <button
               type="button"
               onClick={async () => {
                 setIsOpen(false);
                 await logout();
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:text-rose-300 dark:hover:bg-rose-500/10 rounded-xl transition-colors cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl transition-colors cursor-pointer font-semibold"
             >
-              <SignOut className="size-4 text-rose-500 dark:text-rose-400" weight="bold" />
-              <span>Sign Out</span>
+              <SignOut className="size-4" weight="bold" />
+              <span>Sign Out of Platform</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Main Trigger Pill */}
+      {/* Main Trigger Pill: Completely Unclipped and Centered */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center rounded-xl transition-all cursor-pointer ${
           isCollapsed
-            ? 'p-2 justify-center hover:bg-gray-100 dark:hover:bg-white/5'
-            : 'p-2 justify-between hover:bg-gray-100 dark:hover:bg-white/[0.06] border border-gray-200/80 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/10'
+            ? 'size-10 mx-auto justify-center hover:bg-portal-surface-hover'
+            : 'p-2 justify-between hover:bg-portal-surface-hover border border-portal-border shadow-2xs'
         }`}
         aria-label="User account menu"
       >
-        <div className="flex items-center gap-2.5 overflow-hidden">
-          {/* Avatar Icon */}
-          <div className="size-9 rounded-xl bg-gradient-to-br from-[#8C383E]/30 to-[#E59344]/30 border border-black/10 dark:border-white/15 flex items-center justify-center shrink-0 text-gray-900 dark:text-white font-bold text-xs shadow-inner">
+        {isCollapsed ? (
+          /* Collapsed Mode: Clean centered unclipped circular avatar with status dot */
+          <div className="relative size-9 rounded-full bg-gradient-to-br from-[#8C383E]/20 to-[#E59344]/30 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-xs text-portal-text shadow-2xs">
             {displayName.charAt(0).toUpperCase()}
+            <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-[#121212]" />
           </div>
+        ) : (
+          /* Expanded Mode: Full name, role, and caret */
+          <>
+            <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
+              <div className="relative size-9 rounded-xl bg-gradient-to-br from-[#8C383E]/20 to-[#E59344]/30 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-xs text-portal-text shadow-2xs">
+                {displayName.charAt(0).toUpperCase()}
+                <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-500 border-2 border-portal-surface" />
+              </div>
 
-          {!isCollapsed && (
-            <div className="flex flex-col text-left overflow-hidden">
-              <span className="text-xs font-semibold text-gray-900 dark:text-white tracking-tight truncate">
-                {displayName}
-              </span>
-              <span className="text-[10px] text-gray-500 dark:text-neutral-400 truncate">
-                {roleLabel}
-              </span>
+              <div className="flex flex-col text-left overflow-hidden min-w-0">
+                <span className="text-xs font-bold text-portal-text tracking-tight truncate">
+                  {displayName}
+                </span>
+                <span className="text-[10px] text-portal-text-muted font-mono truncate">
+                  {roleTitle}
+                </span>
+              </div>
             </div>
-          )}
-        </div>
 
-        {!isCollapsed && (
-          <CaretUpDown className="size-4 text-gray-400 dark:text-neutral-400 shrink-0 ml-1" weight="bold" />
+            <CaretUpDown className="size-4 text-portal-text-muted shrink-0 ml-1" weight="bold" />
+          </>
         )}
       </button>
     </div>

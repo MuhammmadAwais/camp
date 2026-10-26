@@ -295,7 +295,7 @@ export function Sidebar() {
         </div>
 
         {/* Navigation Stream */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-4 scrollbar-none">
+        <div className={`flex-1 p-3 space-y-4 scrollbar-none ${isCollapsed ? 'overflow-visible' : 'overflow-y-auto overflow-x-hidden'}`}>
           {/* Collapsed In-Rail Toggle Trigger (Clean bars placed above Home icon, matching reference) */}
           {isCollapsed && (
             <div className="hidden lg:flex flex-col items-center pt-1 pb-1">
@@ -367,7 +367,11 @@ export function Sidebar() {
                       <div
                         className={
                           isCollapsed
-                            ? 'group/item relative flex items-center justify-center py-2 px-1 cursor-pointer transition-colors'
+                            ? `group/item relative flex items-center justify-center size-10 mx-auto rounded-xl cursor-pointer transition-colors ${
+                                isMainActive
+                                  ? 'bg-neutral-100 dark:bg-white/[0.08] text-[#8C383E] dark:text-[#E59344]'
+                                  : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-white/[0.06]'
+                              }`
                             : `group/item flex items-center justify-between rounded-lg px-3 py-2 min-h-[40px] transition-all cursor-pointer ${
                                 isMainActive
                                   ? 'bg-neutral-100 dark:bg-white/[0.08] text-neutral-900 dark:text-white font-semibold shadow-xs'
@@ -377,7 +381,7 @@ export function Sidebar() {
                       >
                         {/* Collapsed Rail Active Left Indicator Bar */}
                         {isCollapsed && isMainActive && (
-                          <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-[#8C383E] dark:bg-[#E59344]" />
+                          <span className="absolute -left-2.5 top-2 bottom-2 w-1 rounded-r-full bg-[#8C383E] dark:bg-[#E59344]" />
                         )}
 
                         {/* Direct Link to Route */}
@@ -478,7 +482,7 @@ export function Sidebar() {
         </div>
 
         {/* Bottom User Profile Section */}
-        <div className="p-3 border-t border-gray-200 dark:border-white/10 shrink-0 bg-gray-50/80 dark:bg-[#121212]">
+        <div className={`${isCollapsed ? 'p-2' : 'p-3'} border-t border-gray-200 dark:border-white/10 shrink-0 bg-gray-50/80 dark:bg-[#121212] overflow-visible`}>
           <UserProfileCard isCollapsed={isCollapsed} />
         </div>
       </aside>

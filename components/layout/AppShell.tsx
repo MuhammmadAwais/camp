@@ -19,7 +19,8 @@ export function AppShell({ children }: AppShellProps) {
     pathname.startsWith('/seller') ||
     pathname.startsWith('/dealer') ||
     pathname.startsWith('/admin') ||
-    pathname.startsWith('/dashboard');
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/settings');
 
   const isWebApp =
     isPortalRoute ||

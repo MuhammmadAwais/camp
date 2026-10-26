@@ -193,6 +193,10 @@ Update this file after completing each page/component. Any AI agent reading this
   - **Route:** `/admin/analytics`
   - **Component:** `AdminAnalyticsView.tsx`
   - **Features:** Complete executive analytics dashboard inspired by modern shadcn/SaaS design: Unified top 4 metric ribbon matching reference specification (Gross Merchandise Value, Total Transactions, Completed Clearance, Bidding Velocity with side-by-side equalized `w-12 h-12` icons), interactive AutoNexa Honey Amber (`#E59344`) & Autumn Wine (`#8C383E`) SVG spline area curve chart with floating tooltips and timeframe toggles, provincial market share SVG donut chart with interactive hover arcs and legend pills, metropolitan hub intake vs. clearance grouped bar chart, top sourcing dealership leaderboard, and Image 4/5 reference-parity Wholesale Settlement Ledger with live search, status filters, multi-row selection, VIN copy, sortable headers (`useTableSort`), and `<TablePagination />`.
+- [x] **Page 6.6: Profile & Account Settings**
+  - **Route:** `/settings/profile`, `/settings/security`
+  - **Component:** `ProfileSettingsView.tsx`, `UserProfileCard.tsx`
+  - **Features:** Comprehensive executive account & compliance settings: Avatar management with verified officer/dealer badge, personal & professional identity fields (Legal Name, Title, Work Email, Direct Phone), Canadian provincial jurisdiction selection (`ON`, `AB`, `BC`, `QC`), regulatory oversight board ID (`OMVIC`, `AMVIC`, `VSA`, `OPC`), bilingual language preference (English / Français Loi 25), Multi-Factor Authentication (MFA/2FA) status, password renewal, active clearance sessions with IP/device telemetry, PIPEDA data portability download request, and live dispatch notification toggles. Profile modal overhauled with classic professional SaaS hierarchy and unclipped circular avatar.
 - [x] **Universal Modern SaaS Table System (Reference Design Parity)**
   - **Components:** `components/ui/SortableHeader.tsx`, `components/ui/TablePagination.tsx`, `hooks/useTableSort.ts`
   - **Implemented in:**
