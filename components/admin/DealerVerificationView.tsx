@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   ShieldCheck,
   CheckCircle2,
@@ -21,9 +21,12 @@ import {
   ArrowRight,
   Shield,
   FileCheck2,
+  Download,
+  Share2,
 } from "lucide-react";
 import { useTableSort } from "@/hooks/useTableSort";
 import { SortableHeader } from "@/components/ui/SortableHeader";
+import { TablePagination } from "@/components/ui/TablePagination";
 
 export type DealerApplication = {
   id: string;
@@ -144,6 +147,13 @@ export function DealerVerificationView() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [feedbackNotice, setFeedbackNotice] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
+  // Checkbox multi-selection
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
+
   // Lock body scroll when review modal is active
   useEffect(() => {
     if (reviewModalOpen) {
@@ -165,28 +175,57 @@ export function DealerVerificationView() {
   };
 
   // Filtered dataset
-  const filtered = dealers.filter((d) => {
-    if (filterRegulator !== "ALL" && d.regulator !== filterRegulator) return false;
-    if (filterStatus !== "ALL" && d.status !== filterStatus) return false;
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      return (
-        d.dealershipName.toLowerCase().includes(q) ||
-        d.legalEntityName.toLowerCase().includes(q) ||
-        d.licenseNumber.toLowerCase().includes(q) ||
-        d.city.toLowerCase().includes(q) ||
-        d.province.toLowerCase().includes(q) ||
-        d.contactName.toLowerCase().includes(q)
-      );
-    }
-    return true;
-  });
+  const filtered = useMemo(() => {
+    return dealers.filter((d) => {
+      if (filterRegulator !== "ALL" && d.regulator !== filterRegulator) return false;
+      if (filterStatus !== "ALL" && d.status !== filterStatus) return false;
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        return (
+          d.dealershipName.toLowerCase().includes(q) ||
+          d.legalEntityName.toLowerCase().includes(q) ||
+          d.licenseNumber.toLowerCase().includes(q) ||
+          d.city.toLowerCase().includes(q) ||
+          d.province.toLowerCase().includes(q) ||
+          d.contactName.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [dealers, filterRegulator, filterStatus, search]);
 
   // Universal Table Sorting Hook
   const { sortedData, requestSort, isSorted } = useTableSort<DealerApplication>(filtered, {
     initialKey: "submittedAt",
     initialDirection: "desc",
   });
+
+  // Paginated slice
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return sortedData.slice(start, start + pageSize);
+  }, [sortedData, page, pageSize]);
+
+  // Select all handler
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedRows(new Set(paginatedData.map((d) => d.id)));
+    } else {
+      setSelectedRows(new Set());
+    }
+  };
+
+  const handleToggleRow = (id: string) => {
+    setSelectedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -392,72 +431,87 @@ export function DealerVerificationView() {
         </div>
       )}
 
-      {/* 3. Toolbar: Search & Facet Filters */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
-        {/* Search Input */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-portal-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search dealership, legal entity, license, city..."
-            className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-portal-border bg-portal-surface text-portal-text placeholder:text-portal-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-portal-primary/40 focus:border-portal-primary transition-all shadow-2xs font-body"
-          />
-          {search && (
-            <button
-              type="button"
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-portal-text-muted hover:text-portal-text cursor-pointer p-0.5"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
+      {/* 3. Modern Reference Table Card Container (Matching Image 4) */}
+      <div className="rounded-2xl border border-portal-border bg-portal-surface shadow-xs overflow-hidden">
+        {/* Table Header Strip */}
+        <div className="p-6 border-b border-portal-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-lg font-bold text-portal-text font-headline">
+                Registered Dealership Roster
+              </h2>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-portal-primary/10 text-portal-primary border border-portal-primary/20">
+                {filtered.length} Total
+              </span>
+            </div>
+            <p className="text-xs text-portal-text-muted mt-1 font-body">
+              Here you can inspect dealer compliance credentials, review licensing statuses, and approve wholesale floor access.
+            </p>
+          </div>
+
+          {/* Action Tools & Search */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Search Input */}
+            <div className="relative w-full sm:w-64">
+              <Search className="w-3.5 h-3.5 text-portal-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search dealership, license..."
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-portal-border bg-portal-surface-hover/50 text-portal-text text-xs placeholder:text-portal-text-muted focus:outline-none focus:ring-2 focus:ring-portal-primary/40 font-body"
+              />
+            </div>
+
+            {/* Regulator Dropdown / Filter */}
+            <div className="flex items-center gap-1">
+              {["ALL", "OMVIC", "AMVIC", "VSA", "OPC"].map((reg) => (
+                <button
+                  key={reg}
+                  type="button"
+                  onClick={() => setFilterRegulator(reg)}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                    filterRegulator === reg
+                      ? "bg-portal-primary text-white font-bold shadow-2xs"
+                      : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover"
+                  }`}
+                >
+                  {reg}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Regulator Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs font-semibold">
-          {[
-            { id: "ALL", label: "All Regulators" },
-            { id: "OMVIC", label: "OMVIC (ON)" },
-            { id: "AMVIC", label: "AMVIC (AB)" },
-            { id: "VSA", label: "VSA (BC)" },
-            { id: "OPC", label: "OPC (QC)" },
-          ].map((reg) => (
-            <button
-              key={reg.id}
-              type="button"
-              onClick={() => setFilterRegulator(reg.id)}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap text-xs font-medium ${
-                filterRegulator === reg.id
-                  ? "bg-portal-primary text-white shadow-2xs font-bold"
-                  : "bg-portal-surface hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text border border-portal-border"
-              }`}
-            >
-              {reg.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 4. Enterprise Sortable Data Table */}
-      <div className="rounded-2xl border border-portal-border bg-portal-surface overflow-hidden shadow-xs">
+        {/* 4. Table Surface */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+          <table className="w-full text-left text-xs border-collapse font-body">
             <thead>
-              <tr className="border-b border-portal-border bg-portal-surface-hover/60">
+              <tr className="border-b border-portal-border/60 bg-portal-surface-hover/30">
+                {/* Select All Checkbox */}
+                <th className="py-3.5 pl-6 pr-2 w-10">
+                  <input
+                    type="checkbox"
+                    checked={
+                      paginatedData.length > 0 &&
+                      paginatedData.every((d) => selectedRows.has(d.id))
+                    }
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
+                  />
+                </th>
                 <SortableHeader
-                  label="Dealership & Entity"
+                  label="Dealership"
                   direction={isSorted("dealershipName")}
                   onSort={() => requestSort("dealershipName")}
                 />
                 <SortableHeader
-                  label="Regulator & License"
+                  label="License & Regulator"
                   direction={isSorted("licenseNumber")}
                   onSort={() => requestSort("licenseNumber")}
                 />
                 <SortableHeader
-                  label="Jurisdiction & Radius"
+                  label="Jurisdiction"
                   direction={isSorted("city")}
                   onSort={() => requestSort("city")}
                 />
@@ -471,15 +525,15 @@ export function DealerVerificationView() {
                   direction={isSorted("status")}
                   onSort={() => requestSort("status")}
                 />
-                <th className="p-3.5 text-right text-[11px] font-bold uppercase tracking-wider text-portal-text-muted font-body">
+                <th className="py-3.5 pr-6 pl-4 text-right text-xs font-semibold text-portal-text-muted">
                   Action
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-portal-border">
-              {sortedData.length === 0 ? (
+            <tbody className="divide-y divide-portal-border/40">
+              {paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-portal-text-muted">
+                  <td colSpan={7} className="py-12 text-center text-portal-text-muted">
                     <Building2 className="w-10 h-10 mx-auto mb-2 opacity-30" />
                     <p className="text-sm font-semibold">No dealer applications match your filter</p>
                     <p className="text-xs text-portal-text-muted mt-1">
@@ -488,7 +542,8 @@ export function DealerVerificationView() {
                   </td>
                 </tr>
               ) : (
-                sortedData.map((dealer) => {
+                paginatedData.map((dealer) => {
+                  const isChecked = selectedRows.has(dealer.id);
                   const monogram = dealer.dealershipName
                     .split(" ")
                     .slice(0, 2)
@@ -499,32 +554,44 @@ export function DealerVerificationView() {
                   return (
                     <tr
                       key={dealer.id}
-                      className="hover:bg-portal-surface-hover/50 transition-colors group"
+                      className={`hover:bg-portal-surface-hover/50 transition-colors group ${
+                        isChecked ? "bg-portal-primary/5" : ""
+                      }`}
                     >
-                      {/* Dealership Identity */}
-                      <td className="p-4">
+                      {/* Row Checkbox */}
+                      <td className="py-4 pl-6 pr-2">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleToggleRow(dealer.id)}
+                          className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
+                        />
+                      </td>
+
+                      {/* Dealership: Icon Badge + Name (Matching Image 4 File Icon + Name style) */}
+                      <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-portal-surface-hover border border-portal-border flex items-center justify-center shrink-0 font-headline font-black text-xs text-portal-text">
+                          <div className="w-8 h-8 rounded-lg bg-portal-surface-hover border border-portal-border flex items-center justify-center shrink-0 font-bold text-xs text-portal-text">
                             {monogram}
                           </div>
                           <div className="min-w-0">
-                            <span className="font-bold text-portal-text block truncate group-hover:text-portal-primary transition-colors text-sm">
+                            <span className="font-semibold text-portal-text text-sm block truncate group-hover:text-portal-primary transition-colors">
                               {dealer.dealershipName}
                             </span>
-                            <span className="text-[11px] text-portal-text-muted block truncate mt-0.5">
+                            <span className="text-xs text-portal-text-muted block truncate mt-0.5">
                               {dealer.legalEntityName}
                             </span>
                           </div>
                         </div>
                       </td>
 
-                      {/* Regulator & License with copy link */}
-                      <td className="p-4">
+                      {/* Regulator & License Number */}
+                      <td className="py-4 px-4">
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded-md bg-portal-primary/10 text-portal-primary font-bold text-[10.5px]">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-portal-surface-hover border border-portal-border text-portal-text font-mono">
                             {dealer.regulator}
                           </span>
-                          <span className="font-mono font-bold text-portal-text">
+                          <span className="font-mono font-medium text-portal-text">
                             {dealer.licenseNumber}
                           </span>
                           <button
@@ -540,38 +607,32 @@ export function DealerVerificationView() {
                             )}
                           </button>
                         </div>
-                        <span className="text-[10px] text-portal-text-muted font-mono block mt-1">
-                          Exp: {dealer.licenseExpiry}
+                      </td>
+
+                      {/* Jurisdiction */}
+                      <td className="py-4 px-4 text-portal-text">
+                        <span>
+                          {dealer.city}, {dealer.province}
+                        </span>
+                        <span className="text-portal-text-muted text-xs block mt-0.5">
+                          {dealer.serviceRadiusKm} km radius
                         </span>
                       </td>
 
-                      {/* Location & Sourcing Radius */}
-                      <td className="p-4 font-body">
-                        <div className="flex items-center gap-1.5 text-portal-text font-medium">
-                          <MapPin className="w-3.5 h-3.5 text-portal-text-muted shrink-0" />
-                          <span>
-                            {dealer.city}, {dealer.province}
-                          </span>
-                        </div>
-                        <span className="text-[11px] text-portal-text-muted block mt-0.5 font-mono">
-                          {dealer.serviceRadiusKm} km sourcing radius
-                        </span>
-                      </td>
-
-                      {/* Contact Officer */}
-                      <td className="p-4 font-body">
-                        <span className="font-semibold text-portal-text block">
+                      {/* Purchasing Officer */}
+                      <td className="py-4 px-4">
+                        <span className="font-medium text-portal-text block">
                           {dealer.contactName}
                         </span>
-                        <div className="flex items-center gap-2 text-[11px] text-portal-text-muted mt-0.5">
-                          <span className="truncate">{dealer.contactEmail}</span>
-                        </div>
+                        <span className="text-portal-text-muted text-xs block mt-0.5">
+                          {dealer.contactEmail}
+                        </span>
                       </td>
 
-                      {/* Verification Status */}
-                      <td className="p-4">
+                      {/* Status: Soft Pastel Pill Badge (Matching Image 4) */}
+                      <td className="py-4 px-4">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
                             dealer.status === "APPROVED"
                               ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
                               : dealer.status === "PENDING"
@@ -598,14 +659,14 @@ export function DealerVerificationView() {
                         </span>
                       </td>
 
-                      {/* Action Review Button */}
-                      <td className="p-4 text-right">
+                      {/* Action: Clean Review Button */}
+                      <td className="py-4 pr-6 pl-4 text-right">
                         <button
                           type="button"
                           onClick={() => handleOpenReview(dealer)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-portal-surface hover:bg-portal-primary hover:text-white border border-portal-border text-portal-text font-bold text-xs transition-all shadow-2xs cursor-pointer group/btn"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-primary hover:text-white text-xs font-semibold text-portal-text transition-colors cursor-pointer shadow-2xs group/btn"
                         >
-                          <span>Review Dossier</span>
+                          <span>Review</span>
                           <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" />
                         </button>
                       </td>
@@ -616,9 +677,17 @@ export function DealerVerificationView() {
             </tbody>
           </table>
         </div>
+
+        {/* 5. Enterprise Pagination Footer (Matching Image 4) */}
+        <TablePagination
+          currentPage={page}
+          totalItems={filtered.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
       </div>
 
-      {/* 5. Accessible Review & Verification Modal (Portaled) */}
+      {/* 6. Accessible Review & Verification Modal (Portaled) */}
       {reviewModalOpen && selectedDealer && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-fadeIn"
@@ -685,7 +754,7 @@ export function DealerVerificationView() {
 
               <div className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border space-y-1">
                 <span className="text-[10px] uppercase font-bold text-portal-text-muted">
-                  Physical Premises & Radius
+                  Physical Premises &amp; Radius
                 </span>
                 <p className="font-bold text-portal-text">
                   {selectedDealer.address}
@@ -729,7 +798,7 @@ export function DealerVerificationView() {
             {/* Compliance Review Notes */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-portal-text block">
-                Verification Findings & Audit Rationale
+                Verification Findings &amp; Audit Rationale
               </label>
               <textarea
                 value={reviewNotes}

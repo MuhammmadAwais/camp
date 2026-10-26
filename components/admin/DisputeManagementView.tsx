@@ -356,8 +356,8 @@ export function DisputeManagementView() {
           </p>
         </div>
       ) : viewMode === "LIST" ? (
-        /* 5A. Refined List View (Matching Vehicle Queue Page) */
-        <div className="space-y-3.5">
+        /* 5A. Refined List View (Clean SaaS Ergonomics, Scannable & Structured) */
+        <div className="space-y-3">
           {filteredQueue.map((item) => {
             const brandLogo = CAR_BRAND_LOGOS[item.vehicle.make.toLowerCase()];
             const brandMonogram =
@@ -368,14 +368,14 @@ export function DisputeManagementView() {
             return (
               <div
                 key={item.id}
-                className="group p-4 sm:p-5 rounded-2xl border border-portal-border bg-portal-surface hover:border-portal-primary/40 hover:shadow-md transition-all duration-200 flex flex-col lg:flex-row lg:items-center justify-between gap-5"
+                className="group p-4 sm:p-5 rounded-2xl border border-portal-border bg-portal-surface hover:border-portal-primary/40 hover:shadow-xs transition-all duration-200 flex flex-col lg:flex-row lg:items-center justify-between gap-5"
               >
-                {/* Left Side: Thumbnail, Title, Dispute Category & Parties */}
+                {/* Left Side: Photo Thumbnail & Structured Vehicle Dossier */}
                 <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
                   {/* Photo Thumbnail */}
                   <Link
                     href={`/admin/disputes/${item.id}`}
-                    className="relative w-28 h-20 sm:w-36 sm:h-24 rounded-xl overflow-hidden bg-portal-surface-hover border border-portal-border shrink-0 block cursor-pointer group/thumb"
+                    className="relative w-28 sm:w-36 aspect-16/10 rounded-xl overflow-hidden bg-portal-surface-hover border border-portal-border shrink-0 block cursor-pointer group/thumb"
                   >
                     <Image
                       src={item.vehicle.thumbnailUrl}
@@ -383,14 +383,14 @@ export function DisputeManagementView() {
                       fill
                       className="object-cover transition-transform duration-300 group-hover/thumb:scale-105"
                     />
-                    <div className="absolute bottom-1.5 left-1.5 bg-black/75 backdrop-blur-xs text-white text-[10px] font-mono px-1.5 py-0.5 rounded border border-white/10">
-                      {item.vehicle.photos.length} Evidence Photos
+                    <div className="absolute bottom-1.5 left-1.5 bg-black/75 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded-md border border-white/10">
+                      {item.vehicle.photos.length} Photos
                     </div>
                   </Link>
 
-                  {/* Primary Info */}
-                  <div className="min-w-0 flex-1 space-y-1.5">
-                    {/* Brand + Year Make Model + Docket & Status Pill */}
+                  {/* Primary Info: 3 Clean Visual Levels */}
+                  <div className="min-w-0 flex-1 space-y-2">
+                    {/* Level 1: Brand + Heading + Trim + Docket & Soft Status Pill */}
                     <div className="flex flex-wrap items-center gap-2">
                       {/* Automaker Monogram / Logo */}
                       <div className="w-6 h-6 rounded-md bg-portal-surface-hover border border-portal-border flex items-center justify-center shrink-0">
@@ -412,19 +412,25 @@ export function DisputeManagementView() {
 
                       <Link
                         href={`/admin/disputes/${item.id}`}
-                        className="font-headline font-bold text-sm sm:text-base text-portal-text hover:text-portal-primary transition-colors truncate"
+                        className="font-headline font-bold text-base sm:text-lg text-portal-text hover:text-portal-primary transition-colors truncate"
                       >
                         {item.vehicle.year} {item.vehicle.make} {item.vehicle.model}
                       </Link>
 
+                      {item.vehicle.trim && (
+                        <span className="text-xs text-portal-text-muted hidden sm:inline">
+                          • {item.vehicle.trim}
+                        </span>
+                      )}
+
                       {/* Docket ID */}
-                      <span className="font-mono text-[11px] font-bold text-portal-primary px-2 py-0.5 rounded bg-portal-primary/10 border border-portal-primary/20">
+                      <span className="font-mono text-[11px] font-semibold text-portal-text-muted bg-portal-surface-hover/80 px-2 py-0.5 rounded border border-portal-border/60">
                         {item.docketNumber}
                       </span>
 
                       {/* Status Badge */}
                       <span
-                        className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full ${
+                        className={`text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full ${
                           item.status === "RESOLVED"
                             ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25"
                             : item.status === "ACTION_REQUIRED"
@@ -433,42 +439,58 @@ export function DisputeManagementView() {
                         }`}
                       >
                         {item.status === "ACTION_REQUIRED"
-                          ? "Escalated Action"
+                          ? "Action Required"
                           : item.status === "INVESTIGATING"
                           ? "Under Review"
                           : item.status}
                       </span>
                     </div>
 
-                    {/* Parties Row: Seller vs Dealership */}
-                    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-portal-text-muted font-body">
-                      <span className="inline-flex items-center gap-1 font-medium text-portal-text">
-                        <User className="w-3.5 h-3.5 text-portal-text-muted" />
-                        <span>Seller: {item.seller.name}</span>
-                        <span className="text-portal-text-muted text-[11px]">
-                          ({item.seller.city}, {item.seller.province})
-                        </span>
+                    {/* Level 2: Clean Category Alert Chip + Allegation Excerpt */}
+                    <div className="flex items-center gap-2 pt-0.5">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25 shrink-0">
+                        <AlertTriangle className="w-3 h-3 text-amber-500 shrink-0" />
+                        <span>{item.categoryLabel}</span>
                       </span>
-                      <span className="text-portal-border">•</span>
-                      <span className="inline-flex items-center gap-1 font-medium text-portal-text">
-                        <Building2 className="w-3.5 h-3.5 text-portal-primary" />
-                        <span>Dealer: {item.dealership.name}</span>
-                        <span className="text-portal-text-muted text-[11px]">
-                          ({item.dealership.regulator}-{item.dealership.licenseNumber})
-                        </span>
+                      <span className="text-xs text-portal-text-muted line-clamp-1 italic">
+                        &ldquo;{item.allegationSummary}&rdquo;
                       </span>
                     </div>
 
-                    {/* Disputed Allegation Summary */}
-                    <p className="text-xs text-portal-text-muted/90 line-clamp-1 font-body">
-                      <span className="font-semibold text-portal-text">Claim:</span>{" "}
-                      {item.allegationSummary}
-                    </p>
+                    {/* Level 3: Micro-Chips for Parties & Mechanical Vitals */}
+                    <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
+                      {/* Seller Chip */}
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-portal-surface-hover/70 border border-portal-border/60 text-portal-text">
+                        <User className="w-3.5 h-3.5 text-portal-text-muted shrink-0" />
+                        <span className="font-semibold text-xs">{item.seller.name}</span>
+                        <span className="text-[11px] text-portal-text-muted">
+                          ({item.seller.city}, {item.seller.province})
+                        </span>
+                      </div>
 
-                    {/* Specs / Vitals Line with Copy VIN */}
-                    <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-portal-text-muted font-mono pt-0.5">
-                      <span className="inline-flex items-center gap-1">
-                        <span>VIN: ···{item.vehicle.vin.slice(-6)}</span>
+                      <span className="text-[10px] font-black text-portal-text-muted/60 uppercase">vs</span>
+
+                      {/* Dealership Chip */}
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-portal-surface-hover/70 border border-portal-border/60 text-portal-text">
+                        <Building2 className="w-3.5 h-3.5 text-portal-primary shrink-0" />
+                        <span className="font-semibold text-xs">{item.dealership.name}</span>
+                        <span className="text-[11px] text-portal-text-muted font-mono">
+                          ({item.dealership.licenseNumber})
+                        </span>
+                      </div>
+
+                      <span className="text-portal-border">•</span>
+
+                      {/* Mileage */}
+                      <span className="font-mono text-[11px] text-portal-text-muted">
+                        {item.vehicle.mileageKm.toLocaleString()} km
+                      </span>
+
+                      <span className="text-portal-border">•</span>
+
+                      {/* Compact VIN with Copy */}
+                      <div className="inline-flex items-center gap-1 font-mono text-[11px] text-portal-text-muted">
+                        <span>VIN ···{item.vehicle.vin.slice(-6)}</span>
                         <button
                           type="button"
                           onClick={() => handleCopy(item.vehicle.vin, item.id)}
@@ -481,37 +503,29 @@ export function DisputeManagementView() {
                             <Copy className="w-3 h-3" />
                           )}
                         </button>
-                      </span>
-                      <span>•</span>
-                      <span>{item.vehicle.mileageKm.toLocaleString()} km</span>
-                      <span>•</span>
-                      <span className="text-portal-primary font-bold">
-                        {item.categoryLabel}
-                      </span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Right Side: Claimed Adjustment, Agreed Price & Action Button */}
+                {/* Right Side: Claimed Adjustment, Settlement Context & Review Action */}
                 <div className="flex sm:items-center justify-between lg:justify-end gap-6 pt-3 lg:pt-0 border-t lg:border-t-0 border-portal-border/60 shrink-0">
                   <div className="text-left lg:text-right">
-                    <div className="text-[10px] uppercase font-bold text-portal-text-muted leading-tight">
+                    <span className="text-[10px] uppercase font-bold text-portal-text-muted tracking-wider block">
                       Disputed Adjustment
-                    </div>
-                    <div className="font-headline text-xl sm:text-2xl font-black text-amber-500 tracking-tight whitespace-nowrap mt-0.5">
+                    </span>
+                    <span className="font-headline text-2xl font-black text-amber-500 tracking-tight block mt-0.5">
                       -{formatCadCents(item.disputedAdjustmentCents)}
-                    </div>
-                    <div className="text-[11px] text-portal-text-muted flex items-center lg:justify-end gap-1 mt-0.5 font-medium">
-                      <span>Agreed: {formatCadCents(item.agreedBidCents)}</span>
-                      <span>•</span>
-                      <span>{item.openedDateFormatted}</span>
-                    </div>
+                    </span>
+                    <span className="text-[11px] text-portal-text-muted block mt-0.5 font-medium">
+                      Agreed: {formatCadCents(item.agreedBidCents)} • {item.openedDateFormatted}
+                    </span>
                   </div>
 
-                  {/* Prominent Equal Action Button (Matching Vehicle Queue Page) */}
+                  {/* Primary Review Action Button */}
                   <Link
                     href={`/admin/disputes/${item.id}`}
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-portal-surface hover:bg-portal-primary hover:text-white border border-portal-border text-portal-text font-headline font-bold text-xs sm:text-sm transition-all shadow-2xs hover:shadow-md cursor-pointer shrink-0 group/btn"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-portal-surface hover:bg-portal-primary hover:text-white border border-portal-border text-portal-text font-headline font-bold text-xs sm:text-sm transition-all shadow-2xs hover:shadow-xs cursor-pointer shrink-0 group/btn"
                   >
                     <span>Review Docket</span>
                     <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
@@ -522,7 +536,7 @@ export function DisputeManagementView() {
           })}
         </div>
       ) : (
-        /* 5B. Signature Notched Card Grid View (Matching Vehicle Queue Page) */
+        /* 5B. Signature Notched Card Grid View (Clean SaaS Grid) */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredQueue.map((item) => {
             const brandLogo = CAR_BRAND_LOGOS[item.vehicle.make.toLowerCase()];
@@ -575,7 +589,7 @@ export function DisputeManagementView() {
                         : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25"
                     }`}
                   >
-                    {item.status === "ACTION_REQUIRED" ? "Escalated" : item.status}
+                    {item.status === "ACTION_REQUIRED" ? "Action Req" : item.status === "INVESTIGATING" ? "Under Review" : item.status}
                   </span>
                 </div>
 
@@ -596,17 +610,24 @@ export function DisputeManagementView() {
                   </div>
                 </Link>
 
-                {/* 3. Card Content Body: Dispute Vitals */}
+                {/* 3. Card Content Body: Clean Vitals */}
                 <div className="pt-3.5 flex-1 flex flex-col justify-between">
-                  <div className="space-y-1.5 text-xs font-body">
-                    <div className="font-semibold text-portal-text line-clamp-1">
-                      {item.categoryLabel}
+                  <div className="space-y-2 text-xs font-body">
+                    {/* Category Chip */}
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                      <AlertTriangle className="w-3 h-3 text-amber-500 shrink-0" />
+                      <span>{item.categoryLabel}</span>
                     </div>
-                    <p className="text-[11px] text-portal-text-muted line-clamp-2 leading-relaxed">
-                      {item.allegationSummary}
+
+                    <p className="text-[11px] text-portal-text-muted line-clamp-2 leading-relaxed italic">
+                      &ldquo;{item.allegationSummary}&rdquo;
                     </p>
-                    <div className="text-[11px] text-portal-text-muted truncate pt-1">
-                      Dealer: <span className="font-semibold text-portal-text">{item.dealership.name}</span>
+
+                    {/* Parties Line */}
+                    <div className="flex items-center justify-between text-[11px] text-portal-text-muted pt-1 border-t border-portal-border/40">
+                      <span className="truncate max-w-[120px] font-medium">{item.seller.name}</span>
+                      <span className="text-[10px] font-bold text-portal-text-muted/60 uppercase">vs</span>
+                      <span className="font-semibold text-portal-text truncate max-w-[140px]">{item.dealership.name}</span>
                     </div>
                   </div>
 

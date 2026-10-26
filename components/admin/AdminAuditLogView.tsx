@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   ShieldCheck,
   FileSpreadsheet,
@@ -21,9 +21,14 @@ import {
   Code,
   ShieldAlert,
   Fingerprint,
+  Download,
+  Share2,
+  FileText,
+  Clock,
 } from "lucide-react";
 import { useTableSort } from "@/hooks/useTableSort";
 import { SortableHeader } from "@/components/ui/SortableHeader";
+import { TablePagination } from "@/components/ui/TablePagination";
 
 export type AuditLogEntry = {
   id: string;
@@ -126,6 +131,13 @@ export function AdminAuditLogView() {
   const [selectedProof, setSelectedProof] = useState<AuditLogEntry | null>(null);
   const [copiedHash, setCopiedHash] = useState<string | null>(null);
 
+  // Checkbox multi-selection
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
+
   // Lock body scroll when cryptographic proof modal is open
   useEffect(() => {
     if (selectedProof) {
@@ -147,26 +159,55 @@ export function AdminAuditLogView() {
   };
 
   // Filtered dataset
-  const filtered = logs.filter((l) => {
-    if (actionFilter !== "ALL" && l.actionType !== actionFilter) return false;
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      return (
-        l.actorName.toLowerCase().includes(q) ||
-        l.entityId.toLowerCase().includes(q) ||
-        l.details.toLowerCase().includes(q) ||
-        l.immutableHash.toLowerCase().includes(q) ||
-        l.ipAddress.toLowerCase().includes(q)
-      );
-    }
-    return true;
-  });
+  const filtered = useMemo(() => {
+    return logs.filter((l) => {
+      if (actionFilter !== "ALL" && l.actionType !== actionFilter) return false;
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        return (
+          l.actorName.toLowerCase().includes(q) ||
+          l.entityId.toLowerCase().includes(q) ||
+          l.details.toLowerCase().includes(q) ||
+          l.immutableHash.toLowerCase().includes(q) ||
+          l.ipAddress.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [logs, actionFilter, search]);
 
   // Universal Table Sorting Hook
   const { sortedData, requestSort, isSorted } = useTableSort<AuditLogEntry>(filtered, {
     initialKey: "timestamp",
     initialDirection: "desc",
   });
+
+  // Paginated slice
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return sortedData.slice(start, start + pageSize);
+  }, [sortedData, page, pageSize]);
+
+  // Select all handler
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedRows(new Set(paginatedData.map((l) => l.id)));
+    } else {
+      setSelectedRows(new Set());
+    }
+  };
+
+  const handleToggleRow = (id: string) => {
+    setSelectedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -177,19 +218,19 @@ export function AdminAuditLogView() {
   const getActionConfig = (type: AuditLogEntry["actionType"]) => {
     switch (type) {
       case "AUCTION_TIME_EXTENSION":
-        return { label: "Time Extension", dot: "bg-amber-500", text: "text-amber-500" };
+        return { label: "Time Extension", pill: "bg-amber-500/10 text-amber-500 border border-amber-500/20" };
       case "AUCTION_EMERGENCY_KILL":
-        return { label: "Emergency Halt", dot: "bg-red-500", text: "text-red-500" };
+        return { label: "Emergency Halt", pill: "bg-red-500/10 text-red-500 border border-red-500/20" };
       case "LISTING_APPROVED":
-        return { label: "Listing Approved", dot: "bg-emerald-500", text: "text-emerald-500" };
+        return { label: "Listing Approved", pill: "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" };
       case "DEALER_LICENSE_VERIFIED":
-        return { label: "Dealer Verified", dot: "bg-teal-500", text: "text-teal-500" };
+        return { label: "Dealer Verified", pill: "bg-teal-500/10 text-teal-500 border border-teal-500/20" };
       case "SEALED_BID_PLACED":
-        return { label: "Sealed Bid", dot: "bg-blue-500", text: "text-blue-500" };
+        return { label: "Sealed Bid", pill: "bg-blue-500/10 text-blue-500 border border-blue-500/20" };
       case "DISPUTE_SETTLED":
-        return { label: "Dispute Settled", dot: "bg-purple-500", text: "text-purple-500" };
+        return { label: "Dispute Settled", pill: "bg-purple-500/10 text-purple-500 border border-purple-500/20" };
       default:
-        return { label: type, dot: "bg-portal-text-muted", text: "text-portal-text" };
+        return { label: type, pill: "bg-portal-surface-hover text-portal-text border border-portal-border" };
     }
   };
 
@@ -327,92 +368,112 @@ export function AdminAuditLogView() {
         </div>
       </div>
 
-      {/* 3. Toolbar: Search & Facet Filters */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
-        {/* Search Input */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-portal-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by hash, actor, IP address, or entity ID..."
-            className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-portal-border bg-portal-surface text-portal-text placeholder:text-portal-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-portal-primary/40 focus:border-portal-primary transition-all shadow-2xs font-body"
-          />
-          {search && (
-            <button
-              type="button"
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-portal-text-muted hover:text-portal-text cursor-pointer p-0.5"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
+      {/* 3. Modern Reference Table Card Container (Matching Image 4) */}
+      <div className="rounded-2xl border border-portal-border bg-portal-surface shadow-xs overflow-hidden">
+        {/* Table Header Strip */}
+        <div className="p-6 border-b border-portal-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-lg font-bold text-portal-text font-headline">
+                Cryptographic Audit Ledger
+              </h2>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-portal-primary/10 text-portal-primary border border-portal-primary/20">
+                {filtered.length} Total Records
+              </span>
+            </div>
+            <p className="text-xs text-portal-text-muted mt-1 font-body">
+              Here you can inspect chronological platform events, verify SHA-256 Merkle receipts, and review actor non-repudiation proofs.
+            </p>
+          </div>
+
+          {/* Action Tools & Search */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Search Input */}
+            <div className="relative w-full sm:w-64">
+              <Search className="w-3.5 h-3.5 text-portal-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search hash, actor, IP..."
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-portal-border bg-portal-surface-hover/50 text-portal-text text-xs placeholder:text-portal-text-muted focus:outline-none focus:ring-2 focus:ring-portal-primary/40 font-body"
+              />
+            </div>
+
+            {/* Quick Action Filter Chips */}
+            <div className="flex items-center gap-1">
+              {[
+                { id: "ALL", label: "All" },
+                { id: "AUCTION_TIME_EXTENSION", label: "Extensions" },
+                { id: "LISTING_APPROVED", label: "Approvals" },
+                { id: "SEALED_BID_PLACED", label: "Bids" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActionFilter(tab.id)}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                    actionFilter === tab.id
+                      ? "bg-portal-primary text-white font-bold shadow-2xs"
+                      : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Action Type Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs font-semibold">
-          {[
-            { id: "ALL", label: "All Audit Records" },
-            { id: "AUCTION_TIME_EXTENSION", label: "Time Extensions" },
-            { id: "LISTING_APPROVED", label: "Listing Approvals" },
-            { id: "SEALED_BID_PLACED", label: "Sealed Bids" },
-            { id: "DEALER_LICENSE_VERIFIED", label: "Dealer Licenses" },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActionFilter(tab.id)}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap text-xs font-medium ${
-                actionFilter === tab.id
-                  ? "bg-portal-primary text-white shadow-2xs font-bold"
-                  : "bg-portal-surface hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text border border-portal-border"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 4. Enterprise Sortable Data Table */}
-      <div className="rounded-2xl border border-portal-border bg-portal-surface overflow-hidden shadow-xs">
+        {/* 4. Table Surface */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+          <table className="w-full text-left text-xs border-collapse font-body">
             <thead>
-              <tr className="border-b border-portal-border bg-portal-surface-hover/60">
+              <tr className="border-b border-portal-border/60 bg-portal-surface-hover/30">
+                {/* Select All Checkbox */}
+                <th className="py-3.5 pl-6 pr-2 w-10">
+                  <input
+                    type="checkbox"
+                    checked={
+                      paginatedData.length > 0 &&
+                      paginatedData.every((l) => selectedRows.has(l.id))
+                    }
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
+                  />
+                </th>
+                <SortableHeader
+                  label="Event Type"
+                  direction={isSorted("actionType")}
+                  onSort={() => requestSort("actionType")}
+                />
+                <SortableHeader
+                  label="Privileged Actor"
+                  direction={isSorted("actorName")}
+                  onSort={() => requestSort("actorName")}
+                />
                 <SortableHeader
                   label="Timestamp (EDT)"
                   direction={isSorted("timestamp")}
                   onSort={() => requestSort("timestamp")}
                 />
                 <SortableHeader
-                  label="Privileged Actor & IP"
-                  direction={isSorted("actorName")}
-                  onSort={() => requestSort("actorName")}
-                />
-                <SortableHeader
-                  label="Action Event"
-                  direction={isSorted("actionType")}
-                  onSort={() => requestSort("actionType")}
-                />
-                <SortableHeader
                   label="Target Entity"
                   direction={isSorted("entityId")}
                   onSort={() => requestSort("entityId")}
                 />
-                <th className="p-3.5 text-[11px] font-bold uppercase tracking-wider text-portal-text-muted font-body">
+                <th className="px-4 py-3.5 text-xs font-semibold text-portal-text-muted">
                   Audit Summary
                 </th>
-                <th className="p-3.5 text-right text-[11px] font-bold uppercase tracking-wider text-portal-text-muted font-body">
-                  Cryptographic Hash
+                <th className="py-3.5 pr-6 pl-4 text-right text-xs font-semibold text-portal-text-muted">
+                  Proof Receipt
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-portal-border font-body">
-              {sortedData.length === 0 ? (
+            <tbody className="divide-y divide-portal-border/40">
+              {paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-portal-text-muted">
+                  <td colSpan={7} className="py-12 text-center text-portal-text-muted">
                     <Fingerprint className="w-10 h-10 mx-auto mb-2 opacity-30" />
                     <p className="text-sm font-semibold">No audit logs match criteria</p>
                     <p className="text-xs text-portal-text-muted mt-1">
@@ -421,12 +482,12 @@ export function AdminAuditLogView() {
                   </td>
                 </tr>
               ) : (
-                sortedData.map((log) => {
+                paginatedData.map((log) => {
+                  const isChecked = selectedRows.has(log.id);
                   const dateObj = new Date(log.timestamp);
                   const timeFormatted = dateObj.toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
-                    second: "2-digit",
                   });
                   const dateFormatted = dateObj.toLocaleDateString("en-CA", {
                     month: "short",
@@ -439,66 +500,76 @@ export function AdminAuditLogView() {
                   return (
                     <tr
                       key={log.id}
-                      className="hover:bg-portal-surface-hover/50 transition-colors group"
+                      className={`hover:bg-portal-surface-hover/50 transition-colors group ${
+                        isChecked ? "bg-portal-primary/5" : ""
+                      }`}
                     >
+                      {/* Row Checkbox */}
+                      <td className="py-4 pl-6 pr-2">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleToggleRow(log.id)}
+                          className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
+                        />
+                      </td>
+
+                      {/* Event Type: Icon Badge + Name (Matching Image 4) */}
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-portal-surface-hover border border-portal-border flex items-center justify-center shrink-0 text-portal-primary">
+                            <FileText className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold inline-block ${actionConfig.pill}`}>
+                              {actionConfig.label}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Privileged Actor */}
+                      <td className="py-4 px-4">
+                        <span className="font-semibold text-portal-text text-sm block">
+                          {log.actorName}
+                        </span>
+                        <span className="text-xs text-portal-text-muted block mt-0.5">
+                          {log.actorRole} • {log.ipAddress.split(" ")[0]}
+                        </span>
+                      </td>
+
                       {/* Timestamp */}
-                      <td className="p-4 whitespace-nowrap">
-                        <span className="font-bold text-portal-text block font-mono text-xs">
+                      <td className="py-4 px-4 text-portal-text">
+                        <span className="font-medium block">{dateFormatted}</span>
+                        <span className="text-xs text-portal-text-muted font-mono block mt-0.5">
                           {timeFormatted}
                         </span>
-                        <span className="text-[11px] text-portal-text-muted block mt-0.5 font-mono">
-                          {dateFormatted}
-                        </span>
-                      </td>
-
-                      {/* Actor & Origin IP */}
-                      <td className="p-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-portal-text text-sm">
-                            {log.actorName}
-                          </span>
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-portal-surface-hover text-portal-text-muted border border-portal-border">
-                            {log.actorRole}
-                          </span>
-                        </div>
-                        <span className="text-[11px] text-portal-text-muted block mt-0.5 font-mono">
-                          {log.ipAddress}
-                        </span>
-                      </td>
-
-                      {/* Action Event with Subtle Dot Indicator */}
-                      <td className="p-4 whitespace-nowrap">
-                        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-portal-surface-hover/80 border border-portal-border font-semibold text-xs text-portal-text">
-                          <span className={`w-2 h-2 rounded-full ${actionConfig.dot}`} />
-                          <span>{actionConfig.label}</span>
-                        </div>
                       </td>
 
                       {/* Target Entity */}
-                      <td className="p-4 whitespace-nowrap">
-                        <span className="font-mono font-bold text-portal-text text-xs">
+                      <td className="py-4 px-4 font-mono">
+                        <span className="font-medium text-portal-text block">
                           {log.entityId}
                         </span>
-                        <span className="text-[10px] uppercase font-bold text-portal-text-muted block mt-0.5 font-mono">
-                          {log.entityType} • {log.provincialJurisdiction}
+                        <span className="text-xs text-portal-text-muted block mt-0.5">
+                          {log.entityType} ({log.provincialJurisdiction})
                         </span>
                       </td>
 
-                      {/* Audit Details */}
-                      <td className="p-4 text-xs text-portal-text/90 max-w-sm leading-relaxed">
+                      {/* Clean Single-Line Summary */}
+                      <td className="py-4 px-4 text-portal-text-muted max-w-xs truncate" title={log.details}>
                         {log.details}
                       </td>
 
-                      {/* Hash & Proof Inspector */}
-                      <td className="p-4 text-right whitespace-nowrap">
+                      {/* Action: Inspect Proof Button (Matching download icon column in Image 4) */}
+                      <td className="py-4 pr-6 pl-4 text-right">
                         <button
                           type="button"
                           onClick={() => setSelectedProof(log)}
-                          className="inline-flex items-center gap-1.5 font-mono text-xs text-portal-text-muted hover:text-portal-primary hover:underline cursor-pointer group/hash transition-colors"
-                          title="Inspect cryptographic proof"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-primary hover:text-white text-xs font-semibold text-portal-text transition-colors cursor-pointer shadow-2xs group/btn"
                         >
-                          <Fingerprint className="w-3.5 h-3.5 text-portal-text-muted group-hover/hash:text-portal-primary" />
-                          <span>{log.immutableHash.slice(0, 16)}...</span>
+                          <Fingerprint className="w-3.5 h-3.5" />
+                          <span>Proof</span>
                         </button>
                       </td>
                     </tr>
@@ -508,9 +579,17 @@ export function AdminAuditLogView() {
             </tbody>
           </table>
         </div>
+
+        {/* 5. Enterprise Pagination Footer (Matching Image 4) */}
+        <TablePagination
+          currentPage={page}
+          totalItems={filtered.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
       </div>
 
-      {/* 5. Cryptographic Proof Verification Modal (z-[9999]) */}
+      {/* 6. Cryptographic Proof Verification Modal (z-[9999]) */}
       {selectedProof && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn"

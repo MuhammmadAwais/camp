@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -24,10 +24,12 @@ import {
   ArrowRight,
   ShieldCheck,
   AlertOctagon,
+  Download,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
 import { useTableSort } from "@/hooks/useTableSort";
 import { SortableHeader } from "@/components/ui/SortableHeader";
+import { TablePagination } from "@/components/ui/TablePagination";
 
 export type AdminAuctionLot = {
   id: string;
@@ -152,6 +154,13 @@ export function AdminAuctionsView() {
   const [copiedVin, setCopiedVin] = useState<string | null>(null);
   const [feedbackNotice, setFeedbackNotice] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
+  // Checkbox multi-selection
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
+
   // Lock body scroll when override modal is open
   useEffect(() => {
     if (overrideModalType) {
@@ -173,33 +182,62 @@ export function AdminAuctionsView() {
   const acceptedLots = lots.filter((l) => l.status === "ACCEPTED");
 
   // Filter logic
-  const filtered = lots.filter((lot) => {
-    if (statusFilter === "ACTIVE" && lot.status !== "ACTIVE") return false;
-    if (statusFilter === "ACCEPTED" && lot.status !== "ACCEPTED") return false;
-    if (statusFilter === "CANCELLED" && lot.status !== "CANCELLED") return false;
-    if (statusFilter === "CLOSING_SOON") {
-      const diff = new Date(lot.endsAt).getTime() - Date.now();
-      if (lot.status !== "ACTIVE" || diff <= 0 || diff >= 60 * 60 * 1000) return false;
-    }
+  const filtered = useMemo(() => {
+    return lots.filter((lot) => {
+      if (statusFilter === "ACTIVE" && lot.status !== "ACTIVE") return false;
+      if (statusFilter === "ACCEPTED" && lot.status !== "ACCEPTED") return false;
+      if (statusFilter === "CANCELLED" && lot.status !== "CANCELLED") return false;
+      if (statusFilter === "CLOSING_SOON") {
+        const diff = new Date(lot.endsAt).getTime() - Date.now();
+        if (lot.status !== "ACTIVE" || diff <= 0 || diff >= 60 * 60 * 1000) return false;
+      }
 
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      return (
-        lot.vin.toLowerCase().includes(q) ||
-        lot.make.toLowerCase().includes(q) ||
-        lot.model.toLowerCase().includes(q) ||
-        lot.sellerName.toLowerCase().includes(q) ||
-        lot.city.toLowerCase().includes(q)
-      );
-    }
-    return true;
-  });
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        return (
+          lot.vin.toLowerCase().includes(q) ||
+          lot.make.toLowerCase().includes(q) ||
+          lot.model.toLowerCase().includes(q) ||
+          lot.sellerName.toLowerCase().includes(q) ||
+          lot.city.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [lots, statusFilter, search]);
 
   // Universal Table Sorting Hook
   const { sortedData, requestSort, isSorted } = useTableSort<AdminAuctionLot>(filtered, {
     initialKey: "endsAt",
     initialDirection: "asc",
   });
+
+  // Paginated slice
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return sortedData.slice(start, start + pageSize);
+  }, [sortedData, page, pageSize]);
+
+  // Select all handler
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedRows(new Set(paginatedData.map((l) => l.id)));
+    } else {
+      setSelectedRows(new Set());
+    }
+  };
+
+  const handleToggleRow = (id: string) => {
+    setSelectedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   const handleCopy = (vin: string) => {
     navigator.clipboard.writeText(vin);
@@ -414,67 +452,87 @@ export function AdminAuctionsView() {
         </div>
       )}
 
-      {/* 3. Toolbar: Search & Facet Filters */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
-        {/* Search Input */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-portal-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search lot by VIN, make, model, seller, city..."
-            className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-portal-border bg-portal-surface text-portal-text placeholder:text-portal-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-portal-primary/40 focus:border-portal-primary transition-all shadow-2xs font-body"
-          />
-          {search && (
-            <button
-              type="button"
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-portal-text-muted hover:text-portal-text cursor-pointer p-0.5"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
+      {/* 3. Modern Reference Table Card Container (Matching Image 4) */}
+      <div className="rounded-2xl border border-portal-border bg-portal-surface shadow-xs overflow-hidden">
+        {/* Table Header Strip */}
+        <div className="p-6 border-b border-portal-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-lg font-bold text-portal-text font-headline">
+                Wholesale Auction Floor Surveillance
+              </h2>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-portal-primary/10 text-portal-primary border border-portal-primary/20">
+                {filtered.length} Total Lots
+              </span>
+            </div>
+            <p className="text-xs text-portal-text-muted mt-1 font-body">
+              Supervise live 24h dealer bidding windows, monitor sealed liquidity, and manage operational overrides.
+            </p>
+          </div>
+
+          {/* Action Tools & Search */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Search Input */}
+            <div className="relative w-full sm:w-64">
+              <Search className="w-3.5 h-3.5 text-portal-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search VIN, make, model..."
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-portal-border bg-portal-surface-hover/50 text-portal-text text-xs placeholder:text-portal-text-muted focus:outline-none focus:ring-2 focus:ring-portal-primary/40 font-body"
+              />
+            </div>
+
+            {/* Quick Filter Tabs */}
+            <div className="flex items-center gap-1">
+              {[
+                { id: "ALL", label: "All" },
+                { id: "ACTIVE", label: "Active" },
+                { id: "CLOSING_SOON", label: "Ending Soon" },
+                { id: "ACCEPTED", label: "Cleared" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setStatusFilter(tab.id as typeof statusFilter)}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                    statusFilter === tab.id
+                      ? "bg-portal-primary text-white font-bold shadow-2xs"
+                      : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Status Quick Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs font-semibold">
-          {[
-            { id: "ALL", label: "All Lots" },
-            { id: "ACTIVE", label: "Active Live Floor" },
-            { id: "CLOSING_SOON", label: "Ending Soon (<1h)" },
-            { id: "ACCEPTED", label: "Accepted Deals" },
-            { id: "CANCELLED", label: "Cancelled / Halted" },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setStatusFilter(tab.id as typeof statusFilter)}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap text-xs font-medium ${
-                statusFilter === tab.id
-                  ? "bg-portal-primary text-white shadow-2xs font-bold"
-                  : "bg-portal-surface hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text border border-portal-border"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 4. Enterprise Sortable Data Table */}
-      <div className="rounded-2xl border border-portal-border bg-portal-surface overflow-hidden shadow-xs">
+        {/* 4. Table Surface */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+          <table className="w-full text-left text-xs border-collapse font-body">
             <thead>
-              <tr className="border-b border-portal-border bg-portal-surface-hover/60">
+              <tr className="border-b border-portal-border/60 bg-portal-surface-hover/30">
+                {/* Select All Checkbox */}
+                <th className="py-3.5 pl-6 pr-2 w-10">
+                  <input
+                    type="checkbox"
+                    checked={
+                      paginatedData.length > 0 &&
+                      paginatedData.every((l) => selectedRows.has(l.id))
+                    }
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
+                  />
+                </th>
                 <SortableHeader
                   label="Vehicle Lot"
                   direction={isSorted("model")}
                   onSort={() => requestSort("model")}
                 />
                 <SortableHeader
-                  label="Seller & City"
+                  label="Seller & Location"
                   direction={isSorted("sellerName")}
                   onSort={() => requestSort("sellerName")}
                 />
@@ -489,19 +547,24 @@ export function AdminAuctionsView() {
                   onSort={() => requestSort("reservePriceCents")}
                 />
                 <SortableHeader
-                  label="Time Remaining"
+                  label="Countdown"
                   direction={isSorted("endsAt")}
                   onSort={() => requestSort("endsAt")}
                 />
-                <th className="p-3.5 text-right text-[11px] font-bold uppercase tracking-wider text-portal-text-muted font-body">
-                  Override Controls
+                <SortableHeader
+                  label="Status"
+                  direction={isSorted("status")}
+                  onSort={() => requestSort("status")}
+                />
+                <th className="py-3.5 pr-6 pl-4 text-right text-xs font-semibold text-portal-text-muted">
+                  Controls
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-portal-border">
-              {sortedData.length === 0 ? (
+            <tbody className="divide-y divide-portal-border/40">
+              {paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-portal-text-muted">
+                  <td colSpan={8} className="py-12 text-center text-portal-text-muted">
                     <Gavel className="w-10 h-10 mx-auto mb-2 opacity-30" />
                     <p className="text-sm font-semibold">No auction lots found</p>
                     <p className="text-xs text-portal-text-muted mt-1">
@@ -510,7 +573,8 @@ export function AdminAuctionsView() {
                   </td>
                 </tr>
               ) : (
-                sortedData.map((lot) => {
+                paginatedData.map((lot) => {
+                  const isChecked = selectedRows.has(lot.id);
                   const msLeft = new Date(lot.endsAt).getTime() - Date.now();
                   const hoursLeft = Math.max(0, Math.floor(msLeft / (3600 * 1000)));
                   const minsLeft = Math.max(0, Math.floor((msLeft % (3600 * 1000)) / (60 * 1000)));
@@ -520,12 +584,24 @@ export function AdminAuctionsView() {
                   return (
                     <tr
                       key={lot.id}
-                      className="hover:bg-portal-surface-hover/50 transition-colors group"
+                      className={`hover:bg-portal-surface-hover/50 transition-colors group ${
+                        isChecked ? "bg-portal-primary/5" : ""
+                      }`}
                     >
-                      {/* Vehicle Lot & Image */}
-                      <td className="p-4">
+                      {/* Row Checkbox */}
+                      <td className="py-4 pl-6 pr-2">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleToggleRow(lot.id)}
+                          className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
+                        />
+                      </td>
+
+                      {/* Vehicle Lot (Image Badge + Title) */}
+                      <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="relative w-12 h-10 rounded-lg overflow-hidden bg-portal-surface-hover border border-portal-border shrink-0">
+                          <div className="relative w-10 h-8 rounded-lg overflow-hidden bg-portal-surface-hover border border-portal-border shrink-0">
                             <Image
                               src={lot.thumbnailUrl}
                               alt={`${lot.year} ${lot.make} ${lot.model}`}
@@ -534,12 +610,10 @@ export function AdminAuctionsView() {
                             />
                           </div>
                           <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold text-portal-text text-sm block truncate group-hover:text-portal-primary transition-colors">
-                                {lot.year} {lot.make} {lot.model}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-[11px] text-portal-text-muted mt-0.5 font-mono">
+                            <span className="font-semibold text-portal-text text-sm block truncate group-hover:text-portal-primary transition-colors">
+                              {lot.year} {lot.make} {lot.model}
+                            </span>
+                            <div className="flex items-center gap-1.5 text-xs text-portal-text-muted mt-0.5 font-mono">
                               <span>VIN: ···{lot.vin.slice(-6)}</span>
                               <button
                                 type="button"
@@ -553,49 +627,45 @@ export function AdminAuctionsView() {
                                   <Copy className="w-3 h-3" />
                                 )}
                               </button>
-                              <span>•</span>
-                              <span className="truncate">{lot.trim}</span>
                             </div>
                           </div>
                         </div>
                       </td>
 
                       {/* Seller & Location */}
-                      <td className="p-4 font-body">
-                        <span className="font-semibold text-portal-text block text-xs">
+                      <td className="py-4 px-4">
+                        <span className="font-medium text-portal-text block">
                           {lot.sellerName}
                         </span>
-                        <span className="text-[11px] text-portal-text-muted block mt-0.5">
+                        <span className="text-xs text-portal-text-muted block mt-0.5">
                           {lot.city}, {lot.province}
                         </span>
                       </td>
 
                       {/* Sealed Telemetry */}
-                      <td className="p-4">
-                        <div className="flex items-center gap-1.5 font-mono font-bold text-xs text-portal-text">
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-1.5 font-medium text-portal-text">
                           <Lock className="w-3.5 h-3.5 text-portal-primary shrink-0" />
                           <span>{lot.totalBidsCount} sealed bids</span>
                         </div>
                         {lot.highestBidEstimateCents && (
-                          <span className="text-[10px] text-portal-text-muted font-mono block mt-0.5">
+                          <span className="text-xs text-portal-text-muted font-mono block mt-0.5">
                             Top: {formatCadCents(lot.highestBidEstimateCents)}
                           </span>
                         )}
                       </td>
 
-                      {/* Reserve Target */}
-                      <td className="p-4 font-mono font-bold text-sm text-portal-text">
+                      {/* Reserve Price */}
+                      <td className="py-4 px-4 font-headline font-bold text-sm text-portal-text">
                         {formatCadCents(lot.reservePriceCents)}
                       </td>
 
                       {/* Time Remaining */}
-                      <td className="p-4 font-mono text-xs">
+                      <td className="py-4 px-4 font-mono text-xs">
                         {lot.status === "ACTIVE" && !isClosed ? (
                           <div
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-bold ${
-                              isUrgent
-                                ? "bg-red-500/10 text-red-500 border border-red-500/25 animate-pulse"
-                                : "text-portal-text"
+                            className={`inline-flex items-center gap-1 font-semibold ${
+                              isUrgent ? "text-red-500 animate-pulse font-bold" : "text-portal-text"
                             }`}
                           >
                             <Clock className="w-3.5 h-3.5" />
@@ -605,29 +675,55 @@ export function AdminAuctionsView() {
                             </span>
                           </div>
                         ) : (
-                          <span className="text-portal-text-muted font-medium">
-                            {lot.status === "ACCEPTED"
-                              ? "Floor Cleared"
-                              : lot.status === "CANCELLED"
-                              ? "Halted"
-                              : "Auction Closed"}
+                          <span className="text-portal-text-muted">
+                            {lot.status === "ACCEPTED" ? "Floor Cleared" : "Closed"}
                           </span>
                         )}
                       </td>
 
-                      {/* Safe Override Controls */}
-                      <td className="p-4 text-right">
+                      {/* Status: Soft Pastel Pill Badge */}
+                      <td className="py-4 px-4">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                            lot.status === "ACTIVE"
+                              ? "bg-blue-500/10 text-blue-500 border border-blue-500/20"
+                              : lot.status === "ACCEPTED"
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                              : "bg-portal-surface-hover text-portal-text-muted border border-portal-border"
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              lot.status === "ACTIVE"
+                                ? "bg-blue-500 animate-pulse"
+                                : lot.status === "ACCEPTED"
+                                ? "bg-emerald-500"
+                                : "bg-portal-text-muted"
+                            }`}
+                          />
+                          <span>
+                            {lot.status === "ACTIVE"
+                              ? "Live Floor"
+                              : lot.status === "ACCEPTED"
+                              ? "Cleared"
+                              : "Closed"}
+                          </span>
+                        </span>
+                      </td>
+
+                      {/* Action Controls */}
+                      <td className="py-4 pr-6 pl-4 text-right">
                         {lot.status === "ACTIVE" ? (
-                          <div className="flex items-center justify-end gap-2">
+                          <div className="flex items-center justify-end gap-1.5">
                             <button
                               type="button"
                               onClick={() => {
                                 setSelectedLot(lot);
                                 setOverrideModalType("EXTEND");
                               }}
-                              className="px-2.5 py-1.5 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text text-xs font-semibold transition-colors cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text text-xs font-medium transition-colors cursor-pointer"
                             >
-                              + Extend Time
+                              + Extend
                             </button>
                             <button
                               type="button"
@@ -635,15 +731,13 @@ export function AdminAuctionsView() {
                                 setSelectedLot(lot);
                                 setOverrideModalType("TERMINATE");
                               }}
-                              className="px-2.5 py-1.5 rounded-lg border border-red-500/30 text-red-500 hover:bg-red-500/10 text-xs font-semibold transition-colors cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg border border-red-500/30 text-red-500 hover:bg-red-500/10 text-xs font-medium transition-colors cursor-pointer"
                             >
-                              Halt Lot
+                              Halt
                             </button>
                           </div>
                         ) : (
-                          <span className="text-[11px] text-portal-text-muted font-mono">
-                            Locked
-                          </span>
+                          <span className="text-xs text-portal-text-muted">Locked</span>
                         )}
                       </td>
                     </tr>
@@ -653,9 +747,17 @@ export function AdminAuctionsView() {
             </tbody>
           </table>
         </div>
+
+        {/* 5. Enterprise Pagination Footer (Matching Image 4) */}
+        <TablePagination
+          currentPage={page}
+          totalItems={filtered.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
       </div>
 
-      {/* 5. Portaled Safety Override Modals (z-[9999]) */}
+      {/* 6. Portaled Safety Override Modals (z-[9999]) */}
       {overrideModalType && selectedLot && (
         <div
           className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn"
