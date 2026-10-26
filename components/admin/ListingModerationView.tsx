@@ -1,573 +1,440 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ShieldAlert,
-  CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  FileText,
   Clock,
   Car,
-  Check,
   X,
-  ExternalLink,
-  ChevronRight,
+  ArrowRight,
+  Search,
+  ArrowUpDown,
+  CheckCircle2,
+  AlertTriangle,
+  Copy,
+  Check,
+  ShieldCheck,
+  FileText,
   MapPin,
-  Camera,
-  Layers,
-  Sparkles,
+  ExternalLink,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
-
-export type ModerationItem = {
-  id: string;
-  submittedAt: string;
-  seller: {
-    name: string;
-    email: string;
-    phone: string;
-    city: string;
-    province: string;
-  };
-  vehicle: {
-    vin: string;
-    year: number;
-    make: string;
-    model: string;
-    trim: string;
-    mileageKm: number;
-    transmission: string;
-    drivetrain: string;
-    reservePriceCents: number; // Integer CAD cents invariant
-    damageGrade: string;
-    damageHotspotCount: number;
-    photosCount: number;
-    thumbnailUrl: string;
-    photos: string[];
-    lienDisclosed: boolean;
-    keysCount: number;
-    sellerNotes: string;
-  };
-  checks: {
-    vinDecoded: boolean;
-    odometerLegible: boolean;
-    damageMapped: boolean;
-    ownershipVerified: boolean;
-  };
-  status: "PENDING" | "APPROVED" | "EDITS_REQUESTED" | "REJECTED";
-};
-
-const INITIAL_QUEUE: ModerationItem[] = [
-  {
-    id: "mod-corvette-z06-2023",
-    submittedAt: "24 minutes ago",
-    seller: {
-      name: "Jean-Philippe Tremblay",
-      email: "jp.tremblay@videotron.ca",
-      phone: "+1 (514) 555-8932",
-      city: "Laval",
-      province: "QC",
-    },
-    vehicle: {
-      vin: "1G1YC2D46P5104921",
-      year: 2023,
-      make: "Chevrolet",
-      model: "Corvette",
-      trim: "Z06 3LZ Coupe",
-      mileageKm: 8900,
-      transmission: "8-Speed Dual Clutch",
-      drivetrain: "Rear-Wheel Drive (RWD)",
-      reservePriceCents: 12500000, // $125,000.00
-      damageGrade: "A",
-      damageHotspotCount: 0,
-      photosCount: 22,
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80",
-      photos: [
-        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1600&q=80",
-        "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1600&q=80",
-      ],
-      lienDisclosed: false,
-      keysCount: 2,
-      sellerNotes: "Single owner, carbon ceramic brakes package, PPF on full front clip.",
-    },
-    checks: {
-      vinDecoded: true,
-      odometerLegible: true,
-      damageMapped: true,
-      ownershipVerified: true,
-    },
-    status: "PENDING",
-  },
-  {
-    id: "mod-lexus-rx350-2022",
-    submittedAt: "1 hour ago",
-    seller: {
-      name: "David Chen",
-      email: "d.chen@gmail.com",
-      phone: "+1 (416) 555-4421",
-      city: "Markham",
-      province: "ON",
-    },
-    vehicle: {
-      vin: "2T2HZMDA3NC129841",
-      year: 2022,
-      make: "Lexus",
-      model: "RX 350",
-      trim: "F SPORT Series 3 AWD",
-      mileageKm: 42100,
-      transmission: "8-Speed Automatic",
-      drivetrain: "All-Wheel Drive (AWD)",
-      reservePriceCents: 4450000, // $44,500.00
-      damageGrade: "B",
-      damageHotspotCount: 2,
-      photosCount: 15,
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1200&q=80",
-      photos: [
-        "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1600&q=80",
-      ],
-      lienDisclosed: false,
-      keysCount: 2,
-      sellerNotes: "Two small bumper scuffs declared. Serviced exclusively at Lexus of Richmond Hill.",
-    },
-    checks: {
-      vinDecoded: true,
-      odometerLegible: true,
-      damageMapped: true,
-      ownershipVerified: true,
-    },
-    status: "PENDING",
-  },
-  {
-    id: "mod-hyundai-tucson-2021",
-    submittedAt: "2 hours ago",
-    seller: {
-      name: "Kavita Sharma",
-      email: "kavita.s@rogers.com",
-      phone: "+1 (905) 555-1290",
-      city: "Brampton",
-      province: "ON",
-    },
-    vehicle: {
-      vin: "KM8JN8W37MU291048",
-      year: 2021,
-      make: "Hyundai",
-      model: "Tucson",
-      trim: "Preferred Trend AWD",
-      mileageKm: 68400,
-      transmission: "6-Speed Automatic",
-      drivetrain: "All-Wheel Drive (AWD)",
-      reservePriceCents: 2100000, // $21,000.00
-      damageGrade: "C",
-      damageHotspotCount: 3,
-      photosCount: 11,
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=1200&q=80",
-      photos: [
-        "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=1600&q=80",
-      ],
-      lienDisclosed: true,
-      keysCount: 1,
-      sellerNotes: "Lien balance of approx $4,500 with Scotiabank Auto Finance.",
-    },
-    checks: {
-      vinDecoded: true,
-      odometerLegible: true,
-      damageMapped: true,
-      ownershipVerified: true,
-    },
-    status: "PENDING",
-  },
-];
+import {
+  INITIAL_MODERATION_QUEUE,
+  type ModerationItem,
+} from "@/lib/mock/admin-moderation";
 
 export function ListingModerationView() {
-  const [queue, setQueue] = useState<ModerationItem[]>(INITIAL_QUEUE);
-  const [selectedItem, setSelectedItem] = useState<ModerationItem | null>(queue[0] || null);
-  const [modalAction, setModalAction] = useState<"REQUEST_EDITS" | "REJECT" | null>(null);
-  const [actionReason, setActionReason] = useState("");
-  const [feedbackNotice, setFeedbackNotice] = useState<string | null>(null);
+  const [queue, setQueue] = useState<ModerationItem[]>(INITIAL_MODERATION_QUEUE);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "PENDING" | "EDITS_REQUESTED" | "APPROVED">("PENDING");
+  const [sortBy, setSortBy] = useState<"NEWEST" | "RESERVE_DESC" | "MILEAGE_ASC">("NEWEST");
+  const [copiedVin, setCopiedVin] = useState<string | null>(null);
 
-  const handleApprove = (id: string) => {
-    setQueue((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, status: "APPROVED" } : item))
-    );
-    setFeedbackNotice(`Listing ${id} approved! 24h auction countdown started.`);
-    setTimeout(() => setFeedbackNotice(null), 4000);
-  };
+  // Status Counts
+  const counts = useMemo(() => {
+    return {
+      ALL: queue.length,
+      PENDING: queue.filter((i) => i.status === "PENDING").length,
+      EDITS_REQUESTED: queue.filter((i) => i.status === "EDITS_REQUESTED").length,
+      APPROVED: queue.filter((i) => i.status === "APPROVED").length,
+    };
+  }, [queue]);
 
-  const handleConfirmAction = (e: React.FormEvent) => {
+  // Filter & Sort Queue
+  const filteredQueue = useMemo(() => {
+    return queue
+      .filter((item) => {
+        // Status filter
+        if (statusFilter !== "ALL" && item.status !== statusFilter) {
+          return false;
+        }
+
+        // Search query
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.toLowerCase();
+        const makeModel = `${item.vehicle.year} ${item.vehicle.make} ${item.vehicle.model} ${item.vehicle.trim}`.toLowerCase();
+        const vin = item.vehicle.vin.toLowerCase();
+        const seller = `${item.seller.name} ${item.seller.city} ${item.seller.province}`.toLowerCase();
+        return makeModel.includes(q) || vin.includes(q) || seller.includes(q);
+      })
+      .sort((a, b) => {
+        if (sortBy === "RESERVE_DESC") {
+          return b.vehicle.reservePriceCents - a.vehicle.reservePriceCents;
+        }
+        if (sortBy === "MILEAGE_ASC") {
+          return a.vehicle.mileageKm - b.vehicle.mileageKm;
+        }
+        return 0; // NEWEST default
+      });
+  }, [queue, statusFilter, searchQuery, sortBy]);
+
+  const copyVinToClipboard = (vin: string, e: React.MouseEvent) => {
     e.preventDefault();
-    if (!selectedItem || !modalAction) return;
-
-    const newStatus = modalAction === "REQUEST_EDITS" ? "EDITS_REQUESTED" : "REJECTED";
-    setQueue((prev) =>
-      prev.map((item) => (item.id === selectedItem.id ? { ...item, status: newStatus } : item))
-    );
-
-    setFeedbackNotice(
-      modalAction === "REQUEST_EDITS"
-        ? `Edit request dispatched to seller: "${actionReason}"`
-        : `Listing rejected: "${actionReason}"`
-    );
-    setModalAction(null);
-    setActionReason("");
-    setTimeout(() => setFeedbackNotice(null), 4000);
+    e.stopPropagation();
+    navigator.clipboard.writeText(vin);
+    setCopiedVin(vin);
+    setTimeout(() => setCopiedVin(null), 2000);
   };
-
-  const pendingCount = queue.filter((i) => i.status === "PENDING").length;
 
   return (
     <div className="space-y-6 pb-16">
-      {/* Top Banner */}
-      <div className="rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded-md bg-red-500/10 text-red-500 text-xs font-bold font-mono uppercase tracking-wider border border-red-500/20">
-              Operations Backoffice
+      {/* 1. Header (Clean, Institutional, Zero Clutter) */}
+      <div className="border-b border-portal-border pb-5">
+        <h1 className="text-2xl sm:text-3xl font-bold font-headline text-portal-text tracking-tight">
+          Listing Moderation Queue
+        </h1>
+        <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-3xl">
+          Review vehicle odometer clarity, NHTSA decoded specs, title liens, and condition disclosures before launching 24h dealer auctions.
+        </p>
+      </div>
+
+      {/* 2. Structured Operational Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Pending Verification */}
+        <div
+          onClick={() => setStatusFilter("PENDING")}
+          className={`p-4 rounded-xl border transition-all cursor-pointer ${
+            statusFilter === "PENDING"
+              ? "bg-portal-surface border-amber-500/50 shadow-xs ring-1 ring-amber-500/20"
+              : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-portal-text-muted">
+              Pending Verification
             </span>
-            <span className="text-xs text-portal-text-muted font-mono">
-              OMVIC / AMVIC / VSA Intake Gate
+            <span className="flex h-2.5 w-2.5 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-portal-text font-headline tracking-tight">
-            Seller Listing Moderation Queue
-          </h1>
-          <p className="text-xs sm:text-sm text-portal-text-muted mt-1">
-            Review and verify pending Canadian consumer vehicle submissions before launching the 24h dealer sealed-bid auction.
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="font-mono text-2xl font-bold text-amber-500">
+              {counts.PENDING}
+            </span>
+            <span className="text-xs text-portal-text-muted">Submissions</span>
+          </div>
+          <p className="text-[11px] text-portal-text-muted mt-1">
+            Awaiting initial compliance inspection
           </p>
         </div>
 
-        {/* Pending Queue Count Pill */}
-        <div className="flex items-center gap-3">
-          <div className="p-3.5 rounded-xl bg-portal-surface-hover border border-portal-border text-right font-mono">
-            <span className="text-[10px] uppercase font-bold text-portal-text-muted block">
-              Pending Verification
+        {/* Card 2: Action Required */}
+        <div
+          onClick={() => setStatusFilter("EDITS_REQUESTED")}
+          className={`p-4 rounded-xl border transition-all cursor-pointer ${
+            statusFilter === "EDITS_REQUESTED"
+              ? "bg-portal-surface border-portal-primary/50 shadow-xs ring-1 ring-portal-primary/20"
+              : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-portal-text-muted">
+              Action Required
             </span>
-            <span className="text-xl font-black text-portal-primary">
-              {pendingCount} Listings
+            <AlertTriangle className="w-4 h-4 text-portal-primary" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="font-mono text-2xl font-bold text-portal-text">
+              {counts.EDITS_REQUESTED}
             </span>
+            <span className="text-xs text-portal-text-muted">Active</span>
+          </div>
+          <p className="text-[11px] text-portal-text-muted mt-1">
+            Corrections requested from seller
+          </p>
+        </div>
+
+        {/* Card 3: Approved & Live */}
+        <div
+          onClick={() => setStatusFilter("APPROVED")}
+          className={`p-4 rounded-xl border transition-all cursor-pointer ${
+            statusFilter === "APPROVED"
+              ? "bg-portal-surface border-emerald-500/50 shadow-xs ring-1 ring-emerald-500/20"
+              : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-portal-text-muted">
+              Approved Today
+            </span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="font-mono text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              {counts.APPROVED}
+            </span>
+            <span className="text-xs text-portal-text-muted">Auctions</span>
+          </div>
+          <p className="text-[11px] text-portal-text-muted mt-1">
+            Live on 24h dealer wholesale floor
+          </p>
+        </div>
+
+        {/* Card 4: Total Queue Volume */}
+        <div
+          onClick={() => setStatusFilter("ALL")}
+          className={`p-4 rounded-xl border transition-all cursor-pointer ${
+            statusFilter === "ALL"
+              ? "bg-portal-surface border-portal-primary/50 shadow-xs ring-1 ring-portal-primary/20"
+              : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-portal-text-muted">
+              Total Intake
+            </span>
+            <Car className="w-4 h-4 text-portal-text-muted" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="font-mono text-2xl font-bold text-portal-text">
+              {counts.ALL}
+            </span>
+            <span className="text-xs text-portal-text-muted">Total Listings</span>
+          </div>
+          <p className="text-[11px] text-portal-text-muted mt-1">
+            All consumer vehicle submissions
+          </p>
+        </div>
+      </div>
+
+      {/* 3. Queue Controls Bar (Search, Filter Tabs & Sort) */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-2">
+        {/* Search Input */}
+        <div className="relative flex-1 max-w-md">
+          <Search className="w-4 h-4 text-portal-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by VIN, make, model, seller, or city..."
+            className="w-full pl-9 pr-8 py-2 rounded-xl bg-portal-surface border border-portal-border text-xs text-portal-text placeholder:text-portal-text-muted focus:outline-none focus:ring-2 focus:ring-portal-primary/20 focus:border-portal-primary transition-all"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-portal-text-muted hover:text-portal-text p-0.5 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Filter Tabs & Sort Selector */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Status Tabs */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-portal-surface border border-portal-border text-xs">
+            <button
+              type="button"
+              onClick={() => setStatusFilter("PENDING")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                statusFilter === "PENDING"
+                  ? "bg-portal-surface-hover text-portal-text shadow-2xs font-bold"
+                  : "text-portal-text-muted hover:text-portal-text"
+              }`}
+            >
+              <span>Pending</span>
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-amber-500/10 text-amber-500 font-bold">
+                {counts.PENDING}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setStatusFilter("EDITS_REQUESTED")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                statusFilter === "EDITS_REQUESTED"
+                  ? "bg-portal-surface-hover text-portal-text shadow-2xs font-bold"
+                  : "text-portal-text-muted hover:text-portal-text"
+              }`}
+            >
+              <span>Corrections</span>
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-portal-border text-portal-text font-bold">
+                {counts.EDITS_REQUESTED}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setStatusFilter("APPROVED")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                statusFilter === "APPROVED"
+                  ? "bg-portal-surface-hover text-portal-text shadow-2xs font-bold"
+                  : "text-portal-text-muted hover:text-portal-text"
+              }`}
+            >
+              <span>Approved</span>
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
+                {counts.APPROVED}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setStatusFilter("ALL")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                statusFilter === "ALL"
+                  ? "bg-portal-surface-hover text-portal-text shadow-2xs font-bold"
+                  : "text-portal-text-muted hover:text-portal-text"
+              }`}
+            >
+              <span>All ({counts.ALL})</span>
+            </button>
+          </div>
+
+          {/* Sort Menu */}
+          <div className="relative">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="py-1.5 pl-3 pr-8 rounded-xl bg-portal-surface border border-portal-border text-xs text-portal-text focus:outline-none cursor-pointer appearance-none font-medium"
+            >
+              <option value="NEWEST">Newest First</option>
+              <option value="RESERVE_DESC">Highest Reserve</option>
+              <option value="MILEAGE_ASC">Lowest Mileage</option>
+            </select>
+            <ArrowUpDown className="w-3.5 h-3.5 text-portal-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
       </div>
 
-      {feedbackNotice && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-500 text-xs font-mono flex items-center gap-2 animate-fade-in">
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <span>{feedbackNotice}</span>
-        </div>
-      )}
-
-      {/* Main 2-Column Split: Queue List on Left, Active Inspector on Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Col (5 cols): Listing Cards Queue */}
-        <div className="lg:col-span-5 space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-portal-text-muted">
-              Pending Queue ({queue.length})
-            </span>
-            <span className="text-[11px] font-mono text-portal-text-muted">
-              Auto-refreshed via SSE
-            </span>
+      {/* 4. Full-Width Moderation Queue List */}
+      <div className="space-y-3">
+        {filteredQueue.length === 0 ? (
+          <div className="py-16 px-4 text-center rounded-2xl border border-dashed border-portal-border bg-portal-surface space-y-2">
+            <Car className="w-10 h-10 text-portal-text-muted mx-auto opacity-40" />
+            <div className="text-sm font-semibold text-portal-text">
+              No vehicle submissions found
+            </div>
+            <p className="text-xs text-portal-text-muted max-w-sm mx-auto">
+              No pending listings match the selected filters or search criteria.
+            </p>
           </div>
+        ) : (
+          filteredQueue.map((item) => {
+            const hasLien = item.vehicle.lienDisclosed;
 
-          <div className="space-y-3">
-            {queue.map((item) => {
-              const isSelected = selectedItem?.id === item.id;
-
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => setSelectedItem(item)}
-                  className={`p-4 rounded-2xl border transition-all cursor-pointer ${
-                    isSelected
-                      ? "border-portal-primary bg-portal-surface shadow-md ring-1 ring-portal-primary/20"
-                      : "border-portal-border bg-portal-surface hover:border-portal-primary/50"
-                  }`}
-                >
-                  <div className="flex items-start gap-3.5">
-                    <div className="relative w-20 h-16 rounded-xl overflow-hidden bg-portal-surface-hover shrink-0 border border-portal-border">
+            return (
+              <div
+                key={item.id}
+                className="p-4 sm:p-5 rounded-2xl border border-portal-border bg-portal-surface hover:border-portal-primary/40 transition-all shadow-2xs hover:shadow-xs group"
+              >
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                  {/* Left: Thumbnail & Core Vehicle Spec */}
+                  <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
+                    <div className="relative w-28 sm:w-32 aspect-16/10 rounded-xl overflow-hidden bg-portal-surface-hover border border-portal-border shrink-0">
                       <Image
                         src={item.vehicle.thumbnailUrl}
                         alt={item.vehicle.model}
                         fill
-                        className="object-cover"
-                        sizes="80px"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 640px) 112px, 128px"
                       />
+                      <div className="absolute bottom-1.5 right-1.5 bg-black/70 backdrop-blur-xs text-white text-[10px] font-mono px-1.5 py-0.5 rounded">
+                        {item.vehicle.photosCount} Photos
+                      </div>
                     </div>
 
-                    <div className="flex-1 min-w-0 space-y-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-mono font-bold text-portal-primary truncate">
+                    <div className="min-w-0 space-y-1 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-base sm:text-lg font-bold font-headline text-portal-text group-hover:text-portal-primary transition-colors truncate">
                           {item.vehicle.year} {item.vehicle.make} {item.vehicle.model}
-                        </span>
+                        </h3>
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase shrink-0 ${
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider shrink-0 ${
                             item.status === "APPROVED"
-                              ? "bg-emerald-500/10 text-emerald-500"
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                               : item.status === "PENDING"
-                              ? "bg-amber-500/10 text-amber-500"
+                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
                               : "bg-red-500/10 text-red-500"
                           }`}
                         >
-                          {item.status}
+                          {item.status === "EDITS_REQUESTED" ? "Corrections Required" : item.status}
                         </span>
                       </div>
 
-                      <p className="text-[11px] text-portal-text-muted truncate">
-                        {item.vehicle.trim} • {item.seller.city}, {item.seller.province}
+                      <p className="text-xs text-portal-text-muted truncate">
+                        {item.vehicle.trim}
+                        {item.vehicle.engineSpec && ` • ${item.vehicle.engineSpec}`}
                       </p>
 
-                      <div className="flex items-center justify-between text-[11px] font-mono text-portal-text-muted pt-1 border-t border-portal-border/50">
-                        <span>Reserve: {formatCadCents(item.vehicle.reservePriceCents)}</span>
-                        <span>{item.submittedAt}</span>
+                      {/* Attribute Pills / Indicators */}
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-portal-text-muted pt-1">
+                        <div className="flex items-center gap-1 font-mono text-[11px]">
+                          <span>VIN:</span>
+                          <span className="font-bold text-portal-text">{item.vehicle.vin}</span>
+                          <button
+                            type="button"
+                            onClick={(e) => copyVinToClipboard(item.vehicle.vin, e)}
+                            className="p-0.5 rounded hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text transition-colors cursor-pointer"
+                            title="Copy VIN"
+                          >
+                            {copiedVin === item.vehicle.vin ? (
+                              <Check className="w-3 h-3 text-emerald-500" />
+                            ) : (
+                              <Copy className="w-3 h-3" />
+                            )}
+                          </button>
+                        </div>
+
+                        <span>•</span>
+                        <span className="font-mono">{item.vehicle.mileageKm.toLocaleString()} km</span>
+
+                        <span>•</span>
+                        <span>{item.vehicle.drivetrain}</span>
+
+                        <span>•</span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-portal-text-muted" />
+                          <span>{item.seller.city}, {item.seller.province}</span>
+                        </span>
+
+                        <span>•</span>
+                        <span
+                          className={`font-medium ${
+                            hasLien
+                              ? "text-amber-500"
+                              : "text-emerald-600 dark:text-emerald-400"
+                          }`}
+                        >
+                          {hasLien ? "Active Lien Declared" : "Lien Free"}
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Right Col (7 cols): Detailed Moderation Inspector & Decision Actions */}
-        {selectedItem ? (
-          <div className="lg:col-span-7 space-y-6">
-            <div className="rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-xs space-y-6">
-              {/* Header */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-portal-border">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono text-xs font-bold text-portal-text-muted">
-                      ID: {selectedItem.id}
-                    </span>
-                    <span className="text-xs text-portal-text-muted">•</span>
-                    <span className="text-xs text-portal-text-muted">
-                      Submitted {selectedItem.submittedAt}
-                    </span>
-                  </div>
-                  <h2 className="text-xl font-bold text-portal-text font-headline">
-                    {selectedItem.vehicle.year} {selectedItem.vehicle.make}{" "}
-                    {selectedItem.vehicle.model} {selectedItem.vehicle.trim}
-                  </h2>
-                </div>
-
-                <div className="text-right font-mono">
-                  <span className="text-[10px] uppercase font-bold text-portal-text-muted block">
-                    Seller Asking Reserve
-                  </span>
-                  <span className="text-xl font-black text-portal-text">
-                    {formatCadCents(selectedItem.vehicle.reservePriceCents)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Photos Gallery Strip */}
-              <div className="space-y-2">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-portal-text flex items-center gap-1.5">
-                  <Camera className="w-3.5 h-3.5 text-portal-primary" />
-                  Media Intake Review ({selectedItem.vehicle.photosCount} Photos Uploaded)
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {selectedItem.vehicle.photos.map((url, idx) => (
-                    <div
-                      key={idx}
-                      className="relative aspect-16/10 rounded-xl overflow-hidden bg-portal-surface-hover border border-portal-border"
-                    >
-                      <Image
-                        src={url}
-                        alt={`Photo ${idx + 1}`}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 50vw, 33vw"
-                      />
+                  {/* Right: Reserve Target, Submission Time & CTA Button */}
+                  <div className="flex items-center justify-between lg:justify-end gap-6 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-portal-border">
+                    <div className="text-left lg:text-right space-y-0.5">
+                      <div className="text-[10px] uppercase font-semibold text-portal-text-muted">
+                        Seller Reserve Target
+                      </div>
+                      <div className="font-mono text-lg sm:text-xl font-bold text-portal-text">
+                        {formatCadCents(item.vehicle.reservePriceCents)}
+                      </div>
+                      <div className="text-[11px] text-portal-text-muted flex items-center gap-1 lg:justify-end">
+                        <Clock className="w-3 h-3" />
+                        <span>Submitted {item.submittedAt}</span>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
 
-              {/* Technical Specifications & Vehicle Attributes */}
-              <div className="space-y-3">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-portal-text flex items-center gap-1.5">
-                  <Car className="w-3.5 h-3.5 text-portal-primary" />
-                  Decoded NHTSA Attributes
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-mono">
-                  <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                    <span className="text-[10px] text-portal-text-muted block">17-Char VIN</span>
-                    <span className="font-bold text-portal-text truncate block">
-                      {selectedItem.vehicle.vin}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                    <span className="text-[10px] text-portal-text-muted block">Odometer</span>
-                    <span className="font-bold text-portal-text">
-                      {selectedItem.vehicle.mileageKm.toLocaleString()} km
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                    <span className="text-[10px] text-portal-text-muted block">Drivetrain</span>
-                    <span className="font-bold text-portal-text truncate block">
-                      {selectedItem.vehicle.drivetrain}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                    <span className="text-[10px] text-portal-text-muted block">Condition Grade</span>
-                    <span className="font-bold text-portal-text">
-                      Grade {selectedItem.vehicle.damageGrade} ({selectedItem.vehicle.damageHotspotCount} Disclosed)
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                    <span className="text-[10px] text-portal-text-muted block">Lien Status</span>
-                    <span
-                      className={`font-bold ${
-                        selectedItem.vehicle.lienDisclosed
-                          ? "text-amber-500"
-                          : "text-emerald-500"
-                      }`}
+                    <Link
+                      href={`/admin/moderation/${item.id}`}
+                      className="px-4 py-2.5 rounded-xl bg-portal-surface-hover hover:bg-portal-primary hover:text-white border border-portal-border text-xs font-semibold text-portal-text transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer group-hover:border-portal-primary"
                     >
-                      {selectedItem.vehicle.lienDisclosed ? "Active Lien" : "Lien Free"}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                    <span className="text-[10px] text-portal-text-muted block">Key Fobs</span>
-                    <span className="font-bold text-portal-text">
-                      {selectedItem.vehicle.keysCount} Sets
-                    </span>
+                      <span>Review Dossier</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
                   </div>
                 </div>
               </div>
-
-              {/* Seller Notes & Identity */}
-              <div className="p-4 rounded-xl bg-portal-surface-hover/70 border border-portal-border space-y-2 text-xs">
-                <div className="flex items-center justify-between pb-1 border-b border-portal-border">
-                  <span className="font-mono font-bold text-portal-text">
-                    Seller: {selectedItem.seller.name} ({selectedItem.seller.phone})
-                  </span>
-                  <span className="font-mono text-portal-text-muted">
-                    {selectedItem.seller.city}, {selectedItem.seller.province}
-                  </span>
-                </div>
-                <p className="text-portal-text-muted leading-relaxed">
-                  &ldquo;{selectedItem.vehicle.sellerNotes}&rdquo;
-                </p>
-              </div>
-
-              {/* Moderation Actions Bar */}
-              <div className="pt-4 border-t border-portal-border flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setModalAction("REQUEST_EDITS")}
-                    className="px-4 py-2.5 rounded-xl border border-amber-500/40 text-amber-500 hover:bg-amber-500/10 text-xs font-bold font-mono transition-colors cursor-pointer"
-                  >
-                    Request Edits
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setModalAction("REJECT")}
-                    className="px-4 py-2.5 rounded-xl border border-red-500/40 text-red-500 hover:bg-red-500/10 text-xs font-bold font-mono transition-colors cursor-pointer"
-                  >
-                    Reject Submission
-                  </button>
-                </div>
-
-                <button
-                  type="button"
-                  disabled={selectedItem.status === "APPROVED"}
-                  onClick={() => handleApprove(selectedItem.id)}
-                  className={`px-6 py-2.5 rounded-xl font-bold font-mono text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer ${
-                    selectedItem.status === "APPROVED"
-                      ? "bg-emerald-600/50 text-white cursor-not-allowed"
-                      : "bg-emerald-600 hover:bg-emerald-700 text-white hover:shadow-lg"
-                  }`}
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>
-                    {selectedItem.status === "APPROVED"
-                      ? "Approved & Auction Active"
-                      : "Approve & Start 24h Auction"}
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="lg:col-span-7 p-12 text-center text-portal-text-muted font-mono text-xs border border-dashed border-portal-border rounded-2xl">
-            Select a listing from the queue to review and moderate.
-          </div>
+            );
+          })
         )}
       </div>
-
-      {/* Action Dialog Modal */}
-      {modalAction && selectedItem && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4"
-          onClick={() => setModalAction(null)}
-        >
-          <div
-            className="w-full max-w-md rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-2xl space-y-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div>
-              <h3 className="text-base font-bold text-portal-text">
-                {modalAction === "REQUEST_EDITS"
-                  ? "Request Listing Corrections"
-                  : "Reject Listing Submission"}
-              </h3>
-              <p className="text-xs text-portal-text-muted font-mono mt-0.5">
-                Listing: {selectedItem.vehicle.year} {selectedItem.vehicle.make}{" "}
-                {selectedItem.vehicle.model}
-              </p>
-            </div>
-
-            <form onSubmit={handleConfirmAction} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-portal-text">
-                  {modalAction === "REQUEST_EDITS"
-                    ? "Specific Required Changes (Seller will receive via SMS/Email)"
-                    : "Regulatory Justification Code & Explanatory Note"}
-                </label>
-                <textarea
-                  rows={4}
-                  required
-                  value={actionReason}
-                  onChange={(e) => setActionReason(e.target.value)}
-                  placeholder={
-                    modalAction === "REQUEST_EDITS"
-                      ? "e.g. Please re-take a clear photo of the dashboard odometer showing exact km reading."
-                      : "e.g. OMVIC compliance failure: Unrepaired structural frame damage reported in Carfax history."
-                  }
-                  className="w-full px-3 py-2 rounded-xl border border-portal-border bg-portal-surface-hover text-portal-text text-xs focus:outline-hidden focus:ring-2 focus:ring-portal-primary"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-2 border-t border-portal-border">
-                <button
-                  type="button"
-                  onClick={() => setModalAction(null)}
-                  className="px-4 py-2 rounded-xl border border-portal-border text-xs text-portal-text-muted hover:text-portal-text cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={`px-5 py-2 rounded-xl text-white text-xs font-bold cursor-pointer ${
-                    modalAction === "REQUEST_EDITS"
-                      ? "bg-amber-600 hover:bg-amber-700"
-                      : "bg-red-600 hover:bg-red-700"
-                  }`}
-                >
-                  Confirm & Send Notice
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

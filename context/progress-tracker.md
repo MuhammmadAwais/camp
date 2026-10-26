@@ -168,7 +168,11 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 6.1: Seller Listing Moderation Queue**
   - **Route:** `/admin/moderation`
   - **Component:** `ListingModerationView.tsx`
-  - **Features:** Review pending seller submissions before the 24h auction opens. Decoded VIN specs vs. photos check, damage inspection check. 1-click "Approve & Start 24h Auction", "Request Edits", or "Reject with Reason".
+  - **Features:** Full-width high-density queue: 4-card operational metric ribbon (`Pending Verification`, `Action Required`, `Approved Today`, `Total Intake`), live search across VIN/Model/Seller, status filter tabs, sort dropdown, high-density listing rows with 1-click VIN copy, and direct links to dedicated dossier review pages.
+- [x] **Page 6.1b: Vehicle Moderation Dossier & Decision Terminal**
+  - **Route:** `/admin/moderation/[id]`
+  - **Component:** `ListingModerationDetailView.tsx`
+  - **Features:** Dedicated full-page vehicle inspection dossier: breadcrumb back navigation, high-resolution photo review stage with portaled fullscreen lightbox (`z-[9999]`), tabular NHTSA decoded vitals & compliance table (eliminated card soup), seller KYC & verified attestation card, and portaled regulatory action modals for corrections and statutory rejections.
 - [x] **Page 6.2: Dealer Regulatory License Verification Queue**
   - **Route:** `/admin/dealers`
   - **Component:** `DealerVerificationView.tsx`
