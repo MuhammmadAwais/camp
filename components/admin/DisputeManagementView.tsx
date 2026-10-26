@@ -1,268 +1,689 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import {
-  AlertTriangle,
   Scale,
   CheckCircle2,
+  AlertTriangle,
   Clock,
-  MessageSquare,
-  FileText,
+  Search,
+  Filter,
+  ArrowUpDown,
+  LayoutList,
+  LayoutGrid,
+  Copy,
+  Check,
+  ArrowUpRight,
+  ArrowRight,
+  ShieldAlert,
+  Car,
   Building2,
   User,
-  Search,
+  ShieldCheck,
+  FileText,
+  DollarSign,
+  AlertCircle,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
+import {
+  INITIAL_DISPUTES,
+  type DisputeItem,
+  type DisputeStatus,
+} from "@/lib/mock/admin-disputes";
 
-export type DisputeCase = {
-  id: string;
-  vehicle: string;
-  sellerName: string;
-  dealershipName: string;
-  openedAt: string;
-  reason: string;
-  agreedPriceCents: number;
-  disputedAdjustmentCents: number;
-  status: "OPEN" | "INVESTIGATING" | "RESOLVED" | "CLOSED";
-  notes: string;
+// Automaker Brand Logo Mapping to local assets in public/car-company-logos
+const CAR_BRAND_LOGOS: Record<string, string> = {
+  toyota: "/car-company-logos/image_16 - Copy.png",
+  jeep: "/car-company-logos/image_15.png",
+  ford: "/car-company-logos/image_14.svg",
+  honda: "/car-company-logos/image_12.png",
+  polestar: "/car-company-logos/image_11.png",
+  mitsubishi: "/car-company-logos/image_10.png",
+  hyundai: "/car-company-logos/image_09.png",
+  cadillac: "/car-company-logos/image_13.png",
+  porsche: "/car-company-logos/image_10.png",
+  lexus: "/car-company-logos/image_16 - Copy.png",
 };
 
-const INITIAL_DISPUTES: DisputeCase[] = [
-  {
-    id: "DSP-2026-081",
-    vehicle: "2021 Ford F-150 Lariat 502A SuperCrew",
-    sellerName: "Robert Kelly",
-    dealershipName: "Woodbine Ford Commercial",
-    openedAt: "4 hours ago",
-    reason: "Undisclosed underbody corrosion observed during hoist inspection. Dealership requested $1,500 CAD price reduction.",
-    agreedPriceCents: 3250000,
-    disputedAdjustmentCents: 150000,
-    status: "INVESTIGATING",
-    notes: "Photos submitted by dealership hoist technician under review against seller damage mapper disclosure.",
-  },
-  {
-    id: "DSP-2026-074",
-    vehicle: "2020 Honda Civic Touring Sedan",
-    sellerName: "Sonia Patel",
-    dealershipName: "Formula Honda Scarborough",
-    openedAt: "2 days ago",
-    reason: "Seller arrived with 1 key fob despite declaring 2 keys during listing wizard Step 2.",
-    agreedPriceCents: 2150000,
-    disputedAdjustmentCents: 35000,
-    status: "RESOLVED",
-    notes: "Seller agreed to $350 key replacement credit deducted from final EFT disbursement.",
-  },
-];
-
 export function DisputeManagementView() {
-  const [disputes, setDisputes] = useState<DisputeCase[]>(INITIAL_DISPUTES);
-  const [selectedCase, setSelectedCase] = useState<DisputeCase | null>(disputes[0] || null);
-  const [resolutionNote, setResolutionNote] = useState("");
-  const [alert, setAlert] = useState<string | null>(null);
+  const [disputes, setDisputes] = useState<DisputeItem[]>(INITIAL_DISPUTES);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | DisputeStatus>("INVESTIGATING");
+  const [sortBy, setSortBy] = useState<"NEWEST" | "ADJUSTMENT_DESC" | "AGREED_DESC">("NEWEST");
+  const [viewMode, setViewMode] = useState<"LIST" | "GRID">("LIST");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const handleResolve = (status: "RESOLVED" | "CLOSED") => {
-    if (!selectedCase) return;
-    setDisputes(
-      disputes.map((d) =>
-        d.id === selectedCase.id
-          ? {
-              ...d,
-              status,
-              notes: resolutionNote ? `${d.notes} | Admin Resolution: ${resolutionNote}` : d.notes,
-            }
-          : d
-      )
-    );
-    setAlert(`Dispute case ${selectedCase.id} marked as ${status}.`);
-    setResolutionNote("");
-    setTimeout(() => setAlert(null), 4000);
+  // Status Counts
+  const counts = useMemo(() => {
+    return {
+      ALL: disputes.length,
+      INVESTIGATING: disputes.filter((d) => d.status === "INVESTIGATING").length,
+      ACTION_REQUIRED: disputes.filter((d) => d.status === "ACTION_REQUIRED").length,
+      RESOLVED: disputes.filter((d) => d.status === "RESOLVED").length,
+      CLOSED: disputes.filter((d) => d.status === "CLOSED").length,
+    };
+  }, [disputes]);
+
+  // Filtering
+  const filteredQueue = useMemo(() => {
+    return disputes
+      .filter((item) => {
+        // Status filter
+        if (statusFilter !== "ALL" && item.status !== statusFilter) {
+          return false;
+        }
+
+        // Search Query filter
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.toLowerCase().trim();
+        return (
+          item.docketNumber.toLowerCase().includes(q) ||
+          item.vehicle.vin.toLowerCase().includes(q) ||
+          item.vehicle.make.toLowerCase().includes(q) ||
+          item.vehicle.model.toLowerCase().includes(q) ||
+          item.seller.name.toLowerCase().includes(q) ||
+          item.dealership.name.toLowerCase().includes(q) ||
+          item.allegationSummary.toLowerCase().includes(q)
+        );
+      })
+      .sort((a, b) => {
+        if (sortBy === "NEWEST") {
+          return new Date(b.openedAt).getTime() - new Date(a.openedAt).getTime();
+        }
+        if (sortBy === "ADJUSTMENT_DESC") {
+          return b.disputedAdjustmentCents - a.disputedAdjustmentCents;
+        }
+        if (sortBy === "AGREED_DESC") {
+          return b.agreedBidCents - a.agreedBidCents;
+        }
+        return 0;
+      });
+  }, [disputes, statusFilter, searchQuery, sortBy]);
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
-    <div className="space-y-6 pb-16">
-      {/* Top Banner */}
-      <div className="rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-500 text-xs font-bold font-mono uppercase tracking-wider">
-              Dispute Resolution
-            </span>
-            <span className="text-xs text-portal-text-muted font-mono">
-              Arbitration &amp; Escrow Mediation
-            </span>
+    <div className="space-y-6 pb-20">
+      {/* 1. Direct-Canvas Page Header */}
+      <div>
+        <div className="flex items-center gap-2 text-xs font-semibold text-portal-text-muted mb-1">
+          <Scale className="w-3.5 h-3.5 text-portal-primary" />
+          <span>Arbitration &amp; Escrow Mediation</span>
+          <span>•</span>
+          <span>Post-Inspection Settlement Cases</span>
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline tracking-tight">
+          Post-Inspection Dispute Management Queue
+        </h1>
+        <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-3xl font-body">
+          Review condition discrepancies, unexpected hoist inspection damage claims, and escrow release adjustments between Canadian sellers and verified dealerships.
+        </p>
+      </div>
+
+      {/* 2. Structured Operational Metric Cards (Side-by-Side Prominent Icons) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Metric 1: Under Investigation */}
+        <div
+          onClick={() => setStatusFilter("INVESTIGATING")}
+          className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+            statusFilter === "INVESTIGATING"
+              ? "bg-portal-surface border-amber-500/60 shadow-xs ring-1 ring-amber-500/20"
+              : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
+          }`}
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 shadow-2xs">
+              <Clock className="w-6 h-6" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-xs sm:text-sm font-bold text-portal-text block truncate leading-tight">
+                Under Investigation
+              </span>
+              <span className="text-[11px] text-portal-text-muted block truncate mt-0.5">
+                Active mediation dockets
+              </span>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline">
-            Post-Inspection Dispute Management
-          </h1>
-          <p className="text-xs sm:text-sm text-portal-text-muted mt-1">
-            Resolve condition discrepancies, unexpected damage claims, and re-negotiation requests between sellers and dealerships.
-          </p>
+          <div className="mt-3 pt-2.5 border-t border-portal-border/60 flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-amber-500">
+              {counts.INVESTIGATING}
+            </span>
+            <span className="text-xs font-semibold text-portal-text-muted">Ongoing Cases</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3 font-mono">
-          <div className="p-3.5 rounded-xl bg-portal-surface-hover border border-portal-border text-right">
-            <span className="text-[10px] uppercase font-bold text-portal-text-muted block">
-              Open Disputes
+        {/* Metric 2: Action Required / Escalated */}
+        <div
+          onClick={() => setStatusFilter("ACTION_REQUIRED")}
+          className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+            statusFilter === "ACTION_REQUIRED"
+              ? "bg-portal-surface border-portal-primary/60 shadow-xs ring-1 ring-portal-primary/20"
+              : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
+          }`}
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-portal-primary/10 border border-portal-primary/20 text-portal-primary flex items-center justify-center shrink-0 shadow-2xs">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-xs sm:text-sm font-bold text-portal-text block truncate leading-tight">
+                Action Required
+              </span>
+              <span className="text-[11px] text-portal-text-muted block truncate mt-0.5">
+                Escalated hoist findings
+              </span>
+            </div>
+          </div>
+          <div className="mt-3 pt-2.5 border-t border-portal-border/60 flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-portal-text">
+              {counts.ACTION_REQUIRED}
             </span>
-            <span className="text-xl font-black text-portal-primary">
-              {disputes.filter((d) => d.status === "OPEN" || d.status === "INVESTIGATING").length} Cases
+            <span className="text-xs font-semibold text-portal-text-muted">Priority Review</span>
+          </div>
+        </div>
+
+        {/* Metric 3: Resolved Disputes */}
+        <div
+          onClick={() => setStatusFilter("RESOLVED")}
+          className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+            statusFilter === "RESOLVED"
+              ? "bg-portal-surface border-emerald-500/60 shadow-xs ring-1 ring-emerald-500/20"
+              : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
+          }`}
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-2xs">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-xs sm:text-sm font-bold text-portal-text block truncate leading-tight">
+                Resolved Disputes
+              </span>
+              <span className="text-[11px] text-portal-text-muted block truncate mt-0.5">
+                Mutual escrow release
+              </span>
+            </div>
+          </div>
+          <div className="mt-3 pt-2.5 border-t border-portal-border/60 flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+              {counts.RESOLVED}
             </span>
+            <span className="text-xs font-semibold text-portal-text-muted">Settled</span>
+          </div>
+        </div>
+
+        {/* Metric 4: Total Incident Intake */}
+        <div
+          onClick={() => setStatusFilter("ALL")}
+          className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+            statusFilter === "ALL"
+              ? "bg-portal-surface border-portal-primary/60 shadow-xs ring-1 ring-portal-primary/20"
+              : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
+          }`}
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-portal-surface-hover border border-portal-border text-portal-text flex items-center justify-center shrink-0 shadow-2xs">
+              <Scale className="w-6 h-6" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-xs sm:text-sm font-bold text-portal-text block truncate leading-tight">
+                Total Incident Intake
+              </span>
+              <span className="text-[11px] text-portal-text-muted block truncate mt-0.5">
+                Historical arbitration dockets
+              </span>
+            </div>
+          </div>
+          <div className="mt-3 pt-2.5 border-t border-portal-border/60 flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-portal-text">
+              {counts.ALL}
+            </span>
+            <span className="text-xs font-semibold text-portal-text-muted">Total Dockets</span>
           </div>
         </div>
       </div>
 
-      {alert && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-500 text-xs font-mono flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4" />
-          <span>{alert}</span>
+      {/* 3. Queue Controls Bar (Search, Filter Tabs, Sort & View Mode Toggle) */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-2">
+        {/* Search Input */}
+        <div className="relative flex-1 max-w-md">
+          <Search className="w-4 h-4 text-portal-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search docket, VIN, vehicle, seller, or dealership..."
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-portal-border bg-portal-surface text-portal-text placeholder:text-portal-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-portal-primary/40 focus:border-portal-primary transition-all shadow-2xs font-body"
+          />
         </div>
-      )}
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left List (5 cols) */}
-        <div className="lg:col-span-5 space-y-3">
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-portal-text-muted px-1">
-            All Incident Cases ({disputes.length})
-          </span>
-
-          <div className="space-y-3">
-            {disputes.map((caseItem) => {
-              const isSelected = selectedCase?.id === caseItem.id;
-
+        {/* Filter Pills, Sort & View Toggle */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Status Tabs */}
+          <div className="flex items-center p-1 rounded-xl bg-portal-surface border border-portal-border shadow-2xs text-xs font-semibold">
+            {[
+              { id: "INVESTIGATING", label: "Investigating", count: counts.INVESTIGATING },
+              { id: "ACTION_REQUIRED", label: "Action Required", count: counts.ACTION_REQUIRED },
+              { id: "RESOLVED", label: "Resolved", count: counts.RESOLVED },
+              { id: "ALL", label: "All", count: counts.ALL },
+            ].map((tab) => {
+              const active = statusFilter === tab.id;
               return (
-                <div
-                  key={caseItem.id}
-                  onClick={() => setSelectedCase(caseItem)}
-                  className={`p-4 rounded-2xl border transition-all cursor-pointer ${
-                    isSelected
-                      ? "border-portal-primary bg-portal-surface shadow-md ring-1 ring-portal-primary/20"
-                      : "border-portal-border bg-portal-surface hover:border-portal-primary/40"
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setStatusFilter(tab.id as typeof statusFilter)}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                    active
+                      ? "bg-portal-surface-hover text-portal-text font-bold shadow-2xs"
+                      : "text-portal-text-muted hover:text-portal-text"
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs font-bold text-portal-primary">
-                      {caseItem.id}
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
-                        caseItem.status === "RESOLVED"
-                          ? "bg-emerald-500/10 text-emerald-500"
-                          : caseItem.status === "INVESTIGATING"
-                          ? "bg-amber-500/10 text-amber-500"
-                          : "bg-red-500/10 text-red-500"
-                      }`}
-                    >
-                      {caseItem.status}
-                    </span>
-                  </div>
-
-                  <h4 className="text-sm font-bold text-portal-text mt-1">{caseItem.vehicle}</h4>
-                  <p className="text-xs text-portal-text-muted line-clamp-2 mt-1 leading-relaxed">
-                    {caseItem.reason}
-                  </p>
-
-                  <div className="flex items-center justify-between font-mono text-[11px] text-portal-text-muted pt-2 mt-2 border-t border-portal-border/50">
-                    <span>Opened: {caseItem.openedAt}</span>
-                    <span className="font-bold text-portal-text">
-                      Adj: {formatCadCents(caseItem.disputedAdjustmentCents)}
-                    </span>
-                  </div>
-                </div>
+                  <span>{tab.label}</span>
+                  <span
+                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                      active
+                        ? "bg-portal-primary text-white"
+                        : "bg-portal-border text-portal-text-muted"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
               );
             })}
           </div>
-        </div>
 
-        {/* Right Detail Case View (7 cols) */}
-        {selectedCase ? (
-          <div className="lg:col-span-7 rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-xs space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-portal-border">
-              <div>
-                <span className="font-mono text-xs text-portal-text-muted block">
-                  Incident Docket #{selectedCase.id}
-                </span>
-                <h3 className="text-lg font-bold text-portal-text font-headline">
-                  {selectedCase.vehicle}
-                </h3>
-              </div>
-              <span className="font-mono text-xs font-bold text-portal-primary">
-                Agreed Bid: {formatCadCents(selectedCase.agreedPriceCents)}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 text-xs font-mono p-4 rounded-xl bg-portal-surface-hover border border-portal-border">
-              <div>
-                <span className="text-[10px] text-portal-text-muted block">Seller Party</span>
-                <span className="font-bold text-portal-text">{selectedCase.sellerName}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-portal-text-muted block">Dealership Party</span>
-                <span className="font-bold text-portal-text">{selectedCase.dealershipName}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-portal-text-muted block">Disputed Adjustment</span>
-                <span className="font-bold text-amber-500">
-                  -{formatCadCents(selectedCase.disputedAdjustmentCents)} CAD
-                </span>
-              </div>
-              <div>
-                <span className="text-[10px] text-portal-text-muted block">Case Status</span>
-                <span className="font-bold text-portal-text">{selectedCase.status}</span>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-portal-text block">
-                Dispute Summary &amp; Allegation
-              </span>
-              <p className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border text-xs text-portal-text-muted leading-relaxed">
-                {selectedCase.reason}
-              </p>
-            </div>
-
-            <div className="space-y-1.5">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-portal-text block">
-                Arbitration Notes &amp; Hoist Evidence
-              </span>
-              <p className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border text-xs font-mono text-portal-text-muted leading-relaxed">
-                {selectedCase.notes}
-              </p>
-            </div>
-
-            {/* Resolution Action */}
-            <div className="space-y-3 pt-3 border-t border-portal-border">
-              <label className="block text-xs font-semibold text-portal-text">
-                Compliance Officer Arbitration Decision / Settlement Note
-              </label>
-              <textarea
-                rows={3}
-                value={resolutionNote}
-                onChange={(e) => setResolutionNote(e.target.value)}
-                placeholder="Document the binding settlement agreement or mediation directive..."
-                className="w-full px-3 py-2 rounded-xl border border-portal-border bg-portal-surface-hover text-portal-text text-xs focus:ring-2 focus:ring-portal-primary"
-              />
-
-              <div className="flex items-center justify-end gap-3 pt-1">
-                <button
-                  type="button"
-                  onClick={() => handleResolve("RESOLVED")}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold font-mono transition-colors cursor-pointer"
-                >
-                  Approve Settlement &amp; Release Escrow
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleResolve("CLOSED")}
-                  className="px-4 py-2 rounded-xl border border-portal-border text-xs font-mono text-portal-text-muted hover:text-portal-text cursor-pointer"
-                >
-                  Close Without Adjustment
-                </button>
-              </div>
-            </div>
+          {/* Sort Dropdown */}
+          <div className="relative">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="appearance-none pl-3 pr-8 py-2 rounded-xl bg-portal-surface border border-portal-border text-xs font-semibold text-portal-text cursor-pointer focus:outline-none focus:ring-2 focus:ring-portal-primary/40 shadow-2xs"
+            >
+              <option value="NEWEST">Newest Opened</option>
+              <option value="ADJUSTMENT_DESC">Adjustment: High to Low</option>
+              <option value="AGREED_DESC">Agreed Bid: High to Low</option>
+            </select>
+            <ArrowUpDown className="w-3.5 h-3.5 text-portal-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
-        ) : null}
+
+          {/* View Mode Toggle */}
+          <div className="flex items-center p-1 rounded-xl bg-portal-surface border border-portal-border shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setViewMode("LIST")}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                viewMode === "LIST"
+                  ? "bg-portal-surface-hover text-portal-text"
+                  : "text-portal-text-muted hover:text-portal-text"
+              }`}
+              title="List View"
+            >
+              <LayoutList className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("GRID")}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                viewMode === "GRID"
+                  ? "bg-portal-surface-hover text-portal-text"
+                  : "text-portal-text-muted hover:text-portal-text"
+              }`}
+              title="Grid View"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* 4. Queue Content: Empty State */}
+      {filteredQueue.length === 0 ? (
+        <div className="p-12 text-center rounded-2xl border border-portal-border bg-portal-surface">
+          <Scale className="w-12 h-12 mx-auto text-portal-text-muted opacity-30 mb-3" />
+          <h3 className="font-headline font-bold text-base text-portal-text">
+            No incident dockets match current filters
+          </h3>
+          <p className="text-xs text-portal-text-muted mt-1 max-w-sm mx-auto font-body">
+            Try adjusting your search terms or changing the status filter tab above.
+          </p>
+        </div>
+      ) : viewMode === "LIST" ? (
+        /* 5A. Refined List View (Matching Vehicle Queue Page) */
+        <div className="space-y-3.5">
+          {filteredQueue.map((item) => {
+            const brandLogo = CAR_BRAND_LOGOS[item.vehicle.make.toLowerCase()];
+            const brandMonogram =
+              item.vehicle.make.length <= 4
+                ? item.vehicle.make.toUpperCase()
+                : item.vehicle.make.slice(0, 3).toUpperCase();
+
+            return (
+              <div
+                key={item.id}
+                className="group p-4 sm:p-5 rounded-2xl border border-portal-border bg-portal-surface hover:border-portal-primary/40 hover:shadow-md transition-all duration-200 flex flex-col lg:flex-row lg:items-center justify-between gap-5"
+              >
+                {/* Left Side: Thumbnail, Title, Dispute Category & Parties */}
+                <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
+                  {/* Photo Thumbnail */}
+                  <Link
+                    href={`/admin/disputes/${item.id}`}
+                    className="relative w-28 h-20 sm:w-36 sm:h-24 rounded-xl overflow-hidden bg-portal-surface-hover border border-portal-border shrink-0 block cursor-pointer group/thumb"
+                  >
+                    <Image
+                      src={item.vehicle.thumbnailUrl}
+                      alt={`${item.vehicle.year} ${item.vehicle.make} ${item.vehicle.model}`}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover/thumb:scale-105"
+                    />
+                    <div className="absolute bottom-1.5 left-1.5 bg-black/75 backdrop-blur-xs text-white text-[10px] font-mono px-1.5 py-0.5 rounded border border-white/10">
+                      {item.vehicle.photos.length} Evidence Photos
+                    </div>
+                  </Link>
+
+                  {/* Primary Info */}
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    {/* Brand + Year Make Model + Docket & Status Pill */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      {/* Automaker Monogram / Logo */}
+                      <div className="w-6 h-6 rounded-md bg-portal-surface-hover border border-portal-border flex items-center justify-center shrink-0">
+                        {brandLogo ? (
+                          <div className="relative w-4 h-4">
+                            <Image
+                              src={brandLogo}
+                              alt={item.vehicle.make}
+                              fill
+                              className="object-contain dark:brightness-0 dark:invert"
+                            />
+                          </div>
+                        ) : (
+                          <span className="font-headline font-black text-[10px] text-portal-text">
+                            {brandMonogram}
+                          </span>
+                        )}
+                      </div>
+
+                      <Link
+                        href={`/admin/disputes/${item.id}`}
+                        className="font-headline font-bold text-sm sm:text-base text-portal-text hover:text-portal-primary transition-colors truncate"
+                      >
+                        {item.vehicle.year} {item.vehicle.make} {item.vehicle.model}
+                      </Link>
+
+                      {/* Docket ID */}
+                      <span className="font-mono text-[11px] font-bold text-portal-primary px-2 py-0.5 rounded bg-portal-primary/10 border border-portal-primary/20">
+                        {item.docketNumber}
+                      </span>
+
+                      {/* Status Badge */}
+                      <span
+                        className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full ${
+                          item.status === "RESOLVED"
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25"
+                            : item.status === "ACTION_REQUIRED"
+                            ? "bg-red-500/10 text-red-500 border border-red-500/25"
+                            : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25"
+                        }`}
+                      >
+                        {item.status === "ACTION_REQUIRED"
+                          ? "Escalated Action"
+                          : item.status === "INVESTIGATING"
+                          ? "Under Review"
+                          : item.status}
+                      </span>
+                    </div>
+
+                    {/* Parties Row: Seller vs Dealership */}
+                    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-portal-text-muted font-body">
+                      <span className="inline-flex items-center gap-1 font-medium text-portal-text">
+                        <User className="w-3.5 h-3.5 text-portal-text-muted" />
+                        <span>Seller: {item.seller.name}</span>
+                        <span className="text-portal-text-muted text-[11px]">
+                          ({item.seller.city}, {item.seller.province})
+                        </span>
+                      </span>
+                      <span className="text-portal-border">•</span>
+                      <span className="inline-flex items-center gap-1 font-medium text-portal-text">
+                        <Building2 className="w-3.5 h-3.5 text-portal-primary" />
+                        <span>Dealer: {item.dealership.name}</span>
+                        <span className="text-portal-text-muted text-[11px]">
+                          ({item.dealership.regulator}-{item.dealership.licenseNumber})
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* Disputed Allegation Summary */}
+                    <p className="text-xs text-portal-text-muted/90 line-clamp-1 font-body">
+                      <span className="font-semibold text-portal-text">Claim:</span>{" "}
+                      {item.allegationSummary}
+                    </p>
+
+                    {/* Specs / Vitals Line with Copy VIN */}
+                    <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-portal-text-muted font-mono pt-0.5">
+                      <span className="inline-flex items-center gap-1">
+                        <span>VIN: ···{item.vehicle.vin.slice(-6)}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(item.vehicle.vin, item.id)}
+                          className="hover:text-portal-text p-0.5 rounded cursor-pointer"
+                          title="Copy VIN"
+                        >
+                          {copiedId === item.id ? (
+                            <Check className="w-3 h-3 text-emerald-500" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                        </button>
+                      </span>
+                      <span>•</span>
+                      <span>{item.vehicle.mileageKm.toLocaleString()} km</span>
+                      <span>•</span>
+                      <span className="text-portal-primary font-bold">
+                        {item.categoryLabel}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side: Claimed Adjustment, Agreed Price & Action Button */}
+                <div className="flex sm:items-center justify-between lg:justify-end gap-6 pt-3 lg:pt-0 border-t lg:border-t-0 border-portal-border/60 shrink-0">
+                  <div className="text-left lg:text-right">
+                    <div className="text-[10px] uppercase font-bold text-portal-text-muted leading-tight">
+                      Disputed Adjustment
+                    </div>
+                    <div className="font-headline text-xl sm:text-2xl font-black text-amber-500 tracking-tight whitespace-nowrap mt-0.5">
+                      -{formatCadCents(item.disputedAdjustmentCents)}
+                    </div>
+                    <div className="text-[11px] text-portal-text-muted flex items-center lg:justify-end gap-1 mt-0.5 font-medium">
+                      <span>Agreed: {formatCadCents(item.agreedBidCents)}</span>
+                      <span>•</span>
+                      <span>{item.openedDateFormatted}</span>
+                    </div>
+                  </div>
+
+                  {/* Prominent Equal Action Button (Matching Vehicle Queue Page) */}
+                  <Link
+                    href={`/admin/disputes/${item.id}`}
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-portal-surface hover:bg-portal-primary hover:text-white border border-portal-border text-portal-text font-headline font-bold text-xs sm:text-sm transition-all shadow-2xs hover:shadow-md cursor-pointer shrink-0 group/btn"
+                  >
+                    <span>Review Docket</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* 5B. Signature Notched Card Grid View (Matching Vehicle Queue Page) */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredQueue.map((item) => {
+            const brandLogo = CAR_BRAND_LOGOS[item.vehicle.make.toLowerCase()];
+            const brandMonogram =
+              item.vehicle.make.length <= 4
+                ? item.vehicle.make.toUpperCase()
+                : item.vehicle.make.slice(0, 3).toUpperCase();
+
+            return (
+              <div
+                key={item.id}
+                className="group relative bg-portal-surface rounded-tl-[32px] rounded-tr-[32px] rounded-bl-[32px] rounded-br-none p-5 transition-all duration-300 flex flex-col justify-between border border-portal-border hover:-translate-y-1 hover:shadow-lg"
+              >
+                {/* 1. Top Header Row: Automotive Identity & Status Pill */}
+                <div className="flex items-center justify-between gap-3 pb-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-portal-surface-hover border border-portal-border flex items-center justify-center shrink-0 shadow-2xs">
+                      {brandLogo ? (
+                        <div className="relative w-5 h-5">
+                          <Image
+                            src={brandLogo}
+                            alt={item.vehicle.make}
+                            fill
+                            className="object-contain dark:brightness-0 dark:invert"
+                          />
+                        </div>
+                      ) : (
+                        <span className="font-headline font-black text-xs tracking-wider text-portal-text">
+                          {brandMonogram}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="min-w-0">
+                      <h3 className="font-headline text-[15px] font-bold text-portal-text tracking-tight truncate group-hover:text-portal-primary transition-colors leading-snug">
+                        {item.vehicle.year} {item.vehicle.make} {item.vehicle.model}
+                      </h3>
+                      <p className="font-body text-[11px] text-portal-text-muted truncate mt-0.5">
+                        {item.docketNumber} • {item.seller.city}, {item.seller.province}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase shrink-0 whitespace-nowrap ${
+                      item.status === "RESOLVED"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25"
+                        : item.status === "ACTION_REQUIRED"
+                        ? "bg-red-500/10 text-red-500 border border-red-500/25"
+                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25"
+                    }`}
+                  >
+                    {item.status === "ACTION_REQUIRED" ? "Escalated" : item.status}
+                  </span>
+                </div>
+
+                {/* 2. Vehicle Photo Canvas (16/10 aspect ratio with link) */}
+                <Link
+                  href={`/admin/disputes/${item.id}`}
+                  className="relative h-48 sm:h-52 w-full rounded-[22px] overflow-hidden bg-portal-surface-hover border border-portal-border shrink-0 block cursor-pointer group/photo"
+                >
+                  <Image
+                    src={item.vehicle.thumbnailUrl}
+                    alt={`${item.vehicle.year} ${item.vehicle.make} ${item.vehicle.model}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 380px"
+                    className="object-cover transition-transform duration-500 ease-out group-hover/photo:scale-105"
+                  />
+                  <div className="absolute bottom-2 left-2 bg-black/75 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded-lg border border-white/10">
+                    {item.vehicle.photos.length} Evidence Photos
+                  </div>
+                </Link>
+
+                {/* 3. Card Content Body: Dispute Vitals */}
+                <div className="pt-3.5 flex-1 flex flex-col justify-between">
+                  <div className="space-y-1.5 text-xs font-body">
+                    <div className="font-semibold text-portal-text line-clamp-1">
+                      {item.categoryLabel}
+                    </div>
+                    <p className="text-[11px] text-portal-text-muted line-clamp-2 leading-relaxed">
+                      {item.allegationSummary}
+                    </p>
+                    <div className="text-[11px] text-portal-text-muted truncate pt-1">
+                      Dealer: <span className="font-semibold text-portal-text">{item.dealership.name}</span>
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="border-t border-portal-border my-3" />
+
+                  {/* Bottom Financial Telemetry & Concave Notch Action Dock */}
+                  <div className="pt-1 flex items-end justify-between min-h-[58px]">
+                    <div className="flex flex-col justify-end max-w-[calc(100%-80px)] pr-2">
+                      <div className="text-[10px] uppercase font-bold text-portal-text-muted leading-tight">
+                        Disputed Adjustment
+                      </div>
+                      <div className="font-headline text-xl sm:text-2xl font-black text-amber-500 tracking-tight whitespace-nowrap mt-0.5">
+                        -{formatCadCents(item.disputedAdjustmentCents)}
+                      </div>
+                      <div className="text-[11px] text-portal-text-muted flex items-center gap-1 mt-0.5 font-medium">
+                        <Clock className="w-3 h-3" />
+                        <span>Opened {item.openedDateFormatted}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Docked Concave Corner Notch & Action Squircle Button */}
+                <div className="absolute -bottom-[1px] -right-[1px] z-20 pointer-events-auto">
+                  <div className="relative w-[78px] h-[78px] bg-portal-canvas rounded-tl-[26px] border-t border-l border-portal-border flex items-center justify-center">
+                    {/* Top Concave Fillet Curve */}
+                    <svg
+                      viewBox="0 0 20 20"
+                      className="w-5 h-5 absolute -top-5 right-0 pointer-events-none overflow-visible"
+                    >
+                      <path
+                        d="M 20,0 A 20 20 0 0 1 0,20 L 20,20 Z"
+                        className="fill-portal-canvas"
+                      />
+                      <path
+                        d="M 20,0 A 20 20 0 0 1 0,20"
+                        fill="none"
+                        stroke="currentColor"
+                        className="text-portal-border"
+                        strokeWidth="1"
+                      />
+                    </svg>
+
+                    {/* Left Concave Fillet Curve (Smooth Outward Transition) */}
+                    <svg
+                      viewBox="0 0 20 20"
+                      className="w-5 h-5 absolute bottom-0 -left-5 pointer-events-none overflow-visible"
+                    >
+                      <path
+                        d="M 0,20 A 20 20 0 0 0 20,0 L 20,20 Z"
+                        className="fill-portal-canvas"
+                      />
+                      <path
+                        d="M 0,20 A 20 20 0 0 0 20,0"
+                        fill="none"
+                        stroke="currentColor"
+                        className="text-portal-border"
+                        strokeWidth="1"
+                      />
+                    </svg>
+
+                    {/* Action Squircle Button */}
+                    <Link
+                      href={`/admin/disputes/${item.id}`}
+                      className="w-[52px] h-[52px] rounded-[18px] bg-portal-surface hover:bg-portal-primary hover:text-white border border-portal-border flex items-center justify-center transition-all group-hover:scale-105 shadow-2xs cursor-pointer text-portal-text"
+                      aria-label={`Review dispute for ${item.vehicle.year} ${item.vehicle.make} ${item.vehicle.model}`}
+                    >
+                      <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

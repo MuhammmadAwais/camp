@@ -176,15 +176,19 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 6.2: Dealer Regulatory License Verification Queue**
   - **Route:** `/admin/dealers`
   - **Component:** `DealerVerificationView.tsx`
-  - **Features:** Pending dealership registrations, validation against provincial registries (OMVIC, AMVIC, VSA), approve/suspend dealer accounts.
+  - **Features:** Modernized with Direct-Canvas architecture, 4-metric executive overview ribbon (`Pending Inspection`, `Active Licenses`, `License Inquiries`, `Total Dealerships`) with side-by-side `w-12 h-12` icons, universal `useTableSort` sorting across all columns (Dealership Name, License, Jurisdiction, Officer, Status), 1-click license copy, and an accessible portaled dossier review modal (`z-[9999]`) with provincial registrar audit sign-off.
 - [x] **Page 6.3: Auction Master Operations & Emergency Overrides**
   - **Route:** `/admin/auctions`
   - **Component:** `AdminAuctionsView.tsx`
-  - **Features:** Filter auctions by state (`PENDING_REVIEW`, `ACTIVE`, `UNSEALED`, `ACCEPTED`, `COMPLETED`, `CANCELLED`). Manual 24h time extension, emergency cancellation with mandatory audit log note.
-- [x] **Page 6.4: Dispute Resolution Case Management**
+  - **Features:** Direct-Canvas supervision console with 4-metric live operational ribbon, `useTableSort` sorting across Vehicle Lot, Seller/Location, Sealed Telemetry, Reserve CAD cents, and dynamic Countdown Clock (sub-15min crimson pulse state). Bare buttons replaced with portaled safety override modals (`z-[9999]`): +Time Extension with quick chips and audit justification, and Emergency Lot Termination with typed `HALT` verification.
+- [x] **Page 6.4: Dispute Resolution Case Management Queue**
   - **Route:** `/admin/disputes`
   - **Component:** `DisputeManagementView.tsx`
-  - **Features:** Case management for post-inspection disputes between seller and dealer. Status tracking (`OPEN`, `INVESTIGATING`, `RESOLVED`, `CLOSED`), resolution notes logger.
+  - **Features:** Direct-Canvas full-width queue matching vehicle moderation layout: 4-metric ribbon (`Under Investigation`, `Action Required`, `Resolved Disputes`, `Total Incident Intake`) with side-by-side `w-12 h-12` icons, real-time search across dockets/VIN/parties, status filter pills, sort dropdown, dual view modes (refined list rows with prominent review buttons & signature S-curve notched grid cards with brand logos and docked squircle buttons), linking to dedicated arbitration dossiers.
+- [x] **Page 6.4b: Incident Dispute Arbitration Dossier & Escrow Settlement Terminal**
+  - **Route:** `/admin/disputes/[id]`
+  - **Component:** `DisputeDetailView.tsx`
+  - **Features:** Dedicated full-page arbitration dossier: breadcrumb back navigation, dual-party dossiers (Seller vs Dealership & certified hoist technician), photo comparison stage with portaled fullscreen lightbox (`z-[9999]`), technician hoist findings report, escrow financial breakdown (agreed bid, adjustment, net seller payout), and portaled binding arbitration decision modals (approve deduction & release escrow, reject claim, or order mutual cancellation).
 - [x] **Page 6.5: Platform Analytics & Provincial Volume**
   - **Route:** `/admin/analytics`
   - **Component:** `AdminAnalyticsView.tsx`
@@ -192,7 +196,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 6.6: Immutable Platform Audit Trail**
   - **Route:** `/admin/audit-log`
   - **Component:** `AdminAuditLogView.tsx`
-  - **Features:** Non-repudiation audit table recording every administrative action, actor ID, entity modified, timestamp, and before/after JSON diffs.
+  - **Features:** Direct-Canvas cryptographic ledger with 4-card security ribbon (SHA-256 Merkle root verification), `useTableSort` sorting across Timestamps, Actors, Actions, and Entity IDs. Removed AI-slop monospace blanket and replaced with Typography Trinity. Interactive Cryptographic Proof Drawer (`z-[9999]`) displaying canonical signed JSON payload and 1-click SHA-256 digest verification.
 
 ---
 
