@@ -47,8 +47,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **10-G Social Proof & Testimonials** (`TestimonialsSection.tsx` with verified Canadian province badges)
 - [x] **10-H Interactive FAQs Accordion** (`FaqSection.tsx` high-intent Q&A)
 - [x] **10-I Pre-Footer Conversion Banner** (`CtaBanner.tsx` valuation trigger banner)
-- [x] **10-J Regulatory Footer** (`Footer.tsx` OMVIC, AMVIC, VSA compliance seals & legal notices)
-- [x] **11 Legal Pages** (`/legal/privacy` and `/legal/terms` PIPEDA & Quebec Law 25 compliant)
+- [x] **11 Modern Legal & Regulatory Hub** (`/legal/privacy` and `/legal/terms` — `LegalViewLayout.tsx`: Fully integrated into app's persistent sidebar layout, unboxed clean editorial typography matching Lotessa/Integri specifications, squircle document badge, left floating sticky Table of Contents with active indicator rail, numbered section hierarchy, brand color highlighting for Canadian statutory frameworks [PIPEDA, Quebec Law 25, OMVIC, AMVIC, VSA], and underlined interactive links).
 
 ---
 

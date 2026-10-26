@@ -20,7 +20,8 @@ export function AppShell({ children }: AppShellProps) {
     pathname.startsWith('/dealer') ||
     pathname.startsWith('/admin') ||
     pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/settings');
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/legal');
 
   const isWebApp =
     isPortalRoute ||
@@ -28,6 +29,7 @@ export function AppShell({ children }: AppShellProps) {
     pathname.startsWith('/register') ||
     pathname.startsWith('/verify') ||
     pathname.startsWith('/settings') ||
+    pathname.startsWith('/legal') ||
     pathname.startsWith('/forgot-password') ||
     pathname.startsWith('/reset-password');
 
