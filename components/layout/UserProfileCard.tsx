@@ -82,15 +82,15 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
           <div className="pb-3 border-b border-portal-border/60">
             <div className="flex items-center gap-3">
               {/* Avatar Monogram */}
-              <div className="relative size-11 rounded-xl bg-gradient-to-br from-[#8C383E]/20 to-[#E59344]/30 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-portal-text text-sm shadow-xs">
+              <div className="relative size-10 rounded-xl bg-gradient-to-br from-[#8C383E]/20 to-[#E59344]/30 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-portal-text text-sm shadow-xs">
                 {displayName.charAt(0).toUpperCase()}
-                <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-emerald-500 border-2 border-portal-surface" />
+                <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-500 border-2 border-portal-surface" />
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-1">
+                <div className="flex items-center justify-between gap-1.5">
                   <span className="font-headline font-bold text-xs text-portal-text truncate">
-                    {displayName}
+                    {displayName.replace(/\s*\(.*?\)\s*/g, '')}
                   </span>
                   <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-portal-primary/10 text-portal-primary border border-portal-primary/20 shrink-0">
                     {roleBadgeLabel}
@@ -103,15 +103,6 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
                   {userEmail}
                 </span>
               </div>
-            </div>
-
-            {/* Canadian Regulatory Assurance Pill */}
-            <div className="mt-2.5 px-2.5 py-1 rounded-lg bg-portal-surface-hover border border-portal-border/60 flex items-center justify-between text-[10px] font-mono text-portal-text-muted">
-              <span className="flex items-center gap-1">
-                <CheckCircle className="size-3 text-emerald-500" weight="fill" />
-                <span>PIPEDA / Law 25 Certified</span>
-              </span>
-              <span className="text-[9px] font-bold text-portal-text opacity-70">CAN-OPS</span>
             </div>
           </div>
 

@@ -50,7 +50,7 @@ export const SEED_USERS: Record<UserRole, User> = {
   ADMIN: {
     id: 'usr_admin_001',
     email: 'admin@autonexa.ca',
-    name: 'Sarah Tremblay (Lead Compliance)',
+    name: 'Sarah Tremblay',
     role: 'ADMIN',
     kycStatus: 'VERIFIED',
     createdAt: '2026-01-01T00:00:00Z',

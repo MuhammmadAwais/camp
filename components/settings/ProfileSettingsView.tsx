@@ -75,26 +75,13 @@ export function ProfileSettingsView() {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20 font-body">
       {/* 1. Header Strip */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-portal-border/60">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline tracking-tight">
-              Account & Profile Settings
-            </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              Verified
-            </span>
-          </div>
-          <p className="text-xs sm:text-sm text-portal-text-muted mt-1">
-            Manage your personal credentials, Canadian regulatory affiliations, security keys, and dispatch alerts.
-          </p>
-        </div>
-
-        {/* Global Compliance Badge */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-portal-surface border border-portal-border text-xs font-mono text-portal-text-muted shadow-2xs self-start sm:self-auto">
-          <ShieldCheck className="w-4 h-4 text-portal-primary" />
-          <span>PIPEDA / Law 25 Active</span>
-        </div>
+      <div className="pb-4 border-b border-portal-border/60">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline tracking-tight">
+          Account & Profile Settings
+        </h1>
+        <p className="text-xs sm:text-sm text-portal-text-muted mt-1">
+          Manage your personal credentials, Canadian regulatory affiliations, security keys, and dispatch alerts.
+        </p>
       </div>
 
       {/* Save Success Banner */}
