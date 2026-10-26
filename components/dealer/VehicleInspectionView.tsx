@@ -323,10 +323,10 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
         </div>
       </div>
 
-      {/* 3. Main 2-Column Inspection Grid (Streamlined & Hierarchy-Driven) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      {/* 3. Main 2-Column Inspection Grid (Equal-Height Balanced Canvas) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* Left Column (7 cols): Immersive Gallery & Unified Condition Dossier */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="lg:col-span-7 space-y-6 flex flex-col justify-between">
           {/* High-Resolution Media Gallery (Direct Canvas) */}
           <div className="space-y-3">
             <div className="relative aspect-16/10 w-full rounded-2xl overflow-hidden bg-black/90 border border-portal-border group shadow-sm">
@@ -486,9 +486,9 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
           </div>
         </div>
 
-        {/* Right Column (5 cols): Single Unified Dealership Console */}
-        <div className="lg:col-span-5">
-          <div className="rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-sm space-y-6 sticky top-6">
+        {/* Right Column (5 cols): Single Unified Dealership Console (Equal Height & Perfectly Aligned) */}
+        <div className="lg:col-span-5 flex flex-col">
+          <div className="rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-sm flex flex-col justify-between h-full space-y-6">
             {/* Tier 1: Action Console */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -588,40 +588,46 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
             {/* Divider */}
             <div className="border-t border-portal-border/60" />
 
-            {/* Tier 3: Verified Title & Provenance (Clean, High-Trust Signals) */}
+            {/* Tier 3: Verified Title & Provenance (Equal Table Architecture) */}
             <div className="space-y-3">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-portal-text-muted flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
                 <span>Title & History Verification</span>
               </span>
 
-              <div className="space-y-2.5 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-portal-text-muted">Accident History:</span>
-                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <dl className="divide-y divide-portal-border/60 text-xs">
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Accident History</dt>
+                  <dd className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     Accident-Free
-                  </span>
+                  </dd>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-portal-text-muted">Ownership:</span>
-                  <span className="font-semibold text-portal-text">
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Ownership</dt>
+                  <dd className="font-semibold text-portal-text text-right">
                     {vehicle.carfaxReport?.ownersCount ?? 1} Owner (Lease Return)
-                  </span>
+                  </dd>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-portal-text-muted">Title & Lien:</span>
-                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Title & Lien</dt>
+                  <dd className="font-semibold text-emerald-600 dark:text-emerald-400 text-right">
                     Lien-Free Disclosed
-                  </span>
+                  </dd>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-portal-text-muted">Registration:</span>
-                  <span className="font-medium text-portal-text">
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Registration</dt>
+                  <dd className="font-medium text-portal-text text-right">
                     {vehicle.carfaxReport?.registrationProvince ?? "Ontario (OMVIC Clean)"}
-                  </span>
+                  </dd>
                 </div>
-              </div>
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Arbitration Terms</dt>
+                  <dd className="font-medium text-portal-text text-right">
+                    48-Hour Inspection Guarantee
+                  </dd>
+                </div>
+              </dl>
             </div>
           </div>
         </div>
