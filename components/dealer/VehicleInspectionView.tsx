@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -61,6 +62,32 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
   const [isBidSlipOpen, setIsBidSlipOpen] = useState(false);
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
   const [copiedVin, setCopiedVin] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock background scroll and listen for Escape key when lightbox is open
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsLightboxOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isLightboxOpen]);
 
   // Sync state if initialVehicle prop updates
   useEffect(() => {
@@ -124,33 +151,13 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
             <span>Back to Inventory</span>
           </Link>
           <span className="text-portal-border hidden sm:inline">•</span>
-          <span className="text-xs font-mono text-portal-text-muted hidden sm:inline">
-            VIN: {vehicle.vin}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          {/* Prominent Active Bids Switcher Pill Button (Matching Seller Auction View) */}
-          <button
-            type="button"
-            id="btn-switch-dealer-bids"
-            onClick={() => setIsSwitcherOpen(true)}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-portal-surface border border-portal-border hover:border-portal-primary/50 text-xs font-medium text-portal-text shadow-2xs hover:bg-portal-surface-hover transition-all cursor-pointer group"
-          >
-            <Gavel className="w-3.5 h-3.5 text-portal-primary" />
-            <span className="font-semibold">{vehicle.year} {vehicle.make} {vehicle.model}</span>
-            <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-bold">
-              {vehicle.myCurrentBidCents ? `Your Bid: ${formatCadCents(vehicle.myCurrentBidCents)}` : `${vehicle.totalBidsPlaced} Bids`}
-            </span>
-            <ChevronsUpDown className="w-3.5 h-3.5 text-portal-text-muted group-hover:text-portal-text transition-colors" />
-          </button>
-
-          {/* Quick Copy VIN Pill */}
+          
+          {/* Consolidated Single Copy VIN Pill */}
           <button
             type="button"
             onClick={handleCopyVin}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text text-xs font-mono transition-colors cursor-pointer shadow-2xs"
-            title="Copy full 17-digit VIN"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text text-xs font-mono transition-colors cursor-pointer shadow-2xs"
+            title="Click to copy full 17-digit VIN"
           >
             {copiedVin ? (
               <>
@@ -160,9 +167,26 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
             ) : (
               <>
                 <Copy className="w-3.5 h-3.5" />
-                <span>{vehicle.vin}</span>
+                <span>VIN: {vehicle.vin}</span>
               </>
             )}
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          {/* Active Bids Switcher Pill Button */}
+          <button
+            type="button"
+            id="btn-switch-dealer-bids"
+            onClick={() => setIsSwitcherOpen(true)}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-portal-surface border border-portal-border hover:border-portal-primary/50 text-xs font-medium text-portal-text shadow-2xs hover:bg-portal-surface-hover transition-all cursor-pointer group"
+          >
+            <Gavel className="w-3.5 h-3.5 text-portal-primary" />
+            <span className="font-semibold">{vehicle.year} {vehicle.make} {vehicle.model}</span>
+            <span className="px-1.5 py-0.5 rounded-md bg-portal-surface-hover text-portal-text-muted text-[10px] font-mono font-medium border border-portal-border">
+              {vehicle.myCurrentBidCents ? `Your Bid: ${formatCadCents(vehicle.myCurrentBidCents)}` : `${vehicle.totalBidsPlaced} Bids`}
+            </span>
+            <ChevronsUpDown className="w-3.5 h-3.5 text-portal-text-muted group-hover:text-portal-text transition-colors" />
           </button>
         </div>
       </div>
@@ -179,6 +203,9 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-medium font-mono uppercase bg-portal-surface-hover text-portal-text-muted border border-portal-border/60">
                 Grade {vehicle.damageGrade} Condition
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-portal-surface-hover text-portal-text-muted border border-portal-border/60">
+                Lien-Free Title
               </span>
             </div>
 
@@ -197,56 +224,34 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
             </p>
           </div>
 
-          {/* Quick Header CTA */}
-          <div className="flex flex-col items-start lg:items-end gap-1.5">
-            <button
-              type="button"
-              onClick={() => setIsBidSlipOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-portal-primary hover:bg-portal-primary-hover text-white shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-            >
-              <ArrowUpRight className="w-4 h-4" />
-              <span>{vehicle.myCurrentBidCents ? "Revise Sealed Bid" : "Place Sealed Bid"}</span>
-            </button>
-            <span className="text-[10px] text-portal-text-muted font-mono">
-              OMVIC & AMVIC Wholesale Binding
-            </span>
+          {/* Regulatory Compliance Badge (Clean, Non-Redundant) */}
+          <div className="flex items-center gap-2 self-start lg:self-center px-3.5 py-2 rounded-xl bg-portal-surface border border-portal-border shadow-2xs">
+            <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+            <div className="text-left">
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-portal-text-muted">
+                Wholesale Compliance
+              </span>
+              <span className="block text-xs font-semibold text-portal-text">
+                OMVIC & AMVIC Regulated
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* 4-Metric Appraisal Bar */}
+        {/* 4-Metric Appraisal & Auction State Bar */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle/60">
-          {/* Metric 1: Your Dealership Bid */}
+          {/* Metric 1: Floor Competition */}
           <div className="flex items-center justify-between pr-0 sm:pr-4">
             <div>
-              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
-                Your Sealed Bid
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider">
+                Floor Activity
               </span>
               <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
-                {vehicle.myCurrentBidCents
-                  ? formatCadCents(vehicle.myCurrentBidCents)
-                  : "No Bid Placed"}
+                {vehicle.totalBidsPlaced} {vehicle.totalBidsPlaced === 1 ? "Sealed Bid" : "Sealed Bids"}
               </span>
-              <span className="text-[11px] text-portal-text-muted mt-0.5 block">
-                {vehicle.myCurrentBidCents ? "Active • Confidential to you" : "Open wholesale floor"}
-              </span>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
-              <DollarSign className="w-5 h-5" />
-            </div>
-          </div>
-
-          {/* Metric 2: Dealer Competition */}
-          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4 pr-0 sm:pr-4">
-            <div>
-              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
-                Dealer Activity
-              </span>
-              <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
-                {vehicle.totalBidsPlaced} {vehicle.totalBidsPlaced === 1 ? "Bid Placed" : "Bids Placed"}
-              </span>
-              <span className="text-[11px] text-portal-text-muted mt-0.5 block flex items-center gap-1">
+              <span className="text-[11px] text-portal-text-muted mt-0.5 flex items-center gap-1">
                 <Lock className="w-3 h-3 text-portal-primary" />
-                <span>Encrypted sealed bids</span>
+                <span>Confidential bids placed</span>
               </span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
@@ -254,10 +259,10 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
             </div>
           </div>
 
-          {/* Metric 3: Time Remaining */}
-          <div className="flex items-center justify-between lg:border-l border-portal-border-subtle/60 lg:pl-4 pr-0 sm:pr-4">
+          {/* Metric 2: Time Remaining */}
+          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4 pr-0 sm:pr-4">
             <div>
-              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider">
                 Time Remaining
               </span>
               <span className="font-mono text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block tabular-nums">
@@ -278,21 +283,41 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
             </div>
           </div>
 
-          {/* Metric 4: Title & Escrow */}
-          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4">
+          {/* Metric 3: Title & Escrow */}
+          <div className="flex items-center justify-between lg:border-l border-portal-border-subtle/60 lg:pl-4 pr-0 sm:pr-4">
             <div>
-              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider">
                 Wholesale Protection
               </span>
               <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
                 Verified Escrow
               </span>
               <span className="text-[11px] text-portal-text-muted mt-0.5 block">
-                OMVIC & AMVIC regulated
+                Guaranteed settlement
               </span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
               <ShieldCheck className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Metric 4: Declared Condition */}
+          <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4">
+            <div>
+              <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider">
+                Condition Declared
+              </span>
+              <span className="font-headline text-lg sm:text-xl font-black text-portal-text tracking-tight mt-0.5 block">
+                Grade {vehicle.damageGrade}
+              </span>
+              <span className="text-[11px] text-portal-text-muted mt-0.5 block">
+                {vehicle.damageHotspots && vehicle.damageHotspots.length > 0
+                  ? `${vehicle.damageHotspots.length} declared imperfection`
+                  : "Pristine inspection record"}
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
+              <AlertTriangle className="w-5 h-5" />
             </div>
           </div>
         </div>
@@ -483,7 +508,7 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
                 </div>
                 <div className="flex items-center gap-2 mt-1">
                   {vehicle.myCurrentBidCents ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10.5px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-mono text-[10.5px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       Active Sealed Bid
                     </span>
@@ -492,7 +517,7 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
                       Floor Open
                     </span>
                   )}
-                  <span className="text-xs text-portal-text-muted font-mono">
+                  <span className="text-xs text-portal-text-muted">
                     • {vehicle.totalBidsPlaced} bids placed
                   </span>
                 </div>
@@ -507,7 +532,7 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
                 <span>{vehicle.myCurrentBidCents ? "Revise Bid Higher" : "Submit Sealed Bid"}</span>
               </button>
 
-              <p className="text-[11px] text-center text-portal-text-muted font-mono">
+              <p className="text-[11px] text-center text-portal-text-muted">
                 Sealed & private to your dealership until countdown elapses
               </p>
             </div>
@@ -515,49 +540,49 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
             {/* Divider */}
             <div className="border-t border-portal-border/60" />
 
-            {/* Tier 2: Vehicle Vitals Grid (High-Value Appraisal Data) */}
+            {/* Tier 2: Vehicle Vitals (Clean High-Density Typographic Spec Sheet) */}
             <div className="space-y-3">
-              <span className="text-[11px] font-semibold uppercase tracking-wider font-mono text-portal-text-muted block">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-portal-text-muted block">
                 Appraisal Vitals
               </span>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Odometer</span>
-                  <span className="font-mono font-bold text-portal-text text-sm">
+              <dl className="divide-y divide-portal-border/60 text-xs">
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Odometer</dt>
+                  <dd className="font-mono font-bold text-portal-text text-sm">
                     {vehicle.mileageKm.toLocaleString()} km
-                  </span>
+                  </dd>
                 </div>
-                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Powertrain</span>
-                  <span className="font-semibold text-portal-text text-sm truncate block" title={vehicle.engineSpec}>
-                    {vehicle.engineSpec ?? "2.9L Twin-Turbo"}
-                  </span>
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Powertrain</dt>
+                  <dd className="font-semibold text-portal-text text-right">
+                    {vehicle.engineSpec ?? "2.9L Twin-Turbo V6"}
+                  </dd>
                 </div>
-                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Transmission</span>
-                  <span className="font-semibold text-portal-text text-sm truncate block" title={vehicle.transmission}>
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Transmission</dt>
+                  <dd className="font-semibold text-portal-text text-right">
                     {vehicle.transmission}
-                  </span>
+                  </dd>
                 </div>
-                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Drivetrain</span>
-                  <span className="font-semibold text-portal-text text-sm truncate block" title={vehicle.drivetrain}>
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Drivetrain</dt>
+                  <dd className="font-semibold text-portal-text text-right">
                     {vehicle.drivetrain}
-                  </span>
+                  </dd>
                 </div>
-                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Exterior Paint</span>
-                  <span className="font-semibold text-portal-text text-sm truncate block" title={vehicle.exteriorColor}>
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Exterior Color</dt>
+                  <dd className="font-semibold text-portal-text text-right">
                     {vehicle.exteriorColor}
-                  </span>
+                  </dd>
                 </div>
-                <div className="p-3 rounded-xl bg-portal-surface-hover border border-portal-border">
-                  <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">Interior Trim</span>
-                  <span className="font-semibold text-portal-text text-sm truncate block" title={vehicle.interiorColor}>
+                <div className="py-2.5 flex items-center justify-between gap-4">
+                  <dt className="text-portal-text-muted font-medium">Interior Trim</dt>
+                  <dd className="font-semibold text-portal-text text-right">
                     {vehicle.interiorColor}
-                  </span>
+                  </dd>
                 </div>
-              </div>
+              </dl>
             </div>
 
             {/* Divider */}
@@ -565,7 +590,7 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
 
             {/* Tier 3: Verified Title & Provenance (Clean, High-Trust Signals) */}
             <div className="space-y-3">
-              <span className="text-[11px] font-semibold uppercase tracking-wider font-mono text-portal-text-muted flex items-center gap-1.5">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-portal-text-muted flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
                 <span>Title & History Verification</span>
               </span>
@@ -580,7 +605,7 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-portal-text-muted">Ownership:</span>
-                  <span className="font-mono font-semibold text-portal-text">
+                  <span className="font-semibold text-portal-text">
                     {vehicle.carfaxReport?.ownersCount ?? 1} Owner (Lease Return)
                   </span>
                 </div>
@@ -592,7 +617,7 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-portal-text-muted">Registration:</span>
-                  <span className="font-mono font-medium text-portal-text">
+                  <span className="font-medium text-portal-text">
                     {vehicle.carfaxReport?.registrationProvince ?? "Ontario (OMVIC Clean)"}
                   </span>
                 </div>
@@ -622,87 +647,89 @@ export function VehicleInspectionView({ initialVehicle }: VehicleInspectionViewP
         />
       )}
 
-      {/* Lightbox Modal */}
-      {isLightboxOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6"
-          onClick={() => setIsLightboxOpen(false)}
-        >
-          <div className="flex items-center justify-between text-white">
-            <span className="font-mono text-xs opacity-75">
-              {vehicle.year} {vehicle.make} {vehicle.model} • Photo {selectedPhotoIndex + 1} of{" "}
-              {photos.length}
-            </span>
-            <button
-              type="button"
-              onClick={() => setIsLightboxOpen(false)}
-              className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-mono transition-colors cursor-pointer"
-            >
-              Close [ESC]
-            </button>
-          </div>
-
+      {/* Lightbox Modal (Portaled to document.body to dim full screen including sidebar) */}
+      {isLightboxOpen && mounted && typeof document !== "undefined" &&
+        createPortal(
           <div
-            className="relative flex-1 max-h-[80vh] my-auto flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 animate-in fade-in duration-200"
+            onClick={() => setIsLightboxOpen(false)}
           >
-            <div className="relative w-full h-full max-w-5xl">
-              <Image
-                src={photos[selectedPhotoIndex]}
-                alt="Full preview"
-                fill
-                className="object-contain"
-                sizes="100vw"
-              />
+            <div className="flex items-center justify-between text-white">
+              <span className="font-mono text-xs opacity-75">
+                {vehicle.year} {vehicle.make} {vehicle.model} • Photo {selectedPhotoIndex + 1} of{" "}
+                {photos.length}
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsLightboxOpen(false)}
+                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-mono transition-colors cursor-pointer"
+              >
+                Close [ESC]
+              </button>
             </div>
 
-            {photos.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSelectedPhotoIndex((prev) => (prev > 0 ? prev - 1 : photos.length - 1))
-                  }
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur-xs transition-colors cursor-pointer"
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSelectedPhotoIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0))
-                  }
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur-xs transition-colors cursor-pointer"
-                  aria-label="Next image"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-              </>
-            )}
-          </div>
+            <div
+              className="relative flex-1 max-h-[80vh] my-auto flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="relative w-full h-full max-w-5xl">
+                <Image
+                  src={photos[selectedPhotoIndex]}
+                  alt="Full preview"
+                  fill
+                  className="object-contain"
+                  sizes="100vw"
+                />
+              </div>
 
-          <div className="flex justify-center gap-2 overflow-x-auto py-2 no-scrollbar">
-            {photos.map((url, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedPhotoIndex(idx);
-                }}
-                className={`relative w-16 h-12 rounded-md overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
-                  selectedPhotoIndex === idx
-                    ? "border-portal-primary scale-105"
-                    : "border-transparent opacity-50 hover:opacity-100"
-                }`}
-              >
-                <Image src={url} alt={`Thumb ${idx}`} fill className="object-cover" sizes="64px" />
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+              {photos.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSelectedPhotoIndex((prev) => (prev > 0 ? prev - 1 : photos.length - 1))
+                    }
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur-xs transition-colors cursor-pointer"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSelectedPhotoIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0))
+                    }
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur-xs transition-colors cursor-pointer"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="flex justify-center gap-2 overflow-x-auto py-2 no-scrollbar">
+              {photos.map((url, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPhotoIndex(idx);
+                  }}
+                  className={`relative w-16 h-12 rounded-md overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                    selectedPhotoIndex === idx
+                      ? "border-portal-primary scale-105"
+                      : "border-transparent opacity-50 hover:opacity-100"
+                  }`}
+                >
+                  <Image src={url} alt={`Thumb ${idx}`} fill className="object-cover" sizes="64px" />
+                </button>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

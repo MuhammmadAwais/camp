@@ -31,6 +31,8 @@ import {
   Receipt,
   Car,
   Info,
+  Search,
+  ChevronsUpDown,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
 
@@ -155,6 +157,8 @@ const INITIAL_WON_MATCHES: WonMatchItem[] = [
 export function DealerWonMatchesView() {
   const [matches, setMatches] = useState<WonMatchItem[]>(INITIAL_WON_MATCHES);
   const [filterTab, setFilterTab] = useState<"ALL" | "SCHEDULED" | "COMPLETED">("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"LATEST" | "PRICE_DESC" | "PRICE_ASC" | "MILEAGE">("LATEST");
   const [editingMatch, setEditingMatch] = useState<WonMatchItem | null>(null);
   const [selectedQrMatch, setSelectedQrMatch] = useState<WonMatchItem | null>(null);
   const [newStatus, setNewStatus] = useState<WonMatchStatus>("COMPLETED");
@@ -191,12 +195,41 @@ export function DealerWonMatchesView() {
   }, [editingMatch, selectedQrMatch]);
 
   const filteredMatches = useMemo(() => {
-    return matches.filter((m) => {
+    let result = matches.filter((m) => {
       if (filterTab === "SCHEDULED") return m.status === "APPOINTMENT_CONFIRMED";
       if (filterTab === "COMPLETED") return m.status === "COMPLETED";
       return true;
     });
-  }, [matches, filterTab]);
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (m) =>
+          m.seller.name.toLowerCase().includes(q) ||
+          m.seller.email.toLowerCase().includes(q) ||
+          m.seller.phone.toLowerCase().includes(q) ||
+          m.voucherCode.toLowerCase().includes(q) ||
+          m.vehicle.vin.toLowerCase().includes(q) ||
+          m.vehicle.make.toLowerCase().includes(q) ||
+          m.vehicle.model.toLowerCase().includes(q) ||
+          m.vehicle.trim.toLowerCase().includes(q)
+      );
+    }
+
+    return [...result].sort((a, b) => {
+      if (sortBy === "PRICE_DESC") {
+        return (b.finalTransactionCents ?? b.acceptedBidAmountCents) - (a.finalTransactionCents ?? a.acceptedBidAmountCents);
+      }
+      if (sortBy === "PRICE_ASC") {
+        return (a.finalTransactionCents ?? a.acceptedBidAmountCents) - (b.finalTransactionCents ?? b.acceptedBidAmountCents);
+      }
+      if (sortBy === "MILEAGE") {
+        return a.vehicle.mileageKm - b.vehicle.mileageKm;
+      }
+      // LATEST
+      return 0;
+    });
+  }, [matches, filterTab, searchQuery, sortBy]);
 
   const openInspectionModal = (match: WonMatchItem) => {
     setEditingMatch(match);
@@ -298,101 +331,75 @@ export function DealerWonMatchesView() {
           </Link>
         </div>
 
-        {/* Single Unified Stats Overview Bar matching Reference Image 2 */}
-        <div className="rounded-2xl border border-portal-border bg-portal-surface p-4 sm:p-6 shadow-xs">
-          <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:divide-x divide-portal-border">
-            {[
-              {
-                label: "TOTAL WON VALUE",
-                value: formatCadCents(totalWonValueCents),
-                icon: DollarSign,
-                trend: "Agreed Wholesale Volume",
-                isPositive: true,
-                highlight: false,
-                isCircle: false,
-              },
-              {
-                label: "TOTAL WON LOTS",
-                value: `${matches.length} Lots`,
-                icon: Trophy,
-                trend: "Accepted Seller Offers",
-                isPositive: false,
-                highlight: false,
-                isCircle: false,
-              },
-              {
-                label: "CONFIRMED INTAKE",
-                value: `${scheduledCount} Scheduled`,
-                icon: Calendar,
-                trend: "Service Bay Appointments",
-                isPositive: true,
-                highlight: false,
-                isCircle: true,
-              },
-              {
-                label: "SETTLED HANDOVERS",
-                value: formatCadCents(totalCompletedValueCents),
-                icon: CheckCircle2,
-                trend: `${completedCount} Completed Sales`,
-                isPositive: true,
-                highlight: true,
-                isCircle: true,
-              },
-            ].map(({ label, value, icon: Icon, trend, isPositive, highlight, isCircle }, idx) => (
-              <div
-                key={label}
-                className={`flex items-center justify-between gap-4 transition-colors ${
-                  idx === 0 ? "lg:pr-6" : idx === 3 ? "lg:pl-6" : "lg:px-6"
-                }`}
-              >
-                {/* Left Side: Metric Information */}
-                <div className="min-w-0 flex-1">
-                  <dt className="font-mono text-[11px] font-bold uppercase tracking-wider text-portal-text-muted truncate">
-                    {label}
-                  </dt>
-                  <dd className="mt-1 font-headline text-2xl sm:text-3xl font-bold text-portal-text tracking-tight tabular-nums truncate">
-                    {value}
-                  </dd>
-                  <div className="mt-1 flex items-center gap-1.5 font-body text-xs truncate">
-                    {isPositive ? (
-                      <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-                        <TrendingUp className="w-3.5 h-3.5 shrink-0" />
-                        <span>{trend}</span>
-                      </span>
-                    ) : (
-                      <span className="text-portal-text-muted font-normal">{trend}</span>
-                    )}
-                    {highlight && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                        VERIFIED
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right Side: Icon */}
-                {isCircle ? (
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-portal-border/80 bg-portal-surface-hover/50 flex items-center justify-center shrink-0 text-portal-primary">
-                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-portal-primary" />
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center shrink-0 text-portal-primary pr-1">
-                    <Icon className="w-6 h-6 text-portal-primary" />
-                  </div>
-                )}
+        {/* Single Unified Stats Overview Bar (Fluid, Zero Overlaps) */}
+        <div className="rounded-2xl border border-portal-border bg-portal-surface p-5 shadow-xs">
+          <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:divide-x divide-portal-border">
+            {/* Metric 1: Total Won Value */}
+            <div className="min-w-0 lg:pr-6">
+              <dt className="text-xs font-semibold text-portal-text-muted uppercase tracking-wider font-mono">
+                Total Won Value
+              </dt>
+              <dd className="mt-1 font-headline text-2xl sm:text-3xl font-extrabold text-portal-text tracking-tight tabular-nums whitespace-nowrap">
+                {formatCadCents(totalWonValueCents)}
+              </dd>
+              <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                <TrendingUp className="w-3.5 h-3.5 shrink-0" />
+                <span>Agreed Wholesale Volume</span>
               </div>
-            ))}
+            </div>
+
+            {/* Metric 2: Total Won Lots */}
+            <div className="min-w-0 sm:pl-6 lg:px-6">
+              <dt className="text-xs font-semibold text-portal-text-muted uppercase tracking-wider font-mono">
+                Total Won Lots
+              </dt>
+              <dd className="mt-1 font-headline text-2xl sm:text-3xl font-extrabold text-portal-text tracking-tight">
+                {matches.length} Lots
+              </dd>
+              <span className="text-xs text-portal-text-muted mt-1 block">
+                Accepted Seller Offers
+              </span>
+            </div>
+
+            {/* Metric 3: Confirmed Intake */}
+            <div className="min-w-0 lg:px-6">
+              <dt className="text-xs font-semibold text-portal-text-muted uppercase tracking-wider font-mono">
+                Confirmed Intake
+              </dt>
+              <dd className="mt-1 font-headline text-2xl sm:text-3xl font-extrabold text-portal-text tracking-tight">
+                {scheduledCount} Scheduled
+              </dd>
+              <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-sky-600 dark:text-sky-400">
+                <Calendar className="w-3.5 h-3.5 shrink-0" />
+                <span>Service Bay Intake</span>
+              </div>
+            </div>
+
+            {/* Metric 4: Settled Handovers */}
+            <div className="min-w-0 sm:pl-6 lg:pl-6">
+              <dt className="text-xs font-semibold text-portal-text-muted uppercase tracking-wider font-mono">
+                Settled Handovers
+              </dt>
+              <dd className="mt-1 font-headline text-2xl sm:text-3xl font-extrabold text-portal-text tracking-tight tabular-nums whitespace-nowrap">
+                {formatCadCents(totalCompletedValueCents)}
+              </dd>
+              <div className="mt-1 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                <span>{completedCount} Completed Sales</span>
+              </div>
+            </div>
           </dl>
         </div>
       </div>
 
-      {/* 2. Filter Pills & Toast */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-        <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-portal-surface border border-portal-border shadow-2xs text-xs self-start">
+      {/* 2. Unified Enterprise Controls Bar (Live Search, Tabs, Sorting) */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-2">
+        {/* Status Filter Tabs */}
+        <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-portal-surface border border-portal-border shadow-2xs text-xs self-start overflow-x-auto max-w-full">
           <button
             type="button"
             onClick={() => setFilterTab("ALL")}
-            className={`px-3 py-1.5 rounded-lg font-bold font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
               filterTab === "ALL"
                 ? "bg-portal-primary text-white shadow-2xs"
                 : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover"
@@ -400,7 +407,7 @@ export function DealerWonMatchesView() {
           >
             <span>All Won Matches</span>
             <span
-              className={`px-1.5 py-0.2 rounded-md text-[10px] ${
+              className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono ${
                 filterTab === "ALL"
                   ? "bg-white/20 text-white"
                   : "bg-portal-surface-hover text-portal-text-muted"
@@ -413,7 +420,7 @@ export function DealerWonMatchesView() {
           <button
             type="button"
             onClick={() => setFilterTab("SCHEDULED")}
-            className={`px-3 py-1.5 rounded-lg font-bold font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
               filterTab === "SCHEDULED"
                 ? "bg-sky-600 text-white shadow-2xs"
                 : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover"
@@ -422,7 +429,7 @@ export function DealerWonMatchesView() {
             <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
             <span>Scheduled Intake</span>
             <span
-              className={`px-1.5 py-0.2 rounded-md text-[10px] ${
+              className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono ${
                 filterTab === "SCHEDULED"
                   ? "bg-white/20 text-white"
                   : "bg-portal-surface-hover text-portal-text-muted"
@@ -435,7 +442,7 @@ export function DealerWonMatchesView() {
           <button
             type="button"
             onClick={() => setFilterTab("COMPLETED")}
-            className={`px-3 py-1.5 rounded-lg font-bold font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
               filterTab === "COMPLETED"
                 ? "bg-emerald-600 text-white shadow-2xs"
                 : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover"
@@ -444,7 +451,7 @@ export function DealerWonMatchesView() {
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Settled & Paid</span>
             <span
-              className={`px-1.5 py-0.2 rounded-md text-[10px] ${
+              className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono ${
                 filterTab === "COMPLETED"
                   ? "bg-white/20 text-white"
                   : "bg-portal-surface-hover text-portal-text-muted"
@@ -455,6 +462,46 @@ export function DealerWonMatchesView() {
           </button>
         </div>
 
+        {/* Live Search & Sort Controls */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1 md:max-w-md md:justify-end">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-portal-text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search seller, voucher, VIN, make..."
+              className="w-full pl-9 pr-8 py-2 rounded-xl bg-portal-surface border border-portal-border focus:border-portal-primary focus:ring-1 focus:ring-portal-primary text-xs text-portal-text placeholder:text-portal-text-muted shadow-2xs transition-all outline-none"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-portal-text-muted hover:text-portal-text p-0.5 cursor-pointer"
+                title="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="relative shrink-0">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="w-full sm:w-auto appearance-none pl-3 pr-8 py-2 rounded-xl bg-portal-surface border border-portal-border text-xs font-semibold text-portal-text hover:bg-portal-surface-hover shadow-2xs transition-colors cursor-pointer outline-none focus:border-portal-primary"
+            >
+              <option value="LATEST">Sort: Latest Won</option>
+              <option value="PRICE_DESC">Price: High to Low</option>
+              <option value="PRICE_ASC">Price: Low to High</option>
+              <option value="MILEAGE">Mileage: Lowest</option>
+            </select>
+            <ChevronsUpDown className="w-3.5 h-3.5 text-portal-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
+        </div>
+
         {saveSuccess && (
           <div className="p-2.5 px-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-xs font-mono flex items-center gap-2 shadow-2xs">
             <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
@@ -463,15 +510,26 @@ export function DealerWonMatchesView() {
         )}
       </div>
 
-      {/* 3. Modernized Won Match Cards (Less Boxy, Seamless Hierarchy) */}
+      {/* 3. Modernized Won Match Cards (Clean, Direct, Non-Boxy) */}
       <div className="space-y-4">
         {filteredMatches.length === 0 ? (
           <div className="py-16 text-center rounded-2xl border border-portal-border bg-portal-surface p-8 space-y-3">
             <Trophy className="w-10 h-10 text-portal-text-muted mx-auto opacity-40" />
-            <h3 className="text-base font-bold text-portal-text">No Matching Won Vehicles</h3>
+            <h3 className="text-base font-bold text-portal-text font-headline">No Matching Won Vehicles</h3>
             <p className="text-xs text-portal-text-muted max-w-sm mx-auto">
-              No won lots match your selected filter.
+              {searchQuery
+                ? `No won vehicles match "${searchQuery}". Try clearing your search.`
+                : "No won lots match your selected filter."}
             </p>
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="mt-2 px-3 py-1.5 rounded-xl border border-portal-border bg-portal-surface-hover text-xs font-medium text-portal-text hover:bg-portal-surface cursor-pointer"
+              >
+                Clear Search Filter
+              </button>
+            )}
           </div>
         ) : (
           filteredMatches.map((match) => {
@@ -483,17 +541,17 @@ export function DealerWonMatchesView() {
                 key={match.id}
                 className="rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 transition-all shadow-2xs hover:shadow-md relative overflow-hidden group space-y-5"
               >
-                {/* Top Row: Voucher, Status, Agreed Price & Action Button */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-portal-border/60">
+                {/* Top Row: Voucher, Status, Agreed Price & Action Buttons */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-portal-border/60">
                   <div className="flex flex-wrap items-center gap-2.5">
                     {/* Status Badge */}
                     {isCompleted ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold border border-emerald-500/25">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/25">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Completed & Settled</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-xs font-mono font-bold border border-sky-500/25">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-xs font-bold border border-sky-500/25">
                         <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
                         <span>Appointment Confirmed</span>
                       </span>
@@ -505,47 +563,60 @@ export function DealerWonMatchesView() {
 
                     <span className="text-portal-border hidden sm:inline">•</span>
 
-                    <span className="text-[11px] text-portal-text-muted font-mono">
-                      Seller accepted {match.wonAt}
+                    <span className="text-xs text-portal-text-muted">
+                      Accepted {match.wonAt}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-3.5 self-start sm:self-auto">
-                    <div className="text-right font-mono">
+                  <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
+                    <div className="text-right pr-2">
                       <span className="text-[10px] uppercase font-semibold text-portal-text-muted block">
                         Agreed Wholesale Price
                       </span>
-                      <span className="text-lg sm:text-xl font-black text-portal-text block">
+                      <span className="text-lg sm:text-xl font-bold font-headline text-portal-text block">
                         {formatCadCents(match.acceptedBidAmountCents)}
                       </span>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => openInspectionModal(match)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-portal-surface border border-portal-border hover:bg-portal-primary hover:text-white hover:border-portal-primary text-portal-text text-xs font-bold transition-all shadow-2xs cursor-pointer group/btn"
-                    >
-                      <FileCheck2 className="w-3.5 h-3.5 text-portal-primary group-hover/btn:text-white transition-colors" />
-                      <span>Log Outcome</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                    </button>
+                    {/* Clean Action Buttons */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedQrMatch(match)}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-xs font-semibold text-portal-text transition-colors shadow-2xs cursor-pointer"
+                        title="View printable digital intake pass & QR code"
+                      >
+                        <QrCode className="w-3.5 h-3.5 text-portal-primary" />
+                        <span>Intake Pass QR</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => openInspectionModal(match)}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-portal-primary hover:bg-portal-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer group/btn"
+                      >
+                        <FileCheck2 className="w-3.5 h-3.5" />
+                        <span>Log Outcome</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                {/* Main Content Area: Vehicle Dossier & Seller Information (Clean, Open Flow) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                {/* Main Content Area: Vehicle Dossier & Seller Intake Information */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                   {/* Left: Vehicle Info & Photo (6 cols) */}
-                  <div className="lg:col-span-6 flex items-start sm:items-center gap-4">
+                  <div className="lg:col-span-6 flex items-start gap-4">
                     <Link
                       href={`/dealer/auctions/${match.vehicle.auctionId || "auc-porsche-macan-2022"}`}
-                      className="relative w-32 h-22 sm:w-38 sm:h-26 rounded-xl overflow-hidden bg-portal-surface-hover shrink-0 border border-portal-border group/photo shadow-2xs block"
+                      className="relative w-32 h-22 sm:w-40 sm:h-28 rounded-xl overflow-hidden bg-portal-surface-hover shrink-0 border border-portal-border group/photo shadow-2xs block"
                     >
                       <Image
                         src={match.vehicle.thumbnailUrl}
                         alt={`${match.vehicle.make} ${match.vehicle.model}`}
                         fill
                         className="object-cover group-hover/photo:scale-105 transition-transform duration-300"
-                        sizes="150px"
+                        sizes="160px"
                       />
 
                       <div className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-xs text-[10px] font-mono font-bold text-white uppercase tracking-wider">
@@ -565,98 +636,91 @@ export function DealerWonMatchesView() {
                       )}
                     </Link>
 
-                    <div className="space-y-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-1.5 text-xs text-portal-text-muted font-mono">
-                        <span>VIN: ···{match.vehicle.vin.slice(-6)}</span>
+                    <div className="space-y-1.5 min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5 text-xs text-portal-text-muted">
+                        <span className="font-mono">VIN: ···{match.vehicle.vin.slice(-6)}</span>
                         <span>•</span>
-                        <span className="font-medium text-portal-text">
+                        <span className="font-mono font-medium text-portal-text">
                           {match.vehicle.mileageKm.toLocaleString()} km
                         </span>
                       </div>
 
                       <Link
                         href={`/dealer/auctions/${match.vehicle.auctionId || "auc-porsche-macan-2022"}`}
-                        className="text-base sm:text-lg font-bold font-headline text-portal-text hover:text-portal-primary transition-colors block truncate"
+                        className="text-base sm:text-lg font-bold font-headline text-portal-text hover:text-portal-primary transition-colors block"
                       >
                         {match.vehicle.year} {match.vehicle.make} {match.vehicle.model}
                       </Link>
 
-                      <p className="text-xs text-portal-text-muted truncate">
+                      <p className="text-xs text-portal-text-muted">
                         {match.vehicle.trim}
                       </p>
 
                       <Link
                         href={`/dealer/auctions/${match.vehicle.auctionId || "auc-porsche-macan-2022"}`}
-                        className="inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-portal-primary hover:underline pt-0.5"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-portal-primary hover:underline pt-0.5"
                       >
                         <span>View Inspection Dossier</span>
-                        <ArrowUpRight className="w-3 h-3" />
+                        <ArrowUpRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>
                   </div>
 
-                  {/* Right: Unsealed Seller Contact & Digital Intake Pass (6 cols) */}
-                  <div className="lg:col-span-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:border-l border-portal-border/60 sm:pl-6">
-                    {/* Scannable Contact Details */}
-                    <div className="space-y-2 text-xs flex-1">
+                  {/* Right: Unsealed Seller Contact & Intake Bay Details (6 cols) */}
+                  <div className="lg:col-span-6 space-y-3 sm:border-l border-portal-border/60 sm:pl-6">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-portal-text">{match.seller.name}</span>
-                        <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-semibold px-1.5 py-0.2 rounded-md bg-emerald-500/10 border border-emerald-500/20">
+                        <span className="font-bold text-sm text-portal-text font-headline">{match.seller.name}</span>
+                        <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20">
                           <ShieldCheck className="w-3 h-3" />
                           ID Verified
                         </span>
                       </div>
-
-                      <div className="space-y-1 text-portal-text-muted">
-                        <div className="flex items-center gap-2 font-mono">
-                          <Phone className="w-3.5 h-3.5 text-portal-primary shrink-0" />
-                          <a
-                            href={`tel:${match.seller.phone}`}
-                            className="hover:text-portal-text hover:underline transition-colors"
-                          >
-                            {match.seller.phone}
-                          </a>
-                        </div>
-                        <div className="flex items-center gap-2 font-mono">
-                          <Mail className="w-3.5 h-3.5 text-portal-primary shrink-0" />
-                          <a
-                            href={`mailto:${match.seller.email}`}
-                            className="hover:text-portal-text hover:underline truncate max-w-[200px] transition-colors"
-                          >
-                            {match.seller.email}
-                          </a>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-portal-primary shrink-0" />
-                          <span>
-                            {match.seller.city}, {match.seller.province}
-                          </span>
-                        </div>
-                      </div>
+                      <span className="text-[11px] text-portal-text-muted">
+                        Registered Private Seller
+                      </span>
                     </div>
 
-                    {/* Interactive Digital Pass Trigger Button */}
-                    <button
-                      type="button"
-                      onClick={() => setSelectedQrMatch(match)}
-                      className="p-3.5 rounded-xl border border-portal-border bg-portal-surface-hover hover:border-portal-primary/50 text-center space-y-1.5 transition-all cursor-pointer shadow-2xs shrink-0 self-stretch sm:self-auto group/qr"
-                      title="Click to view full digital intake pass & QR code"
-                    >
-                      <div className="w-12 h-12 rounded-lg bg-portal-surface border border-portal-border flex items-center justify-center mx-auto shadow-2xs group-hover/qr:scale-105 transition-transform">
-                        <QrCode className="w-7 h-7 text-portal-text" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      <div className="flex items-center gap-2 font-mono text-portal-text-muted">
+                        <Phone className="w-3.5 h-3.5 text-portal-primary shrink-0" />
+                        <a
+                          href={`tel:${match.seller.phone}`}
+                          className="hover:text-portal-text hover:underline transition-colors"
+                        >
+                          {match.seller.phone}
+                        </a>
                       </div>
-                      <span className="text-[10px] font-mono text-portal-text-muted uppercase block">
-                        Intake Pass QR
-                      </span>
-                      <span className="text-[11px] font-mono font-bold text-portal-primary block">
-                        #{match.voucherCode}
-                      </span>
-                    </button>
+
+                      <div className="flex items-center gap-2 font-mono text-portal-text-muted">
+                        <Mail className="w-3.5 h-3.5 text-portal-primary shrink-0" />
+                        <a
+                          href={`mailto:${match.seller.email}`}
+                          className="hover:text-portal-text hover:underline truncate transition-colors"
+                        >
+                          {match.seller.email}
+                        </a>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-portal-text-muted">
+                        <MapPin className="w-3.5 h-3.5 text-portal-primary shrink-0" />
+                        <span>
+                          {match.seller.city}, {match.seller.province} ({match.seller.postalCode})
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-portal-text-muted">
+                        <Building2 className="w-3.5 h-3.5 text-portal-primary shrink-0" />
+                        <span className="truncate">
+                          {match.appointmentLocation ?? "Dealership Service Bay"}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 {/* Bottom Row: Appointment Status & Operational Notes */}
-                <div className="pt-3 border-t border-portal-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <div className="pt-3.5 border-t border-portal-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                   <div className="flex items-start sm:items-center gap-2 text-portal-text-muted">
                     {isCompleted ? (
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 sm:mt-0" />
@@ -668,13 +732,14 @@ export function DealerWonMatchesView() {
                     </span>
                   </div>
 
-                  <div className="font-mono text-portal-text-muted text-[11px] shrink-0">
+                  <div className="text-portal-text-muted text-[11px] shrink-0 font-medium">
                     {isCompleted ? (
-                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                        Final Payout Settled
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                        <span>Final Payout: {formatCadCents(match.finalTransactionCents ?? match.acceptedBidAmountCents)}</span>
+                        <span>• Bill of Sale Signed</span>
                       </span>
                     ) : (
-                      <span>Appointment Window: 34h remaining</span>
+                      <span className="text-portal-text-muted">Appointment Window: 34h remaining</span>
                     )}
                   </div>
                 </div>
