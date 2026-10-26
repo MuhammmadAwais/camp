@@ -123,11 +123,11 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 5.1: Dealership Registration & Licensing**
   - **Route:** `/dealer/register`
   - **Component:** `DealerRegisterView.tsx`
-  - **Features:** Business name, OMVIC / AMVIC / VSA license intake, operating address, geographic service radius (25km–150km).
+  - **Features:** Redesigned into an unboxed 3-step progressive wizard (01. Licensing & Legal Entity, 02. Premises & Sourcing Radius, 03. Purchasing Officer) with interactive radius quick-chips (50km, 100km, 250km), full `Plus Jakarta Sans` typography, and zero robotic monospace.
 - [x] **Page 5.2: Subscription Tier Gate**
   - **Route:** `/dealer/subscription`
   - **Component:** `DealerSubscriptionView.tsx`
-  - **Features:** Stripe CAD billing tiers (Basic, Pro, Enterprise), monthly/annual toggle, bid quota monitor, past-due billing banner.
+  - **Features:** 3D concave tilt pricing architecture with dual-theme contrast, S-curve notched cards, balanced 2-line pricing numerals (`Plus Jakarta Sans`), and minimal 1-line status bar with direct billing link.
 
 #### Milestone 5.2: Trading Floor & Bidding Engine
 - [x] **Page 5.3: Live Wholesale Auction Exchange (Trading Floor)**
@@ -155,11 +155,11 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 5.8: Dealership Team Management** (`DEALER_ADMIN` role only)
   - **Route:** `/dealer/team`
   - **Component:** `DealerTeamView.tsx`
-  - **Features:** Invite staff members, assign roles (`DEALER_ADMIN`, `DEALER_BUYER`, `DEALER_INSPECTOR`), revoke access.
+  - **Features:** Unboxed roster layout with live search, role filter tabs (`All`, `Buyers`, `Inspectors`, `Admins`), member avatar badges, rooftop seat capacity tracker, and interactive permission role selection cards in the invite modal with body scroll lock.
 - [x] **Page 5.9: Dealership Invoices & Quotas** (`DEALER_ADMIN` role only)
   - **Route:** `/dealer/billing`
   - **Component:** `DealerBillingView.tsx`
-  - **Features:** Stripe billing portal launcher, invoice history download, monthly bid quota gauge.
+  - **Features:** Direct-canvas unboxed layout, dual summary metric cards (Quota Progress + Active Subscription), real-time search by invoice number or description, CRA year filter tabs (`All`, `2026`, `2025`), sorting toggle, and 1-click PDF receipt downloads.
 
 ---
 

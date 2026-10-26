@@ -1466,5 +1466,30 @@ Mode: Tri-Card 3D Symmetrical Tilt Wholesale Pricing Architecture
 - **Removed Boilerplate Paragraphs:** Eliminated the multi-line filler descriptions, allowing the balanced 2-line pricing blocks to transition directly into the dashed divider and feature matrix.
 - **Harmonized 2-Line Price Blocks:** Price numerals and `CAD / mo` sit on a single line, followed by the centered annual billing subtitle. Eliminates erratic multi-line wrapping across all cards.
 - **Concave 3D Triptych Symmetry:** Left and right cards tilt gently inward (6°) toward the elevated center hero card, creating an executive 3D showcase that smoothly responds to cursor hover.
-- **Institutional Status Console:** Replaced the raw bottom text line with a pulsing emerald status beacon, active tier badge, billing metadata, and an interactive payment management button.
+- **Institutional Status Console:** Minimal single-line status bar with clean hierarchy: Current Plan, renewal date, and direct link to `/dealer/billing`. Uses `Plus Jakarta Sans` exclusively with zero blinking beacons.
+
+---
+
+### `DealerBillingView` (Unboxed Enterprise Billing & CRA Receipts)
+
+File: `components/dealer/DealerBillingView.tsx`  
+Last updated: 2026-10-26  
+Mode: Dual-Theme (Porcelain Light / Obsidian Dark)
+
+- **Unboxed Layout:** Direct-canvas layout with no nested gray enclosure card.
+- **Top Metrics:** Dual summary cards for Quota usage (`14 / 50 used`) and Active Plan status.
+- **Enterprise Utilities:** Real-time search by invoice number or description, Year filter pills (`All`, `2026`, `2025`), and sorting toggle (`Highest` / `Lowest`).
+- **Typography:** Display headlines in `Epilogue` (`font-headline`), UI and data in `Plus Jakarta Sans` (`font-body`), with no robotic monospace font.
+
+---
+
+### `DealerTeamView` (Enterprise Roster & Permission Selector Modal)
+
+File: `components/dealer/DealerTeamView.tsx`  
+Last updated: 2026-10-26  
+Mode: Dual-Theme (Porcelain Light / Obsidian Dark)
+
+- **Role Filter Tabs:** Instant client-side filtering by role (`All`, `Buyers`, `Inspectors`, `Admins`) with member counts.
+- **Live Search:** Instant filtering across member names and work email addresses.
+- **Interactive Invite Modal:** Replaced primitive dropdown with 3 interactive role selection cards detailing actual permissions (`Wholesale Buyer`, `Service Inspector`, `Dealership Admin`). Background scroll lock enabled during modal open.
 
