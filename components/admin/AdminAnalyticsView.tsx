@@ -4,7 +4,6 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   TrendingUp,
-  TrendingDown,
   DollarSign,
   BarChart3,
   Gavel,
@@ -30,8 +29,13 @@ import {
   PieChart as PieChartIcon,
   Check,
   Copy,
+  Receipt,
+  FileText,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
+import { useTableSort } from "@/hooks/useTableSort";
+import { SortableHeader } from "@/components/ui/SortableHeader";
+import { TablePagination } from "@/components/ui/TablePagination";
 
 // --- Mock Datasets for Canadian Wholesale Analytics ---
 
@@ -64,7 +68,6 @@ interface ProvincialMarketShare {
   lotsCount: number;
   avgSurplusCents: number;
   color: string;
-  colorHover: string;
 }
 
 const PROVINCIAL_DATA: ProvincialMarketShare[] = [
@@ -76,9 +79,8 @@ const PROVINCIAL_DATA: ProvincialMarketShare[] = [
     sharePercent: 60.3,
     dealersCount: 88,
     lotsCount: 312,
-    avgSurplusCents: 285000, // $2,850 CAD
-    color: "#6366f1", // Indigo
-    colorHover: "#4f46e5",
+    avgSurplusCents: 285000,
+    color: "#E59344", // AutoNexa Honey Amber
   },
   {
     province: "Alberta",
@@ -88,9 +90,8 @@ const PROVINCIAL_DATA: ProvincialMarketShare[] = [
     sharePercent: 21.1,
     dealersCount: 29,
     lotsCount: 104,
-    avgSurplusCents: 245000, // $2,450 CAD
-    color: "#f59e0b", // Amber
-    colorHover: "#d97706",
+    avgSurplusCents: 245000,
+    color: "#8C383E", // AutoNexa Autumn Wine
   },
   {
     province: "British Columbia",
@@ -100,9 +101,8 @@ const PROVINCIAL_DATA: ProvincialMarketShare[] = [
     sharePercent: 12.0,
     dealersCount: 16,
     lotsCount: 62,
-    avgSurplusCents: 262000, // $2,620 CAD
-    color: "#10b981", // Emerald
-    colorHover: "#059669",
+    avgSurplusCents: 262000,
+    color: "#10B981", // Emerald
   },
   {
     province: "Quebec",
@@ -112,9 +112,8 @@ const PROVINCIAL_DATA: ProvincialMarketShare[] = [
     sharePercent: 6.6,
     dealersCount: 9,
     lotsCount: 38,
-    avgSurplusCents: 210000, // $2,100 CAD
-    color: "#ec4899", // Pink
-    colorHover: "#db2777",
+    avgSurplusCents: 210000,
+    color: "#64748B", // Slate
   },
 ];
 
@@ -206,7 +205,7 @@ const LEADERBOARD_DEALERS: LeaderboardDealer[] = [
   },
 ];
 
-interface SettlementRecord {
+export interface SettlementRecord {
   id: string;
   vehicle: string;
   vin: string;
@@ -224,7 +223,7 @@ const SETTLEMENT_RECORDS: SettlementRecord[] = [
     vehicle: "2023 Porsche Macan GTS AWD",
     vin: "WP1AF2AY5NL128491",
     buyer: "Pfaff Porsche Markham",
-    regulator: "OMVIC",
+    regulator: "OMVIC-481920",
     amountCents: 3825000,
     surplusCents: 345000,
     completedAt: "10 mins ago",
@@ -235,7 +234,7 @@ const SETTLEMENT_RECORDS: SettlementRecord[] = [
     vehicle: "2021 Ford F-150 Lariat 502A",
     vin: "1FTFW1E84MFA12345",
     buyer: "Woodbine Ford Commercial",
-    regulator: "OMVIC",
+    regulator: "OMVIC-312984",
     amountCents: 3250000,
     surplusCents: 280000,
     completedAt: "42 mins ago",
@@ -246,7 +245,7 @@ const SETTLEMENT_RECORDS: SettlementRecord[] = [
     vehicle: "2023 BMW M340i xDrive Sedan",
     vin: "WBA5R7C09NF123456",
     buyer: "Budds' BMW Oakville",
-    regulator: "OMVIC",
+    regulator: "OMVIC-192847",
     amountCents: 4100000,
     surplusCents: 310000,
     completedAt: "2 hours ago",
@@ -257,7 +256,7 @@ const SETTLEMENT_RECORDS: SettlementRecord[] = [
     vehicle: "2022 Lexus RX 350 F SPORT",
     vin: "2T2HZMAA5NC129841",
     buyer: "Stampede Toyota Calgary",
-    regulator: "AMVIC",
+    regulator: "AMVIC-849201",
     amountCents: 4450000,
     surplusCents: 295000,
     completedAt: "4 hours ago",
@@ -268,11 +267,22 @@ const SETTLEMENT_RECORDS: SettlementRecord[] = [
     vehicle: "2023 Tesla Model Y Long Range",
     vin: "5YJYGDEE8PF412345",
     buyer: "OpenRoad Auto Group Vancouver",
-    regulator: "VSA",
+    regulator: "VSA-192840",
     amountCents: 3900000,
     surplusCents: 240000,
     completedAt: "6 hours ago",
     status: "ESCROW_CLEARED",
+  },
+  {
+    id: "stl-9836",
+    vehicle: "2022 Audi Q7 55 TFSI Progressiv",
+    vin: "WA1VAAF75ND019283",
+    buyer: "Markham Audi Group",
+    regulator: "OMVIC-774910",
+    amountCents: 4100000,
+    surplusCents: 275000,
+    completedAt: "8 hours ago",
+    status: "SETTLED",
   },
 ];
 
@@ -283,21 +293,26 @@ export function AdminAnalyticsView() {
   const [hoveredTrendIndex, setHoveredTrendIndex] = useState<number | null>(4); // Default to Fri peak
   const [hoveredProvince, setHoveredProvince] = useState<ProvincialMarketShare | null>(null);
   const [hoveredCityIndex, setHoveredCityIndex] = useState<number | null>(null);
+  const [searchTableQuery, setSearchTableQuery] = useState("");
+  const [tableStatusFilter, setTableStatusFilter] = useState<"ALL" | "SETTLED" | "ESCROW_CLEARED">("ALL");
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set(["stl-9841", "stl-9840"]));
+  const [currentPage, setCurrentPage] = useState(1);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [exportNotice, setExportNotice] = useState<string | null>(null);
+  const pageSize = 5;
 
   // High-level KPIs
   const totalVolumeCents = 1482050000; // $14,820,500 CAD
   const gmvGrowthPercent = 23.4;
   const clearanceRatePercent = 88.6;
+  const totalTransactionsCount = 312;
   const averageBidsPerLot = 14.8;
   const averageSellerSurplusCents = 264000; // $2,640 CAD
   const activeDealerCount = 142;
-  const escrowVaultActiveCents = 384250000; // $3,842,500 CAD
 
   // Chart Curve Math for 7-day volume
-  // ViewBox: 0 0 600 220
-  const chartW = 600;
+  // ViewBox: 0 0 680 200
+  const chartW = 680;
   const chartH = 200;
   const paddingX = 40;
   const paddingY = 25;
@@ -324,7 +339,7 @@ export function AdminAnalyticsView() {
     });
   }, [maxVal, minVal]);
 
-  // Generate smooth SVG Catmull-Rom / Bezier curve string
+  // Generate smooth SVG Bezier curve string
   const generateCurvedPath = (pts: { x: number; y: number }[]) => {
     if (pts.length < 2) return "";
     let d = `M ${pts[0].x} ${pts[0].y}`;
@@ -349,11 +364,9 @@ export function AdminAnalyticsView() {
   }, [points]);
 
   // Donut Arc Calculations
-  // Total circumference for r = 70 is 2 * PI * 70 = 439.82
-  const donutR = 70;
+  const donutR = 64;
   const circumference = 2 * Math.PI * donutR;
 
-  // Compute stroke offsets
   let accumulatedPercent = 0;
   const donutSlices = PROVINCIAL_DATA.map((prov) => {
     const strokeDasharray = `${(prov.sharePercent / 100) * circumference} ${circumference}`;
@@ -368,6 +381,25 @@ export function AdminAnalyticsView() {
 
   const activeDonutProvince = hoveredProvince || PROVINCIAL_DATA[0];
 
+  // Table filtering and sorting
+  const filteredRecords = useMemo(() => {
+    return SETTLEMENT_RECORDS.filter((rec) => {
+      const matchesSearch =
+        rec.vehicle.toLowerCase().includes(searchTableQuery.toLowerCase()) ||
+        rec.buyer.toLowerCase().includes(searchTableQuery.toLowerCase()) ||
+        rec.vin.toLowerCase().includes(searchTableQuery.toLowerCase());
+      const matchesStatus = tableStatusFilter === "ALL" || rec.status === tableStatusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [searchTableQuery, tableStatusFilter]);
+
+  const { sortedData, requestSort, isSorted } = useTableSort(filteredRecords);
+
+  const paginatedRecords = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return sortedData.slice(start, start + pageSize);
+  }, [sortedData, currentPage, pageSize]);
+
   const handleToggleRow = (id: string) => {
     const next = new Set(selectedRows);
     if (next.has(id)) next.delete(id);
@@ -376,11 +408,21 @@ export function AdminAnalyticsView() {
   };
 
   const handleSelectAllRows = () => {
-    if (selectedRows.size === SETTLEMENT_RECORDS.length) {
-      setSelectedRows(new Set());
+    if (paginatedRecords.length === 0) return;
+    const allSelected = paginatedRecords.every((r) => selectedRows.has(r.id));
+    const next = new Set(selectedRows);
+    if (allSelected) {
+      paginatedRecords.forEach((r) => next.delete(r.id));
     } else {
-      setSelectedRows(new Set(SETTLEMENT_RECORDS.map((r) => r.id)));
+      paginatedRecords.forEach((r) => next.add(r.id));
     }
+    setSelectedRows(next);
+  };
+
+  const handleCopyVin = (vin: string) => {
+    navigator.clipboard.writeText(vin);
+    setCopiedId(vin);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const handleExport = () => {
@@ -390,26 +432,20 @@ export function AdminAnalyticsView() {
 
   return (
     <div className="space-y-6 pb-20 font-body">
-      {/* 1. Executive Intelligence Header & Action Toolbar */}
+      {/* 1. Executive Intelligence Header (Cleaned of arbitrary pill badges) */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-portal-text-muted mb-1 font-mono">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Canadian National Sourcing Network</span>
-            <span>•</span>
-            <span>Live Clearing Telemetry</span>
-          </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline tracking-tight">
-            Wholesale Analytics & Provincial Liquidity
+            Platform Analytics & Wholesale Volume
           </h1>
           <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-3xl">
             Real-time Gross Merchandise Value (GMV), 24h sealed-bid velocity, regional quota distribution, and verifiable dealer settlement feeds.
           </p>
         </div>
 
-        {/* Global Controls & Export Strip */}
+        {/* Global Controls & Timeframe Strip */}
         <div className="flex flex-wrap items-center gap-2.5">
-          {/* Timeframe Segmented Control (Inspired by Image 2 & Image 3) */}
+          {/* Timeframe Segmented Control */}
           <div className="inline-flex items-center p-1 rounded-xl bg-portal-surface border border-portal-border shadow-2xs text-xs font-semibold">
             {(["7D", "30D", "90D", "YTD"] as const).map((range) => (
               <button
@@ -434,7 +470,7 @@ export function AdminAnalyticsView() {
               onChange={(e) => setSelectedProvince(e.target.value)}
               className="appearance-none pl-3 pr-8 py-2 rounded-xl bg-portal-surface border border-portal-border text-xs font-semibold text-portal-text cursor-pointer focus:outline-none focus:ring-2 focus:ring-portal-primary/40 shadow-2xs"
             >
-              <option value="ALL">All Jurisdictions (Canada)</option>
+              <option value="ALL">All Jurisdictions</option>
               <option value="ON">Ontario (OMVIC)</option>
               <option value="AB">Alberta (AMVIC)</option>
               <option value="BC">British Columbia (VSA)</option>
@@ -472,192 +508,93 @@ export function AdminAnalyticsView() {
         </div>
       )}
 
-      {/* 2. Top KPI Metrics Row (Inspired by Images 1, 2, 3) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* KPI 1: Gross Merchandise Value */}
-        <div className="p-5 rounded-2xl border border-portal-border bg-portal-surface shadow-xs space-y-3 relative overflow-hidden group hover:border-portal-primary/40 transition-all">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-portal-text-muted">
-              <DollarSign className="w-4 h-4 text-portal-primary" />
-              <span>Gross Merchandise Value</span>
-            </div>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              <TrendingUp className="w-3 h-3" />
-              <span>+{gmvGrowthPercent}%</span>
+      {/* 2. Unified Top Metrics Ribbon (Directly Matching User Reference Image 2) */}
+      <div className="border border-portal-border rounded-2xl bg-portal-surface shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-portal-border/60 overflow-hidden">
+        {/* Metric 1: Total Spent / GMV */}
+        <div className="p-6 flex items-center justify-between gap-4 hover:bg-portal-surface-hover/30 transition-colors">
+          <div className="min-w-0">
+            <span className="text-[11px] font-bold text-portal-text-muted uppercase tracking-wider block mb-1">
+              Gross Merchandise Value
             </span>
-          </div>
-
-          <div>
-            <div className="text-2xl sm:text-3xl font-black font-headline text-portal-text tracking-tight">
+            <span className="font-headline text-2xl sm:text-3xl font-black text-portal-text tracking-tight block">
               {formatCadCents(totalVolumeCents)}
+            </span>
+            <div className="flex items-center gap-1.5 text-xs text-emerald-500 font-semibold mt-1">
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span>+{gmvGrowthPercent}% Net Growth</span>
             </div>
-            <p className="text-xs text-portal-text-muted mt-1">
-              +$2.8M CAD over prior 30-day clearing cycle
-            </p>
           </div>
-
-          {/* Mini Sparkline Background Indicator */}
-          <div className="h-1.5 w-full bg-portal-surface-hover rounded-full overflow-hidden">
-            <div className="h-full bg-portal-primary rounded-full transition-all duration-700" style={{ width: "78%" }} />
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 shadow-2xs">
+            <DollarSign className="w-6 h-6" />
           </div>
         </div>
 
-        {/* KPI 2: Auction Clearance Rate */}
-        <div className="p-5 rounded-2xl border border-portal-border bg-portal-surface shadow-xs space-y-3 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-portal-text-muted">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              <span>Clearance Rate</span>
-            </div>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              <TrendingUp className="w-3 h-3" />
-              <span>+4.2%</span>
+        {/* Metric 2: Total Transactions */}
+        <div className="p-6 flex items-center justify-between gap-4 hover:bg-portal-surface-hover/30 transition-colors">
+          <div className="min-w-0">
+            <span className="text-[11px] font-bold text-portal-text-muted uppercase tracking-wider block mb-1">
+              Total Transactions
+            </span>
+            <span className="font-headline text-2xl sm:text-3xl font-black text-portal-text tracking-tight block">
+              {totalTransactionsCount}
+            </span>
+            <span className="text-xs text-portal-text-muted font-medium block mt-1">
+              Recorded Wholesale Clearances
             </span>
           </div>
+          <div className="w-12 h-12 rounded-2xl bg-portal-primary/10 border border-portal-primary/20 text-portal-primary flex items-center justify-center shrink-0 shadow-2xs">
+            <CreditCard className="w-6 h-6" />
+          </div>
+        </div>
 
-          <div>
-            <div className="text-2xl sm:text-3xl font-black font-headline text-portal-text tracking-tight">
+        {/* Metric 3: Completed Clearance */}
+        <div className="p-6 flex items-center justify-between gap-4 hover:bg-portal-surface-hover/30 transition-colors">
+          <div className="min-w-0">
+            <span className="text-[11px] font-bold text-portal-text-muted uppercase tracking-wider block mb-1">
+              Completed Clearance
+            </span>
+            <span className="font-headline text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight block">
               {clearanceRatePercent}%
-            </div>
-            <p className="text-xs text-portal-text-muted mt-1">
-              312 of 352 vehicle lots met reserve floor
-            </p>
+            </span>
+            <span className="text-xs text-portal-text-muted font-medium block mt-1">
+              312 of 352 Reserve Floors Met
+            </span>
           </div>
-
-          <div className="h-1.5 w-full bg-portal-surface-hover rounded-full overflow-hidden">
-            <div className="h-full bg-emerald-500 rounded-full transition-all duration-700" style={{ width: `${clearanceRatePercent}%` }} />
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0 shadow-2xs">
+            <CheckCircle2 className="w-6 h-6" />
           </div>
         </div>
 
-        {/* KPI 3: Bidding Velocity */}
-        <div className="p-5 rounded-2xl border border-portal-border bg-portal-surface shadow-xs space-y-3 relative overflow-hidden group hover:border-amber-500/40 transition-all">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-portal-text-muted">
-              <Gavel className="w-4 h-4 text-amber-500" />
-              <span>Bidding Velocity</span>
-            </div>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-              <TrendingUp className="w-3 h-3" />
-              <span>+18.5%</span>
+        {/* Metric 4: Bidding Velocity */}
+        <div className="p-6 flex items-center justify-between gap-4 hover:bg-portal-surface-hover/30 transition-colors">
+          <div className="min-w-0">
+            <span className="text-[11px] font-bold text-portal-text-muted uppercase tracking-wider block mb-1">
+              Bidding Velocity
+            </span>
+            <span className="font-headline text-2xl sm:text-3xl font-black text-amber-500 tracking-tight block">
+              {averageBidsPerLot} <span className="text-sm font-semibold text-portal-text-muted">bids/lot</span>
+            </span>
+            <span className="text-xs text-portal-text-muted font-medium block mt-1">
+              Across {activeDealerCount} Licensed Groups
             </span>
           </div>
-
-          <div>
-            <div className="text-2xl sm:text-3xl font-black font-headline text-portal-text tracking-tight">
-              {averageBidsPerLot} <span className="text-base font-semibold text-portal-text-muted">bids/lot</span>
-            </div>
-            <p className="text-xs text-portal-text-muted mt-1">
-              Across {activeDealerCount} registered dealership groups
-            </p>
-          </div>
-
-          <div className="h-1.5 w-full bg-portal-surface-hover rounded-full overflow-hidden">
-            <div className="h-full bg-amber-500 rounded-full transition-all duration-700" style={{ width: "65%" }} />
-          </div>
-        </div>
-
-        {/* KPI 4: Consumer Surplus Generated */}
-        <div className="p-5 rounded-2xl border border-portal-border bg-portal-surface shadow-xs space-y-3 relative overflow-hidden group hover:border-portal-primary/40 transition-all">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-portal-text-muted">
-              <ArrowUpRight className="w-4 h-4 text-portal-primary" />
-              <span>Avg. Seller Surplus</span>
-            </div>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              <TrendingUp className="w-3 h-3" />
-              <span>+12.8%</span>
-            </span>
-          </div>
-
-          <div>
-            <div className="text-2xl sm:text-3xl font-black font-headline text-emerald-600 dark:text-emerald-400 tracking-tight">
-              +{formatCadCents(averageSellerSurplusCents)}
-            </div>
-            <p className="text-xs text-portal-text-muted mt-1">
-              Delivered directly above typical dealer trade-in offers
-            </p>
-          </div>
-
-          <div className="h-1.5 w-full bg-portal-surface-hover rounded-full overflow-hidden">
-            <div className="h-full bg-emerald-500 rounded-full transition-all duration-700" style={{ width: "82%" }} />
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 shadow-2xs">
+            <Clock className="w-6 h-6" />
           </div>
         </div>
       </div>
 
-      {/* 3. Hero Visual Section: Escrow Sinking Fund Card (Left) + Spline Trend Curve Chart (Right) */}
+      {/* 3. Hero Charts: Expansive Revenue Spline Curve & Regional Share */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Card 1: Visual Gradient Escrow Vault Card (Inspired by Image 1 Left Card) */}
-        <div className="lg:col-span-4 rounded-3xl p-6 bg-gradient-to-br from-indigo-950 via-purple-900 to-amber-950 text-white shadow-lg flex flex-col justify-between relative overflow-hidden border border-white/10">
-          {/* Subtle Ambient Glow Orbs */}
-          <div className="absolute top-0 right-0 w-48 h-48 bg-primary/30 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
-
-          {/* Top Label */}
-          <div className="flex items-center justify-between relative z-10">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-amber-400" />
-              <span className="font-headline font-bold text-sm tracking-wide">
-                Direct Clearing Vault
-              </span>
-            </div>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-white/90">
-              PIPEDA / Law 25
-            </span>
-          </div>
-
-          {/* Center Graphic: Realistic Shimmering Credit Card / Vault Badge */}
-          <div className="my-6 relative z-10 p-5 rounded-2xl bg-gradient-to-r from-amber-400/90 via-amber-500 to-amber-600 text-neutral-950 shadow-xl border border-white/30 backdrop-blur-xs">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-bold tracking-widest uppercase">
-                AutoNexa Escrow
-              </span>
-              <div className="w-7 h-5 rounded bg-black/20 border border-black/10 flex items-center justify-center font-mono text-[9px] font-black">
-                CAD
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <span className="text-[11px] font-medium opacity-80 block">
-                Total Sinking Vault Reserve
-              </span>
-              <span className="font-headline text-2xl sm:text-3xl font-black tracking-tight block">
-                {formatCadCents(escrowVaultActiveCents)}
-              </span>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-black/15 flex items-center justify-between text-xs font-mono font-bold">
-              <span>VAULT: *4918-ON</span>
-              <span>100% BONDED</span>
-            </div>
-          </div>
-
-          {/* Bottom Metric Pill */}
-          <div className="relative z-10 space-y-3">
-            <div className="flex items-center justify-between text-xs text-white/80">
-              <span>Settlement Clearance Target</span>
-              <span className="font-bold text-white">92% / 24h</span>
-            </div>
-            <div className="w-full h-2 rounded-full bg-white/15 overflow-hidden">
-              <div className="h-full bg-amber-400 rounded-full" style={{ width: "92%" }} />
-            </div>
-            <p className="text-[11px] text-white/70">
-              Pre-funded buyer EFT accounts guarantee zero seller default risks across Canada.
-            </p>
-          </div>
-        </div>
-
-        {/* Card 2: Interactive SVG Multi-Line Trend Chart (Inspired by Image 1 & Image 3) */}
-        <div className="lg:col-span-8 rounded-3xl border border-portal-border bg-portal-surface p-6 shadow-xs flex flex-col justify-between">
-          {/* Header & Metric Toggle Controls */}
+        {/* Main Spline Curve Chart (8 Cols) - Styled to AutoNexa Amber & Wine Tokens */}
+        <div className="lg:col-span-8 rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-xs flex flex-col justify-between">
+          {/* Header Strip with Toggle Controls */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-portal-border/60">
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-portal-text font-headline">
-                  Wholesale Liquidity & Clearance Trends
+                  Wholesale Liquidity & Revenue Volume
                 </h2>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-portal-primary/10 text-portal-primary border border-portal-primary/20">
-                  Daily CAD Telemetry
-                </span>
               </div>
               <p className="text-xs text-portal-text-muted mt-0.5 font-body">
                 Tracking settled transaction volume versus competitive floor reserve targets.
@@ -702,37 +639,29 @@ export function AdminAnalyticsView() {
             </div>
           </div>
 
-          {/* Interactive SVG Chart Stage */}
-          <div className="relative my-4 w-full h-[240px]">
-            {/* Legend Indicators */}
-            <div className="absolute top-2 right-4 z-10 flex items-center gap-4 text-xs font-semibold font-body">
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-1.5 rounded-full bg-indigo-500" />
-                <span className="text-portal-text">Settled Volume</span>
-              </div>
+          {/* Clean SVG Spline Chart */}
+          <div className="relative my-4 w-full h-[230px]">
+            {/* Chart Legend */}
+            <div className="absolute top-2 right-4 z-10 flex items-center gap-4 text-xs font-medium">
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-1.5 rounded-full bg-amber-500" />
+                <span className="text-portal-text font-semibold">Settled GMV</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-1.5 rounded-full bg-portal-text-muted/50" />
                 <span className="text-portal-text-muted">Reserve Floor</span>
               </div>
             </div>
 
-            {/* SVG Canvas */}
             <svg
               viewBox={`0 0 ${chartW} ${chartH}`}
               className="w-full h-full overflow-visible"
               preserveAspectRatio="none"
             >
               <defs>
-                {/* Area Gradient */}
-                <linearGradient id="volumeAreaGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#6366f1" stopOpacity="0.0" />
-                </linearGradient>
-
-                {/* Vertical Cursor Dash Pattern */}
-                <linearGradient id="cursorGlow" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#6366f1" stopOpacity="0.1" />
+                <linearGradient id="autonexaAmberGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#E59344" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="#E59344" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
 
@@ -747,7 +676,7 @@ export function AdminAnalyticsView() {
                     x2={chartW - paddingX}
                     y2={y}
                     stroke="currentColor"
-                    className="text-portal-border/50"
+                    className="text-portal-border/40"
                     strokeDasharray="4 4"
                     strokeWidth="1"
                   />
@@ -755,23 +684,23 @@ export function AdminAnalyticsView() {
               })}
 
               {/* Area Gradient Fill */}
-              <path d={areaPathD} fill="url(#volumeAreaGradient)" />
+              <path d={areaPathD} fill="url(#autonexaAmberGradient)" />
 
-              {/* Reserve Target Line (Amber dashed curve) */}
+              {/* Reserve Target Line (Dashed) */}
               <path
                 d={reservePathD}
                 fill="none"
-                stroke="#f59e0b"
+                stroke="currentColor"
+                className="text-portal-text-muted/60"
                 strokeWidth="2"
                 strokeDasharray="4 4"
-                strokeOpacity="0.85"
               />
 
-              {/* Primary Volume Spline Curve (Indigo vibrant curve) */}
+              {/* Primary Volume Spline Curve (Honey Amber) */}
               <path
                 d={volumePathD}
                 fill="none"
-                stroke="#6366f1"
+                stroke="#E59344"
                 strokeWidth="3.5"
                 strokeLinecap="round"
                 className="drop-shadow-sm"
@@ -780,36 +709,32 @@ export function AdminAnalyticsView() {
               {/* Interactive Hover Point & Dashed Guideline */}
               {hoveredTrendIndex !== null && points[hoveredTrendIndex] && (
                 <g>
-                  {/* Vertical Guide Crosshair */}
                   <line
                     x1={points[hoveredTrendIndex].x}
                     y1={paddingY}
                     x2={points[hoveredTrendIndex].x}
                     y2={chartH - paddingY}
-                    stroke="currentColor"
-                    className="text-portal-primary"
+                    stroke="#E59344"
                     strokeWidth="1.5"
                     strokeDasharray="3 3"
                   />
-
-                  {/* Highlight Anchor Dot */}
                   <circle
                     cx={points[hoveredTrendIndex].x}
                     cy={points[hoveredTrendIndex].y}
                     r="6"
-                    className="fill-portal-surface stroke-indigo-500"
+                    className="fill-portal-surface stroke-amber-500"
                     strokeWidth="3"
                   />
                   <circle
                     cx={points[hoveredTrendIndex].x}
                     cy={points[hoveredTrendIndex].y}
                     r="2.5"
-                    className="fill-indigo-500"
+                    className="fill-amber-500"
                   />
                 </g>
               )}
 
-              {/* Transparent Click / Hover Target Columns */}
+              {/* Hover Trigger Hitboxes */}
               {points.map((pt, idx) => (
                 <rect
                   key={idx}
@@ -824,16 +749,16 @@ export function AdminAnalyticsView() {
               ))}
             </svg>
 
-            {/* Floating Rich Tooltip (Inspired by Image 1's $6,156 badge) */}
+            {/* Floating Sleek Tooltip */}
             {hoveredTrendIndex !== null && points[hoveredTrendIndex] && (
               <div
-                className="absolute z-20 pointer-events-none transition-all duration-200 transform -translate-x-1/2 -translate-y-full"
+                className="absolute z-20 pointer-events-none transition-all duration-150 transform -translate-x-1/2 -translate-y-full"
                 style={{
                   left: `${(points[hoveredTrendIndex].x / chartW) * 100}%`,
                   top: `${Math.max(10, (points[hoveredTrendIndex].y / chartH) * 100 - 8)}%`,
                 }}
               >
-                <div className="bg-portal-surface/95 dark:bg-neutral-900/95 backdrop-blur-md border border-portal-border p-2.5 rounded-xl shadow-xl text-xs space-y-1 min-w-[160px]">
+                <div className="bg-portal-surface border border-portal-border p-2.5 rounded-xl shadow-xl text-xs space-y-1 min-w-[160px]">
                   <div className="flex items-center justify-between text-[10px] text-portal-text-muted font-mono font-bold">
                     <span>{points[hoveredTrendIndex].pt.dateStr}</span>
                     <span>{points[hoveredTrendIndex].pt.day}</span>
@@ -860,7 +785,7 @@ export function AdminAnalyticsView() {
                 type="button"
                 onClick={() => setHoveredTrendIndex(idx)}
                 className={`font-semibold transition-colors cursor-pointer ${
-                  hoveredTrendIndex === idx ? "text-portal-primary font-bold" : "hover:text-portal-text"
+                  hoveredTrendIndex === idx ? "text-amber-500 font-bold" : "hover:text-portal-text"
                 }`}
               >
                 {d.day} <span className="text-[10px] opacity-70">({d.dateStr.split(" ")[1]})</span>
@@ -868,32 +793,26 @@ export function AdminAnalyticsView() {
             ))}
           </div>
         </div>
-      </div>
 
-      {/* 4. Donut Chart (Provincial Share) & Grouped Bar Chart (Regional Intake Velocity) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Card A: Provincial Donut Chart (Inspired by Images 1, 2, 3) */}
-        <div className="lg:col-span-5 rounded-3xl border border-portal-border bg-portal-surface p-6 shadow-xs flex flex-col justify-between">
+        {/* Provincial Donut Chart (4 Cols) */}
+        <div className="lg:col-span-4 rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-portal-border/60">
-              <div className="flex items-center gap-2">
-                <PieChartIcon className="w-4 h-4 text-portal-primary" />
-                <h3 className="text-base font-bold text-portal-text font-headline">
-                  Provincial Market Distribution
-                </h3>
-              </div>
+              <h3 className="text-base font-bold text-portal-text font-headline">
+                Provincial Market Share
+              </h3>
               <span className="text-xs font-mono text-portal-text-muted">
                 {PROVINCIAL_DATA.reduce((acc, p) => acc + p.dealersCount, 0)} Dealers
               </span>
             </div>
-            <p className="text-xs text-portal-text-muted mt-2 font-body">
-              Wholesale trade volume segmented by Canadian provincial registrar jurisdictions.
+            <p className="text-xs text-portal-text-muted mt-1.5 font-body">
+              Canadian wholesale clearing volume by registrar jurisdiction.
             </p>
           </div>
 
-          {/* Center Donut SVG Canvas */}
-          <div className="relative my-6 flex items-center justify-center">
-            <svg width="220" height="220" viewBox="0 0 200 200" className="transform -rotate-90">
+          {/* Semicircular / Donut Ring */}
+          <div className="relative my-4 flex items-center justify-center">
+            <svg width="200" height="200" viewBox="0 0 200 200" className="transform -rotate-90">
               {donutSlices.map((prov) => {
                 const isHovered = hoveredProvince?.code === prov.code;
                 return (
@@ -904,7 +823,7 @@ export function AdminAnalyticsView() {
                     r={donutR}
                     fill="transparent"
                     stroke={prov.color}
-                    strokeWidth={isHovered ? "28" : "22"}
+                    strokeWidth={isHovered ? "26" : "20"}
                     strokeDasharray={prov.strokeDasharray}
                     strokeDashoffset={prov.strokeDashoffset}
                     strokeLinecap="round"
@@ -916,12 +835,12 @@ export function AdminAnalyticsView() {
               })}
             </svg>
 
-            {/* Centered Donut KPI Label (Inspired by Image 2 & Image 3) */}
+            {/* Centered Donut KPI */}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
               <span className="text-[11px] font-mono uppercase tracking-wider text-portal-text-muted">
                 {activeDonutProvince.province}
               </span>
-              <span className="font-headline text-xl sm:text-2xl font-black text-portal-text tracking-tight mt-0.5">
+              <span className="font-headline text-2xl font-black text-portal-text tracking-tight mt-0.5">
                 {activeDonutProvince.sharePercent}%
               </span>
               <span className="text-xs font-semibold text-portal-text-muted font-mono">
@@ -930,8 +849,8 @@ export function AdminAnalyticsView() {
             </div>
           </div>
 
-          {/* Sliced Legend Pills with Interactive Hover */}
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-portal-border/60">
+          {/* Legend Items */}
+          <div className="space-y-1.5 pt-2 border-t border-portal-border/60">
             {PROVINCIAL_DATA.map((prov) => {
               const active = activeDonutProvince.code === prov.code;
               return (
@@ -939,27 +858,17 @@ export function AdminAnalyticsView() {
                   key={prov.code}
                   onMouseEnter={() => setHoveredProvince(prov)}
                   onMouseLeave={() => setHoveredProvince(null)}
-                  className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
-                    active
-                      ? "bg-portal-surface-hover border-portal-primary/40 shadow-2xs"
-                      : "bg-portal-surface hover:bg-portal-surface-hover/60 border-portal-border"
+                  className={`p-2 rounded-xl transition-all cursor-pointer flex items-center justify-between text-xs ${
+                    active ? "bg-portal-surface-hover font-semibold" : "hover:bg-portal-surface-hover/50"
                   }`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span
-                      className="w-3 h-3 rounded-full shrink-0"
-                      style={{ backgroundColor: prov.color }}
-                    />
-                    <div className="truncate">
-                      <span className="text-xs font-bold text-portal-text block truncate">
-                        {prov.code} ({prov.regulator})
-                      </span>
-                      <span className="text-[10px] text-portal-text-muted block font-mono">
-                        {prov.dealersCount} dealers
-                      </span>
-                    </div>
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: prov.color }} />
+                    <span className="text-portal-text truncate">
+                      {prov.province} ({prov.regulator})
+                    </span>
                   </div>
-                  <span className="text-xs font-mono font-bold text-portal-text ml-2 shrink-0">
+                  <span className="font-mono text-portal-text-muted shrink-0">
                     {prov.sharePercent}%
                   </span>
                 </div>
@@ -967,21 +876,21 @@ export function AdminAnalyticsView() {
             })}
           </div>
         </div>
+      </div>
 
-        {/* Card B: Grouped Vertical Bar Chart (City Volume & Clearance Intake) */}
-        <div className="lg:col-span-7 rounded-3xl border border-portal-border bg-portal-surface p-6 shadow-xs flex flex-col justify-between">
+      {/* 4. Regional Sourcing Intake Velocity Bar Chart & Dealership Leaderboard */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        {/* Metropolitan Consignment Velocity (7 Cols) */}
+        <div className="lg:col-span-7 rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-portal-border/60">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-portal-primary" />
-                <h3 className="text-base font-bold text-portal-text font-headline">
-                  Metropolitan Hub Intake & Clearance
-                </h3>
-              </div>
+              <h3 className="text-base font-bold text-portal-text font-headline">
+                Metropolitan Intake & Clearance Velocity
+              </h3>
               <div className="flex items-center gap-3 text-xs font-medium">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-portal-primary/60" />
-                  <span className="text-portal-text-muted">Intake Lots</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-portal-text-muted/40" />
+                  <span className="text-portal-text-muted">Intake</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
@@ -989,53 +898,77 @@ export function AdminAnalyticsView() {
                 </div>
               </div>
             </div>
-            <p className="text-xs text-portal-text-muted mt-2 font-body">
+            <p className="text-xs text-portal-text-muted mt-1.5 font-body">
               Comparing incoming vehicle consignments with completed 24-hour dealer auction clearings by major Canadian metro hub.
             </p>
           </div>
 
-          {/* Grouped Bar Chart Visual Stage */}
-          <div className="my-6 pt-4 space-y-4">
-            <div className="grid grid-cols-7 gap-3 sm:gap-5 items-end h-[180px] px-2">
+          {/* Grouped Bar Chart Visual with Background Gridlines & Explicit Heights */}
+          <div className="my-4 pt-2 relative">
+            {/* Background Gridlines */}
+            <div className="absolute inset-x-0 top-0 h-[150px] flex flex-col justify-between pointer-events-none opacity-40">
+              <div className="border-b border-dashed border-portal-border/60 flex items-center justify-between text-[10px] font-mono text-portal-text-muted px-1">
+                <span>60 lots</span>
+                <span className="opacity-0">60</span>
+              </div>
+              <div className="border-b border-dashed border-portal-border/60 flex items-center justify-between text-[10px] font-mono text-portal-text-muted px-1">
+                <span>40 lots</span>
+                <span className="opacity-0">40</span>
+              </div>
+              <div className="border-b border-dashed border-portal-border/60 flex items-center justify-between text-[10px] font-mono text-portal-text-muted px-1">
+                <span>20 lots</span>
+                <span className="opacity-0">20</span>
+              </div>
+              <div className="border-b border-portal-border" />
+            </div>
+
+            {/* Bars Container */}
+            <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-[175px] px-2 relative z-10">
               {CITY_VOLUME_BARS.map((hub, idx) => {
                 const maxCityLots = 70;
-                const intakeHeight = (hub.intakeLots / maxCityLots) * 100;
-                const clearedHeight = (hub.clearedLots / maxCityLots) * 100;
+                const barAreaHeight = 135; // px max height for bars
+                const intakePx = Math.round((hub.intakeLots / maxCityLots) * barAreaHeight);
+                const clearedPx = Math.round((hub.clearedLots / maxCityLots) * barAreaHeight);
                 const isHovered = hoveredCityIndex === idx;
 
                 return (
                   <div
                     key={hub.city}
-                    className="flex flex-col items-center gap-2 h-full justify-end group cursor-pointer"
+                    className="flex flex-col items-center h-full justify-end group cursor-pointer relative"
                     onMouseEnter={() => setHoveredCityIndex(idx)}
                     onMouseLeave={() => setHoveredCityIndex(null)}
                   >
-                    {/* Tooltip on Hover */}
+                    {/* Floating Tooltip */}
                     {isHovered && (
-                      <div className="text-[10px] font-mono px-2 py-0.5 rounded bg-portal-surface-hover border border-portal-border text-portal-text shadow-sm whitespace-nowrap animate-fadeIn">
-                        {hub.clearancePercent}% clear
+                      <div className="absolute -top-12 z-30 px-2.5 py-1 rounded-lg bg-portal-surface border border-portal-border shadow-lg text-center whitespace-nowrap animate-fadeIn pointer-events-none">
+                        <div className="text-[10px] font-bold text-portal-text font-headline">
+                          {hub.city} • <span className="text-amber-500 font-mono">{hub.clearancePercent}%</span>
+                        </div>
+                        <div className="text-[9px] font-mono text-portal-text-muted">
+                          {hub.clearedLots} cleared / {hub.intakeLots} intake
+                        </div>
                       </div>
                     )}
 
-                    {/* Twin Bar Columns */}
-                    <div className="flex items-end gap-1.5 w-full justify-center">
-                      {/* Bar 1: Intake */}
+                    {/* Bar Columns */}
+                    <div className="flex items-end justify-center gap-1 sm:gap-1.5 w-full pb-1">
+                      {/* Intake Bar (Slate) */}
                       <div
-                        className="w-3 sm:w-4 rounded-full bg-portal-primary/30 transition-all duration-300 group-hover:bg-portal-primary/60"
-                        style={{ height: `${intakeHeight}%` }}
-                        title={`${hub.city}: ${hub.intakeLots} Lots Submitted`}
+                        className="w-2.5 sm:w-3.5 rounded-t-sm bg-portal-text-muted/30 transition-all duration-300 group-hover:bg-portal-text-muted/50"
+                        style={{ height: `${intakePx}px` }}
+                        title={`Intake: ${hub.intakeLots} lots`}
                       />
-                      {/* Bar 2: Cleared (Golden Amber) */}
+                      {/* Cleared Bar (AutoNexa Amber) */}
                       <div
-                        className="w-3 sm:w-4 rounded-full bg-amber-500 transition-all duration-300 group-hover:brightness-110 shadow-2xs"
-                        style={{ height: `${clearedHeight}%` }}
-                        title={`${hub.city}: ${hub.clearedLots} Lots Sold`}
+                        className="w-2.5 sm:w-3.5 rounded-t-sm bg-amber-500 transition-all duration-300 group-hover:bg-amber-400 group-hover:brightness-110 shadow-2xs"
+                        style={{ height: `${clearedPx}px` }}
+                        title={`Cleared: ${hub.clearedLots} lots`}
                       />
                     </div>
 
-                    {/* City Label */}
-                    <div className="text-center">
-                      <span className="text-xs font-bold text-portal-text block truncate max-w-[50px]">
+                    {/* City Labels */}
+                    <div className="text-center pt-1.5 border-t border-portal-border/40 w-full">
+                      <span className="text-[11px] sm:text-xs font-bold text-portal-text block truncate">
                         {hub.city}
                       </span>
                       <span className="text-[10px] text-portal-text-muted font-mono block">
@@ -1048,18 +981,14 @@ export function AdminAnalyticsView() {
             </div>
           </div>
 
-          {/* Bottom City Summary Strip */}
           <div className="pt-3 border-t border-portal-border/60 flex items-center justify-between text-xs font-mono text-portal-text-muted">
-            <span>Peak Clearance: <strong>Markham, ON (94.7%)</strong></span>
-            <span>Total Metropolitan Intake: <strong>278 lots</strong></span>
+            <span>Peak Clearance: <strong className="text-portal-text">Markham, ON (94.7%)</strong></span>
+            <span>Total Intake: <strong className="text-portal-text">278 lots</strong></span>
           </div>
         </div>
-      </div>
 
-      {/* 5. Bottom Row: Dealership Sourcing Leaderboard (Left) + Real-time Wholesale Settlements Table (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Dealership Sourcing Leaderboard (5 Cols) (Inspired by Image 2 Bottom Left) */}
-        <div className="lg:col-span-5 rounded-3xl border border-portal-border bg-portal-surface p-6 shadow-xs space-y-4">
+        {/* Top Dealership Leaderboard (5 Cols) */}
+        <div className="lg:col-span-5 rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-portal-border/60">
             <div>
               <h3 className="text-base font-bold text-portal-text font-headline">
@@ -1078,25 +1007,18 @@ export function AdminAnalyticsView() {
             {LEADERBOARD_DEALERS.map((dealer) => (
               <div
                 key={dealer.name}
-                className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 group"
+                className="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-3 group"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  {/* Monogram Initial Avatar */}
-                  <div className="w-9 h-9 rounded-xl bg-portal-surface-hover border border-portal-border flex items-center justify-center font-headline font-bold text-xs text-portal-text shrink-0 group-hover:border-portal-primary/50 transition-colors">
+                  <div className="w-8 h-8 rounded-xl bg-portal-surface-hover border border-portal-border flex items-center justify-center font-headline font-bold text-xs text-portal-text shrink-0 group-hover:border-portal-primary/50 transition-colors">
                     {dealer.monogram}
                   </div>
-
                   <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-portal-text truncate group-hover:text-portal-primary transition-colors">
-                        {dealer.name}
-                      </span>
-                      <span className="text-[10px] font-mono text-portal-text-muted">
-                        ({dealer.province})
-                      </span>
-                    </div>
+                    <span className="text-xs font-bold text-portal-text truncate block group-hover:text-portal-primary transition-colors">
+                      {dealer.name}
+                    </span>
                     <span className="text-[11px] text-portal-text-muted block truncate font-mono">
-                      {dealer.lotsWon} lots won • {dealer.regulator}
+                      {dealer.lotsWon} lots won • {dealer.province}
                     </span>
                   </div>
                 </div>
@@ -1113,56 +1035,107 @@ export function AdminAnalyticsView() {
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Real-time Settlements Ledger (7 Cols) (Inspired by Image 2 & Image 4 SaaS Table) */}
-        <div className="lg:col-span-7 rounded-3xl border border-portal-border bg-portal-surface shadow-xs overflow-hidden flex flex-col justify-between">
-          {/* Header */}
-          <div className="p-6 border-b border-portal-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-portal-text font-headline">
-                  Recent Wholesale Settlements
-                </h3>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  EFT Verified
-                </span>
-              </div>
-              <p className="text-xs text-portal-text-muted mt-0.5 font-body">
-                Automated escrow disbursements and trade-in surplus releases.
-              </p>
+      {/* 5. Clean SaaS Settlement Ledger Table (Matching Reference Images 4 & 5) */}
+      <div className="rounded-2xl border border-portal-border bg-portal-surface shadow-xs overflow-hidden">
+        {/* Table Header Strip with Search & Filters */}
+        <div className="p-6 border-b border-portal-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h3 className="text-lg font-bold text-portal-text font-headline">
+                Wholesale Settlement Ledger
+              </h3>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-portal-primary/10 text-portal-primary border border-portal-primary/20">
+                {filteredRecords.length} Records
+              </span>
             </div>
-
-            <Link
-              href="/admin/auctions"
-              className="text-xs font-bold text-portal-primary hover:underline inline-flex items-center gap-1 shrink-0"
-            >
-              <span>View All Auctions</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
+            <p className="text-xs text-portal-text-muted mt-1 font-body">
+              Historical record of all verified dealer settlements, automated escrow releases, and trade-in surplus payouts.
+            </p>
           </div>
 
-          {/* Table Surface */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse font-body">
-              <thead>
-                <tr className="border-b border-portal-border/60 bg-portal-surface-hover/30 text-portal-text-muted">
-                  <th className="py-3 pl-6 pr-2 w-10">
-                    <input
-                      type="checkbox"
-                      checked={selectedRows.size === SETTLEMENT_RECORDS.length}
-                      onChange={handleSelectAllRows}
-                      className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
-                    />
-                  </th>
-                  <th className="py-3 px-3 font-semibold">Vehicle Lot</th>
-                  <th className="py-3 px-3 font-semibold">Purchasing Dealer</th>
-                  <th className="py-3 px-3 font-semibold">Amount (CAD)</th>
-                  <th className="py-3 px-3 font-semibold">Seller Surplus</th>
-                  <th className="py-3 pr-6 pl-3 text-right font-semibold">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-portal-border/40">
-                {SETTLEMENT_RECORDS.map((rec) => {
+          {/* Action Tools: Live Search & Status Filters */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="relative w-full sm:w-60">
+              <Search className="w-3.5 h-3.5 text-portal-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search vehicle, dealer, VIN..."
+                value={searchTableQuery}
+                onChange={(e) => setSearchTableQuery(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-portal-border bg-portal-surface-hover/50 text-portal-text text-xs placeholder:text-portal-text-muted focus:outline-none focus:ring-2 focus:ring-portal-primary/30 font-body"
+              />
+            </div>
+
+            <div className="inline-flex items-center p-1 rounded-xl bg-portal-surface-hover border border-portal-border text-xs font-semibold">
+              {(["ALL", "SETTLED", "ESCROW_CLEARED"] as const).map((filter) => (
+                <button
+                  key={filter}
+                  type="button"
+                  onClick={() => setTableStatusFilter(filter)}
+                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                    tableStatusFilter === filter
+                      ? "bg-portal-surface text-portal-text shadow-2xs font-bold"
+                      : "text-portal-text-muted hover:text-portal-text"
+                  }`}
+                >
+                  {filter === "ALL" ? "All" : filter === "SETTLED" ? "Settled" : "Escrow Paid"}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Table Surface */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse font-body">
+            <thead>
+              <tr className="border-b border-portal-border/60 bg-portal-surface-hover/30 text-portal-text-muted">
+                <th className="py-3.5 pl-6 pr-2 w-10">
+                  <input
+                    type="checkbox"
+                    checked={
+                      paginatedRecords.length > 0 &&
+                      paginatedRecords.every((r) => selectedRows.has(r.id))
+                    }
+                    onChange={handleSelectAllRows}
+                    className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
+                  />
+                </th>
+                <SortableHeader
+                  label="Vehicle Lot"
+                  direction={isSorted("vehicle")}
+                  onSort={() => requestSort("vehicle")}
+                />
+                <SortableHeader
+                  label="Purchasing Dealer"
+                  direction={isSorted("buyer")}
+                  onSort={() => requestSort("buyer")}
+                />
+                <SortableHeader
+                  label="Amount (CAD)"
+                  direction={isSorted("amountCents")}
+                  onSort={() => requestSort("amountCents")}
+                />
+                <SortableHeader
+                  label="Seller Surplus"
+                  direction={isSorted("surplusCents")}
+                  onSort={() => requestSort("surplusCents")}
+                />
+                <SortableHeader
+                  label="Status"
+                  direction={isSorted("status")}
+                  onSort={() => requestSort("status")}
+                />
+                <th className="py-3.5 pr-6 pl-4 text-right font-semibold text-portal-text-muted">
+                  Completed
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-portal-border/40">
+              {paginatedRecords.length > 0 ? (
+                paginatedRecords.map((rec) => {
                   const isChecked = selectedRows.has(rec.id);
                   return (
                     <tr
@@ -1172,7 +1145,7 @@ export function AdminAnalyticsView() {
                       }`}
                     >
                       {/* Checkbox */}
-                      <td className="py-3.5 pl-6 pr-2">
+                      <td className="py-4 pl-6 pr-2">
                         <input
                           type="checkbox"
                           checked={isChecked}
@@ -1182,55 +1155,108 @@ export function AdminAnalyticsView() {
                       </td>
 
                       {/* Vehicle Lot */}
-                      <td className="py-3.5 px-3">
-                        <span className="font-semibold text-portal-text block truncate group-hover:text-portal-primary transition-colors max-w-[180px]">
-                          {rec.vehicle}
-                        </span>
-                        <span className="text-[10px] text-portal-text-muted font-mono block mt-0.5">
-                          VIN: ···{rec.vin.slice(-6)}
-                        </span>
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-portal-surface-hover border border-portal-border flex items-center justify-center shrink-0 text-portal-primary">
+                            <Car className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <span className="font-semibold text-portal-text text-sm block group-hover:text-portal-primary transition-colors">
+                              {rec.vehicle}
+                            </span>
+                            <div className="flex items-center gap-1.5 text-xs text-portal-text-muted font-mono mt-0.5">
+                              <span>VIN ···{rec.vin.slice(-6)}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleCopyVin(rec.vin)}
+                                className="hover:text-portal-text cursor-pointer p-0.5"
+                                title="Copy VIN"
+                              >
+                                {copiedId === rec.vin ? (
+                                  <Check className="w-3 h-3 text-emerald-500" />
+                                ) : (
+                                  <Copy className="w-3 h-3" />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </td>
 
-                      {/* Dealer & Regulator */}
-                      <td className="py-3.5 px-3">
-                        <span className="font-medium text-portal-text block truncate max-w-[160px]">
+                      {/* Purchasing Dealer */}
+                      <td className="py-4 px-4">
+                        <span className="font-medium text-portal-text block">
                           {rec.buyer}
                         </span>
-                        <span className="text-[10px] text-portal-text-muted font-mono block mt-0.5">
-                          {rec.regulator} Verified
+                        <span className="text-xs text-portal-text-muted font-mono block mt-0.5">
+                          {rec.regulator}
                         </span>
                       </td>
 
                       {/* Amount */}
-                      <td className="py-3.5 px-3 font-headline font-bold text-portal-text">
+                      <td className="py-4 px-4 font-headline font-bold text-sm text-portal-text">
                         {formatCadCents(rec.amountCents)}
                       </td>
 
-                      {/* Surplus */}
-                      <td className="py-3.5 px-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                      {/* Seller Surplus */}
+                      <td className="py-4 px-4 font-mono font-bold text-emerald-600 dark:text-emerald-400">
                         +{formatCadCents(rec.surplusCents)}
                       </td>
 
-                      {/* Status */}
-                      <td className="py-3.5 pr-6 pl-3 text-right">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          <Check className="w-3 h-3 text-emerald-500" />
-                          <span>{rec.status === "ESCROW_CLEARED" ? "Escrow Paid" : "Settled"}</span>
+                      {/* Soft Pastel Status Pill */}
+                      <td className="py-4 px-4">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                            rec.status === "ESCROW_CLEARED"
+                              ? "bg-indigo-500/10 text-indigo-500 border border-indigo-500/20"
+                              : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              rec.status === "ESCROW_CLEARED" ? "bg-indigo-500" : "bg-emerald-500"
+                            }`}
+                          />
+                          <span>{rec.status === "ESCROW_CLEARED" ? "Escrow Cleared" : "Settled"}</span>
                         </span>
+                      </td>
+
+                      {/* Completed */}
+                      <td className="py-4 pr-6 pl-4 text-right text-portal-text-muted font-mono text-xs">
+                        {rec.completedAt}
                       </td>
                     </tr>
                   );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Footer note */}
-          <div className="p-4 border-t border-portal-border/60 bg-portal-surface-hover/20 flex items-center justify-between text-xs text-portal-text-muted font-mono">
-            <span>Cryptographically sealed under Canadian PIPEDA standards</span>
-            <span className="text-emerald-500 font-bold">100% Non-Repudiation</span>
-          </div>
+                })
+              ) : (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-portal-text-muted">
+                    <Receipt className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                    <p className="text-xs font-medium">No settlements match your search query</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchTableQuery("");
+                        setTableStatusFilter("ALL");
+                      }}
+                      className="text-xs font-semibold text-portal-primary mt-1 hover:underline cursor-pointer"
+                    >
+                      Clear search filters
+                    </button>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
+
+        {/* Table Pagination Footer */}
+        <TablePagination
+          currentPage={currentPage}
+          totalItems={sortedData.length}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

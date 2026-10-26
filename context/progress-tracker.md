@@ -192,13 +192,14 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **Page 6.5: Platform Analytics & Provincial Volume**
   - **Route:** `/admin/analytics`
   - **Component:** `AdminAnalyticsView.tsx`
-  - **Features:** Complete executive analytics dashboard inspired by modern shadcn/SaaS design: Top 4 KPI metric cards with growth badges, gradient Escrow Clearing Vault card ($3.8M CAD reserve), interactive SVG spline area curve chart with floating hover tooltips, provincial market share SVG donut chart with interactive hover arcs and legend pills, metropolitan hub intake vs. clearance grouped bar chart, top sourcing dealership leaderboard, and real-time wholesale settlements data table.
+  - **Features:** Complete executive analytics dashboard inspired by modern shadcn/SaaS design: Unified top 4 metric ribbon matching reference specification (Gross Merchandise Value, Total Transactions, Completed Clearance, Bidding Velocity with side-by-side equalized `w-12 h-12` icons), interactive AutoNexa Honey Amber (`#E59344`) & Autumn Wine (`#8C383E`) SVG spline area curve chart with floating tooltips and timeframe toggles, provincial market share SVG donut chart with interactive hover arcs and legend pills, metropolitan hub intake vs. clearance grouped bar chart, top sourcing dealership leaderboard, and Image 4/5 reference-parity Wholesale Settlement Ledger with live search, status filters, multi-row selection, VIN copy, sortable headers (`useTableSort`), and `<TablePagination />`.
 - [x] **Universal Modern SaaS Table System (Reference Design Parity)**
   - **Components:** `components/ui/SortableHeader.tsx`, `components/ui/TablePagination.tsx`, `hooks/useTableSort.ts`
   - **Implemented in:**
     - `components/admin/DealerVerificationView.tsx` (`/admin/dealers`)
     - `components/admin/AdminAuctionsView.tsx` (`/admin/auctions`)
     - `components/admin/AdminAuditLogView.tsx` (`/admin/audit-log`)
+    - `components/admin/AdminAnalyticsView.tsx` (`/admin/analytics`)
     - `components/dealer/DealerBillingView.tsx` (`/dealer/billing`)
   - **Features:** Card header container with `{count} Total` pill, subtitle, search bar, and action toolbars. Interactive multi-select checkboxes on every row and select-all in header. Single-line scanability without text cramming (icon/thumbnail badges, soft pastel status pills, formatted integer CAD cents). Dedicated SaaS pagination footer with page buttons, ellipses, previous/next buttons, and results count. Type-safe 3-state column sorting.
 
