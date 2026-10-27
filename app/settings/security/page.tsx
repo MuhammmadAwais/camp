@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function SecuritySettingsPage() {
-  return <ProfileSettingsView />;
+  return <ProfileSettingsView defaultTab="SECURITY" />;
 }

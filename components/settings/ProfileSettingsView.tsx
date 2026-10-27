@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -29,9 +29,14 @@ import { useAuth } from "@/lib/auth-context";
 
 type SettingsTab = "GENERAL" | "SECURITY" | "COMPLIANCE" | "NOTIFICATIONS";
 
-export function ProfileSettingsView() {
+interface ProfileSettingsContentProps {
+  defaultTab?: SettingsTab;
+}
+
+function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") === "security" ? "SECURITY" : "GENERAL";
+  const queryTab = searchParams.get("tab") === "security" ? "SECURITY" : "GENERAL";
+  const initialTab = defaultTab || queryTab;
   const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
 
   const { user, role } = useAuth();
@@ -638,3 +643,22 @@ export function ProfileSettingsView() {
     </div>
   );
 }
+
+export interface ProfileSettingsViewProps {
+  defaultTab?: SettingsTab;
+}
+
+export function ProfileSettingsView({ defaultTab }: ProfileSettingsViewProps = {}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-portal-canvas flex items-center justify-center p-8">
+          <div className="w-8 h-8 rounded-full border-2 border-portal-primary border-t-transparent animate-spin" />
+        </div>
+      }
+    >
+      <ProfileSettingsContent defaultTab={defaultTab} />
+    </Suspense>
+  );
+}
+
