@@ -35,6 +35,7 @@ Last updated: 2026-10-27 15:13:00
 - **Sidebar Clutter on Legal Views:** Removed the Table of Contents rail and pill switcher to prevent navigation redundancy alongside the persistent application sidebar.
 - **Sidebar Avatar & Shadow Bleed:** Eliminated dark shadow box-shadow overflow on collapsed sidebar item hover and fixed avatar clip in the profile badge.
 - **Production Build Suspense CSR Bailout:** Wrapped `ProfileSettingsView` in `<Suspense>` boundary to prevent Next.js static prerender bailouts from `useSearchParams()`.
+- **React 19 Raw Script Warning:** Migrated inline theme script in `app/layout.tsx` to Next.js `<Script strategy="beforeInteractive">`.
 
 ## Current state
 
