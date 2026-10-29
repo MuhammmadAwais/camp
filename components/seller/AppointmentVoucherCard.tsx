@@ -456,6 +456,7 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
             {voucher.checklist.map((item, idx) => {
               const isChecked = !!checkedItems[idx];
               return (
+                
                 <div
                   key={idx}
                   onClick={() => toggleCheck(idx)}
