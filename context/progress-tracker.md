@@ -228,12 +228,12 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 1. Read `context/architecture.md`, `context/code-standards.md`, and ONLY the files listed in Prompt B#.#.
 2. Follow all production invariants (4-layer architecture, handleApiRoute error boundary, integer BIGINT CAD cents, sealed-bid secrecy, Zod validation, versioned SQL migrations in `supabase/migrations/`).
 3. Run the exact Exit Gate checks for Prompt B#.# (`npx tsc --noEmit` + listed tests/verifications).
-4. Once green, check off Prompt B#.# in `context/progress-tracker.md`, update "Next Prompt", create a clean conventional `git commit` on `feat/supabase-backend` (verifying `.env` is never staged), and report exact files changed + verification results.
+4. Once green, check off Prompt B#.# in `context/progress-tracker.md`, update "Next Prompt", create a clean conventional `git commit` and `git push origin feat/supabase-backend` (verifying `.env` is never staged and `main` is never touched), and report exact files changed + verification results.
 ```
 
 ### AI Engineering Rules for This Roadmap
 - **One Vertical Slice at a Time:** Never ask the agent to build multiple phases in one prompt. Each Prompt Unit below is sized to ~3–6 files or 1 cohesive SQL migration + service + route + UI hook.
-- **Auto-Commit Per Verified Prompt:** After every Prompt Unit passes its Exit Gate and is checked off in `context/progress-tracker.md`, always create a clean conventional commit on `feat/supabase-backend` (e.g., `feat(backend): complete Prompt B1.2 core schema migrations`). Never commit `.env` or secret values; never push to `main`.
+- **Auto-Commit & Push Per Verified Prompt:** After every Prompt Unit passes its Exit Gate and is checked off in `context/progress-tracker.md`, always create a clean conventional commit on `feat/supabase-backend` (e.g., `feat(backend): complete Prompt B1.2 core schema migrations`) and push to `origin feat/supabase-backend`. Never commit `.env` or secret values; never push to `main` (which remains the live Vercel production branch).
 - **No Unversioned DB Edits:** Every schema, RLS, index, RPC, or `pg_cron` change MUST be saved under `supabase/migrations/00XX_*.sql` AND applied to Supabase (via Supabase MCP `apply_migration` or CLI).
 - **Load Supabase Skills Before SQL:** Before running `B1.2`, `B1.3`, `B5.1`, `B6.2`, or `B8.2`, load the `supabase` and `supabase-postgres-best-practices` skills.
 - **Zero Crash Guarantee:** Every `app/api/**` handler wraps in `handleApiRoute(...)` and throws typed `AppError` subclasses (`lib/server/errors.ts`). No raw DB errors or stack traces ever leave the server.
