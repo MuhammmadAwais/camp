@@ -38,7 +38,29 @@ The AI agent on this project operates as a senior engineer. This means:
 - **Data Fetching:**
   - Server Components: Use native `fetch` with Next.js caching options.
   - Client Components: Use TanStack Query exclusively. Never fetch in a bare `useEffect`.
-- **No Server Actions for API Mutations:** Our backend is a decoupled Node.js/Express REST API. We use TanStack `useMutation` pointing to our Next.js API route proxies or directly to the backend. We do not use Next.js Server Actions (`"use server"`) for standard CRUD.
+- **No Server Actions for API Mutations:** All mutations run through TanStack `useMutation` calling `app/api/**` Route Handlers via `lib/api-client.ts`. Do not use Next.js Server Actions (`"use server"`) for standard CRUD — keeping `/api/*` REST contracts explicit, testable, and portable for Senior Engineer review.
+
+---
+
+## Backend & Server Architecture Rules (`app/api/**` & `lib/server/**`)
+
+Every backend file built on `feat/supabase-backend` MUST follow these production system-design standards:
+
+1. **Strict Layer Separation:**
+   - `app/api/**/route.ts` — Thin HTTP controllers only: parse/validate input with Zod, check auth/RBAC, delegate to a service, return standardized JSON. Zero business logic or raw SQL inside route files.
+   - `lib/server/services/*.ts` — Pure domain logic (auction transitions, bidding rules, moderation, fulfillment, audit logging). Independently unit-testable with Vitest.
+   - `lib/server/adapters/*.ts` — External vendor boundaries (`storage`, `vin`, `geo`, `kyc`, `billing`, `notification`). Must implement a typed interface, handle timeouts gracefully, and NEVER crash the request if an optional vendor key is absent.
+   - `lib/supabase/` — `client.ts` (browser Realtime/Auth only), `server.ts` (per-request `@supabase/ssr` client honoring RLS), `admin.ts` (service-role client — server-only, explicitly justified per call site).
+2. **Zero Unhandled Crashes:**
+   - Every Route Handler MUST be wrapped in `handleApiRoute(...)` (`lib/server/http.ts`).
+   - Throw typed `AppError` subclasses (`ValidationError`, `UnauthorizedError`, `ForbiddenError`, `NotFoundError`, `ConflictError`, `PaymentRequiredError`, `RateLimitError`) with stable machine-readable error codes (`BID_MUST_INCREASE`, `AUCTION_NOT_ACTIVE`, `SUBSCRIPTION_PAST_DUE`, etc.) so frontend i18n maps them cleanly.
+   - Never leak raw Postgres errors, stack traces, or internal column names to API responses.
+3. **Database & Migration Discipline:**
+   - Every schema, RLS, index, RPC, and `pg_cron` change MUST be saved in ordered SQL files under `supabase/migrations/` — zero ad-hoc untracked dashboard edits.
+   - Every table storing CAD money MUST use `BIGINT` (`*_cents`) with `CHECK (*_cents >= 0)` (or `> 0` for bids).
+   - Never bypass RLS casually: use the user-scoped `createServerSupabaseClient()` by default; use `createAdminSupabaseClient()` ONLY for verified webhooks, system jobs, or explicitly role-checked admin operations.
+4. **Transparent Senior Handoff Comments:**
+   - Whenever a Phase 1/reference shortcut is taken intentionally (e.g., Supabase Storage before dedicated AWS S3, seeded postal centroids before Google Geocoding API, sandbox KYC), annotate the exact line with `// TODO(senior-review): <production upgrade note>`.
 
 ---
 
@@ -183,9 +205,13 @@ Approved dependencies for this project:
 - `@tanstack/react-query` — Server state
 - `zustand` — Client state
 - `react-hook-form`, `@hookform/resolvers/zod`, `zod` — Forms and Validation
-- `next-intl` — Bilingual localization
-- `browser-image-compression` — S3 photo compression/EXIF stripping
+- `next-intl` — Bilingual localization (Phase B10)
+- `browser-image-compression` — Client-side photo compression/EXIF stripping
 - `tailwindcss`, `lucide-react`, `clsx`, `tailwind-merge` — Styling & UI
 - Radix UI primitives (`@radix-ui/react-*`) — Accessible headless components
+- `@supabase/supabase-js`, `@supabase/ssr` — Supabase Postgres, Auth, Realtime & Storage (`ca-central-1`)
+- `stripe` — Dealership CAD SaaS subscription billing & verified webhooks (Phase B7)
+- `vitest` — Unit, service, and RLS isolation test suite (Phase B9)
+- *(Optional Phase B8 production adapters)* `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`, `@upstash/ratelimit`, `@upstash/redis`
 
 Do not install any other packages without updating this list first.

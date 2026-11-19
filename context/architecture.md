@@ -4,15 +4,64 @@
 
 | Layer | Tool | Purpose |
 | :--- | :--- | :--- |
-| **Framework** | Next.js 15 (App Router) | Full-stack framework, SSR for marketing SEO, API route proxies |
+| **Framework** | Next.js 16 (App Router) on Vercel | Full-stack framework, SSR for marketing SEO, BFF Route Handlers (`app/api/**`) |
 | **Styling** | Tailwind CSS v4 + Shadcn UI | Zero-runtime CSS, accessible headless UI primitives |
-| **Server State** | TanStack Query v5 | Data fetching, caching, background polling, optimistic updates |
-| **Client State** | Zustand | Multi-step form state (Listing Wizard), UI toggles (minimal footprint) |
-| **Forms & Validation**| React Hook Form + Zod | Uncontrolled form inputs, shared schema validation with backend |
-| **Localization** | `next-intl` | Server-rendered bilingual routing (`/en`, `/fr`) for Quebec Law 25 |
-| **Real-time Sync** | Server-Sent Events (SSE) | Unidirectional stream for live bid counts and authoritative countdowns |
-| **Client Compression**| `browser-image-compression` | Downscaling & EXIF stripping of photos before S3 upload |
-| **Backend API** | Node.js + Express (External) | Source of truth, REST API, MySQL ACID transactions, BullMQ jobs |
+| **Server State** | TanStack Query v5 | Data fetching, caching, optimistic updates, cache invalidation |
+| **Client State** | Zustand | Multi-step form state (Listing Wizard), ephemeral UI toggles only |
+| **Forms & Validation** | React Hook Form + Zod | Uncontrolled form inputs + strict server/client schema validation |
+| **Localization** | `next-intl` *(Phase B10)* | Bilingual routing (`/en`, `/fr`) for Quebec Law 25 parity; backend is i18n-ready (`language_pref`, structured error codes) from Day 1 |
+| **Backend & Database** | **Supabase Cloud (AWS `ca-central-1` Montreal)** | Managed PostgreSQL 16 + PostGIS (`ST_DWithin`), Row-Level Security (RLS), atomic PL/pgSQL RPCs, `pg_cron` sweeps |
+| **Auth & MFA** | **Supabase Auth (`@supabase/ssr`)** | HttpOnly secure cookie sessions refreshed in `proxy.ts`, JWT role/dealership claims, native TOTP MFA (NFR-06) |
+| **Real-time Sync** | **Supabase Realtime** | WebSocket subscription to `listings.bid_count`, `status`, and authoritative `auction_ends_at` (zero bid dollar amounts broadcast) |
+| **Media & Compression** | `browser-image-compression` + Storage Adapter | Client-side WebP downscaling & EXIF stripping → Direct PUT to signed upload URLs (`Supabase Storage ca-central-1` in MVP, drop-in `AWS S3 ca-central-1` adapter) |
+| **Payments** | Stripe Billing (CAD) | Dealership SaaS subscription checkout, portal, idempotent signature-verified webhooks (`/api/webhooks/stripe`) |
+
+---
+
+## Backend Reference Architecture (Scenario 3 — Next.js 16 + Supabase `ca-central-1`)
+
+> Authoritative blueprint: `docs/architecture/backend/03-nextjs-supabase-vercel.md` and `docs/specifications/SRS_Car_Auction_Marketplace.pdf`.
+> Built on branch `feat/supabase-backend` (keeping `main` untouched on Vercel with mock APIs until Senior Backend Engineer review & production promotion).
+
+### Strict 4-Layer Server Architecture (Crash-Proof & Senior-Reviewable)
+
+```text
+React Components (Presentation only — never call Supabase DB directly)
+       │
+       ├── TanStack Query hooks (hooks/*) ──► lib/api-client.ts ──► app/api/**/route.ts  [Layer 1: Thin HTTP Controllers]
+       │                                                                   │               (Zod parse, handleApiRoute wrapper, RBAC guard)
+       │                                                                   ▼
+       │                                                       lib/server/services/*.ts   [Layer 2: Pure Domain Services]
+       │                                                                   │               (Business rules BR-01..14, unit-testable, audit logging)
+       │                                                      ┌────────────┴────────────┐
+       │                                                      ▼                         ▼
+       │                                        lib/supabase/{server,admin}.ts   lib/server/adapters/*.ts  [Layer 3: Infrastructure & External Adapters]
+       │                                        (Typed DB queries & RPC calls)   (Storage, VIN, Geo, KYC, Stripe, Notifications — never crash on missing keys)
+       │                                                      │
+       │                                                      ▼
+       │                                        Supabase Postgres 16 + PostGIS + RLS + Atomic RPCs + pg_cron  [Layer 4: Database Engine (ca-central-1)]
+       │
+       ├── Live Bid Count Telemetry ──────────► Supabase Realtime WebSocket (listings.bid_count & status ONLY)
+       └── Direct Photo Upload ───────────────► Signed Upload URL (direct browser PUT; photos never transit Next.js)
+```
+
+### Canonical Domain Contracts (Reconciled SRS + Built UI)
+
+1. **Listing Status State Machine (`listing_status` Postgres enum):**
+   `DRAFT` → `PENDING_MODERATION` → (`EDITS_REQUESTED` | `REJECTED` | `ACTIVE`) → `UNSEALED` → (`ACCEPTED` | `EXPIRED`) → `COMPLETED` | `CANCELLED`
+   - Supports relisting via `relist_count` + `parent_listing_id` (FR-EU-13 / BR-12).
+   - Enforces **BR-02 (one active listing per VIN)** via a partial unique index on `listings(vin)` where `status IN ('PENDING_MODERATION', 'ACTIVE', 'UNSEALED', 'ACCEPTED')`.
+2. **Two-Level Dealership RBAC:**
+   - Top-level `profiles.role` (and JWT claim): `SELLER | DEALER_ADMIN | DEALER_AGENT | ADMIN` (drives RLS, `proxy.ts` routing, and mandatory TOTP MFA for `ADMIN`/`DEALER_ADMIN`).
+   - Granular seat permission in `dealership_members.seat_role`: `DEALER_ADMIN | DEALER_BUYER | DEALER_INSPECTOR` (inspectors cannot place bids; only `DEALER_ADMIN` manages billing & team).
+3. **Configurable Platform Timers (`platform_config` table — FR-AD-08):**
+   - `auction_duration_hours = 24` (BR-03), `acceptance_window_hours = 24` (BR-08), `relist_cooldown_hours = 24` (BR-12), `min_photo_count = 8` (FR-EU-05), `default_radius_km = 100`.
+4. **Crash-Proof API Envelope & Error Boundary:**
+   - Every `app/api/**/route.ts` MUST wrap execution in `handleApiRoute(request, handler)` (`lib/server/http.ts`) which catches `AppError`, `ZodError`, and unexpected errors, logs structured JSON with `requestId`, and ALWAYS returns `{ data }` on success or `{ error: { code, message, fields?, requestId } }` — never raw stack traces or unhandled 500 HTML pages.
+5. **Defense-in-Depth Security:**
+   - Sealed-bid secrecy (H1 / BR-04) is enforced **twice**: at the Postgres RLS/View layer AND in `lib/server/services/listing.service.ts` response serialization.
+   - All financial mutations (`submit_dealer_bid`, `accept_dealer_bid`, Stripe webhooks) require idempotency keys and row-level locking (`SELECT ... FOR UPDATE`).
+   - `SUPABASE_SERVICE_ROLE_KEY` is strictly server-only (`lib/supabase/admin.ts`), never imported in client code, and only used where cross-tenant/system writes are explicitly required (e.g., webhooks, admin overrides, `pg_cron` reconciliation).
 
 ---
 
@@ -128,8 +177,9 @@ The frontend expects the backend API to adhere to these data contracts:
 ## Invariants
 Rules the Antigravity AI agent must never violate:
 
-*   **No Floating Point Math:** Never use standard JS floats for CAD currency. Always perform calculations on integers (cents) and format to decimals only at the very last step in the UI.
-*   **No Generic Polling:** Do not use `setInterval` to poll the API for bid updates. Use the SSE listener utility in `lib/sse.ts`.
-*   **No Direct Node.js Database Queries:** The Next.js app is decoupled. It communicates exclusively with the Express backend REST API via standard HTTP fetches. Do not write Prisma/MySQL code in Next.js `app/api`.
-*   **Zustand vs TanStack:** Never store server responses in Zustand. Server data belongs in TanStack Query. Zustand is only for local UI state.
-*   **Sealed Bid Secrecy:** Never attempt to render "Highest Bid" or "Current Bid Amount" while an auction is `ACTIVE`. The UI must only render the Bid Count.
+*   **No Floating Point Math:** Never use standard JS floats for CAD currency. Always store/process as integer cents (`BIGINT` in Postgres, `number` integer cents in TypeScript) and format to decimals only at the very last step in the UI.
+*   **No Generic Polling:** Do not use `setInterval` to poll the API for live bid counts or countdown clocks. Use Supabase Realtime (`hooks/useAuctionRealtime.ts`) synced to authoritative server `auction_ends_at`.
+*   **Strict Server Layering (No DB Calls in React Components):** React components NEVER call `supabase.from(...)` directly. All CRUD & mutations go through TanStack Query hooks → `lib/api-client.ts` → `app/api/**/route.ts` → `lib/server/services/*.ts` → Supabase/Postgres RPCs. Browser Supabase client is strictly limited to Realtime subscriptions and Auth/MFA helpers.
+*   **Zero Unhandled Crashes:** Every Route Handler MUST run inside `handleApiRoute(...)` with Zod validation and typed `AppError` handling so raw DB errors or stack traces never escape.
+*   **Zustand vs TanStack:** Never store server responses in Zustand. Server data belongs in TanStack Query. Zustand is only for local UI state (e.g., listing wizard draft).
+*   **Sealed Bid Secrecy (Defense-in-Depth):** Never return or render "Highest Bid" or individual bid amounts/dealer identities while an auction is `ACTIVE`. Enforced simultaneously by Postgres RLS/Views AND `lib/server/services/listing.service.ts`. Only `bidCount` is exposed.
