@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B1.1 Complete) — **Next Prompt: `Prompt B1.2`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B1.2 Complete) — **Next Prompt: `Prompt B1.3`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -246,7 +246,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | Part | Phase | Prompt ID | Deliverable (Build From → To) | Milestone Tier | Est. Time | Status |
 |---|---|---|---|---|---:|:---:|
 | **I** | **B1** | `Prompt B1.1` | Git branch `feat/supabase-backend`, deps, Zod env, server error/HTTP kernel, Supabase clients | **PM Demo (Day 1)** | 2–3 hrs | [x] |
-| **I** | **B1** | `Prompt B1.2` | Provision Supabase `ca-central-1` + Core SQL migrations (`0001`–`0003`: enums, 20 tables, constraints, PostGIS indexes) | **PM Demo (Day 1)** | 3–4 hrs | [ ] |
+| **I** | **B1** | `Prompt B1.2` | Provision Supabase `ca-central-1` + Core SQL migrations (`0001`–`0003`: enums, 20 tables, constraints, PostGIS indexes) | **PM Demo (Day 1)** | 3–4 hrs | [x] |
 | **I** | **B1** | `Prompt B1.3` | Airtight RLS (`0004`), Atomic RPCs (`0005`), `pg_cron` + Realtime (`0006`), Demo seed (`0007`), generated TS types | **PM Demo (Day 1)** | 3–4 hrs | [ ] |
 | **I** | **B2** | `Prompt B2.1` | Server RBAC guard (`lib/server/auth.ts`), `proxy.ts` cookie refresh + role routing, cookie-only `api-client.ts` | **PM Demo (Day 2)** | 2–3 hrs | [ ] |
 | **I** | **B2** | `Prompt B2.2` | Real `/api/auth/*` routes + `auth.service.ts` backed by Supabase Auth, `profiles`, and PIPEDA/CASL consents | **PM Demo (Day 2)** | 3–4 hrs | [ ] |
@@ -297,7 +297,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **Invariants:** Never expose `SUPABASE_SERVICE_ROLE_KEY` to `NEXT_PUBLIC_*` or client imports; every error maps to stable machine code.
   - **Exit Gate:** `git branch` confirms `feat/supabase-backend`, `npx tsc --noEmit` passes with 0 errors, `npm run build` passes.
 
-- [ ] **`Prompt B1.2` — Provision Supabase `ca-central-1` & Core Schema Migrations (`0001`–`0003`)**
+- [x] **`Prompt B1.2` — Provision Supabase `ca-central-1` & Core Schema Migrations (`0001`–`0003`)**
   - **Build From → To:** Empty Supabase `ca-central-1` (Montreal) project → all 20 normalized SRS + UI tables deployed via ordered migrations with `BIGINT` cents constraints, partial unique VIN index, and PostGIS GiST indexes.
   - **Migrations to Create & Apply:**
     - `supabase/migrations/0001_extensions_and_enums.sql` — Enable `postgis`, `pg_cron`, `pgcrypto`; define canonical enums (`user_role`, `dealer_seat_role`, `kyc_status`, `dealership_status`, `regulator_code`, `listing_status` [10 states], `damage_severity`, `bid_status`, `match_outcome`, `dispute_status`, `dispute_category`, `subscription_status`, `notification_type`).
