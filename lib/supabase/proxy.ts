@@ -38,6 +38,10 @@ function redirectWithCookies(
  * and enforces portal-level authentication and RBAC redirects.
  */
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
+  if (request.nextUrl.pathname.startsWith("/api/webhooks/")) {
+    return NextResponse.next({ request });
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const publishableKey =
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??

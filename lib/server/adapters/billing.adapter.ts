@@ -35,8 +35,7 @@ export function isStripeConfigured(): boolean {
 }
 
 export function isStripeWebhookConfigured(): boolean {
-  const env = getServerEnv();
-  return Boolean(env.stripeSecretKey && env.stripeWebhookSecret);
+  return Boolean(getServerEnv().stripeWebhookSecret);
 }
 
 async function ensureStripeCustomerId(
@@ -220,13 +219,32 @@ export async function createBillingPortalSession(
 }
 
 /**
- * Verifies Stripe webhook HMAC signatures against the raw request body.
+ * Retrieves an active Stripe Subscription when `STRIPE_SECRET_KEY` is configured.
+ * Returns null gracefully when Stripe API keys are absent (e.g., signed test webhooks).
+ */
+export async function retrieveStripeSubscription(
+  stripeSubscriptionId: string
+): Promise<Stripe.Subscription | null> {
+  if (!isStripeConfigured()) {
+    return null;
+  }
+
+  try {
+    const stripe = getStripeClient();
+    return await stripe.subscriptions.retrieve(stripeSubscriptionId);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Verifies Stripe webhook HMAC signatures against the raw request body using
+ * `STRIPE_WEBHOOK_SECRET` (does not require `STRIPE_SECRET_KEY`).
  */
 export function constructWebhookEvent(
   rawBody: string | Buffer,
   signatureHeader: string | null
 ): Stripe.Event {
-  const stripe = getStripeClient();
   const { stripeWebhookSecret } = getServerEnv();
 
   if (!stripeWebhookSecret) {
@@ -245,7 +263,7 @@ export function constructWebhookEvent(
   }
 
   try {
-    return stripe.webhooks.constructEvent(
+    return Stripe.webhooks.constructEvent(
       rawBody,
       signatureHeader,
       stripeWebhookSecret

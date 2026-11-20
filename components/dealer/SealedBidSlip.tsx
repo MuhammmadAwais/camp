@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Gavel,
   Lock,
@@ -10,6 +11,7 @@ import {
   X,
   RefreshCw,
 } from "lucide-react";
+import { ApiError } from "@/lib/api-client";
 import { formatCadCents } from "@/lib/utils";
 import type { WholesaleAuctionItem } from "@/lib/types/dealer";
 import { usePlaceSealedBid } from "@/hooks/useDealerInventory";
@@ -49,6 +51,10 @@ export function SealedBidSlip({
   const [bidCents, setBidCents] = useState(suggestedInitialCents);
   const [declaration, setDeclaration] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [errorAction, setErrorAction] = useState<{
+    href: string;
+    label: string;
+  } | null>(null);
 
   const placeBidMutation = usePlaceSealedBid();
   const pendingKeyRef = useRef<{
@@ -83,6 +89,7 @@ export function SealedBidSlip({
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawVal = e.target.value.replace(/\D/g, "");
     setErrorMsg(null);
+    setErrorAction(null);
     if (!rawVal) {
       setDisplayAmount("");
       setBidCents(0);
@@ -97,6 +104,7 @@ export function SealedBidSlip({
   // Quick increment chips
   const addIncrement = (incrementCents: number) => {
     setErrorMsg(null);
+    setErrorAction(null);
     const nextCents = Math.max(strictMinBidCents, bidCents + incrementCents);
     setBidCents(nextCents);
     setDisplayAmount(Math.round(nextCents / 100).toLocaleString("en-CA"));
@@ -106,6 +114,7 @@ export function SealedBidSlip({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+    setErrorAction(null);
 
     if (auction.myCurrentBidCents && bidCents <= auction.myCurrentBidCents) {
       setErrorMsg(
@@ -151,6 +160,19 @@ export function SealedBidSlip({
       onBidSuccess(receipt.auctionId, receipt.bidAmountCents);
       onClose();
     } catch (err: unknown) {
+      if (err instanceof ApiError) {
+        if (err.failure.code === "SUBSCRIPTION_PAST_DUE") {
+          setErrorAction({
+            href: "/dealer/billing",
+            label: "Resolve Billing →",
+          });
+        } else if (err.failure.code === "QUOTA_EXCEEDED") {
+          setErrorAction({
+            href: "/dealer/subscription",
+            label: "Upgrade Plan →",
+          });
+        }
+      }
       setErrorMsg(
         err instanceof Error ? err.message : "Failed to submit sealed bid."
       );
@@ -314,9 +336,20 @@ export function SealedBidSlip({
 
           {/* Error Message */}
           {errorMsg && (
-            <div className="p-3 bg-portal-surface-hover border border-error/30 rounded-xl flex items-center gap-2 text-xs text-error">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{errorMsg}</span>
+            <div className="p-3 bg-portal-surface-hover border border-error/30 rounded-xl flex items-start gap-2 text-xs text-error">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <div className="flex-1 space-y-1">
+                <p>{errorMsg}</p>
+                {errorAction && (
+                  <Link
+                    href={errorAction.href}
+                    onClick={onClose}
+                    className="inline-flex items-center gap-1 font-semibold text-portal-primary hover:underline"
+                  >
+                    {errorAction.label}
+                  </Link>
+                )}
+              </div>
             </div>
           )}
 

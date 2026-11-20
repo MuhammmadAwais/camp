@@ -135,13 +135,15 @@ function mapBidRpcError(error: RpcErrorLike): never {
   if (raw.startsWith("SUBSCRIPTION_PAST_DUE")) {
     throw new PaymentRequiredError(
       "Your dealership subscription is inactive or past due. Please update billing to continue bidding.",
-      "SUBSCRIPTION_PAST_DUE"
+      "SUBSCRIPTION_PAST_DUE",
+      { actionUrl: "/dealer/billing" }
     );
   }
   if (raw.startsWith("QUOTA_EXCEEDED")) {
     throw new PaymentRequiredError(
       "Your monthly dealership bid quota has been exhausted. Upgrade your plan to place more bids.",
-      "QUOTA_EXCEEDED"
+      "QUOTA_EXCEEDED",
+      { actionUrl: "/dealer/subscription" }
     );
   }
   if (error.code === "23505") {
