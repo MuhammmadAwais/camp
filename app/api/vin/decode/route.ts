@@ -3,6 +3,7 @@ import { z } from "zod";
 import { decodeVin } from "@/lib/server/adapters/vin.adapter";
 import { AppError } from "@/lib/server/errors";
 import { handleApiRoute, ok, parseBody } from "@/lib/server/http";
+import { enforceRateLimit, rateLimitHeaders } from "@/lib/server/rate-limit";
 
 const vinRequestSchema = z.object({
   vin: z.unknown().optional(),
@@ -14,6 +15,7 @@ const vinRequestSchema = z.object({
  * and NHTSA vPIC with a 3-second timeout + manual fallback (FR-EU-03 / AC-01).
  */
 export const POST = handleApiRoute(async (request: NextRequest) => {
+  const rl = await enforceRateLimit(request, "vin_decode");
   const body = await parseBody(request, vinRequestSchema);
   if (typeof body.vin !== "string" || body.vin.trim().length === 0) {
     throw new AppError({
@@ -38,6 +40,6 @@ export const POST = handleApiRoute(async (request: NextRequest) => {
       fallbackManual: result.fallbackManual,
     },
     200,
-    { "X-VIN-Cache": cacheHeader }
+    { "X-VIN-Cache": cacheHeader, ...rateLimitHeaders(rl) }
   );
 });
