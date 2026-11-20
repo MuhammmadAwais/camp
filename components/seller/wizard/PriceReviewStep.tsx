@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   DollarSign,
   ShieldCheck,
@@ -19,6 +20,7 @@ import {
 import { useListingWizardStore } from "@/store/useListingWizardStore";
 import { formatCadCents } from "@/lib/utils";
 import { apiClient } from "@/lib/api-client";
+import { sellerKeys } from "@/lib/query-keys";
 
 interface PriceReviewStepProps {
   onBack: () => void;
@@ -26,6 +28,7 @@ interface PriceReviewStepProps {
 
 export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const {
     vin,
     postalCode,
@@ -153,12 +156,28 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
         model: decodedVehicle?.model,
         trim: decodedVehicle?.trim || "",
         bodyStyle: decodedVehicle?.bodyStyle || "",
+        engine: decodedVehicle?.engine || null,
         transmission: specs.transmission || decodedVehicle?.transmission || "Automatic",
         drivetrain: specs.drivetrain || decodedVehicle?.drivetrain || "AWD",
         fuelType: decodedVehicle?.fuelType || "Gasoline",
+        exteriorColor: specs.exteriorColor || null,
+        interiorColor: specs.interiorColor || null,
+        keysCount: specs.keysCount,
+        accidentDeclaration: specs.accidentDeclaration,
+        accidentCount: specs.accidentCount,
+        accidentDetails: specs.accidentDetails,
+        hasLien: specs.hasLien,
+        lienDetails: specs.lienDetails,
         mileageKm: specs.mileageKm || 0,
         reservePriceCents: isNoReserve ? 0 : reservePriceCents,
         damageHotspots,
+        photos: photos.map((p) => ({
+          storageKey: p.s3Key,
+          publicUrl: p.previewUrl,
+          fileName: p.fileName,
+          fileSizeBytes: p.fileSizeBytes,
+          isCover: p.isCover,
+        })),
         photoUrls: photos.map((p) => p.previewUrl),
         coverPhotoUrl: coverPhoto?.previewUrl || photos[0]?.previewUrl || "",
         declarationOwnerAttested,
@@ -168,7 +187,7 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
 
       const res = await apiClient.api.post<{
         id: string;
-        auctionEndsAt: string;
+        auctionEndsAt: string | null;
         message: string;
       }>("/api/listings", payload);
 
@@ -176,10 +195,11 @@ export function PriceReviewStep({ onBack }: PriceReviewStepProps) {
         throw new Error(res.error || "Failed to submit vehicle listing");
       }
 
+      await queryClient.invalidateQueries({ queryKey: sellerKeys.dashboard() });
       markStepComplete("pricing");
       setSubmittedData({
         id: res.data.id,
-        auctionEndsAt: res.data.auctionEndsAt,
+        auctionEndsAt: res.data.auctionEndsAt ?? "",
         message: res.data.message,
       });
     } catch (err: unknown) {

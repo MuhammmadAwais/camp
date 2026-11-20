@@ -1,10 +1,13 @@
 export type AuctionStatus =
   | "DRAFT"
   | "PENDING_MODERATION"
+  | "EDITS_REQUESTED"
+  | "REJECTED"
   | "ACTIVE"
   | "UNSEALED"
   | "ACCEPTED"
   | "COMPLETED"
+  | "EXPIRED"
   | "CANCELLED";
 
 export type SellerAuctionItem = {
