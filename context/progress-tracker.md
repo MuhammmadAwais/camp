@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B3.2 Complete) — **Next Prompt: `Prompt B3.3`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B3.3 Complete) — **Next Prompt: `Prompt B4.1`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -253,7 +253,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B2** | `Prompt B2.3` | Storage adapter (`ca-central-1` buckets + signed PUT URLs), real `/api/listings/media/presign`, real `/api/kyc/*` | **PM Demo (Day 2)** | 2–3 hrs | [x] |
 | **I** | **B3** | `Prompt B3.1` | Cached NHTSA vPIC VIN adapter (`vin.adapter.ts` + 3s timeout + `vin_decode_cache`) & real `/api/vin/decode` | **PM Demo (Day 3)** | 1–2 hrs | [x] |
 | **I** | **B3** | `Prompt B3.2` | `listing.service.ts` + real `POST /api/listings`, `GET /api/seller/dashboard`, sealed `GET /api/listings/[id]` | **PM Demo (Day 3)** | 3–4 hrs | [x] |
-| **I** | **B3** | `Prompt B3.3` | Admin Moderation service & APIs (`/api/admin/moderation*`) + wire Moderation UI views to TanStack Query | **PM Demo (Day 3)** | 2–3 hrs | [ ] |
+| **I** | **B3** | `Prompt B3.3` | Admin Moderation service & APIs (`/api/admin/moderation*`) + wire Moderation UI views to TanStack Query | **PM Demo (Day 3)** | 2–3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.1` | Dealer Inventory & Inspection APIs (`/api/dealer/inventory*`) + wire `VehicleInspectionView` | **PM Demo (Day 4)** | 2–3 hrs | [ ] |
 | **I** | **B4** | `Prompt B4.2` | `bidding.service.ts` + real `POST /api/dealer/bid` calling atomic `submit_dealer_bid` RPC + verify `SealedBidSlip` | **PM Demo (Day 4)** | 2–3 hrs | [ ] |
 | **I** | **B4** | `Prompt B4.3` | `hooks/useAuctionRealtime.ts` (live `bid_count` & `status` WebSocket + server-time clock) wired to Seller & Dealer UIs | **PM Demo (Day 4)** | 2–3 hrs | [ ] |
@@ -373,7 +373,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** FR-EU-04, FR-EU-06, FR-EU-07, FR-EU-08, FR-EU-11, BR-01, BR-02, BR-04, H1, AC-04.
   - **Exit Gate:** Seller completes 5-step wizard → car appears in Postgres as `PENDING_MODERATION` and renders on `/seller/dashboard`; `GET /api/listings/[id]` on an `ACTIVE` auction contains **zero** bid dollar amounts or dealer names in the JSON payload.
 
-- [ ] **`Prompt B3.3` — Admin Listing Moderation Queue & 24h Auction Launch**
+- [x] **`Prompt B3.3` — Admin Listing Moderation Queue & 24h Auction Launch**
   - **Build From → To:** Hardcoded `lib/mock/admin-moderation.ts` → real Admin moderation endpoints wired to `ListingModerationView` & `ListingModerationDetailView` that launch real 24h auctions.
   - **Files to Create/Modify:**
     - `lib/server/services/moderation.service.ts` — `listModerationQueue()`, `getModerationDossier(id)`, `decideListing(id, action: 'APPROVE' | 'REQUEST_EDITS' | 'REJECT', reason)` — on `APPROVE`: reads `auction_duration_hours` from `platform_config`, sets `status = 'ACTIVE'`, `auction_started_at = NOW()`, `auction_ends_at = NOW() + interval`, writes `audit_logs` + seller `notifications` row.

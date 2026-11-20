@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -25,12 +24,14 @@ import {
   ShieldCheck,
   FileText,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
+import { getErrorMessage } from "@/lib/api-errors";
 import {
-  INITIAL_MODERATION_QUEUE,
-  type ModerationItem,
-} from "@/lib/mock/admin-moderation";
+  useAdminModerationDossier,
+  useModerationDecision,
+} from "@/hooks/useAdminModeration";
 
 interface ListingModerationDetailViewProps {
   id: string;
@@ -45,12 +46,8 @@ const PRESET_CORRECTION_NOTES = [
 ];
 
 export function ListingModerationDetailView({ id }: ListingModerationDetailViewProps) {
-  const router = useRouter();
-
-  // Find vehicle in mock database
-  const [item, setItem] = useState<ModerationItem | null>(() => {
-    return INITIAL_MODERATION_QUEUE.find((m) => m.id === id) || INITIAL_MODERATION_QUEUE[0];
-  });
+  const { data: item, isLoading, isError } = useAdminModerationDossier(id);
+  const decision = useModerationDecision(id);
 
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -58,6 +55,7 @@ export function ListingModerationDetailView({ id }: ListingModerationDetailViewP
   const [modalAction, setModalAction] = useState<"REQUEST_EDITS" | "REJECT" | null>(null);
   const [actionReason, setActionReason] = useState("");
   const [feedbackNotice, setFeedbackNotice] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [copiedVin, setCopiedVin] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -67,7 +65,7 @@ export function ListingModerationDetailView({ id }: ListingModerationDetailViewP
 
   // Lightbox keyboard controls
   useEffect(() => {
-    if (!lightboxOpen || !item) return;
+    if (!lightboxOpen || !item || item.vehicle.photos.length === 0) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightboxOpen(false);
@@ -97,7 +95,16 @@ export function ListingModerationDetailView({ id }: ListingModerationDetailViewP
     };
   }, [lightboxOpen, modalAction]);
 
-  if (!item) {
+  if (isLoading) {
+    return (
+      <div className="py-24 flex flex-col items-center justify-center gap-3 text-portal-text-muted">
+        <Loader2 className="w-7 h-7 animate-spin text-portal-primary" />
+        <span className="text-xs font-medium">Loading compliance dossier...</span>
+      </div>
+    );
+  }
+
+  if (isError || !item) {
     return (
       <div className="py-20 text-center space-y-4">
         <h2 className="text-lg font-bold text-portal-text">Listing Not Found</h2>
@@ -115,28 +122,44 @@ export function ListingModerationDetailView({ id }: ListingModerationDetailViewP
     );
   }
 
-  const handleApprove = () => {
-    setItem((prev) => (prev ? { ...prev, status: "APPROVED" } : null));
-    setFeedbackNotice(`✓ Listing ${item.id} approved! 24h dealer sealed-bid auction launched.`);
-    setTimeout(() => setFeedbackNotice(null), 4000);
+  const handleApprove = async () => {
+    setActionError(null);
+    try {
+      await decision.mutateAsync({ action: "APPROVE" });
+      setFeedbackNotice(
+        `Listing ${item.vehicle.year} ${item.vehicle.make} ${item.vehicle.model} approved! 24h dealer sealed-bid auction launched.`
+      );
+      setTimeout(() => setFeedbackNotice(null), 5000);
+    } catch (err: unknown) {
+      setActionError(getErrorMessage(err));
+    }
   };
 
-  const handleConfirmAction = (e: React.FormEvent) => {
+  const handleConfirmAction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!modalAction) return;
+    setActionError(null);
 
-    const newStatus = modalAction === "REQUEST_EDITS" ? "EDITS_REQUESTED" : "REJECTED";
-    setItem((prev) => (prev ? { ...prev, status: newStatus } : null));
-
-    setFeedbackNotice(
-      modalAction === "REQUEST_EDITS"
-        ? `Notice dispatched to ${item.seller.name}: "${actionReason.slice(0, 50)}..."`
-        : `Listing rejected: "${actionReason.slice(0, 50)}..."`
-    );
-    setModalAction(null);
-    setActionReason("");
-    setTimeout(() => setFeedbackNotice(null), 4000);
+    try {
+      await decision.mutateAsync({
+        action: modalAction,
+        reason: actionReason.trim(),
+      });
+      setFeedbackNotice(
+        modalAction === "REQUEST_EDITS"
+          ? `Correction notice dispatched to ${item.seller.name}: "${actionReason.trim().slice(0, 60)}"`
+          : `Listing rejected: "${actionReason.trim().slice(0, 60)}"`
+      );
+      setModalAction(null);
+      setActionReason("");
+      setTimeout(() => setFeedbackNotice(null), 5000);
+    } catch (err: unknown) {
+      setActionError(getErrorMessage(err));
+    }
   };
+
+  const canModerate =
+    item.status === "PENDING" || item.status === "EDITS_REQUESTED";
 
   const copyVinToClipboard = () => {
     navigator.clipboard.writeText(item.vehicle.vin);
@@ -182,6 +205,22 @@ export function ListingModerationDetailView({ id }: ListingModerationDetailViewP
           <button
             type="button"
             onClick={() => setFeedbackNotice(null)}
+            className="text-portal-text-muted hover:text-portal-text cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {actionError && (
+        <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/25 text-red-500 text-xs font-medium flex items-center justify-between gap-2 shadow-xs">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{actionError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setActionError(null)}
             className="text-portal-text-muted hover:text-portal-text cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -463,22 +502,26 @@ export function ListingModerationDetailView({ id }: ListingModerationDetailViewP
         <div className="flex items-center gap-2">
           <button
             type="button"
+            disabled={!canModerate || decision.isPending}
             onClick={() => {
+              setActionError(null);
               setActionReason("");
               setModalAction("REQUEST_EDITS");
             }}
-            className="px-4 py-2.5 rounded-xl border border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 text-xs font-semibold transition-colors cursor-pointer"
+            className="px-4 py-2.5 rounded-xl border border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Request Corrections
           </button>
 
           <button
             type="button"
+            disabled={!canModerate || decision.isPending}
             onClick={() => {
+              setActionError(null);
               setActionReason("");
               setModalAction("REJECT");
             }}
-            className="px-4 py-2.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 text-xs font-semibold transition-colors cursor-pointer"
+            className="px-4 py-2.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Reject Submission
           </button>
@@ -486,19 +529,27 @@ export function ListingModerationDetailView({ id }: ListingModerationDetailViewP
 
         <button
           type="button"
-          disabled={item.status === "APPROVED"}
-          onClick={handleApprove}
-          className={`px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer ${
+          disabled={!canModerate || decision.isPending}
+          onClick={() => void handleApprove()}
+          className={`px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
             item.status === "APPROVED"
-              ? "bg-emerald-600/40 text-white cursor-not-allowed"
+              ? "bg-emerald-600/40 text-white"
               : "bg-emerald-600 hover:bg-emerald-700 text-white hover:shadow-lg"
           }`}
         >
-          <CheckCircle2 className="w-4 h-4" />
+          {decision.isPending ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <CheckCircle2 className="w-4 h-4" />
+          )}
           <span>
             {item.status === "APPROVED"
               ? "Approved & Auction Active"
-              : "Approve & Launch 24h Auction"}
+              : item.status === "REJECTED"
+                ? "Submission Rejected"
+                : decision.isPending
+                  ? "Launching 24h Auction..."
+                  : "Approve & Launch 24h Auction"}
           </span>
         </button>
       </div>

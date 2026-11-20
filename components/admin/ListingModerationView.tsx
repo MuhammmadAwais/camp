@@ -22,12 +22,10 @@ import {
   LayoutGrid,
   List,
   Layers,
+  RefreshCw,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
-import {
-  INITIAL_MODERATION_QUEUE,
-  type ModerationItem,
-} from "@/lib/mock/admin-moderation";
+import { useAdminModerationQueue } from "@/hooks/useAdminModeration";
 
 // Automaker Brand Logo Mapping to local assets in public/car-company-logos
 const CAR_BRAND_LOGOS: Record<string, string> = {
@@ -41,23 +39,30 @@ const CAR_BRAND_LOGOS: Record<string, string> = {
   cadillac: "/car-company-logos/image_13.png",
 };
 
+type SortMode = "NEWEST" | "RESERVE_DESC" | "MILEAGE_ASC";
+
 export function ListingModerationView() {
-  const [queue, setQueue] = useState<ModerationItem[]>(INITIAL_MODERATION_QUEUE);
+  const { data, isLoading, isError, refetch, isFetching } =
+    useAdminModerationQueue();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "PENDING" | "EDITS_REQUESTED" | "APPROVED">("PENDING");
-  const [sortBy, setSortBy] = useState<"NEWEST" | "RESERVE_DESC" | "MILEAGE_ASC">("NEWEST");
+  const [sortBy, setSortBy] = useState<SortMode>("NEWEST");
   const [viewMode, setViewMode] = useState<"LIST" | "GRID">("LIST");
   const [copiedVin, setCopiedVin] = useState<string | null>(null);
 
+  const queue = data?.items ?? [];
+
   // Status Counts
   const counts = useMemo(() => {
+    if (data?.counts) return data.counts;
     return {
       ALL: queue.length,
       PENDING: queue.filter((i) => i.status === "PENDING").length,
       EDITS_REQUESTED: queue.filter((i) => i.status === "EDITS_REQUESTED").length,
       APPROVED: queue.filter((i) => i.status === "APPROVED").length,
+      REJECTED: queue.filter((i) => i.status === "REJECTED").length,
     };
-  }, [queue]);
+  }, [data?.counts, queue]);
 
   // Filter & Sort Queue
   const filteredQueue = useMemo(() => {
@@ -83,7 +88,10 @@ export function ListingModerationView() {
         if (sortBy === "MILEAGE_ASC") {
           return a.vehicle.mileageKm - b.vehicle.mileageKm;
         }
-        return 0; // NEWEST default
+        return (
+          new Date(b.submittedAtIso).getTime() -
+          new Date(a.submittedAtIso).getTime()
+        );
       });
   }, [queue, statusFilter, searchQuery, sortBy]);
 
@@ -315,7 +323,7 @@ export function ListingModerationView() {
           <div className="relative">
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as SortMode)}
               className="py-1.5 pl-3 pr-8 rounded-xl bg-portal-surface border border-portal-border text-xs text-portal-text focus:outline-none cursor-pointer appearance-none font-medium"
             >
               <option value="NEWEST">Newest First</option>
@@ -358,7 +366,32 @@ export function ListingModerationView() {
       </div>
 
       {/* 4. Listings Display (List View OR Signature Notched Grid View) */}
-      {filteredQueue.length === 0 ? (
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((idx) => (
+            <div
+              key={idx}
+              className="h-32 rounded-2xl border border-portal-border bg-portal-surface animate-pulse"
+            />
+          ))}
+        </div>
+      ) : isError ? (
+        <div className="py-12 px-4 text-center rounded-2xl border border-red-500/25 bg-red-500/5 space-y-3">
+          <AlertTriangle className="w-8 h-8 text-red-500 mx-auto" />
+          <div className="text-sm font-semibold text-portal-text">
+            Unable to load moderation queue
+          </div>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            disabled={isFetching}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-portal-primary text-white text-xs font-semibold cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? "animate-spin" : ""}`} />
+            <span>Retry</span>
+          </button>
+        </div>
+      ) : filteredQueue.length === 0 ? (
         <div className="py-16 px-4 text-center rounded-2xl border border-dashed border-portal-border bg-portal-surface space-y-2">
           <Car className="w-10 h-10 text-portal-text-muted mx-auto opacity-40" />
           <div className="text-sm font-semibold text-portal-text">

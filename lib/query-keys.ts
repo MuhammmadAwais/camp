@@ -21,3 +21,10 @@ export const sellerKeys = {
   auction: (id: string) => [...sellerKeys.auctions(), id] as const,
 };
 
+export const adminKeys = {
+  all: ["admin"] as const,
+  moderationQueue: () => [...adminKeys.all, "moderation", "queue"] as const,
+  moderationDetail: (id: string) =>
+    [...adminKeys.all, "moderation", "detail", id] as const,
+};
+
