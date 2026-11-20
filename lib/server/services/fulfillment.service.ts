@@ -8,6 +8,7 @@ import {
   UnauthorizedError,
 } from "@/lib/server/errors";
 import { logger } from "@/lib/server/logger";
+import { notifyMatchCreated } from "@/lib/server/services/notification.service";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import type {
   AcceptOfferResponse,
@@ -138,7 +139,7 @@ export async function acceptDealerOffer(
   const result = parsed.data;
   const admin = createAdminSupabaseClient();
 
-  const [dealerRes, listingRes, membersRes] = await Promise.all([
+  const [dealerRes, listingRes] = await Promise.all([
     admin
       .from("dealerships")
       .select(
@@ -151,11 +152,6 @@ export async function acceptDealerOffer(
       .select("year, make, model, vin, city, province")
       .eq("id", listingId)
       .maybeSingle(),
-    admin
-      .from("dealership_members")
-      .select("user_id")
-      .eq("dealership_id", result.dealership_id)
-      .eq("is_active", true),
   ]);
 
   const dealer = dealerRes.data;
@@ -181,45 +177,21 @@ export async function acceptDealerOffer(
   };
 
   try {
-    // TODO(senior-review): Trigger CASL-compliant email/SMS handover voucher & dealer win dispatch in Prompt B7.3.
     const vehicleLabel = listing
       ? `${listing.year} ${listing.make} ${listing.model}`
       : "your vehicle";
 
-    const notifications = [
-      {
-        user_id: ctx.userId,
-        type: "MATCH" as const,
-        title: `Offer accepted — Handover pass ${voucher.voucherCode} ready`,
-        description: `Your ${vehicleLabel} handover voucher for ${voucher.dealershipName} is active for 24 hours.`,
-        listing_id: listingId,
-        metadata: {
-          matchId: result.match_id,
-          voucherCode: voucher.voucherCode,
-          dealershipId: result.dealership_id,
-          agreedAmountCents: result.agreed_amount_cents,
-          expiresAt: voucher.expiresAt,
-        },
-      },
-      ...(membersRes.data ?? []).map((member) => ({
-        user_id: member.user_id,
-        type: "MATCH" as const,
-        title: `Bid won — ${vehicleLabel}`,
-        description: `Seller accepted your offer and generated handover pass ${voucher.voucherCode} (valid 24 hours).`,
-        listing_id: listingId,
-        metadata: {
-          matchId: result.match_id,
-          voucherCode: voucher.voucherCode,
-          dealershipId: result.dealership_id,
-          agreedAmountCents: result.agreed_amount_cents,
-          expiresAt: voucher.expiresAt,
-        },
-      })),
-    ];
-
-    if (notifications.length > 0) {
-      await admin.from("notifications").insert(notifications);
-    }
+    await notifyMatchCreated({
+      matchId: result.match_id,
+      listingId,
+      sellerId: ctx.userId,
+      winningDealershipId: result.dealership_id,
+      dealershipName: voucher.dealershipName,
+      vehicleLabel,
+      voucherCode: voucher.voucherCode,
+      agreedAmountCents: result.agreed_amount_cents,
+      expiresAt: voucher.expiresAt,
+    });
   } catch (notifyErr) {
     logger.warn("Best-effort match notifications failed after bid acceptance", {
       actorId: ctx.userId,

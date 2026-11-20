@@ -1783,6 +1783,19 @@ export type Database = {
           listing_id: string
         }[]
       }
+      get_eligible_dealerships_within_radius: {
+        Args: { p_listing_id: string }
+        Returns: {
+          dealership_id: string
+          distance_km: number
+          effective_radius_km: number
+          email: string
+          language_pref: string
+          operating_name: string
+          phone_e164: string | null
+          user_id: string
+        }[]
+      }
       get_unsealed_bid_distances: {
         Args: { p_listing_id: string }
         Returns: {

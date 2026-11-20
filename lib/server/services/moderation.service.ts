@@ -6,6 +6,8 @@ import {
   ForbiddenError,
   NotFoundError,
 } from "@/lib/server/errors";
+import { logger } from "@/lib/server/logger";
+import { notifyListingModerationDecision } from "@/lib/server/services/notification.service";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import type { Database } from "@/lib/supabase/database.types";
 import type {
@@ -324,9 +326,6 @@ export async function decideListing(
   let auctionStartedAt: string | null = null;
   let auctionEndsAt: string | null = null;
   let auditAction: string;
-  let notifType: Database["public"]["Enums"]["notification_type"];
-  let notifTitle: string;
-  let notifDescription: string;
 
   if (action === "APPROVE") {
     const durationHours = await readAuctionDurationHours(admin);
@@ -336,22 +335,12 @@ export async function decideListing(
       nowMs + durationHours * 60 * 60 * 1000
     ).toISOString();
     auditAction = "LISTING_APPROVED";
-    notifType = "AUCTION";
-    notifTitle = "Your vehicle auction is now live!";
-    notifDescription = `Your ${existing.year} ${existing.make} ${existing.model} passed verification and is now live for 24-hour licensed dealer bidding.`;
-    // TODO(senior-review): Trigger radius-scoped dealer email/SMS alert fan-out in Prompt B7.3.
   } else if (action === "REQUEST_EDITS") {
     nextStatus = "EDITS_REQUESTED";
     auditAction = "LISTING_EDITS_REQUESTED";
-    notifType = "MODERATION";
-    notifTitle = "Corrections requested for your vehicle listing";
-    notifDescription = `Admin review notes for your ${existing.year} ${existing.make} ${existing.model}: ${input.reason}`;
   } else {
     nextStatus = "REJECTED";
     auditAction = "LISTING_REJECTED";
-    notifType = "MODERATION";
-    notifTitle = "Vehicle listing submission rejected";
-    notifDescription = `Your ${existing.year} ${existing.make} ${existing.model} submission was declined: ${input.reason}`;
   }
 
   const updatePayload: Database["public"]["Tables"]["listings"]["Update"] = {
@@ -389,42 +378,46 @@ export async function decideListing(
   const actorName =
     `${ctx.profile.first_name} ${ctx.profile.last_name}`.trim() || ctx.email;
 
-  await Promise.all([
-    admin.from("audit_logs").insert({
-      actor_id: ctx.userId,
-      actor_name: actorName,
-      actor_role: ctx.role,
-      action: auditAction,
-      entity_type: "listing",
-      entity_id: updated.id,
-      provincial_jurisdiction: updated.province,
-      ip_address: requestMeta.ipAddress,
-      details: input.reason?.trim() || null,
-      before_json: {
-        status: existing.status,
-        moderationNotes: existing.moderation_notes,
-      },
-      after_json: {
-        status: updated.status,
-        moderatedBy: ctx.userId,
-        auctionStartedAt: updated.auction_started_at,
-        auctionEndsAt: updated.auction_ends_at,
-        moderationNotes: updated.moderation_notes,
-      },
-    }),
-    admin.from("notifications").insert({
-      user_id: existing.seller_id,
-      type: notifType,
-      title: notifTitle,
-      description: notifDescription,
-      listing_id: updated.id,
-      metadata: {
-        vin: existing.vin,
-        status: updated.status,
-        auctionEndsAt: updated.auction_ends_at,
-      },
-    }),
-  ]);
+  await admin.from("audit_logs").insert({
+    actor_id: ctx.userId,
+    actor_name: actorName,
+    actor_role: ctx.role,
+    action: auditAction,
+    entity_type: "listing",
+    entity_id: updated.id,
+    provincial_jurisdiction: updated.province,
+    ip_address: requestMeta.ipAddress,
+    details: input.reason?.trim() || null,
+    before_json: {
+      status: existing.status,
+      moderationNotes: existing.moderation_notes,
+    },
+    after_json: {
+      status: updated.status,
+      moderatedBy: ctx.userId,
+      auctionStartedAt: updated.auction_started_at,
+      auctionEndsAt: updated.auction_ends_at,
+      moderationNotes: updated.moderation_notes,
+    },
+  });
+
+  try {
+    await notifyListingModerationDecision({
+      listingId: updated.id,
+      sellerId: existing.seller_id,
+      vin: existing.vin,
+      vehicleLabel: `${existing.year} ${existing.make} ${existing.model}`,
+      status: updated.status,
+      action,
+      reason: input.reason,
+      auctionEndsAt: updated.auction_ends_at,
+    });
+  } catch (notifyErr) {
+    logger.warn("Best-effort moderation notification fan-out failed", {
+      actorId: ctx.userId,
+      meta: { listingId: updated.id, action, notifyErr },
+    });
+  }
 
   const [hydrated] = await hydrateModerationItems(admin, [updated]);
   return hydrated;

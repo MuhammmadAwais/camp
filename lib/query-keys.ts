@@ -52,6 +52,14 @@ export const settingsKeys = {
   security: () => [...settingsKeys.all, "security"] as const,
 };
 
+export const notificationKeys = {
+  all: ["notifications"] as const,
+  list: (filters?: Record<string, string | number | boolean | undefined>) =>
+    filters
+      ? ([...notificationKeys.all, "list", filters] as const)
+      : ([...notificationKeys.all, "list"] as const),
+};
+
 export const dealerKeys = {
   all: ["dealer"] as const,
   onboarding: () => [...dealerKeys.all, "onboarding"] as const,

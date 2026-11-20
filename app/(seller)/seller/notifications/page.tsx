@@ -10,14 +10,28 @@ import {
   Clock,
   CheckCircle,
   Check,
-  Funnel,
   Trash,
+  CreditCard,
+  WarningCircle,
+  Handshake,
 } from "@phosphor-icons/react";
-import { useSellerDashboard } from "@/hooks/useSellerDashboard";
-import type { SellerNotificationItem } from "@/lib/types/seller";
+import {
+  useClearNotifications,
+  useMarkNotificationsRead,
+  useNotifications,
+} from "@/hooks/useNotifications";
+import type {
+  NotificationItem,
+  NotificationType,
+} from "@/lib/types/notifications";
 import { cn } from "@/lib/utils";
 
-function formatFullTime(isoString: string): string {
+const emptySubscribe = () => () => {};
+
+function formatFullTime(isoString: string, mounted: boolean): string {
+  if (!mounted) {
+    return isoString.slice(0, 10);
+  }
   try {
     const date = new Date(isoString);
     return date.toLocaleDateString("en-CA", {
@@ -27,55 +41,74 @@ function formatFullTime(isoString: string): string {
       minute: "2-digit",
     });
   } catch {
-    return isoString;
+    return isoString.slice(0, 10);
+  }
+}
+
+function isAuctionTabType(type: NotificationType): boolean {
+  return type === "BID" || type === "AUCTION" || type === "MATCH";
+}
+
+function getNotificationIcon(type: NotificationType) {
+  switch (type) {
+    case "BID":
+    case "AUCTION":
+      return Gavel;
+    case "MATCH":
+      return Handshake;
+    case "KYC":
+      return ShieldCheck;
+    case "MODERATION":
+      return Clock;
+    case "BILLING":
+      return CreditCard;
+    case "DISPUTE":
+      return WarningCircle;
+    default:
+      return CheckCircle;
   }
 }
 
 export default function SellerNotificationsPage() {
-  const { data, isLoading, refetch } = useSellerDashboard("default");
-  const [notifications, setNotifications] = React.useState<SellerNotificationItem[]>([]);
-  const [filterType, setFilterType] = React.useState<"ALL" | "UNREAD" | "BID" | "SYSTEM">("ALL");
+  const mounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+  const [filterType, setFilterType] = React.useState<
+    "ALL" | "UNREAD" | "BID" | "SYSTEM"
+  >("ALL");
 
-  React.useEffect(() => {
-    if (data?.notifications) {
-      setNotifications(data.notifications);
-    }
-  }, [data?.notifications]);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const { notifications, unreadCount, isLoading, isLive } = useNotifications({
+    limit: 50,
+  });
+  const markRead = useMarkNotificationsRead();
+  const clearAllNotifications = useClearNotifications();
 
   const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    if (unreadCount === 0 || markRead.isPending) return;
+    markRead.mutate({ markAll: true });
   };
 
-  const markItemAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  const markItemAsRead = (notif: NotificationItem) => {
+    if (!notif.read) {
+      markRead.mutate({ notificationIds: [notif.id] });
+    }
   };
 
   const clearAll = () => {
-    setNotifications([]);
+    if (notifications.length === 0 || clearAllNotifications.isPending) return;
+    clearAllNotifications.mutate();
   };
 
   const filteredNotifications = React.useMemo(() => {
     if (filterType === "ALL") return notifications;
     if (filterType === "UNREAD") return notifications.filter((n) => !n.read);
-    return notifications.filter((n) => n.type === filterType);
-  }, [notifications, filterType]);
-
-  const getIcon = (type: SellerNotificationItem["type"]) => {
-    switch (type) {
-      case "BID":
-        return Gavel;
-      case "KYC":
-        return ShieldCheck;
-      case "MODERATION":
-        return Clock;
-      default:
-        return CheckCircle;
+    if (filterType === "BID") {
+      return notifications.filter((n) => isAuctionTabType(n.type));
     }
-  };
+    return notifications.filter((n) => !isAuctionTabType(n.type));
+  }, [notifications, filterType]);
 
   return (
     <div className="w-full max-w-[1200px] mx-auto py-4 sm:py-6 space-y-6">
@@ -93,18 +126,35 @@ export default function SellerNotificationsPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-portal-border">
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <h1 className="font-headline text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-portal-text">
               Notifications
             </h1>
             {unreadCount > 0 && (
-              <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#8C383E]/10 text-[#8C383E] dark:bg-[#E59344]/15 dark:text-[#E59344] border border-[#8C383E]/20 dark:border-[#E59344]/30">
+              <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full bg-portal-primary/10 text-portal-primary border border-portal-primary/25">
                 {unreadCount} unread
               </span>
             )}
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 font-mono text-[11px] px-2.5 py-0.5 rounded-full border",
+                isLive
+                  ? "bg-success/10 text-success border-success/25"
+                  : "bg-portal-surface-hover text-portal-text-muted border-portal-border"
+              )}
+            >
+              <span
+                className={cn(
+                  "w-1.5 h-1.5 rounded-full",
+                  isLive ? "bg-success" : "bg-portal-text-muted"
+                )}
+              />
+              <span>{isLive ? "Live" : "Synced"}</span>
+            </span>
           </div>
           <p className="mt-1 font-body text-xs sm:text-sm text-portal-text-muted">
-            Live updates on dealer bids, moderation approvals, identity checks, and vehicle settlements.
+            Live updates on dealer bids, moderation approvals, identity checks,
+            and vehicle settlements.
           </p>
         </div>
 
@@ -114,9 +164,10 @@ export default function SellerNotificationsPage() {
             <button
               type="button"
               onClick={markAllAsRead}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-xs font-semibold text-portal-text transition-colors cursor-pointer shadow-xs"
+              disabled={markRead.isPending}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-xs font-semibold text-portal-text transition-colors cursor-pointer shadow-xs disabled:opacity-50"
             >
-              <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" weight="bold" />
+              <Check className="w-4 h-4 text-success" weight="bold" />
               <span>Mark all read</span>
             </button>
           )}
@@ -125,7 +176,8 @@ export default function SellerNotificationsPage() {
             <button
               type="button"
               onClick={clearAll}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-xs font-semibold text-portal-text-muted hover:text-red-600 transition-colors cursor-pointer shadow-xs"
+              disabled={clearAllNotifications.isPending}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-xs font-semibold text-portal-text-muted hover:text-error transition-colors cursor-pointer shadow-xs disabled:opacity-50"
             >
               <Trash className="w-4 h-4" weight="bold" />
               <span>Clear</span>
@@ -139,8 +191,16 @@ export default function SellerNotificationsPage() {
         {[
           { id: "ALL", label: "All Alerts", count: notifications.length },
           { id: "UNREAD", label: "Unread", count: unreadCount },
-          { id: "BID", label: "Bids & Auctions", count: notifications.filter((n) => n.type === "BID").length },
-          { id: "SYSTEM", label: "System & KYC", count: notifications.filter((n) => n.type !== "BID").length },
+          {
+            id: "BID",
+            label: "Bids & Auctions",
+            count: notifications.filter((n) => isAuctionTabType(n.type)).length,
+          },
+          {
+            id: "SYSTEM",
+            label: "System & KYC",
+            count: notifications.filter((n) => !isAuctionTabType(n.type)).length,
+          },
         ].map((tab) => {
           const isActive = filterType === tab.id;
           return (
@@ -151,7 +211,7 @@ export default function SellerNotificationsPage() {
               className={cn(
                 "px-3.5 py-1.5 rounded-xl font-body text-xs font-semibold transition-all cursor-pointer border",
                 isActive
-                  ? "bg-[#8C383E] dark:bg-[#E59344] text-white border-transparent shadow-xs"
+                  ? "bg-portal-primary text-on-primary border-transparent shadow-xs"
                   : "bg-portal-surface border-portal-border text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover"
               )}
             >
@@ -166,7 +226,10 @@ export default function SellerNotificationsPage() {
         {isLoading ? (
           <div className="p-8 space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 rounded-xl bg-portal-surface-hover animate-pulse" />
+              <div
+                key={i}
+                className="h-16 rounded-xl bg-portal-surface-hover animate-pulse"
+              />
             ))}
           </div>
         ) : filteredNotifications.length === 0 ? (
@@ -174,7 +237,9 @@ export default function SellerNotificationsPage() {
             <div className="w-12 h-12 rounded-2xl bg-portal-surface-hover mx-auto flex items-center justify-center text-portal-text-muted">
               <Bell className="w-6 h-6" weight="duotone" />
             </div>
-            <h3 className="font-headline text-base font-bold text-portal-text">You are all caught up!</h3>
+            <h3 className="font-headline text-base font-bold text-portal-text">
+              You are all caught up!
+            </h3>
             <p className="font-body text-xs text-portal-text-muted max-w-sm mx-auto">
               There are no notifications matching the selected filter.
             </p>
@@ -182,18 +247,24 @@ export default function SellerNotificationsPage() {
         ) : (
           <div className="divide-y divide-portal-border/60">
             {filteredNotifications.map((notif) => {
-              const Icon = getIcon(notif.type);
+              const Icon = getNotificationIcon(notif.type);
+              const href =
+                notif.actionUrl ??
+                (notif.listingId ? `/seller/listings/${notif.listingId}` : null);
+
               return (
                 <div
                   key={notif.id}
-                  onClick={() => markItemAsRead(notif.id)}
+                  onClick={() => markItemAsRead(notif)}
                   className={cn(
                     "flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 transition-colors cursor-pointer",
-                    notif.read ? "hover:bg-portal-surface-hover/70" : "bg-[#8C383E]/[0.02] dark:bg-[#E59344]/[0.03] hover:bg-portal-surface-hover/90"
+                    notif.read
+                      ? "hover:bg-portal-surface-hover/70"
+                      : "bg-portal-primary/[0.03] hover:bg-portal-surface-hover/90"
                   )}
                 >
                   <div className="flex items-start gap-4 min-w-0">
-                    <div className="p-3 rounded-xl bg-portal-surface-hover text-[#8C383E] dark:text-[#E59344] shrink-0 mt-0.5">
+                    <div className="p-3 rounded-xl bg-portal-surface-hover text-portal-primary shrink-0 mt-0.5">
                       <Icon className="w-5 h-5" weight="duotone" />
                     </div>
 
@@ -203,7 +274,7 @@ export default function SellerNotificationsPage() {
                           {notif.title}
                         </h4>
                         {!notif.read && (
-                          <span className="w-2 h-2 rounded-full bg-[#8C383E] dark:bg-[#E59344] shrink-0" />
+                          <span className="w-2 h-2 rounded-full bg-portal-primary shrink-0" />
                         )}
                       </div>
                       <p className="font-body text-xs text-portal-text-muted leading-relaxed">
@@ -213,14 +284,17 @@ export default function SellerNotificationsPage() {
                   </div>
 
                   <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 font-mono text-xs text-portal-text-muted">
-                    <span>{formatFullTime(notif.timestamp)}</span>
-                    {notif.listingId && (
+                    <span>{formatFullTime(notif.createdAt, mounted)}</span>
+                    {href && (
                       <Link
-                        href={`/seller/listings/${notif.listingId}`}
-                        onClick={(e) => e.stopPropagation()}
+                        href={href}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          markItemAsRead(notif);
+                        }}
                         className="px-3 py-1.5 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text font-semibold text-xs transition-colors"
                       >
-                        View Vehicle →
+                        View Details →
                       </Link>
                     )}
                   </div>

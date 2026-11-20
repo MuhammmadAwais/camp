@@ -7,6 +7,11 @@ import {
   NotFoundError,
 } from "@/lib/server/errors";
 import { logger } from "@/lib/server/logger";
+import {
+  notifyAuctionClosed,
+  notifyAuctionExtended,
+  notifyAuctionHalted,
+} from "@/lib/server/services/notification.service";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import type { Database } from "@/lib/supabase/database.types";
 import type {
@@ -347,18 +352,13 @@ export async function extendAuction(
   }
 
   try {
-    // TODO(senior-review): Dispatch participating dealer extension email/SMS alerts in Prompt B7.3.
-    await admin.from("notifications").insert({
-      user_id: existing.seller_id,
-      type: "AUCTION",
-      title: `Auction extended by +${hours}h`,
-      description: `Administrator extended bidding for your ${existing.year} ${existing.make} ${existing.model}: ${trimmedReason}`,
-      listing_id: updated.id,
-      metadata: {
-        action: "EXTEND",
-        extensionHours: hours,
-        auctionEndsAt: updated.auction_ends_at,
-      },
+    await notifyAuctionExtended({
+      listingId: updated.id,
+      sellerId: existing.seller_id,
+      vehicleLabel: `${existing.year} ${existing.make} ${existing.model}`,
+      hours,
+      reason: trimmedReason,
+      auctionEndsAt: updated.auction_ends_at,
     });
   } catch (notifyErr) {
     logger.warn("Best-effort seller notification failed on auction extend", {
@@ -455,62 +455,14 @@ export async function forceCloseAuction(
   }
 
   try {
-    // TODO(senior-review): Dispatch CASL email/SMS unsealing alerts to seller & participating dealers in Prompt B7.3.
-    const { data: bidDealers } = await admin
-      .from("bids")
-      .select("dealership_id")
-      .eq("listing_id", updated.id)
-      .neq("status", "VOIDED");
-
-    const dealershipIds = Array.from(
-      new Set((bidDealers ?? []).map((b) => b.dealership_id))
-    );
-
-    const dealerMembersRes =
-      dealershipIds.length > 0
-        ? await admin
-            .from("dealership_members")
-            .select("user_id")
-            .in("dealership_id", dealershipIds)
-            .eq("is_active", true)
-        : { data: [] };
-
-    const vehicleLabel = `${updated.year} ${updated.make} ${updated.model}`;
-    const notifications = [
-      {
-        user_id: existing.seller_id,
-        type: "AUCTION" as const,
-        title: `Bids unsealed for ${vehicleLabel}`,
-        description:
-          updated.bid_count > 0
-            ? `${updated.bid_count} verified dealership offer(s) are now unsealed and ready for your selection.`
-            : "Your auction window closed without dealer offers.",
-        listing_id: updated.id,
-        metadata: {
-          action: "FORCE_CLOSE",
-          status: updated.status,
-          bidCount: updated.bid_count,
-        },
-      },
-      ...Array.from(
-        new Set((dealerMembersRes.data ?? []).map((m) => m.user_id))
-      ).map((userId) => ({
-        user_id: userId,
-        type: "AUCTION" as const,
-        title: `Auction closed — ${vehicleLabel}`,
-        description:
-          "Bidding has closed on this vehicle. Offers have been unsealed for seller review.",
-        listing_id: updated.id,
-        metadata: {
-          action: "FORCE_CLOSE",
-          status: updated.status,
-        },
-      })),
-    ];
-
-    if (notifications.length > 0) {
-      await admin.from("notifications").insert(notifications);
-    }
+    await notifyAuctionClosed({
+      listingId: updated.id,
+      sellerId: existing.seller_id,
+      vehicleLabel: `${updated.year} ${updated.make} ${updated.model}`,
+      bidCount: updated.bid_count,
+      status: updated.status,
+      source: "FORCE_CLOSE",
+    });
   } catch (notifyErr) {
     logger.warn("Best-effort notifications failed on auction force-close", {
       actorId: ctx.userId,
@@ -625,51 +577,17 @@ export async function haltAuction(
   }
 
   try {
-    // TODO(senior-review): Dispatch regulatory halt email/SMS notices in Prompt B7.3.
     const dealershipIds = Array.from(
       new Set((voidedBids ?? []).map((b) => b.dealership_id))
     );
-    const dealerMembersRes =
-      dealershipIds.length > 0
-        ? await admin
-            .from("dealership_members")
-            .select("user_id")
-            .in("dealership_id", dealershipIds)
-            .eq("is_active", true)
-        : { data: [] };
-
-    const vehicleLabel = `${updated.year} ${updated.make} ${updated.model}`;
-    const notifications = [
-      {
-        user_id: existing.seller_id,
-        type: "AUCTION" as const,
-        title: `Auction halted — ${vehicleLabel}`,
-        description: `Platform administration halted this auction: ${trimmedReason}`,
-        listing_id: updated.id,
-        metadata: {
-          action: "HALT",
-          status: updated.status,
-          voidedBidsCount: voidedCount,
-        },
-      },
-      ...Array.from(
-        new Set((dealerMembersRes.data ?? []).map((m) => m.user_id))
-      ).map((userId) => ({
-        user_id: userId,
-        type: "AUCTION" as const,
-        title: `Lot halted — ${vehicleLabel}`,
-        description: `Administrator terminated this auction lot (${trimmedReason}). Any active bid has been voided.`,
-        listing_id: updated.id,
-        metadata: {
-          action: "HALT",
-          status: updated.status,
-        },
-      })),
-    ];
-
-    if (notifications.length > 0) {
-      await admin.from("notifications").insert(notifications);
-    }
+    await notifyAuctionHalted({
+      listingId: updated.id,
+      sellerId: existing.seller_id,
+      vehicleLabel: `${updated.year} ${updated.make} ${updated.model}`,
+      reason: trimmedReason,
+      voidedBidsCount: voidedCount,
+      voidedDealershipIds: dealershipIds,
+    });
   } catch (notifyErr) {
     logger.warn("Best-effort notifications failed on auction halt", {
       actorId: ctx.userId,

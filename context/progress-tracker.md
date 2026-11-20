@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B7 — Prompt B7.2 Complete) — **Next Prompt: `Prompt B7.3`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B7 Complete — Prompt B7.3 Complete) — **Next Prompt: `Prompt B8.1`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -267,7 +267,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **II** | **B6** | `Prompt B6.3` | Seller Relisting (FR-EU-13 cooldown), Account Settings (`/api/settings/*`), & Platform Config (`/api/admin/config`) | Complete Platform | 3 hrs | [x] |
 | **II** | **B7** | `Prompt B7.1` | Stripe Checkout, Billing Portal & Invoices (`billing.adapter.ts`, `/api/dealer/subscription*`, `/api/dealer/billing*`) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B7** | `Prompt B7.2` | Idempotent Stripe Webhook (`/api/webhooks/stripe` — HMAC verify, quota sync, HTTP 402 bid block on `PAST_DUE`) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B7** | `Prompt B7.3` | Persistent Notifications + Realtime Bell (`/api/notifications`) + Email/SMS CASL Adapter (radius approval fan-out) | Complete Platform | 3–4 hrs | [ ] |
+| **II** | **B7** | `Prompt B7.3` | Persistent Notifications + Realtime Bell (`/api/notifications`) + Email/SMS CASL Adapter (radius approval fan-out) | Complete Platform | 3–4 hrs | [x] |
 | **III** | **B8** | `Prompt B8.1` | Mandatory TOTP MFA (`supabase.auth.mfa` — NFR-06) enrollment, QR setup & AAL2 guard for `ADMIN` / `DEALER_ADMIN` | Hardening & Handoff | 3–4 hrs | [ ] |
 | **III** | **B8** | `Prompt B8.2` | Rate Limiting (`lib/server/rate-limit.ts` — NFR-07), Security Headers, Supabase Security/Performance Advisor Audit | Hardening & Handoff | 3 hrs | [ ] |
 | **III** | **B8** | `Prompt B8.3` | PIPEDA / Law 25 Data Export & 30-Day Deletion Workflow + Optional Drop-In AWS S3 `ca-central-1` Storage Adapter | Hardening & Handoff | 3 hrs | [ ] |
@@ -516,7 +516,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** FR-DL-03, BR-06, H9, AC-03.
   - **Exit Gate:** Replaying the same Stripe webhook event twice (via Stripe CLI / test harness) is 100% idempotent; a `PAST_DUE` dealer receives HTTP 402 when attempting to bid.
 
-- [ ] **`Prompt B7.3` — Persistent Notification Center & Multi-Channel CASL Fan-Out**
+- [x] **`Prompt B7.3` — Persistent Notification Center & Multi-Channel CASL Fan-Out**
   - **Build From → To:** Hardcoded notification arrays → persistent `notifications` table with live Realtime bell + crash-proof Email (SendGrid/Resend) & SMS (Twilio) adapter with CASL unsubscribe compliance.
   - **Files to Create/Modify:**
     - `lib/server/adapters/notification.adapter.ts` — Persists `notifications` row first (always succeeds), checks `user_consents` / CASL preferences, dispatches Email/SMS when keys are present or records `SANDBOX_LOGGED` in `notification_deliveries` when absent; includes `List-Unsubscribe` header and EN/FR template hook (`locale`).
