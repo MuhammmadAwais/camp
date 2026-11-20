@@ -52,6 +52,7 @@ export type SellerDashboardData = {
   stats: SellerDashboardStats;
   auctions: SellerAuctionItem[];
   notifications: SellerNotificationItem[];
+  serverTime?: string;
 };
 
 export type UnsealedDealerBid = {
@@ -103,6 +104,7 @@ export type ListingDetailData = {
     hasLien: boolean;
     accidentDeclaration: boolean;
   };
+  serverTime?: string;
   unsealedBids?: UnsealedDealerBid[];
   selectedBid?: UnsealedDealerBid;
   appointmentVoucher?: AppointmentVoucher;

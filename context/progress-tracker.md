@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B4.2 Complete) — **Next Prompt: `Prompt B4.3`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B4.3 Complete) — **Next Prompt: `Prompt B4.4`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -256,7 +256,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B3** | `Prompt B3.3` | Admin Moderation service & APIs (`/api/admin/moderation*`) + wire Moderation UI views to TanStack Query | **PM Demo (Day 3)** | 2–3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.1` | Dealer Inventory & Inspection APIs (`/api/dealer/inventory*`) + wire `VehicleInspectionView` | **PM Demo (Day 4)** | 2–3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.2` | `bidding.service.ts` + real `POST /api/dealer/bid` calling atomic `submit_dealer_bid` RPC + verify `SealedBidSlip` | **PM Demo (Day 4)** | 2–3 hrs | [x] |
-| **I** | **B4** | `Prompt B4.3` | `hooks/useAuctionRealtime.ts` (live `bid_count` & `status` WebSocket + server-time clock) wired to Seller & Dealer UIs | **PM Demo (Day 4)** | 2–3 hrs | [ ] |
+| **I** | **B4** | `Prompt B4.3` | `hooks/useAuctionRealtime.ts` (live `bid_count` & `status` WebSocket + server-time clock) wired to Seller & Dealer UIs | **PM Demo (Day 4)** | 2–3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.4` | Post-auction unsealing, `accept_dealer_bid` RPC → Appointment Voucher, + Admin `/api/admin/auctions` overrides | **PM Demo (Day 4–5)** | 3 hrs | [ ] |
 | **I** | **B4** | `Prompt B4.5` | Dealer Active Bids & Won Matches APIs + Outcome logging + **Vercel Preview Deploy & Full 3-Role PM Demo Gate** | **PM Demo (Day 5)** | 3–4 hrs | [ ] |
 | **II** | **B5** | `Prompt B5.1` | Seed Canadian postal centroids + `geo.adapter.ts` + PostGIS `ST_DWithin` RPC (`distanceKm` in feed & unsealed view) | Complete Platform | 3–4 hrs | [ ] |
@@ -403,7 +403,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** FR-DL-07, FR-DL-08, BR-05, BR-06, H2, NFR-02 (< 200ms), NFR-14, NFR-15, AC-03.
   - **Exit Gate:** Dealer submits `$35,000` (`3500000`) → succeeds & increments `listings.bid_count`; submitting `$34,000` fails with structured `409 BID_MUST_INCREASE`; raising to `$36,500` updates bid without double-counting `bid_count`.
 
-- [ ] **`Prompt B4.3` — Supabase Realtime Live Bid Counter & Server-Synced Countdown**
+- [x] **`Prompt B4.3` — Supabase Realtime Live Bid Counter & Server-Synced Countdown**
   - **Build From → To:** Static mock bid count & client clock → live WebSocket telemetry synced to Supabase Realtime (`listings.bid_count`, `status`, `auction_ends_at`) with zero bid-amount broadcasting.
   - **Files to Create/Modify:**
     - `hooks/useAuctionRealtime.ts` — Subscribes via `lib/supabase/client.ts` to `postgres_changes` (`UPDATE` on `public.listings`), computes drift-free countdown offset against server timestamp returned in API payload, invalidates TanStack Query automatically when `status` flips to `UNSEALED`, cleanly unsubscribes on unmount.

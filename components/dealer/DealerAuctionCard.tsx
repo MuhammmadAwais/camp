@@ -4,12 +4,10 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Clock,
   Car,
   CheckCircle2,
   ArrowRight,
   ArrowUpRight,
-  Lock,
 } from "lucide-react";
 import type { WholesaleAuctionItem } from "@/lib/types/dealer";
 import { cn, formatCadCents } from "@/lib/utils";
@@ -26,39 +24,48 @@ const CAR_BRAND_LOGOS: Record<string, string> = {
   cadillac: "/car-company-logos/image_13.png",
 };
 
+const emptySubscribe = () => () => {};
+
 interface DealerAuctionCardProps {
   item: WholesaleAuctionItem;
+  serverOffsetMs?: number;
   onOpenBid: (item: WholesaleAuctionItem) => void;
 }
 
-export function DealerAuctionCard({ item, onOpenBid }: DealerAuctionCardProps) {
-  const [timeLeft, setTimeLeft] = React.useState<{ hours: number; minutes: number } | null>(null);
-  const [isClient, setIsClient] = React.useState(false);
+export function DealerAuctionCard({
+  item,
+  serverOffsetMs = 0,
+  onOpenBid,
+}: DealerAuctionCardProps) {
+  const isClient = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+  const [nowMs, setNowMs] = React.useState<number>(() => Date.now());
 
   React.useEffect(() => {
-    setIsClient(true);
     if (!item.auctionEndsAt) return;
-
-    const calculateRemaining = () => {
-      const diff = new Date(item.auctionEndsAt).getTime() - Date.now();
-      if (diff <= 0) {
-        return { hours: 0, minutes: 0 };
-      }
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      return { hours, minutes };
-    };
-
-    setTimeLeft(calculateRemaining());
     const interval = setInterval(() => {
-      setTimeLeft(calculateRemaining());
-    }, 30000);
-
+      setNowMs(Date.now());
+    }, 10_000);
     return () => clearInterval(interval);
   }, [item.auctionEndsAt]);
 
-  const msLeft = Math.max(0, new Date(item.auctionEndsAt).getTime() - Date.now());
-  const isUrgent = msLeft > 0 && msLeft < 15 * 60 * 1000;
+  const msLeft = React.useMemo(() => {
+    if (!isClient || !item.auctionEndsAt) return 0;
+    return Math.max(0, Date.parse(item.auctionEndsAt) - (nowMs + serverOffsetMs));
+  }, [isClient, item.auctionEndsAt, nowMs, serverOffsetMs]);
+
+  const timeLeft = React.useMemo(() => {
+    if (!isClient || !item.auctionEndsAt) return null;
+    if (msLeft <= 0) return { hours: 0, minutes: 0 };
+    const hours = Math.floor(msLeft / (1000 * 60 * 60));
+    const minutes = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+    return { hours, minutes };
+  }, [isClient, item.auctionEndsAt, msLeft]);
+
+  const isUrgent = isClient && msLeft > 0 && msLeft < 15 * 60 * 1000;
 
   // Clean brand logo or crisp typographic marque
   const brandLogo = CAR_BRAND_LOGOS[item.make.toLowerCase()];

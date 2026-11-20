@@ -18,13 +18,22 @@ import type {
 import { SealedBidSlip } from "@/components/dealer/SealedBidSlip";
 import { DealerAuctionCard } from "@/components/dealer/DealerAuctionCard";
 import { dealerKeys } from "@/lib/query-keys";
+import { useAuctionRealtime } from "@/hooks/useAuctionRealtime";
 import { useDealerInventory } from "@/hooks/useDealerInventory";
 
 type InventorySortOption = "closing" | "mileage" | "year" | "distance";
 
 export function DealerInventoryFeed() {
   const queryClient = useQueryClient();
-  const { data, isLoading, isError, error, refetch } = useDealerInventory();
+  const { data, isLoading, isError, error, dataUpdatedAt, refetch } =
+    useDealerInventory();
+
+  const realtime = useAuctionRealtime({
+    serverTime: data?.serverTime,
+    dataUpdatedAt,
+    enabled: Boolean(data),
+    portal: "dealer",
+  });
 
   // Filters state
   const [searchQuery, setSearchQuery] = useState("");
@@ -316,6 +325,7 @@ export function DealerInventoryFeed() {
             <DealerAuctionCard
               key={item.id}
               item={item}
+              serverOffsetMs={realtime.countdown.serverOffsetMs}
               onOpenBid={(auction) => setBiddingAuction(auction)}
             />
           ))}

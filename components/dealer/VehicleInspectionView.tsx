@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useSyncExternalStore } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,6 +28,7 @@ import {
 import type { VehicleInspectionDetails } from "@/lib/types/dealer";
 import { SealedBidSlip } from "@/components/dealer/SealedBidSlip";
 import { DealerBidSwitcherModal } from "@/components/dealer/DealerBidSwitcherModal";
+import { useAuctionRealtime } from "@/hooks/useAuctionRealtime";
 import { useDealerAuctionDetail } from "@/hooks/useDealerInventory";
 import { dealerKeys } from "@/lib/query-keys";
 import { formatCadCents } from "@/lib/utils";
@@ -47,8 +48,19 @@ export function VehicleInspectionView({ auctionId }: VehicleInspectionViewProps)
     isLoading,
     isError,
     error,
+    dataUpdatedAt,
     refetch,
   } = useDealerAuctionDetail(auctionId);
+
+  const realtime = useAuctionRealtime({
+    listingId: auctionId,
+    auctionEndsAt: vehicle?.auctionEndsAt,
+    serverTime: vehicle?.serverTime,
+    dataUpdatedAt,
+    status: vehicle?.status,
+    enabled: Boolean(vehicle),
+    portal: "dealer",
+  });
 
   const mounted = useSyncExternalStore(
     emptySubscribe,
@@ -65,7 +77,6 @@ export function VehicleInspectionView({ auctionId }: VehicleInspectionViewProps)
   const [isBidSlipOpen, setIsBidSlipOpen] = useState(false);
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
   const [copiedVin, setCopiedVin] = useState(false);
-  const [nowMs, setNowMs] = useState<number>(() => Date.now());
 
   const selectedPhotoIndex =
     photoSelection.auctionId === auctionId ? photoSelection.index : 0;
@@ -105,28 +116,7 @@ export function VehicleInspectionView({ auctionId }: VehicleInspectionViewProps)
     };
   }, [isLightboxOpen]);
 
-  const auctionEndsAt = vehicle?.auctionEndsAt;
-  useEffect(() => {
-    if (!auctionEndsAt) return;
-    const interval = setInterval(() => {
-      setNowMs(Date.now());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [auctionEndsAt]);
-
-  const timeLeft = useMemo(() => {
-    if (!mounted || !auctionEndsAt) {
-      return { hours: 0, minutes: 0, seconds: 0, totalMs: 0 };
-    }
-    const diff = new Date(auctionEndsAt).getTime() - nowMs;
-    if (diff <= 0) {
-      return { hours: 0, minutes: 0, seconds: 0, totalMs: 0 };
-    }
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    return { hours, minutes, seconds, totalMs: diff };
-  }, [mounted, auctionEndsAt, nowMs]);
+  const timeLeft = realtime.countdown;
 
   if (isLoading) {
     return (
@@ -285,7 +275,9 @@ export function VehicleInspectionView({ auctionId }: VehicleInspectionViewProps)
               {vehicle.isAuctionOpen ? (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Live 24h Auction</span>
+                  <span>
+                    {realtime.isLive ? "Live 24h Auction • Synced" : "Live 24h Auction"}
+                  </span>
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium font-mono bg-portal-surface-hover text-portal-text-muted border border-portal-border/60">

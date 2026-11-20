@@ -7,7 +7,6 @@ import {
 import { validateAndNormalizeVin } from "@/lib/server/adapters/vin.adapter";
 import type { SessionContext } from "@/lib/server/auth";
 import {
-  AppError,
   ConflictError,
   ExternalServiceError,
   ForbiddenError,
@@ -742,6 +741,7 @@ export async function getSellerDashboard(
     },
     auctions,
     notifications,
+    serverTime: new Date().toISOString(),
   };
 }
 
@@ -842,6 +842,7 @@ export async function getSellerListingDetail(
       hasLien: listing.has_lien,
       accidentDeclaration: listing.accident_declaration,
     },
+    serverTime: new Date().toISOString(),
   };
 
   if (!UNSEALED_VISIBLE_STATUSES.has(listing.status)) {
