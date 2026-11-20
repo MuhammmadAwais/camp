@@ -10,9 +10,12 @@ import {
 } from "@/lib/query-keys";
 import type {
   AdminPlatformConfigResponse,
+  PrivacyExportBundle,
   ProfileSettingsResponse,
   RelistVehiclePayload,
   RelistVehicleResponse,
+  RequestAccountDeletionPayload,
+  RequestAccountDeletionResponse,
   SecuritySettingsResponse,
   UpdatePlatformConfigPayload,
   UpdatePlatformConfigResponse,
@@ -134,6 +137,35 @@ export function useRelistVehicle(listingId: string) {
       void queryClient.invalidateQueries({
         queryKey: adminKeys.moderationQueue(),
       });
+    },
+  });
+}
+
+export function useExportPersonalData() {
+  return useMutation({
+    mutationFn: async (): Promise<PrivacyExportBundle> =>
+      unwrap(
+        await api.get<PrivacyExportBundle>("/api/settings/privacy/export")
+      ),
+  });
+}
+
+export function useRequestAccountDeletion() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (
+      payload: RequestAccountDeletionPayload
+    ): Promise<RequestAccountDeletionResponse> =>
+      unwrap(
+        await api.post<RequestAccountDeletionResponse>(
+          "/api/settings/privacy/delete",
+          payload
+        )
+      ),
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: authKeys.all });
+      queryClient.removeQueries({ queryKey: settingsKeys.all });
     },
   });
 }

@@ -2,9 +2,10 @@
 
 import React, { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   AlertCircle,
+  AlertTriangle,
   Bell,
   Camera,
   CheckCircle2,
@@ -17,6 +18,7 @@ import {
   Save,
   Shield,
   Sliders,
+  Trash2,
   User,
 } from "lucide-react";
 import { getDefaultPortalForRole } from "@/lib/auth-routing";
@@ -25,7 +27,9 @@ import { PROVINCE_CODES, type ProvinceCode } from "@/lib/canada";
 import { MfaSettingsCard } from "@/components/settings/MfaSettingsCard";
 import {
   useAdminPlatformConfig,
+  useExportPersonalData,
   useProfileSettings,
+  useRequestAccountDeletion,
   useSecuritySettings,
   useUpdateAdminPlatformConfig,
   useUpdateProfileSettings,
@@ -78,6 +82,7 @@ const CONFIG_LABELS: Record<PlatformConfigKey, string> = {
 };
 
 function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const isMfaEnrollPrompt = searchParams.get("mfa") === "enroll";
   const queryTab =
@@ -100,6 +105,8 @@ function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
   const updateProfile = useUpdateProfileSettings();
   const updateSecurity = useUpdateSecuritySettings();
   const updateConfig = useUpdateAdminPlatformConfig();
+  const exportPersonalData = useExportPersonalData();
+  const requestAccountDeletion = useRequestAccountDeletion();
 
   const [draft, setDraft] = useState<ProfileDraft | null>(null);
   const [configDraft, setConfigDraft] = useState<
@@ -110,6 +117,9 @@ function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showDeletePanel, setShowDeletePanel] = useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
+  const [deleteReason, setDeleteReason] = useState("");
   const [bannerSuccess, setBannerSuccess] = useState<string | null>(null);
   const [bannerError, setBannerError] = useState<string | null>(null);
 
@@ -236,6 +246,58 @@ function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
         err instanceof ApiError
           ? err.message
           : "Unable to save platform configuration."
+      );
+    }
+  };
+
+  const handleExportPersonalData = async () => {
+    setBannerSuccess(null);
+    setBannerError(null);
+    try {
+      const bundle = await exportPersonalData.mutateAsync();
+      const jsonText = JSON.stringify(bundle, null, 2);
+      const blob = new Blob([jsonText], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `autonexa-personal-data-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+
+      setBannerSuccess(
+        `Downloaded PIPEDA / Law 25 JSON archive (${bundle.counts.listings} listings, ${bundle.counts.bids} bids, ${bundle.counts.consents} consent records).`
+      );
+    } catch (err) {
+      setBannerError(
+        err instanceof ApiError
+          ? err.message
+          : "Unable to generate personal data export."
+      );
+    }
+  };
+
+  const handleRequestAccountDeletion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBannerSuccess(null);
+    setBannerError(null);
+
+    try {
+      const res = await requestAccountDeletion.mutateAsync({
+        confirmationText: deleteConfirmationText.trim() as "DELETE MY ACCOUNT",
+        reason: deleteReason.trim() || undefined,
+      });
+      setShowDeletePanel(false);
+      setDeleteConfirmationText("");
+      setDeleteReason("");
+      setBannerSuccess(res.message);
+      router.push("/login?erasure=scheduled");
+    } catch (err) {
+      setBannerError(
+        err instanceof ApiError
+          ? err.message
+          : "Unable to schedule account deletion."
       );
     }
   };
@@ -662,10 +724,10 @@ function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
                 <div className="pt-4 border-t border-portal-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <span className="font-bold text-xs text-portal-text block">
-                      PIPEDA &amp; Law 25 Audit Export
+                      PIPEDA &amp; Law 25 Governance &amp; Auditability
                     </span>
                     <span className="text-[11px] text-portal-text-muted block mt-0.5">
-                      Full personal data portability archive arrives in Phase B8.3.
+                      Personal data portability and right-to-erasure controls are available directly below.
                     </span>
                   </div>
                   {isAdmin && (
@@ -796,6 +858,128 @@ function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
             </button>
           </div>
         </form>
+      )}
+
+      {activeTab === "COMPLIANCE" && (
+        <div className="rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-xs space-y-5 animate-fadeIn">
+          <div className="pb-3 border-b border-portal-border/60">
+            <h3 className="text-base font-bold text-portal-text font-headline">
+              PIPEDA &amp; Quebec Law 25 Data Privacy Rights
+            </h3>
+            <p className="text-xs text-portal-text-muted mt-0.5">
+              Exercise your statutory Canadian right of access (portable JSON export) or request permanent 30-day account erasure.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl border border-portal-border bg-portal-surface-hover/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-xs font-bold text-portal-text block">
+                Personal Data Portability Export
+              </span>
+              <span className="text-[11px] text-portal-text-muted block">
+                Download your profile, CASL consents, KYC status, listings, own bids/vouchers, and notifications in JSON format (`ca-central-1` residency).
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleExportPersonalData}
+              disabled={exportPersonalData.isPending}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-portal-primary hover:bg-portal-primary-hover text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-60 shrink-0"
+            >
+              {exportPersonalData.isPending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Download className="w-3.5 h-3.5" />
+              )}
+              <span>Download My Data (JSON)</span>
+            </button>
+          </div>
+
+          <div className="p-4 rounded-xl border border-error/30 bg-error/10 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-xs font-bold text-error">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span>30-Day Account Deletion Request (Right to Erasure)</span>
+                </div>
+                <p className="text-[11px] text-portal-text-muted">
+                  Account deactivation is blocked while active auctions, confirmed appointments, or open disputes exist. Statutory anonymized audit records are retained for 7 years under NFR-11.
+                </p>
+              </div>
+              {!isAdmin && (
+                <button
+                  type="button"
+                  onClick={() => setShowDeletePanel((prev) => !prev)}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-error/40 bg-portal-surface text-error hover:bg-error hover:text-on-error text-xs font-bold transition-colors cursor-pointer shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>
+                    {showDeletePanel ? "Cancel Request" : "Request Account Deletion"}
+                  </span>
+                </button>
+              )}
+            </div>
+
+            {isAdmin && (
+              <p className="text-[11px] font-medium text-portal-text-muted">
+                Platform administrator accounts are protected from self-service erasure for audit continuity.
+              </p>
+            )}
+
+            {showDeletePanel && !isAdmin && (
+              <form
+                onSubmit={handleRequestAccountDeletion}
+                className="pt-3 border-t border-error/20 space-y-3"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-portal-text mb-1">
+                      Type <code className="font-mono">DELETE MY ACCOUNT</code> to confirm
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={deleteConfirmationText}
+                      onChange={(e) => setDeleteConfirmationText(e.target.value)}
+                      placeholder="DELETE MY ACCOUNT"
+                      className="w-full px-3 py-2 rounded-xl border border-error/40 bg-portal-surface text-portal-text text-xs font-mono focus:outline-none focus:ring-2 focus:ring-error/30"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-portal-text mb-1">
+                      Reason for leaving (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={500}
+                      value={deleteReason}
+                      onChange={(e) => setDeleteReason(e.target.value)}
+                      placeholder="Optional privacy feedback"
+                      className="w-full px-3 py-2 rounded-xl border border-portal-border bg-portal-surface text-portal-text text-xs focus:outline-none focus:ring-2 focus:ring-portal-primary/30"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={
+                      requestAccountDeletion.isPending ||
+                      deleteConfirmationText.trim() !== "DELETE MY ACCOUNT"
+                    }
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-error text-on-error text-xs font-bold transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {requestAccountDeletion.isPending ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-3.5 h-3.5" />
+                    )}
+                    <span>Confirm 30-Day Account Deletion</span>
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
       )}
 
       {/* SECURITY TAB */}

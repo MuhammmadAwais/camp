@@ -47,6 +47,7 @@ const serverEnvSchema = z.object({
   awsS3Bucket: z.string().min(1).optional(),
   awsAccessKeyId: z.string().min(1).optional(),
   awsSecretAccessKey: z.string().min(1).optional(),
+  awsCloudfrontUrl: z.string().url().optional(),
 });
 
 export type PublicSupabaseEnv = z.infer<typeof publicSupabaseSchema>;
@@ -135,6 +136,7 @@ export function getServerEnv(): ServerEnv {
     awsS3Bucket: nonEmpty(process.env.AWS_S3_BUCKET),
     awsAccessKeyId: nonEmpty(process.env.AWS_ACCESS_KEY_ID),
     awsSecretAccessKey: nonEmpty(process.env.AWS_SECRET_ACCESS_KEY),
+    awsCloudfrontUrl: nonEmpty(process.env.AWS_CLOUDFRONT_URL),
   });
 
   if (!parsed.success) {

@@ -303,6 +303,7 @@ function toProfileResponse(
     accountStatus: normalizeAccountStatus(profile.account_status),
     marketingOptIn: profile.marketing_opt_in,
     mfaEnabled: profile.mfa_enabled,
+    deletionRequestedAt: profile.deletion_requested_at ?? null,
     notificationPreferences: notifPrefs,
     serverTime: new Date().toISOString(),
   };

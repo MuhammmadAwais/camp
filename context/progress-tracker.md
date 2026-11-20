@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B8 — Prompt B8.1 Complete) — **Next Prompt: `Prompt B8.2`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B8 Complete — Prompt B8.3 Complete) — **Next Prompt: `Prompt B9.1`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -269,8 +269,8 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **II** | **B7** | `Prompt B7.2` | Idempotent Stripe Webhook (`/api/webhooks/stripe` — HMAC verify, quota sync, HTTP 402 bid block on `PAST_DUE`) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B7** | `Prompt B7.3` | Persistent Notifications + Realtime Bell (`/api/notifications`) + Email/SMS CASL Adapter (radius approval fan-out) | Complete Platform | 3–4 hrs | [x] |
 | **III** | **B8** | `Prompt B8.1` | Mandatory TOTP MFA (`supabase.auth.mfa` — NFR-06) enrollment, QR setup & AAL2 guard for `ADMIN` / `DEALER_ADMIN` | Hardening & Handoff | 3–4 hrs | [x] |
-| **III** | **B8** | `Prompt B8.2` | Rate Limiting (`lib/server/rate-limit.ts` — NFR-07), Security Headers, Supabase Security/Performance Advisor Audit | Hardening & Handoff | 3 hrs | [ ] |
-| **III** | **B8** | `Prompt B8.3` | PIPEDA / Law 25 Data Export & 30-Day Deletion Workflow + Optional Drop-In AWS S3 `ca-central-1` Storage Adapter | Hardening & Handoff | 3 hrs | [ ] |
+| **III** | **B8** | `Prompt B8.2` | Rate Limiting (`lib/server/rate-limit.ts` — NFR-07), Security Headers, Supabase Security/Performance Advisor Audit | Hardening & Handoff | 3 hrs | [x] |
+| **III** | **B8** | `Prompt B8.3` | PIPEDA / Law 25 Data Export & 30-Day Deletion Workflow + Optional Drop-In AWS S3 `ca-central-1` Storage Adapter | Hardening & Handoff | 3 hrs | [x] |
 | **III** | **B9** | `Prompt B9.1` | Vitest Setup + ≥70% Unit Tests (auction state machine, bids, integer cents, Stripe webhooks) + Sealed-Bid RLS Leak Tests | Hardening & Handoff | 4–5 hrs | [ ] |
 | **III** | **B9** | `Prompt B9.2` | GitHub Actions CI (`.github/workflows/ci.yml`), Full Preview E2E QA & Senior Engineer Handoff (`docs/backend-handoff.md`) | Hardening & Handoff | 3 hrs | [ ] |
 | **III** | **B10** | `Prompt B10.1` | *(Separate Track)* `next-intl` Setup, `[locale]` Routing, `messages/en.json` & `fr.json`, Language Sync | Quebec Law 25 i18n | 1–2 days | [ ] |
@@ -540,16 +540,16 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** NFR-06, H7.
   - **Exit Gate:** `ADMIN` and `DEALER_ADMIN` can enroll an authenticator app (TOTP), pass challenge at login, and are blocked from privileged mutations if MFA is unverified.
 
-- [ ] **`Prompt B8.2` — Rate Limiting, Security Headers & Supabase Advisor Audit**
+- [x] **`Prompt B8.2` — Rate Limiting, Security Headers & Supabase Advisor Audit**
   - **Build From → To:** Unthrottled API routes → rate-limited auth/OTP/VIN/bid endpoints, hardened security headers, and zero critical warnings from Supabase Security & Performance Advisors.
   - **Files to Create/Modify:**
     - `lib/server/rate-limit.ts` — Sliding-window rate limiter supporting Upstash Redis in production with automatic safe in-memory fallback in dev (`auth/login`: 10/15m, `auth/verify`: 5/15m, `dealer/bid`: 30/min, `vin/decode`: 20/min — returns `429 RATE_LIMITED` + `Retry-After`).
     - `next.config.ts` — Add OWASP security headers (`Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, scoped `Content-Security-Policy`).
-    - Run Supabase MCP `get_advisors(type="security")` and `get_advisors(type="performance")` → create `supabase/migrations/0011_security_and_perf_hardening.sql` resolving every warning (e.g., `search_path`, unindexed FKs, overly broad policies).
+    - Run Supabase MCP `get_advisors(type="security")` and `get_advisors(type="performance")` → applied `supabase/migrations/0017_security_and_perf_hardening.sql` (plus `supabase/manual/0017b_split_rls_write_policies.sql` for SQL Editor / `supabase db push` promotion).
   - **SRS / Rules:** NFR-07, OWASP Top 10.
   - **Exit Gate:** Rapid-firing `/api/auth/login` triggers `429`; Supabase security & performance advisors report zero ERROR/CRITICAL issues.
 
-- [ ] **`Prompt B8.3` — PIPEDA / Quebec Law 25 Privacy APIs & Optional AWS S3 Drop-In**
+- [x] **`Prompt B8.3` — PIPEDA / Quebec Law 25 Privacy APIs & Optional AWS S3 Drop-In**
   - **Build From → To:** Consent storage only → full PIPEDA/Law 25 right-of-access JSON export, 30-day deletion workflow, and drop-in AWS S3 `ca-central-1` storage adapter for Senior production promotion.
   - **Files to Create/Modify:**
     - Create `app/api/settings/privacy/export/route.ts` (authenticated downloadable JSON bundle of user profile, consents, vehicles, listings, bids, matches — never exposing competitor bids!) and `app/api/settings/privacy/delete/route.ts` (creates erasure request, anonymizes/schedules 30-day cascade deletion while preserving statutory 7-year anonymized audit records).

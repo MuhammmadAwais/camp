@@ -35,6 +35,7 @@ export type ProfileSettingsResponse = {
   accountStatus: AccountStatus;
   marketingOptIn: boolean;
   mfaEnabled: boolean;
+  deletionRequestedAt: string | null;
   notificationPreferences: NotificationPreferences;
   serverTime: string;
 };
@@ -168,6 +169,146 @@ export type AdminUserStatusResponse = {
   role: UserRole;
   accountStatus: "ACTIVE" | "SUSPENDED";
   auditAction: string;
+  message: string;
+  serverTime: string;
+};
+
+export type PrivacyExportBundle = {
+  schemaVersion: "autonexa-pipeda-law25-v1";
+  exportedAt: string;
+  legalBasis: string;
+  dataResidency: "ca-central-1 (Montreal, Canada)";
+  retentionNotice: string;
+  subject: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    phoneE164: string | null;
+    postalCode: string | null;
+    city: string | null;
+    province: string | null;
+    languagePref: string;
+    role: UserRole;
+    kycStatus: KycStatus;
+    accountStatus: string;
+    dealershipId: string | null;
+    marketingOptIn: boolean;
+    mfaEnabled: boolean;
+    jobTitle: string | null;
+    regulatorBoardId: string | null;
+    createdAt: string;
+    deletionRequestedAt: string | null;
+  };
+  consents: Array<{
+    id: string;
+    consentType: string;
+    granted: boolean;
+    policyVersion: string;
+    recordedAt: string;
+  }>;
+  kyc: {
+    status: KycStatus;
+    idDocType: string;
+    provider: string;
+    submittedAt: string;
+    verifiedAt: string | null;
+    expiresAt: string | null;
+  } | null;
+  listings: Array<{
+    id: string;
+    vin: string;
+    year: number;
+    make: string;
+    model: string;
+    trim: string;
+    mileageKm: number;
+    status: AuctionStatus;
+    reservePriceCents: number | null;
+    city: string;
+    province: string;
+    postalCode: string;
+    bidCount: number;
+    createdAt: string;
+    auctionStartedAt: string | null;
+    auctionEndsAt: string | null;
+    closedAt: string | null;
+    media: Array<{
+      storagePath: string;
+      angleTag: string | null;
+      position: number;
+    }>;
+    damageHotspots: Array<{
+      zone: string;
+      severity: string;
+      notes: string | null;
+    }>;
+  }>;
+  bids: Array<{
+    id: string;
+    listingId: string;
+    dealershipId: string;
+    amountCents: number;
+    status: string;
+    conditions: string | null;
+    version: number;
+    revisionCount: number;
+    createdAt: string;
+    revisedAt: string | null;
+  }>;
+  matches: Array<{
+    id: string;
+    listingId: string;
+    dealershipId: string;
+    voucherCode: string;
+    selectionReason: string;
+    agreedAmountCents: number;
+    finalPriceCents: number | null;
+    acceptExpiresAt: string;
+    outcome: string;
+    outcomeLoggedAt: string | null;
+    createdAt: string;
+  }>;
+  disputes: Array<{
+    id: string;
+    matchId: string;
+    category: string;
+    status: string;
+    description: string;
+    resolutionNotes: string | null;
+    createdAt: string;
+    resolvedAt: string | null;
+  }>;
+  notifications: Array<{
+    id: string;
+    type: string;
+    title: string;
+    description: string;
+    read: boolean;
+    createdAt: string;
+  }>;
+  counts: {
+    consents: number;
+    listings: number;
+    bids: number;
+    matches: number;
+    disputes: number;
+    notifications: number;
+  };
+};
+
+export type RequestAccountDeletionPayload = {
+  confirmationText: "DELETE MY ACCOUNT";
+  reason?: string;
+};
+
+export type RequestAccountDeletionResponse = {
+  accountStatus: "PENDING_DELETION";
+  deletionRequestedAt: string;
+  scheduledPurgeAt: string;
+  gracePeriodDays: 30;
+  auditRetentionNotice: string;
   message: string;
   serverTime: string;
 };
