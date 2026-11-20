@@ -13,6 +13,10 @@ import {
   sortPhotos,
   toReserveStatus,
 } from "@/lib/server/services/dealer-feed.service";
+import {
+  disputeEvidencePhotoInputSchema,
+  openDispute,
+} from "@/lib/server/services/dispute.service";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import type { Database } from "@/lib/supabase/database.types";
 import type {
@@ -59,6 +63,18 @@ export const logMatchOutcomeSchema = z.object({
     .nullable()
     .optional(),
   notes: z.string().trim().max(2000).optional(),
+  openDispute: z.boolean().optional(),
+  disputeCategory: z
+    .enum([
+      "UNDERBODY_DAMAGE",
+      "MISSING_KEYS",
+      "MECHANICAL_POWERTRAIN",
+      "ODOMETER_DISCREPANCY",
+      "UNRESOLVED_LIEN",
+    ])
+    .optional(),
+  technicianName: z.string().trim().max(120).nullable().optional(),
+  evidencePhotos: z.array(disputeEvidencePhotoInputSchema).max(12).optional(),
 });
 
 export type LogMatchOutcomeInput = z.output<typeof logMatchOutcomeSchema>;
@@ -779,6 +795,39 @@ export async function logMatchOutcome(
     });
   }
 
+  let linkedDisputeId: string | null = null;
+  if (
+    input.openDispute &&
+    (input.outcome === "RENEGOTIATED_LOWER" ||
+      input.outcome === "DECLINED_AFTER_INSPECTION")
+  ) {
+    const adjustmentDeltaCents =
+      input.outcome === "RENEGOTIATED_LOWER" && resolvedFinalPriceCents !== null
+        ? Math.max(0, match.agreed_amount_cents - resolvedFinalPriceCents)
+        : 0;
+    const summaryText =
+      trimmedNotes.length >= 10
+        ? trimmedNotes
+        : `Post-inspection discrepancy logged under outcome ${input.outcome}.`;
+
+    const opened = await openDispute(
+      ctx,
+      {
+        matchId: updatedMatch.id,
+        category: input.disputeCategory ?? "UNDERBODY_DAMAGE",
+        disputedAdjustmentCents: adjustmentDeltaCents,
+        allegationSummary: summaryText,
+        hoistEvidenceNotes: trimmedNotes || summaryText,
+        ...(input.technicianName
+          ? { technicianName: input.technicianName }
+          : {}),
+        evidencePhotos: input.evidencePhotos ?? [],
+      },
+      requestMeta
+    );
+    linkedDisputeId = opened.id;
+  }
+
   const [hydratedMatch] = await hydrateWonMatchItems(
     admin,
     dealership,
@@ -790,6 +839,7 @@ export async function logMatchOutcome(
     match: hydratedMatch,
     listingStatus: effectiveListingStatus,
     auditAction: "MATCH_OUTCOME_LOGGED",
+    ...(linkedDisputeId ? { disputeId: linkedDisputeId } : {}),
     message: `Saved inspection outcome (${input.outcome}) for voucher ${updatedMatch.voucher_code}.`,
     serverTime: nowIso,
   };

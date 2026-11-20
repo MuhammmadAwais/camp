@@ -211,12 +211,27 @@ export type LogMatchOutcomePayload = {
   outcome: LogMatchOutcomeValue;
   finalPriceCents?: number | null;
   notes?: string;
+  openDispute?: boolean;
+  disputeCategory?:
+    | "UNDERBODY_DAMAGE"
+    | "MISSING_KEYS"
+    | "MECHANICAL_POWERTRAIN"
+    | "ODOMETER_DISCREPANCY"
+    | "UNRESOLVED_LIEN";
+  technicianName?: string | null;
+  evidencePhotos?: Array<{
+    url?: string;
+    storagePath?: string;
+    label: string;
+    isHoistEvidence?: boolean;
+  }>;
 };
 
 export type LogMatchOutcomeResponse = {
   match: WonMatchItem;
   listingStatus: string;
   auditAction: string;
+  disputeId?: string | null;
   message: string;
   serverTime: string;
 };

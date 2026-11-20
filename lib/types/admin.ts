@@ -207,3 +207,155 @@ export type AdminDealerDecisionResult = {
   message: string;
   serverTime: string;
 };
+
+export type DisputeCategory =
+  | "UNDERBODY_DAMAGE"
+  | "MISSING_KEYS"
+  | "MECHANICAL_POWERTRAIN"
+  | "ODOMETER_DISCREPANCY"
+  | "UNRESOLVED_LIEN";
+
+export type DisputeStatus =
+  | "INVESTIGATING"
+  | "ACTION_REQUIRED"
+  | "RESOLVED"
+  | "CLOSED";
+
+export type DisputeResolutionDecision =
+  | "APPROVE_ADJUSTMENT"
+  | "REJECT_CLAIM"
+  | "MUTUAL_CANCEL";
+
+export type DisputePhoto = {
+  url: string;
+  label: string;
+  isHoistEvidence?: boolean;
+  storagePath?: string | null;
+};
+
+export type DisputeTimelineEntry = {
+  timestamp: string;
+  timestampIso: string;
+  actor: string;
+  action: string;
+  note: string;
+};
+
+export type DisputeItem = {
+  id: string;
+  docketNumber: string;
+  matchId: string;
+  listingId: string;
+  openedAt: string;
+  openedDateFormatted: string;
+  status: DisputeStatus;
+  category: DisputeCategory;
+  categoryLabel: string;
+  agreedBidCents: number; // Integer CAD cents invariant
+  disputedAdjustmentCents: number; // Integer CAD cents requested deduction
+  netSettlementCents: number; // agreedBidCents - disputedAdjustmentCents
+  allegationSummary: string;
+  hoistEvidenceNotes: string;
+  complianceDecisionNotes?: string | null;
+  resolutionDecision?: DisputeResolutionDecision | null;
+  resolvedAt?: string | null;
+  seller: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    city: string;
+    province: string;
+    declaredConditionGrade: string;
+  };
+  dealership: {
+    id: string;
+    name: string;
+    legalEntity: string;
+    regulator: AdminDealerRegulator;
+    licenseNumber: string;
+    contactOfficer: string;
+    technician: string;
+    city: string;
+    province: string;
+  };
+  vehicle: {
+    vin: string;
+    year: number;
+    make: string;
+    model: string;
+    trim: string;
+    mileageKm: number;
+    engineSpec?: string;
+    transmission: string;
+    drivetrain: string;
+    thumbnailUrl: string;
+    photos: DisputePhoto[];
+  };
+  timeline: DisputeTimelineEntry[];
+};
+
+export type DisputeQueueCounts = {
+  ALL: number;
+  INVESTIGATING: number;
+  ACTION_REQUIRED: number;
+  RESOLVED: number;
+  CLOSED: number;
+};
+
+export type AdminDisputesResponse = {
+  items: DisputeItem[];
+  counts: DisputeQueueCounts;
+  serverTime: string;
+};
+
+export type DisputeEvidencePresignPayload = {
+  matchId: string;
+  fileName: string;
+  contentType:
+    | "image/jpeg"
+    | "image/png"
+    | "image/webp"
+    | "image/heic"
+    | "image/heif"
+    | "application/pdf";
+  fileSizeBytes: number;
+};
+
+export type DisputeEvidencePresignResponse = {
+  uploadUrl: string;
+  token: string;
+  storagePath: string;
+  expiresInSeconds: number;
+};
+
+export type OpenDisputePayload = {
+  matchId: string;
+  category: DisputeCategory;
+  disputedAdjustmentCents: number;
+  allegationSummary: string;
+  hoistEvidenceNotes?: string;
+  technicianName?: string;
+  evidencePhotos?: Array<{
+    url?: string;
+    storagePath?: string;
+    label: string;
+    isHoistEvidence?: boolean;
+  }>;
+};
+
+export type ResolveDisputePayload = {
+  decision: DisputeResolutionDecision;
+  adjustmentCents?: number;
+  notes: string;
+};
+
+export type ResolveDisputeResult = {
+  dispute: DisputeItem;
+  decision: DisputeResolutionDecision;
+  matchOutcome: string;
+  listingStatus: string;
+  auditAction: string;
+  message: string;
+  serverTime: string;
+};

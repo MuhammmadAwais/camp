@@ -1,94 +1,87 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
-  ArrowLeft,
-  CheckCircle2,
-  XCircle,
   AlertTriangle,
-  Clock,
-  Car,
-  X,
-  ChevronRight,
-  ChevronLeft,
-  MapPin,
-  Camera,
-  Copy,
+  ArrowLeft,
+  Building2,
   Check,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Copy,
+  FileCheck2,
+  Loader2,
+  Mail,
   Maximize2,
   Phone,
-  Mail,
-  ShieldCheck,
-  FileText,
-  AlertCircle,
   Scale,
-  Building2,
-  User,
-  ShieldAlert,
-  Wrench,
-  DollarSign,
   Undo2,
-  FileCheck2,
+  User,
+  Wrench,
+  X,
 } from "lucide-react";
-import { formatCadCents } from "@/lib/utils";
+import { ApiError } from "@/lib/api-client";
 import {
-  INITIAL_DISPUTES,
-  type DisputeItem,
-  type DisputeStatus,
-} from "@/lib/mock/admin-disputes";
+  useAdminDisputeDetail,
+  useResolveDispute,
+} from "@/hooks/useAdminDisputes";
+import type { DisputeResolutionDecision } from "@/lib/types/admin";
+import { formatCadCents } from "@/lib/utils";
+
+const subscribeNoop = () => () => {};
+const getTrueClient = () => true;
+const getFalseServer = () => false;
 
 interface DisputeDetailViewProps {
   id: string;
 }
 
 export function DisputeDetailView({ id }: DisputeDetailViewProps) {
-  const router = useRouter();
+  const mounted = useSyncExternalStore(
+    subscribeNoop,
+    getTrueClient,
+    getFalseServer
+  );
 
-  // Find dispute item in mock database
-  const [dispute, setDispute] = useState<DisputeItem | null>(() => {
-    return INITIAL_DISPUTES.find((d) => d.id === id) || INITIAL_DISPUTES[0];
-  });
+  const { data: dispute, isLoading, isError, error } =
+    useAdminDisputeDetail(id);
+  const resolveMutation = useResolveDispute(id);
 
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [decisionModalAction, setDecisionModalAction] = useState<
-    "APPROVE_ADJUSTMENT" | "REJECT_CLAIM" | "MUTUAL_CANCEL" | null
-  >(null);
+  const [decisionModalAction, setDecisionModalAction] =
+    useState<DisputeResolutionDecision | null>(null);
+  const [adjustmentDollars, setAdjustmentDollars] = useState("");
   const [decisionNotes, setDecisionNotes] = useState("");
+  const [modalError, setModalError] = useState<string | null>(null);
   const [feedbackNotice, setFeedbackNotice] = useState<string | null>(null);
   const [copiedText, setCopiedText] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
+
+  const photoCount = dispute?.vehicle.photos.length ?? 0;
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Lightbox keyboard controls
-  useEffect(() => {
-    if (!lightboxOpen || !dispute) return;
+    if (!lightboxOpen || photoCount === 0) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightboxOpen(false);
       if (e.key === "ArrowRight") {
-        setLightboxIndex((prev) => (prev + 1) % dispute.vehicle.photos.length);
+        setLightboxIndex((prev) => (prev + 1) % photoCount);
       }
       if (e.key === "ArrowLeft") {
-        setLightboxIndex((prev) =>
-          prev === 0 ? dispute.vehicle.photos.length - 1 : prev - 1
-        );
+        setLightboxIndex((prev) => (prev === 0 ? photoCount - 1 : prev - 1));
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxOpen, dispute]);
+  }, [lightboxOpen, photoCount]);
 
-  // Scroll lock for modals
   useEffect(() => {
     if (lightboxOpen || decisionModalAction) {
       document.body.style.overflow = "hidden";
@@ -100,12 +93,27 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
     };
   }, [lightboxOpen, decisionModalAction]);
 
-  if (!dispute) {
+  if (isLoading) {
+    return (
+      <div className="py-24 text-center space-y-3 text-portal-text-muted">
+        <Loader2 className="w-8 h-8 animate-spin text-portal-primary mx-auto" />
+        <p className="text-xs">Loading dispute arbitration dossier...</p>
+      </div>
+    );
+  }
+
+  if (isError || !dispute) {
     return (
       <div className="py-20 text-center space-y-4">
         <Scale className="w-12 h-12 mx-auto text-portal-text-muted opacity-30" />
-        <h2 className="font-headline font-bold text-xl text-portal-text">Dispute Docket Not Found</h2>
-        <p className="text-xs text-portal-text-muted">The requested arbitration case does not exist.</p>
+        <h2 className="font-headline font-bold text-xl text-portal-text">
+          {error instanceof ApiError
+            ? error.failure.error
+            : "Dispute Docket Not Found"}
+        </h2>
+        <p className="text-xs text-portal-text-muted">
+          The requested arbitration case does not exist or could not be loaded.
+        </p>
         <Link
           href="/admin/disputes"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-portal-primary text-white text-xs font-bold"
@@ -117,59 +125,75 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
     );
   }
 
+  const photos = dispute.vehicle.photos;
+  const safePhotoIdx =
+    activePhotoIdx >= 0 && activePhotoIdx < photos.length ? activePhotoIdx : 0;
+  const currentPhoto = photos[safePhotoIdx] ?? photos[0];
+  const isFinalized =
+    dispute.status === "RESOLVED" || dispute.status === "CLOSED";
+
   const handleCopy = (text: string, identifier: string) => {
-    navigator.clipboard.writeText(text);
+    void navigator.clipboard.writeText(text);
     setCopiedText(identifier);
     setTimeout(() => setCopiedText(null), 2000);
   };
 
-  const handleExecuteDecision = () => {
-    if (!decisionModalAction) return;
-
-    let updatedStatus: DisputeStatus = "RESOLVED";
-    let noticeMessage = "";
-
-    if (decisionModalAction === "APPROVE_ADJUSTMENT") {
-      updatedStatus = "RESOLVED";
-      noticeMessage = `Arbitration Ruling Executed: Disputed adjustment of -${formatCadCents(
-        dispute.disputedAdjustmentCents
-      )} approved. Net escrow release authorized.`;
-    } else if (decisionModalAction === "REJECT_CLAIM") {
-      updatedStatus = "RESOLVED";
-      noticeMessage = `Arbitration Ruling Executed: Claim dismissed as unsubstantiated normal wear. Original winning bid of ${formatCadCents(
-        dispute.agreedBidCents
-      )} enforced in full.`;
-    } else if (decisionModalAction === "MUTUAL_CANCEL") {
-      updatedStatus = "CLOSED";
-      noticeMessage = `Arbitration Ruling Executed: Order for mutual cancellation and vehicle return issued. Escrow funds refunded.`;
-    }
-
-    setDispute((prev) =>
-      prev
-        ? {
-            ...prev,
-            status: updatedStatus,
-            complianceDecisionNotes: decisionNotes.trim() || undefined,
-            timeline: [
-              ...prev.timeline,
-              {
-                timestamp: "Just now",
-                actor: "AutoNexa Compliance Arbitration",
-                action: decisionModalAction,
-                note: decisionNotes.trim() || "Executed official binding resolution directive.",
-              },
-            ],
-          }
-        : null
+  const openDecisionModal = (action: DisputeResolutionDecision) => {
+    setDecisionModalAction(action);
+    setAdjustmentDollars(
+      String(Math.round(dispute.disputedAdjustmentCents / 100))
     );
-
-    setFeedbackNotice(noticeMessage);
-    setDecisionModalAction(null);
     setDecisionNotes("");
-    setTimeout(() => setFeedbackNotice(null), 6000);
+    setModalError(null);
   };
 
-  const currentPhoto = dispute.vehicle.photos[activePhotoIdx] || dispute.vehicle.photos[0];
+  const handleExecuteDecision = async () => {
+    if (!decisionModalAction) return;
+    setModalError(null);
+
+    const trimmedNotes = decisionNotes.trim();
+    if (trimmedNotes.length < 5) {
+      setModalError(
+        "Please record binding mediation findings (at least 5 characters)."
+      );
+      return;
+    }
+
+    let adjustmentCents: number | undefined;
+    if (decisionModalAction === "APPROVE_ADJUSTMENT") {
+      const parsedDollars = Number(adjustmentDollars);
+      if (!Number.isFinite(parsedDollars) || parsedDollars < 0) {
+        setModalError("Enter a valid non-negative CAD deduction amount.");
+        return;
+      }
+      adjustmentCents = Math.round(parsedDollars * 100);
+      if (adjustmentCents > dispute.agreedBidCents) {
+        setModalError(
+          "Approved deduction cannot exceed the agreed winning bid."
+        );
+        return;
+      }
+    }
+
+    try {
+      const result = await resolveMutation.mutateAsync({
+        decision: decisionModalAction,
+        ...(adjustmentCents !== undefined ? { adjustmentCents } : {}),
+        notes: trimmedNotes,
+      });
+
+      setFeedbackNotice(result.message);
+      setDecisionModalAction(null);
+      setDecisionNotes("");
+      setTimeout(() => setFeedbackNotice(null), 6000);
+    } catch (err) {
+      setModalError(
+        err instanceof ApiError
+          ? err.failure.error
+          : "Unable to execute arbitration ruling."
+      );
+    }
+  };
 
   return (
     <div className="space-y-6 pb-20">
@@ -186,7 +210,9 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 font-mono text-xs">
             <span className="text-portal-text-muted">Docket:</span>
-            <span className="font-bold text-portal-text">{dispute.docketNumber}</span>
+            <span className="font-bold text-portal-text">
+              {dispute.docketNumber}
+            </span>
             <button
               type="button"
               onClick={() => handleCopy(dispute.docketNumber, "docket")}
@@ -205,12 +231,15 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
             className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase ${
               dispute.status === "RESOLVED"
                 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25"
-                : dispute.status === "ACTION_REQUIRED"
-                ? "bg-red-500/10 text-red-500 border border-red-500/25"
-                : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25"
+                : dispute.status === "ACTION_REQUIRED" ||
+                    dispute.status === "CLOSED"
+                  ? "bg-red-500/10 text-red-500 border border-red-500/25"
+                  : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25"
             }`}
           >
-            {dispute.status === "ACTION_REQUIRED" ? "Escalated Action" : dispute.status}
+            {dispute.status === "ACTION_REQUIRED"
+              ? "Escalated Action"
+              : dispute.status}
           </span>
         </div>
       </div>
@@ -232,7 +261,7 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
         </div>
       )}
 
-      {/* 2. Top Executive Docket Banner: Vehicle Title & Financial Telemetry */}
+      {/* 2. Top Executive Docket Banner */}
       <div className="p-6 rounded-2xl border border-portal-border bg-portal-surface shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 text-xs font-semibold text-portal-text-muted">
@@ -246,13 +275,14 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
             {dispute.vehicle.year} {dispute.vehicle.make} {dispute.vehicle.model}
           </h1>
           <p className="font-body text-xs sm:text-sm text-portal-text-muted">
-            {dispute.vehicle.trim} • VIN:{" "}
-            <span className="font-mono font-semibold text-portal-text">{dispute.vehicle.vin}</span> •{" "}
-            {dispute.vehicle.mileageKm.toLocaleString()} km
+            {dispute.vehicle.trim || "Standard Trim"} • VIN:{" "}
+            <span className="font-mono font-semibold text-portal-text">
+              {dispute.vehicle.vin}
+            </span>{" "}
+            • {dispute.vehicle.mileageKm.toLocaleString()} km
           </p>
         </div>
 
-        {/* Financial Escrow Telemetry Card */}
         <div className="flex flex-wrap items-center gap-4 sm:gap-6 p-4 rounded-xl bg-portal-surface-hover/80 border border-portal-border">
           <div>
             <span className="text-[10px] uppercase font-bold text-portal-text-muted block font-mono">
@@ -287,9 +317,8 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
         </div>
       </div>
 
-      {/* 3. Dual-Party Identity Cards (Seller vs Dealership) */}
+      {/* 3. Dual-Party Identity Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Seller Dossier */}
         <div className="p-5 rounded-2xl border border-portal-border bg-portal-surface space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-portal-border">
             <div className="flex items-center gap-2">
@@ -304,7 +333,9 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
           </div>
 
           <div className="space-y-1 text-xs font-body">
-            <p className="font-bold text-sm text-portal-text">{dispute.seller.name}</p>
+            <p className="font-bold text-sm text-portal-text">
+              {dispute.seller.name}
+            </p>
             <p className="text-portal-text-muted">
               {dispute.seller.city}, {dispute.seller.province}
             </p>
@@ -321,7 +352,6 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
           </div>
         </div>
 
-        {/* Dealership Dossier */}
         <div className="p-5 rounded-2xl border border-portal-border bg-portal-surface space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-portal-border">
             <div className="flex items-center gap-2">
@@ -336,8 +366,12 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
           </div>
 
           <div className="space-y-1 text-xs font-body">
-            <p className="font-bold text-sm text-portal-text">{dispute.dealership.name}</p>
-            <p className="text-portal-text-muted">{dispute.dealership.legalEntity}</p>
+            <p className="font-bold text-sm text-portal-text">
+              {dispute.dealership.name}
+            </p>
+            <p className="text-portal-text-muted">
+              {dispute.dealership.legalEntity}
+            </p>
             <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-portal-text-muted font-body">
               <span className="inline-flex items-center gap-1">
                 <User className="w-3.5 h-3.5" />
@@ -360,33 +394,32 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
               Inspection Photo Evidence Stage
             </h2>
             <p className="text-xs text-portal-text-muted mt-0.5">
-              Compare certified hoist technician inspection findings against seller listing declarations.
+              Compare signed hoist technician inspection findings against seller listing disclosures.
             </p>
           </div>
           <button
             type="button"
             onClick={() => {
-              setLightboxIndex(activePhotoIdx);
+              setLightboxIndex(safePhotoIdx);
               setLightboxOpen(true);
             }}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-portal-border bg-portal-surface-hover text-portal-text text-xs font-bold hover:bg-portal-primary hover:text-white transition-all cursor-pointer shadow-2xs shrink-0 self-start sm:self-auto"
           >
             <Maximize2 className="w-3.5 h-3.5" />
-            <span>Fullscreen Lightbox ({dispute.vehicle.photos.length})</span>
+            <span>Fullscreen Lightbox ({photos.length})</span>
           </button>
         </div>
 
-        {/* Main Photo Canvas */}
         <div className="relative w-full h-72 sm:h-96 md:h-[480px] rounded-2xl overflow-hidden bg-black/40 border border-portal-border group/canvas">
           <Image
             src={currentPhoto.url}
             alt={currentPhoto.label}
             fill
+            unoptimized
             className="object-contain"
             priority
           />
 
-          {/* Tag Overlay */}
           <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
             <span
               className={`px-3 py-1 rounded-lg text-xs font-bold backdrop-blur-md shadow-md ${
@@ -395,25 +428,28 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
                   : "bg-black/80 text-white border border-white/20"
               }`}
             >
-              {currentPhoto.isHoistEvidence ? "⚠️ Technician Hoist Evidence" : "Seller Listing Photo"}
+              {currentPhoto.isHoistEvidence
+                ? "Technician Hoist Evidence"
+                : "Seller Listing Photo"}
             </span>
           </div>
 
           <div className="absolute bottom-4 left-4 right-4 z-10 p-3 rounded-xl bg-black/80 backdrop-blur-md border border-white/10 text-white flex items-center justify-between">
-            <span className="text-xs sm:text-sm font-semibold truncate">{currentPhoto.label}</span>
+            <span className="text-xs sm:text-sm font-semibold truncate">
+              {currentPhoto.label}
+            </span>
             <span className="text-xs font-mono opacity-70 shrink-0 ml-3">
-              Photo {activePhotoIdx + 1} of {dispute.vehicle.photos.length}
+              Photo {safePhotoIdx + 1} of {photos.length}
             </span>
           </div>
         </div>
 
-        {/* Photo Thumbnail Strip */}
         <div className="flex items-center gap-3 overflow-x-auto pb-2 pt-1">
-          {dispute.vehicle.photos.map((photo, idx) => {
-            const active = idx === activePhotoIdx;
+          {photos.map((photo, idx) => {
+            const active = idx === safePhotoIdx;
             return (
               <button
-                key={photo.url}
+                key={`${photo.url}-${idx}`}
                 type="button"
                 onClick={() => setActivePhotoIdx(idx)}
                 className={`relative w-24 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
@@ -422,7 +458,13 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
                     : "border-portal-border opacity-70 hover:opacity-100"
                 }`}
               >
-                <Image src={photo.url} alt={photo.label} fill className="object-cover" />
+                <Image
+                  src={photo.url}
+                  alt={photo.label}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
                 {photo.isHoistEvidence && (
                   <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-black" />
                 )}
@@ -432,11 +474,9 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
         </div>
       </div>
 
-      {/* 5. Inspection Hoist Findings & Allegation Report */}
+      {/* 5. Inspection Hoist Findings & Timeline */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left: Summary & Technician Findings (8 cols) */}
         <div className="lg:col-span-8 space-y-4">
-          {/* Dispute Allegation Report */}
           <div className="p-5 rounded-2xl border border-portal-border bg-portal-surface space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-portal-text font-mono">
               <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -447,7 +487,6 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
             </p>
           </div>
 
-          {/* Technician Notes */}
           <div className="p-5 rounded-2xl border border-portal-border bg-portal-surface space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-portal-text font-mono">
               <Wrench className="w-4 h-4 text-portal-primary" />
@@ -458,7 +497,6 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
             </p>
           </div>
 
-          {/* Compliance Decision Notes (if already decided) */}
           {dispute.complianceDecisionNotes && (
             <div className="p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-2">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-mono">
@@ -472,7 +510,6 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
           )}
         </div>
 
-        {/* Right: Case Timeline (4 cols) */}
         <div className="lg:col-span-4 p-5 rounded-2xl border border-portal-border bg-portal-surface space-y-4">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-portal-text font-mono">
             <Clock className="w-4 h-4 text-portal-primary" />
@@ -481,23 +518,30 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
 
           <div className="space-y-4 text-xs font-body relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[1px] before:bg-portal-border">
             {dispute.timeline.map((event, idx) => (
-              <div key={idx} className="relative pl-6 space-y-0.5">
+              <div
+                key={`${event.timestampIso}-${idx}`}
+                className="relative pl-6 space-y-0.5"
+              >
                 <div className="absolute left-0 top-1 w-4 h-4 rounded-full bg-portal-surface-hover border border-portal-primary flex items-center justify-center">
                   <span className="w-1.5 h-1.5 rounded-full bg-portal-primary" />
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-portal-text-muted font-mono">
-                  <span>{event.actor}</span>
-                  <span>{event.timestamp}</span>
+                <div className="flex items-center justify-between text-[11px] text-portal-text-muted font-mono gap-2">
+                  <span className="truncate">{event.actor}</span>
+                  <span className="shrink-0">{event.timestamp}</span>
                 </div>
-                <p className="font-semibold text-portal-text text-[11px]">{event.action}</p>
-                <p className="text-[11px] text-portal-text-muted leading-relaxed">{event.note}</p>
+                <p className="font-semibold text-portal-text text-[11px]">
+                  {event.action}
+                </p>
+                <p className="text-[11px] text-portal-text-muted leading-relaxed">
+                  {event.note}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* 6. Binding Compliance Officer Arbitration Decision Terminal */}
+      {/* 6. Binding Compliance Arbitration Decision Console */}
       <div className="p-6 rounded-2xl border border-portal-border bg-portal-surface space-y-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -507,20 +551,23 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
             </span>
           </div>
           <h2 className="font-headline font-bold text-lg text-portal-text">
-            Execute Binding Arbitration Ruling
+            {isFinalized
+              ? `Arbitration Ruling Finalized (${dispute.resolutionDecision ?? dispute.status})`
+              : "Execute Binding Arbitration Ruling"}
           </h2>
           <p className="text-xs text-portal-text-muted mt-0.5">
-            Select the binding mediation directive. Executing will disburse or refund escrow funds and notify both parties via verified CASL notice.
+            {isFinalized
+              ? "This docket is closed and locked. Settlement math, audit logs, and participant notices have been recorded."
+              : "Select the binding mediation directive. Executing updates match settlement amounts in integer cents and notifies both parties."}
           </p>
         </div>
 
-        {/* Quick Action Decision Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-          {/* Action 1: Approve Adjustment */}
           <button
             type="button"
-            onClick={() => setDecisionModalAction("APPROVE_ADJUSTMENT")}
-            className="p-4 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-left space-y-1.5 cursor-pointer transition-all hover:border-emerald-500/60 group"
+            disabled={isFinalized || resolveMutation.isPending}
+            onClick={() => openDecisionModal("APPROVE_ADJUSTMENT")}
+            className="p-4 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-left space-y-1.5 cursor-pointer transition-all hover:border-emerald-500/60 group disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center justify-between">
               <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[10.5px]">
@@ -529,18 +576,20 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
             </div>
             <p className="font-bold text-xs text-portal-text group-hover:text-emerald-500 transition-colors">
-              Approve -{formatCadCents(dispute.disputedAdjustmentCents)} Deduction
+              Approve -{formatCadCents(dispute.disputedAdjustmentCents)}{" "}
+              Deduction
             </p>
             <p className="text-[11px] text-portal-text-muted leading-relaxed">
-              Disburse net ${formatCadCents(dispute.netSettlementCents)} to seller and credit balance to dealer.
+              Authorize net {formatCadCents(dispute.netSettlementCents)} settlement
+              to seller (adjustable in dialog).
             </p>
           </button>
 
-          {/* Action 2: Reject Claim (Enforce Original Bid) */}
           <button
             type="button"
-            onClick={() => setDecisionModalAction("REJECT_CLAIM")}
-            className="p-4 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-left space-y-1.5 cursor-pointer transition-all hover:border-portal-primary/60 group"
+            disabled={isFinalized || resolveMutation.isPending}
+            onClick={() => openDecisionModal("REJECT_CLAIM")}
+            className="p-4 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-left space-y-1.5 cursor-pointer transition-all hover:border-portal-primary/60 group disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center justify-between">
               <span className="px-2 py-0.5 rounded bg-portal-primary/10 text-portal-primary font-bold text-[10.5px]">
@@ -552,15 +601,16 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
               Dismiss Claim (Release Full Bid)
             </p>
             <p className="text-[11px] text-portal-text-muted leading-relaxed">
-              Ruling finds claim represents normal wear. Release original ${formatCadCents(dispute.agreedBidCents)} to seller.
+              Ruling finds claim represents normal wear. Release original{" "}
+              {formatCadCents(dispute.agreedBidCents)} to seller.
             </p>
           </button>
 
-          {/* Action 3: Order Mutual Cancellation */}
           <button
             type="button"
-            onClick={() => setDecisionModalAction("MUTUAL_CANCEL")}
-            className="p-4 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-left space-y-1.5 cursor-pointer transition-all hover:border-red-500/60 group"
+            disabled={isFinalized || resolveMutation.isPending}
+            onClick={() => openDecisionModal("MUTUAL_CANCEL")}
+            className="p-4 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-left space-y-1.5 cursor-pointer transition-all hover:border-red-500/60 group disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center justify-between">
               <span className="px-2 py-0.5 rounded bg-red-500/10 text-red-500 font-bold text-[10.5px]">
@@ -569,16 +619,17 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
               <Undo2 className="w-4 h-4 text-red-500" />
             </div>
             <p className="font-bold text-xs text-portal-text group-hover:text-red-500 transition-colors">
-              Order Mutual Return &amp; Refund
+              Order Mutual Return &amp; Cancellation
             </p>
             <p className="text-[11px] text-portal-text-muted leading-relaxed">
-              Void contract due to material defect. Return vehicle to seller and refund dealership deposit.
+              Void contract due to material discrepancy. Release vehicle back to
+              unsealed status.
             </p>
           </button>
         </div>
       </div>
 
-      {/* 7. Portaled Fullscreen Lightbox (z-[9999]) */}
+      {/* 7. Portaled Fullscreen Lightbox */}
       {mounted &&
         lightboxOpen &&
         createPortal(
@@ -586,16 +637,15 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
             className="fixed inset-0 z-[9999] bg-black/95 flex flex-col justify-between p-4 sm:p-6 animate-fadeIn select-none"
             onClick={() => setLightboxOpen(false)}
           >
-            {/* Lightbox Header */}
             <div
               className="flex items-center justify-between text-white"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-2">
                 <span className="font-bold text-sm sm:text-base">
-                  {dispute.vehicle.photos[lightboxIndex]?.label}
+                  {photos[lightboxIndex]?.label}
                 </span>
-                {dispute.vehicle.photos[lightboxIndex]?.isHoistEvidence && (
+                {photos[lightboxIndex]?.isHoistEvidence && (
                   <span className="px-2 py-0.5 rounded bg-red-600 text-[10.5px] font-bold">
                     Hoist Evidence
                   </span>
@@ -610,24 +660,23 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
               </button>
             </div>
 
-            {/* Lightbox Center Stage */}
             <div
               className="relative flex-1 w-full max-h-[80vh] flex items-center justify-center my-4"
               onClick={(e) => e.stopPropagation()}
             >
               <Image
-                src={dispute.vehicle.photos[lightboxIndex]?.url || ""}
+                src={photos[lightboxIndex]?.url || currentPhoto.url}
                 alt="Evidence"
                 fill
+                unoptimized
                 className="object-contain"
               />
 
-              {/* Navigation Arrows */}
               <button
                 type="button"
                 onClick={() =>
                   setLightboxIndex((prev) =>
-                    prev === 0 ? dispute.vehicle.photos.length - 1 : prev - 1
+                    prev === 0 ? photos.length - 1 : prev - 1
                   )
                 }
                 className="absolute left-2 sm:left-4 p-3 rounded-full bg-black/60 hover:bg-black/80 text-white cursor-pointer transition-colors"
@@ -637,7 +686,7 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
               <button
                 type="button"
                 onClick={() =>
-                  setLightboxIndex((prev) => (prev + 1) % dispute.vehicle.photos.length)
+                  setLightboxIndex((prev) => (prev + 1) % photos.length)
                 }
                 className="absolute right-2 sm:right-4 p-3 rounded-full bg-black/60 hover:bg-black/80 text-white cursor-pointer transition-colors"
               >
@@ -645,30 +694,30 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
               </button>
             </div>
 
-            {/* Lightbox Footer Counter */}
             <div
               className="text-center text-xs text-white/70 font-mono"
               onClick={(e) => e.stopPropagation()}
             >
-              Photo {lightboxIndex + 1} of {dispute.vehicle.photos.length}
+              Photo {lightboxIndex + 1} of {photos.length}
             </div>
           </div>,
           document.body
         )}
 
-      {/* 8. Portaled Arbitration Decision Confirmation Modal (z-[9999]) */}
+      {/* 8. Portaled Arbitration Decision Confirmation Modal */}
       {mounted &&
         decisionModalAction &&
         createPortal(
           <div
             className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn"
-            onClick={() => setDecisionModalAction(null)}
+            onClick={() => {
+              if (!resolveMutation.isPending) setDecisionModalAction(null);
+            }}
           >
             <div
               className="relative w-full max-w-lg bg-portal-surface border border-portal-border rounded-2xl shadow-2xl p-6 sm:p-7 space-y-5 animate-scaleUp"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header */}
               <div className="flex items-start justify-between pb-3 border-b border-portal-border">
                 <div className="flex items-center gap-3">
                   <div
@@ -676,8 +725,8 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
                       decisionModalAction === "APPROVE_ADJUSTMENT"
                         ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
                         : decisionModalAction === "REJECT_CLAIM"
-                        ? "bg-portal-primary/10 border border-portal-primary/20 text-portal-primary"
-                        : "bg-red-500/10 border border-red-500/20 text-red-500"
+                          ? "bg-portal-primary/10 border border-portal-primary/20 text-portal-primary"
+                          : "bg-red-500/10 border border-red-500/20 text-red-500"
                     }`}
                   >
                     <Scale className="w-6 h-6" />
@@ -687,12 +736,16 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
                       Confirm Binding Arbitration Order
                     </h3>
                     <p className="text-xs text-portal-text-muted mt-0.5">
-                      Case Docket: <span className="font-mono text-portal-text">{dispute.docketNumber}</span>
+                      Case Docket:{" "}
+                      <span className="font-mono text-portal-text">
+                        {dispute.docketNumber}
+                      </span>
                     </p>
                   </div>
                 </div>
                 <button
                   type="button"
+                  disabled={resolveMutation.isPending}
                   onClick={() => setDecisionModalAction(null)}
                   className="p-1 rounded text-portal-text-muted hover:text-portal-text cursor-pointer"
                 >
@@ -700,31 +753,48 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
                 </button>
               </div>
 
-              {/* Summary of Action */}
               <div className="p-3.5 rounded-xl bg-portal-surface-hover/80 border border-portal-border text-xs space-y-1 font-body">
                 <p className="font-bold text-portal-text">
                   {decisionModalAction === "APPROVE_ADJUSTMENT"
-                    ? `Deduction Approval: -${formatCadCents(dispute.disputedAdjustmentCents)}`
+                    ? `Deduction Approval (Agreed Bid: ${formatCadCents(dispute.agreedBidCents)})`
                     : decisionModalAction === "REJECT_CLAIM"
-                    ? `Claim Dismissal: Full ${formatCadCents(dispute.agreedBidCents)} Enforced`
-                    : "Mutual Contract Void & Return Order"}
+                      ? `Claim Dismissal: Full ${formatCadCents(dispute.agreedBidCents)} Enforced`
+                      : "Mutual Contract Void & Return Order"}
                 </p>
                 <p className="text-[11px] text-portal-text-muted leading-relaxed">
                   {decisionModalAction === "APPROVE_ADJUSTMENT"
-                    ? `Seller ${dispute.seller.name} will receive net EFT payout of ${formatCadCents(
-                        dispute.netSettlementCents
-                      )}. Dealership ${dispute.dealership.name} will receive a credit of ${formatCadCents(
-                        dispute.disputedAdjustmentCents
-                      )}.`
+                    ? `Adjust final match settlement below. Net settlement to ${dispute.seller.name} updates in integer CAD cents.`
                     : decisionModalAction === "REJECT_CLAIM"
-                    ? `Dealership claim is denied. Seller ${dispute.seller.name} will receive full original agreed bid of ${formatCadCents(
-                        dispute.agreedBidCents
-                      )}.`
-                    : `Contract cancelled. Escrow balance will be refunded to ${dispute.dealership.name} and vehicle returned to ${dispute.seller.name}.`}
+                      ? `Dealership claim is dismissed. Seller ${dispute.seller.name} retains full original agreed bid of ${formatCadCents(dispute.agreedBidCents)}.`
+                      : `Contract voided. ${dispute.dealership.name} claim is closed and the listing returns to UNSEALED status.`}
                 </p>
               </div>
 
-              {/* Rationale Textarea */}
+              {decisionModalAction === "APPROVE_ADJUSTMENT" && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-portal-text block">
+                    Approved Deduction ($ CAD)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={adjustmentDollars}
+                    onChange={(e) => {
+                      setAdjustmentDollars(e.target.value);
+                      setModalError(null);
+                    }}
+                    className="w-full px-3.5 py-2 rounded-xl border border-portal-border bg-portal-surface text-portal-text font-mono text-xs focus:ring-2 focus:ring-portal-primary/40 focus:outline-none"
+                  />
+                </div>
+              )}
+
+              {modalError && (
+                <div className="p-3 rounded-xl border border-red-500/30 bg-red-500/10 text-xs text-red-500 font-semibold">
+                  {modalError}
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-portal-text block">
                   Binding Mediation Directive &amp; Audit Rationale (Required)
@@ -733,33 +803,44 @@ export function DisputeDetailView({ id }: DisputeDetailViewProps) {
                   rows={3}
                   required
                   value={decisionNotes}
-                  onChange={(e) => setDecisionNotes(e.target.value)}
-                  placeholder="Record the official compliance findings and regulatory justification for this arbitration ruling..."
+                  onChange={(e) => {
+                    setDecisionNotes(e.target.value);
+                    setModalError(null);
+                  }}
+                  placeholder="Record the official compliance findings and justification (minimum 5 characters)..."
                   className="w-full p-3 rounded-xl border border-portal-border bg-portal-surface text-portal-text text-xs focus:ring-2 focus:ring-portal-primary/40 focus:outline-none placeholder:text-portal-text-muted font-body"
                 />
               </div>
 
-              {/* Action Buttons */}
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-portal-border">
                 <button
                   type="button"
+                  disabled={resolveMutation.isPending}
                   onClick={() => setDecisionModalAction(null)}
-                  className="px-4 py-2.5 rounded-xl border border-portal-border text-xs font-bold text-portal-text hover:bg-portal-surface-hover cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl border border-portal-border text-xs font-bold text-portal-text hover:bg-portal-surface-hover cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  onClick={handleExecuteDecision}
-                  className={`px-5 py-2.5 rounded-xl text-white text-xs font-bold cursor-pointer transition-all ${
+                  disabled={resolveMutation.isPending}
+                  onClick={() => void handleExecuteDecision()}
+                  className={`px-5 py-2.5 rounded-xl text-white text-xs font-bold cursor-pointer transition-all inline-flex items-center gap-2 disabled:opacity-50 ${
                     decisionModalAction === "APPROVE_ADJUSTMENT"
                       ? "bg-emerald-600 hover:bg-emerald-700"
                       : decisionModalAction === "REJECT_CLAIM"
-                      ? "bg-portal-primary hover:bg-portal-primary-hover"
-                      : "bg-red-600 hover:bg-red-700"
+                        ? "bg-portal-primary hover:bg-portal-primary-hover"
+                        : "bg-red-600 hover:bg-red-700"
                   }`}
                 >
-                  Execute Binding Ruling &amp; Release Escrow
+                  {resolveMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Executing...</span>
+                    </>
+                  ) : (
+                    <span>Execute Binding Ruling &amp; Release Escrow</span>
+                  )}
                 </button>
               </div>
             </div>

@@ -29,6 +29,8 @@ export const adminKeys = {
   auctions: () => [...adminKeys.all, "auctions"] as const,
   dealers: () => [...adminKeys.all, "dealers"] as const,
   dealer: (id: string) => [...adminKeys.dealers(), id] as const,
+  disputes: () => [...adminKeys.all, "disputes"] as const,
+  dispute: (id: string) => [...adminKeys.disputes(), id] as const,
 };
 
 export const dealerKeys = {

@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B5 Complete — Prompt B5.3 Complete) — **Next Prompt: `Prompt B6.1`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B6 — Prompt B6.1 Complete) — **Next Prompt: `Prompt B6.2`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -262,7 +262,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **II** | **B5** | `Prompt B5.1` | Seed Canadian postal centroids + `geo.adapter.ts` + PostGIS `ST_DWithin` RPC (`distanceKm` in feed & unsealed view) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B5** | `Prompt B5.2` | Dealer Registration (`/api/dealer/register`) & Admin License Verification (`/api/admin/dealers*` + BR-14 bid voiding) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B5** | `Prompt B5.3` | Dealership Team & Seat Management (`/api/dealer/team` — `DEALER_ADMIN` gate, buyer vs. inspector permissions) | Complete Platform | 2–3 hrs | [x] |
-| **II** | **B6** | `Prompt B6.1` | Dispute Arbitration Engine (`/api/admin/disputes*` + hoist evidence upload + timeline + resolution) | Complete Platform | 3–4 hrs | [ ] |
+| **II** | **B6** | `Prompt B6.1` | Dispute Arbitration Engine (`/api/admin/disputes*` + hoist evidence upload + timeline + resolution) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B6** | `Prompt B6.2` | Admin Analytics SQL Views (`/api/admin/analytics`) & Paginated Immutable Audit Log + SHA-256 Chain (`/api/admin/audit-log`) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B6** | `Prompt B6.3` | Seller Relisting (FR-EU-13 cooldown), Account Settings (`/api/settings/*`), & Platform Config (`/api/admin/config`) | Complete Platform | 3 hrs | [ ] |
 | **II** | **B7** | `Prompt B7.1` | Stripe Checkout, Billing Portal & Invoices (`billing.adapter.ts`, `/api/dealer/subscription*`, `/api/dealer/billing*`) | Complete Platform | 3–4 hrs | [ ] |
@@ -467,7 +467,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 
 ### Phase B6 — Disputes, Platform Analytics, Immutable Audit Log, Relisting & Settings
 
-- [ ] **`Prompt B6.1` — Dispute Arbitration Engine & Hoist Evidence Intake**
+- [x] **`Prompt B6.1` — Dispute Arbitration Engine & Hoist Evidence Intake**
   - **Build From → To:** Hardcoded `lib/mock/admin-disputes.ts` → real `disputes` + `dispute_timeline` workflow from declined/disputed dealer inspection through binding Admin resolution.
   - **Files to Create/Modify:**
     - `lib/server/services/dispute.service.ts` — `openDispute()` (auto-linked when dealer logs inspection discrepancy/dispute), `listDisputes()`, `getDisputeDetail()`, `resolveDispute(adminId, id, decision: 'APPROVE_ADJUSTMENT' | 'REJECT_CLAIM' | 'MUTUAL_CANCEL', adjustmentCents, notes)` (updates `matches`, appends `dispute_timeline` + `audit_logs`).
