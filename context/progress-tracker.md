@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B4.4 Complete) — **Next Prompt: `Prompt B4.5`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B4.5 & Part I PM Demo Complete) — **Next Prompt: `Prompt B5.1`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -258,7 +258,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B4** | `Prompt B4.2` | `bidding.service.ts` + real `POST /api/dealer/bid` calling atomic `submit_dealer_bid` RPC + verify `SealedBidSlip` | **PM Demo (Day 4)** | 2–3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.3` | `hooks/useAuctionRealtime.ts` (live `bid_count` & `status` WebSocket + server-time clock) wired to Seller & Dealer UIs | **PM Demo (Day 4)** | 2–3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.4` | Post-auction unsealing, `accept_dealer_bid` RPC → Appointment Voucher, + Admin `/api/admin/auctions` overrides | **PM Demo (Day 4–5)** | 3 hrs | [x] |
-| **I** | **B4** | `Prompt B4.5` | Dealer Active Bids & Won Matches APIs + Outcome logging + **Vercel Preview Deploy & Full 3-Role PM Demo Gate** | **PM Demo (Day 5)** | 3–4 hrs | [ ] |
+| **I** | **B4** | `Prompt B4.5` | Dealer Active Bids & Won Matches APIs + Outcome logging + **Vercel Preview Deploy & Full 3-Role PM Demo Gate** | **PM Demo (Day 5)** | 3–4 hrs | [x] |
 | **II** | **B5** | `Prompt B5.1` | Seed Canadian postal centroids + `geo.adapter.ts` + PostGIS `ST_DWithin` RPC (`distanceKm` in feed & unsealed view) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B5** | `Prompt B5.2` | Dealer Registration (`/api/dealer/register`) & Admin License Verification (`/api/admin/dealers*` + BR-14 bid voiding) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B5** | `Prompt B5.3` | Dealership Team & Seat Management (`/api/dealer/team` — `DEALER_ADMIN` gate, buyer vs. inspector permissions) | Complete Platform | 2–3 hrs | [ ] |
@@ -421,7 +421,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** FR-EU-09, FR-EU-10, FR-AD-04, BR-07, BR-08, H4, AC-02.
   - **Exit Gate:** Admin force-closes (or `pg_cron` closes) an auction → Seller sees ranked unsealed bids on `/seller/listings/[id]/select-dealer` → clicks Accept → `/seller/listings/[id]/appointment` displays real DB-persisted voucher & 24h expiry.
 
-- [ ] **`Prompt B4.5` — Dealer Active Bids, Won Matches Outcome Logger & PM DEMO GATE**
+- [x] **`Prompt B4.5` — Dealer Active Bids, Won Matches Outcome Logger & PM DEMO GATE**
   - **Build From → To:** Hardcoded `DealerActiveBidsView` & `DealerWonMatchesView` → real DB-backed bids & match fulfillment logging (`COMPLETED`, `RENEGOTIATED_LOWER`, `NO_SHOW`, `DECLINED_AFTER_INSPECTION`) + live Vercel Preview Deployment.
   - **Files to Create/Modify:**
     - Create `app/api/dealer/active-bids/route.ts` (`GET`), `app/api/dealer/won-matches/route.ts` (`GET`), `app/api/dealer/won-matches/[id]/outcome/route.ts` (`POST` — updates `matches.outcome`, `final_price_cents`, `outcome_notes`, transitions `listings.status = 'COMPLETED'` when sold or releases back to `UNSEALED` if declined/no-show, writes `audit_logs`).
