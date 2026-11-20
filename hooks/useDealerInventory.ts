@@ -10,11 +10,23 @@ import type {
   VehicleInspectionDetails,
 } from "@/lib/types/dealer";
 
-export function useDealerInventory(options?: { enabled?: boolean }) {
+export function useDealerInventory(options?: {
+  maxDistanceKm?: number | null;
+  enabled?: boolean;
+}) {
+  const maxDistanceKm = options?.maxDistanceKm ?? undefined;
+  const filterKey =
+    maxDistanceKm !== undefined ? { maxDistanceKm } : undefined;
+
   return useQuery({
-    queryKey: dealerKeys.inventory(),
-    queryFn: async (): Promise<DealerInventoryResponse> =>
-      unwrap(await api.get<DealerInventoryResponse>("/api/dealer/inventory")),
+    queryKey: dealerKeys.inventory(filterKey),
+    queryFn: async (): Promise<DealerInventoryResponse> => {
+      const path =
+        maxDistanceKm !== undefined
+          ? `/api/dealer/inventory?maxDistanceKm=${maxDistanceKm}`
+          : "/api/dealer/inventory";
+      return unwrap(await api.get<DealerInventoryResponse>(path));
+    },
     staleTime: 15 * 1000,
     enabled: options?.enabled ?? true,
   });

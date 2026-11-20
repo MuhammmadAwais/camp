@@ -1565,6 +1565,59 @@ export type Database = {
         }
         Returns: Json
       }
+      get_dealer_inventory_with_distance: {
+        Args: {
+          p_damage_grade?: string
+          p_dealership_id: string
+          p_make?: string
+          p_max_distance_km?: number
+          p_max_mileage_km?: number
+          p_province?: string
+          p_search?: string
+          p_sort_by?: string
+        }
+        Returns: {
+          auction_ends_at: string
+          bid_count: number
+          body_type: string
+          carfax_clean: boolean
+          city: string
+          damage_grade: string
+          damage_hotspot_count: number
+          distance_km: number
+          drivetrain: string
+          exterior_color: string
+          has_lien: boolean
+          has_reserve: boolean
+          id: string
+          interior_color: string
+          keys_count: number
+          make: string
+          mileage_km: number
+          model: string
+          my_current_bid_cents: number
+          postal_code: string
+          province: string
+          transmission: string
+          vehicle_trim: string
+          vin: string
+          year: number
+        }[]
+      }
+      get_dealership_listing_distances: {
+        Args: { p_dealership_id: string; p_listing_ids: string[] }
+        Returns: {
+          distance_km: number
+          listing_id: string
+        }[]
+      }
+      get_unsealed_bid_distances: {
+        Args: { p_listing_id: string }
+        Returns: {
+          dealership_id: string
+          distance_km: number
+        }[]
+      }
       submit_dealer_bid: {
         Args: {
           p_amount_cents: number

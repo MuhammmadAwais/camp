@@ -1,5 +1,6 @@
 import { createHmac, randomInt, timingSafeEqual } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
+import { geocodeCanadianPostalCode } from "@/lib/server/adapters/geo.adapter";
 import {
   getSessionContext,
   maskPhone,
@@ -423,6 +424,10 @@ export async function registerAccount(
   let createdDealershipId: string | null = null;
 
   try {
+    const geo = await geocodeCanadianPostalCode(payload.postalCode, {
+      preferredProvince: payload.province,
+    });
+
     if (isDealer) {
       // BR-13: Newly registered dealerships stay PENDING until OMVIC/AMVIC/VSA admin verification.
       const { data: dealership, error: dealerInsertErr } = await admin
@@ -434,9 +439,10 @@ export async function registerAccount(
           license_number: licenseNumber,
           status: "PENDING",
           street_address: "Pending onboarding completion",
-          city: "",
+          city: geo.city,
           province: payload.province,
           postal_code: payload.postalCode,
+          location: geo.locationWkt,
           contact_name: `${payload.firstName} ${payload.lastName}`.trim(),
           contact_email: email,
           contact_phone: payload.phone,
@@ -475,8 +481,10 @@ export async function registerAccount(
           first_name: payload.firstName,
           last_name: payload.lastName,
           phone_e164: payload.phone,
+          city: geo.city,
           postal_code: payload.postalCode,
           province: payload.province,
+          location: geo.locationWkt,
           role: targetRole,
           dealership_id: createdDealershipId,
           email_verified: false,

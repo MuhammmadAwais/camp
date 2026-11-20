@@ -1,9 +1,5 @@
 import { z } from "zod";
-import {
-  PROVINCE_CODES,
-  normalizePostalCode,
-  suggestProvinceFromPostal,
-} from "@/lib/canada";
+import { geocodeCanadianPostalCode } from "@/lib/server/adapters/geo.adapter";
 import { validateAndNormalizeVin } from "@/lib/server/adapters/vin.adapter";
 import type { SessionContext } from "@/lib/server/auth";
 import {
@@ -183,39 +179,6 @@ function computeDamageGrade(
     return "C";
   }
   return "B";
-}
-
-function normalizeProvince(raw?: string | null): string {
-  if (raw) {
-    const upper = raw.trim().toUpperCase();
-    if (PROVINCE_CODES.some((code) => code === upper)) {
-      return upper;
-    }
-  }
-  return "ON";
-}
-
-function toRadians(degrees: number): number {
-  return (degrees * Math.PI) / 180;
-}
-
-// TODO(senior-review): Replace centroid Haversine approximation with PostGIS ST_Distance RPC in Prompt B5.1.
-function haversineDistanceKm(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-): number {
-  const earthRadiusKm = 6371;
-  const dLat = toRadians(lat2 - lat1);
-  const dLon = toRadians(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRadians(lat1)) *
-      Math.cos(toRadians(lat2)) *
-      Math.sin(dLon / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return Math.max(1, Math.round(earthRadiusKm * c));
 }
 
 function mapNotificationType(
@@ -402,30 +365,17 @@ export async function createListing(
     );
   }
 
-  const rawPostal = payload.postalCode?.trim() || ctx.profile.postal_code || "M5V 2T6";
-  const postalCode = normalizePostalCode(rawPostal);
-  const fsaPrefix = postalCode.slice(0, 3).toUpperCase();
+  const rawPostal =
+    payload.postalCode?.trim() || ctx.profile.postal_code || "M5V 2T6";
+  const geo = await geocodeCanadianPostalCode(rawPostal, {
+    preferredProvince: payload.province ?? ctx.profile.province,
+    preferredCity: payload.city,
+  });
 
-  const { data: centroid } =
-    fsaPrefix.length === 3
-      ? await admin
-          .from("postal_centroids")
-          .select("city, province, latitude, longitude")
-          .eq("postal_prefix", fsaPrefix)
-          .maybeSingle()
-      : { data: null };
-
-  const province = normalizeProvince(
-    payload.province ??
-      centroid?.province ??
-      suggestProvinceFromPostal(postalCode) ??
-      ctx.profile.province
-  );
-  const city =
-    payload.city?.trim() || centroid?.city || ctx.profile.city || "";
-  const locationWkt = centroid
-    ? `SRID=4326;POINT(${centroid.longitude} ${centroid.latitude})`
-    : null;
+  const postalCode = geo.postalCode;
+  const province = geo.province;
+  const city = payload.city?.trim() || geo.city || ctx.profile.city || "";
+  const locationWkt = geo.locationWkt;
 
   const damageHotspots = payload.damageHotspots ?? [];
   const damageGrade = computeDamageGrade(damageHotspots);
@@ -871,63 +821,29 @@ export async function getSellerListingDetail(
     string,
     Database["public"]["Tables"]["dealerships"]["Row"]
   >();
-  if (dealershipIds.length > 0) {
-    const { data: dealerRows } = await admin
-      .from("dealerships")
-      .select("*")
-      .in("id", dealershipIds);
+  const distanceByDealershipId = new Map<string, number>();
 
-    for (const dealer of dealerRows ?? []) {
+  if (dealershipIds.length > 0) {
+    const [dealerRowsRes, distancesRes] = await Promise.all([
+      admin.from("dealerships").select("*").in("id", dealershipIds),
+      ctx.supabase.rpc("get_unsealed_bid_distances", {
+        p_listing_id: listing.id,
+      }),
+    ]);
+
+    for (const dealer of dealerRowsRes.data ?? []) {
       dealershipMap.set(dealer.id, dealer);
     }
-  }
 
-  const fsaPrefixes = Array.from(
-    new Set([
-      listing.postal_code.slice(0, 3).toUpperCase(),
-      ...Array.from(dealershipMap.values()).map((d) =>
-        d.postal_code.slice(0, 3).toUpperCase()
-      ),
-    ])
-  ).filter((prefix) => prefix.length === 3);
-
-  const centroidMap = new Map<
-    string,
-    { latitude: number; longitude: number }
-  >();
-  if (fsaPrefixes.length > 0) {
-    const { data: centroids } = await admin
-      .from("postal_centroids")
-      .select("postal_prefix, latitude, longitude")
-      .in("postal_prefix", fsaPrefixes);
-
-    for (const c of centroids ?? []) {
-      centroidMap.set(c.postal_prefix, {
-        latitude: c.latitude,
-        longitude: c.longitude,
-      });
+    for (const row of distancesRes.data ?? []) {
+      if (row.distance_km !== null && row.distance_km !== undefined) {
+        distanceByDealershipId.set(row.dealership_id, row.distance_km);
+      }
     }
   }
-
-  const listingCentroid = centroidMap.get(
-    listing.postal_code.slice(0, 3).toUpperCase()
-  );
 
   const unsealedBids: UnsealedDealerBid[] = bids.map((bid) => {
     const dealer = dealershipMap.get(bid.dealership_id);
-    const dealerCentroid = dealer
-      ? centroidMap.get(dealer.postal_code.slice(0, 3).toUpperCase())
-      : undefined;
-
-    const distanceKm =
-      listingCentroid && dealerCentroid
-        ? haversineDistanceKm(
-            listingCentroid.latitude,
-            listingCentroid.longitude,
-            dealerCentroid.latitude,
-            dealerCentroid.longitude
-          )
-        : 25;
 
     return {
       id: bid.id,
@@ -939,7 +855,7 @@ export async function getSellerListingDetail(
       rating: Number(dealer?.rating ?? 5),
       reviewCount: dealer?.review_count ?? 0,
       bidAmountCents: bid.amount_cents,
-      distanceKm,
+      distanceKm: distanceByDealershipId.get(bid.dealership_id) ?? 25,
       placedAt: bid.revised_at ?? bid.created_at,
       payoutSpeedDays: dealer?.payout_speed_days ?? 1,
       certifiedPreInspection: dealer?.certified_pre_inspection ?? false,

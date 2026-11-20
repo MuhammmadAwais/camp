@@ -331,8 +331,8 @@ export function useAuctionRealtime({
       );
 
       let foundInInventory = false;
-      queryClient.setQueryData<DealerInventoryResponse>(
-        dealerKeys.inventory(),
+      queryClient.setQueriesData<DealerInventoryResponse>(
+        { queryKey: dealerKeys.inventory() },
         (prev) => {
           if (!prev) return prev;
           const existingIdx = prev.items.findIndex(

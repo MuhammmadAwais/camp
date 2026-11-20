@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B4.5 & Part I PM Demo Complete) — **Next Prompt: `Prompt B5.1`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B5.1 Complete) — **Next Prompt: `Prompt B5.2`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -259,7 +259,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B4** | `Prompt B4.3` | `hooks/useAuctionRealtime.ts` (live `bid_count` & `status` WebSocket + server-time clock) wired to Seller & Dealer UIs | **PM Demo (Day 4)** | 2–3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.4` | Post-auction unsealing, `accept_dealer_bid` RPC → Appointment Voucher, + Admin `/api/admin/auctions` overrides | **PM Demo (Day 4–5)** | 3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.5` | Dealer Active Bids & Won Matches APIs + Outcome logging + **Vercel Preview Deploy & Full 3-Role PM Demo Gate** | **PM Demo (Day 5)** | 3–4 hrs | [x] |
-| **II** | **B5** | `Prompt B5.1` | Seed Canadian postal centroids + `geo.adapter.ts` + PostGIS `ST_DWithin` RPC (`distanceKm` in feed & unsealed view) | Complete Platform | 3–4 hrs | [ ] |
+| **II** | **B5** | `Prompt B5.1` | Seed Canadian postal centroids + `geo.adapter.ts` + PostGIS `ST_DWithin` RPC (`distanceKm` in feed & unsealed view) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B5** | `Prompt B5.2` | Dealer Registration (`/api/dealer/register`) & Admin License Verification (`/api/admin/dealers*` + BR-14 bid voiding) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B5** | `Prompt B5.3` | Dealership Team & Seat Management (`/api/dealer/team` — `DEALER_ADMIN` gate, buyer vs. inspector permissions) | Complete Platform | 2–3 hrs | [ ] |
 | **II** | **B6** | `Prompt B6.1` | Dispute Arbitration Engine (`/api/admin/disputes*` + hoist evidence upload + timeline + resolution) | Complete Platform | 3–4 hrs | [ ] |
@@ -436,10 +436,10 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 
 ### Phase B5 — PostGIS Spatial Radius Engine, Dealer Onboarding & Team Management
 
-- [ ] **`Prompt B5.1` — PostGIS Radius Search & Canadian Postal Geocoding**
+- [x] **`Prompt B5.1` — PostGIS Radius Search & Canadian Postal Geocoding**
   - **Build From → To:** Placeholder `distanceKm` → real Canadian postal-centroid lookup + PostGIS `ST_DWithin` geography query returning exact dealership-to-vehicle distance in km.
   - **Files to Create/Modify:**
-    - `supabase/migrations/0009_postal_centroids_and_geo_rpc.sql` — Seed Canadian FSA/major city centroids (`ON`, `QC`, `BC`, `AB`, `MB`, `SK`, `NS`, `NB`, `NL`, `PE`) + PostGIS RPC `get_dealer_inventory_with_distance(p_dealership_id, p_max_distance_km, p_filters)` using `ST_DWithin` & `ST_Distance`.
+    - `supabase/migrations/0011_postal_centroids_and_geo_rpc.sql` — Seed Canadian FSA/major city centroids (`ON`, `QC`, `BC`, `AB`, `MB`, `SK`, `NS`, `NB`, `NL`, `PE`) + PostGIS RPC `get_dealer_inventory_with_distance(p_dealership_id, p_max_distance_km, p_filters)` using `ST_DWithin` & `ST_Distance` (plus `get_dealership_listing_distances` & `get_unsealed_bid_distances`).
     - `lib/server/adapters/geo.adapter.ts` — Resolves postal code → `(lat, lng)` from `postal_centroids` with optional Google Geocoding API upgrade (`// TODO(senior-review)`).
     - Wire automatic `location` geocoding into listing creation (`listing.service.ts`), dealership registration, dealer inventory feed, and seller unsealed bid distance sorting.
   - **SRS / Rules:** FR-X-03, FR-X-05, FR-DL-06, H6.

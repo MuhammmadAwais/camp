@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { normalizePostalCode } from "@/lib/canada";
 import type { SessionContext } from "@/lib/server/auth";
 import { ExternalServiceError, NotFoundError } from "@/lib/server/errors";
 import { logger } from "@/lib/server/logger";
@@ -78,11 +77,6 @@ export type DealerInventoryQuery = z.output<typeof dealerInventoryQuerySchema>;
 
 type DealerContext = SessionContext & { dealershipId: string };
 
-export type CentroidPoint = {
-  latitude: number;
-  longitude: number;
-};
-
 type PlanJoin = {
   name: string;
   monthly_bid_quota: number;
@@ -110,76 +104,6 @@ export function toReserveStatus(
     return "NO_RESERVE";
   }
   return "RESERVE_PENDING";
-}
-
-function toRadians(degrees: number): number {
-  return (degrees * Math.PI) / 180;
-}
-
-// TODO(senior-review): Replace centroid Haversine approximation with PostGIS ST_DWithin / ST_Distance RPC in Prompt B5.1.
-function haversineDistanceKm(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-): number {
-  const earthRadiusKm = 6371;
-  const dLat = toRadians(lat2 - lat1);
-  const dLon = toRadians(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRadians(lat1)) *
-      Math.cos(toRadians(lat2)) *
-      Math.sin(dLon / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return Math.max(1, Math.round(earthRadiusKm * c));
-}
-
-export function extractFsa(postalCode: string | null | undefined): string | null {
-  if (!postalCode) return null;
-  const normalized = normalizePostalCode(postalCode).replace(/\s+/g, "");
-  return normalized.length >= 3 ? normalized.slice(0, 3).toUpperCase() : null;
-}
-
-export function computeDistanceKm(params: {
-  dealerPostal?: string | null;
-  listingPostal?: string | null;
-  dealerCity?: string | null;
-  dealerProvince?: string | null;
-  listingCity?: string | null;
-  listingProvince?: string | null;
-  centroidMap: Map<string, CentroidPoint>;
-}): number {
-  const dealerFsa = extractFsa(params.dealerPostal);
-  const listingFsa = extractFsa(params.listingPostal);
-
-  if (dealerFsa && listingFsa) {
-    if (dealerFsa === listingFsa) return 5;
-    const origin = params.centroidMap.get(dealerFsa);
-    const dest = params.centroidMap.get(listingFsa);
-    if (origin && dest) {
-      return haversineDistanceKm(
-        origin.latitude,
-        origin.longitude,
-        dest.latitude,
-        dest.longitude
-      );
-    }
-  }
-
-  const dCity = (params.dealerCity ?? "").trim().toLowerCase();
-  const lCity = (params.listingCity ?? "").trim().toLowerCase();
-  if (dCity && lCity && dCity === lCity) {
-    return 10;
-  }
-
-  const dProv = (params.dealerProvince ?? "").trim().toUpperCase();
-  const lProv = (params.listingProvince ?? "").trim().toUpperCase();
-  if (dProv && lProv && dProv === lProv) {
-    return 45;
-  }
-
-  return 350;
 }
 
 function formatRegistrationProvince(province: string): string {
@@ -295,7 +219,27 @@ export async function listActiveInventory(
 ): Promise<DealerInventoryResponse> {
   const nowIso = new Date().toISOString();
 
-  const [dealershipRes, subscriptionRes, listingsRes, bidsRes] =
+  const rpcArgs: Database["public"]["Functions"]["get_dealer_inventory_with_distance"]["Args"] =
+    {
+      p_dealership_id: ctx.dealershipId,
+      p_sort_by: filters.sortBy,
+      ...(filters.maxDistanceKm !== undefined
+        ? { p_max_distance_km: filters.maxDistanceKm }
+        : {}),
+      ...(filters.make && filters.make.toUpperCase() !== "ALL"
+        ? { p_make: filters.make }
+        : {}),
+      ...(filters.maxMileageKm !== undefined
+        ? { p_max_mileage_km: filters.maxMileageKm }
+        : {}),
+      ...(filters.damageGrade && filters.damageGrade !== "ALL"
+        ? { p_damage_grade: filters.damageGrade }
+        : {}),
+      ...(filters.province ? { p_province: filters.province } : {}),
+      ...(filters.search ? { p_search: filters.search } : {}),
+    };
+
+  const [dealershipRes, subscriptionRes, inventoryRes, bidsRes] =
     await Promise.all([
       ctx.supabase
         .from("dealerships")
@@ -307,43 +251,7 @@ export async function listActiveInventory(
         .select("bids_used, status, plans ( name, monthly_bid_quota )")
         .eq("dealership_id", ctx.dealershipId)
         .maybeSingle(),
-      ctx.supabase
-        .from("listings")
-        .select(
-          `
-          id,
-          vin,
-          year,
-          make,
-          model,
-          trim,
-          mileage_km,
-          body_type,
-          transmission,
-          drivetrain,
-          exterior_color,
-          interior_color,
-          province,
-          city,
-          postal_code,
-          damage_grade,
-          damage_hotspot_count,
-          auction_ends_at,
-          bid_count,
-          reserve_price_cents,
-          carfax_clean,
-          keys_count,
-          has_lien,
-          listing_media (
-            public_url,
-            is_cover,
-            sort_order
-          )
-        `
-        )
-        .eq("status", "ACTIVE")
-        .gt("auction_ends_at", nowIso)
-        .order("auction_ends_at", { ascending: true }),
+      ctx.supabase.rpc("get_dealer_inventory_with_distance", rpcArgs),
       ctx.supabase
         .from("bids")
         .select("listing_id, amount_cents, status")
@@ -351,11 +259,11 @@ export async function listActiveInventory(
         .eq("status", "ACTIVE"),
     ]);
 
-  if (listingsRes.error) {
+  if (inventoryRes.error) {
     throw new ExternalServiceError(
       "Unable to load active dealer auction inventory.",
       "EXTERNAL_SERVICE_ERROR",
-      listingsRes.error
+      inventoryRes.error
     );
   }
 
@@ -382,34 +290,34 @@ export async function listActiveInventory(
   }
 
   const dealership = dealershipRes.data;
-  const listings = listingsRes.data ?? [];
+  const inventoryRows = inventoryRes.data ?? [];
+  const listingIds = inventoryRows.map((row) => row.id);
 
-  const fsaSet = new Set<string>();
-  const dealerFsa = extractFsa(dealership?.postal_code);
-  if (dealerFsa) fsaSet.add(dealerFsa);
-  for (const row of listings) {
-    const fsa = extractFsa(row.postal_code);
-    if (fsa) fsaSet.add(fsa);
-  }
+  const mediaByListingId = new Map<
+    string,
+    Array<{ public_url: string; is_cover: boolean; sort_order: number }>
+  >();
 
-  const centroidMap = new Map<string, CentroidPoint>();
-  if (fsaSet.size > 0) {
-    const { data: centroids, error: centroidErr } = await ctx.supabase
-      .from("postal_centroids")
-      .select("postal_prefix, latitude, longitude")
-      .in("postal_prefix", Array.from(fsaSet));
+  if (listingIds.length > 0) {
+    const { data: mediaRows, error: mediaErr } = await ctx.supabase
+      .from("listing_media")
+      .select("listing_id, public_url, is_cover, sort_order")
+      .in("listing_id", listingIds);
 
-    if (centroidErr) {
-      logger.warn("Postal centroid lookup error while loading dealer feed", {
+    if (mediaErr) {
+      logger.warn("Listing media lookup error while loading dealer feed", {
         actorId: ctx.userId,
-        meta: { code: centroidErr.code },
+        meta: { code: mediaErr.code },
       });
     } else {
-      for (const c of centroids ?? []) {
-        centroidMap.set(c.postal_prefix.toUpperCase(), {
-          latitude: Number(c.latitude),
-          longitude: Number(c.longitude),
+      for (const media of mediaRows ?? []) {
+        const list = mediaByListingId.get(media.listing_id) ?? [];
+        list.push({
+          public_url: media.public_url,
+          is_cover: media.is_cover,
+          sort_order: media.sort_order,
         });
+        mediaByListingId.set(media.listing_id, list);
       }
     }
   }
@@ -419,8 +327,8 @@ export async function listActiveInventory(
     myBidByListingId.set(bid.listing_id, bid.amount_cents);
   }
 
-  const mappedItems: WholesaleAuctionItem[] = listings.map((row) => {
-    const mediaRows = Array.isArray(row.listing_media) ? row.listing_media : [];
+  const mappedItems: WholesaleAuctionItem[] = inventoryRows.map((row) => {
+    const mediaRows = mediaByListingId.get(row.id) ?? [];
     const photos = sortPhotos(mediaRows);
 
     return {
@@ -429,7 +337,7 @@ export async function listActiveInventory(
       year: row.year,
       make: row.make,
       model: row.model,
-      trim: row.trim || "",
+      trim: row.vehicle_trim || "",
       mileageKm: row.mileage_km,
       bodyType: row.body_type || "Passenger Vehicle",
       transmission: row.transmission || "Automatic",
@@ -439,89 +347,22 @@ export async function listActiveInventory(
       province: row.province,
       city: row.city || row.province,
       postalCode: row.postal_code,
-      distanceKm: computeDistanceKm({
-        dealerPostal: dealership?.postal_code,
-        listingPostal: row.postal_code,
-        dealerCity: dealership?.city,
-        dealerProvince: dealership?.province,
-        listingCity: row.city,
-        listingProvince: row.province,
-        centroidMap,
-      }),
+      distanceKm: row.distance_km ?? 25,
       damageGrade: normalizeDamageGrade(row.damage_grade),
       damageHotspotCount: row.damage_hotspot_count,
       thumbnailUrl: photos[0] ?? DEFAULT_THUMBNAIL,
       photos,
       photosCount: mediaRows.length,
       auctionEndsAt: row.auction_ends_at ?? nowIso,
-      myCurrentBidCents: myBidByListingId.get(row.id) ?? null,
+      myCurrentBidCents:
+        row.my_current_bid_cents ?? myBidByListingId.get(row.id) ?? null,
       totalBidsPlaced: row.bid_count,
-      reserveStatus: toReserveStatus(row.reserve_price_cents),
+      reserveStatus: row.has_reserve ? "RESERVE_PENDING" : "NO_RESERVE",
       carfaxClean: row.carfax_clean,
       keysCount: row.keys_count,
       hasLien: row.has_lien,
     };
   });
-
-  const searchLower = filters.search?.toLowerCase();
-  const makeUpper = filters.make?.toUpperCase();
-  const filteredItems = mappedItems
-    .filter((item) => {
-      if (
-        makeUpper &&
-        makeUpper !== "ALL" &&
-        item.make.toUpperCase() !== makeUpper
-      ) {
-        return false;
-      }
-      if (
-        filters.maxMileageKm !== undefined &&
-        item.mileageKm > filters.maxMileageKm
-      ) {
-        return false;
-      }
-      if (
-        filters.maxDistanceKm !== undefined &&
-        item.distanceKm > filters.maxDistanceKm
-      ) {
-        return false;
-      }
-      if (
-        filters.damageGrade &&
-        filters.damageGrade !== "ALL" &&
-        item.damageGrade !== filters.damageGrade
-      ) {
-        return false;
-      }
-      if (filters.province && item.province.toUpperCase() !== filters.province) {
-        return false;
-      }
-      if (searchLower) {
-        const matched =
-          item.make.toLowerCase().includes(searchLower) ||
-          item.model.toLowerCase().includes(searchLower) ||
-          item.trim.toLowerCase().includes(searchLower) ||
-          item.vin.toLowerCase().includes(searchLower) ||
-          item.city.toLowerCase().includes(searchLower);
-        if (!matched) return false;
-      }
-      return true;
-    })
-    .sort((a, b) => {
-      if (filters.sortBy === "mileage_low") {
-        return a.mileageKm - b.mileageKm;
-      }
-      if (filters.sortBy === "year_new") {
-        return b.year - a.year;
-      }
-      if (filters.sortBy === "distance_near") {
-        return a.distanceKm - b.distanceKm;
-      }
-      return (
-        new Date(a.auctionEndsAt).getTime() -
-        new Date(b.auctionEndsAt).getTime()
-      );
-    });
 
   const sub = subscriptionRes.data;
   const plan = extractPlan(sub?.plans);
@@ -534,8 +375,8 @@ export async function listActiveInventory(
   };
 
   return {
-    items: filteredItems,
-    totalCount: filteredItems.length,
+    items: mappedItems,
+    totalCount: mappedItems.length,
     dealerQuota,
     dealershipName: dealership?.operating_name ?? "Verified Dealership",
     serverTime: nowIso,
@@ -555,12 +396,18 @@ export async function getDealerAuctionDetail(
     throw new NotFoundError("Vehicle auction not found.");
   }
 
-  const [listingRes, mediaRes, hotspotsRes, myBidRes, dealershipRes] =
-    await Promise.all([
-      ctx.supabase
-        .from("listings")
-        .select(
-          `
+  const [
+    listingRes,
+    mediaRes,
+    hotspotsRes,
+    myBidRes,
+    dealershipRes,
+    distanceRes,
+  ] = await Promise.all([
+    ctx.supabase
+      .from("listings")
+      .select(
+        `
           id,
           vin,
           year,
@@ -596,36 +443,40 @@ export async function getDealerAuctionDetail(
           accident_details,
           seller_notes
         `
-        )
-        .eq("id", listingId)
-        .maybeSingle(),
-      ctx.supabase
-        .from("listing_media")
-        .select("public_url, is_cover, sort_order")
-        .eq("listing_id", listingId)
-        .order("is_cover", { ascending: false })
-        .order("sort_order", { ascending: true }),
-      ctx.supabase
-        .from("damage_hotspots")
-        .select(
-          "id, panel, severity, description, viewpoint, x_percent, y_percent, photo_url"
-        )
-        .eq("listing_id", listingId)
-        .order("created_at", { ascending: true }),
-      ctx.supabase
-        .from("bids")
-        .select("amount_cents, status")
-        .eq("listing_id", listingId)
-        .eq("dealership_id", ctx.dealershipId)
-        .neq("status", "VOIDED")
-        .neq("status", "WITHDRAWN")
-        .maybeSingle(),
-      ctx.supabase
-        .from("dealerships")
-        .select("operating_name, postal_code, city, province")
-        .eq("id", ctx.dealershipId)
-        .maybeSingle(),
-    ]);
+      )
+      .eq("id", listingId)
+      .maybeSingle(),
+    ctx.supabase
+      .from("listing_media")
+      .select("public_url, is_cover, sort_order")
+      .eq("listing_id", listingId)
+      .order("is_cover", { ascending: false })
+      .order("sort_order", { ascending: true }),
+    ctx.supabase
+      .from("damage_hotspots")
+      .select(
+        "id, panel, severity, description, viewpoint, x_percent, y_percent, photo_url"
+      )
+      .eq("listing_id", listingId)
+      .order("created_at", { ascending: true }),
+    ctx.supabase
+      .from("bids")
+      .select("amount_cents, status")
+      .eq("listing_id", listingId)
+      .eq("dealership_id", ctx.dealershipId)
+      .neq("status", "VOIDED")
+      .neq("status", "WITHDRAWN")
+      .maybeSingle(),
+    ctx.supabase
+      .from("dealerships")
+      .select("operating_name, postal_code, city, province")
+      .eq("id", ctx.dealershipId)
+      .maybeSingle(),
+    ctx.supabase.rpc("get_dealership_listing_distances", {
+      p_dealership_id: ctx.dealershipId,
+      p_listing_ids: [listingId],
+    }),
+  ]);
 
   if (listingRes.error) {
     throw new ExternalServiceError(
@@ -671,31 +522,13 @@ export async function getDealerAuctionDetail(
   }
 
   const dealership = dealershipRes.data;
-  const fsaPrefixes = Array.from(
-    new Set(
-      [
-        extractFsa(dealership?.postal_code),
-        extractFsa(listing.postal_code),
-      ].filter((v): v is string => Boolean(v))
-    )
-  );
-
-  const centroidMap = new Map<string, CentroidPoint>();
-  if (fsaPrefixes.length > 0) {
-    const { data: centroids, error: centroidErr } = await ctx.supabase
-      .from("postal_centroids")
-      .select("postal_prefix, latitude, longitude")
-      .in("postal_prefix", fsaPrefixes);
-
-    if (!centroidErr) {
-      for (const c of centroids ?? []) {
-        centroidMap.set(c.postal_prefix.toUpperCase(), {
-          latitude: Number(c.latitude),
-          longitude: Number(c.longitude),
-        });
-      }
-    }
+  if (distanceRes.error) {
+    logger.warn("PostGIS distance RPC fallback while loading inspection", {
+      actorId: ctx.userId,
+      meta: { code: distanceRes.error.code },
+    });
   }
+  const distanceRow = (distanceRes.data ?? [])[0];
 
   const mediaRows = mediaRes.data ?? [];
   const photos = sortPhotos(mediaRows);
@@ -738,15 +571,7 @@ export async function getDealerAuctionDetail(
     province: listing.province,
     city: listing.city || listing.province,
     postalCode: listing.postal_code,
-    distanceKm: computeDistanceKm({
-      dealerPostal: dealership?.postal_code,
-      listingPostal: listing.postal_code,
-      dealerCity: dealership?.city,
-      dealerProvince: dealership?.province,
-      listingCity: listing.city,
-      listingProvince: listing.province,
-      centroidMap,
-    }),
+    distanceKm: distanceRow?.distance_km ?? 25,
     damageGrade: normalizeDamageGrade(listing.damage_grade),
     damageHotspotCount: listing.damage_hotspot_count,
     thumbnailUrl: photos[0] ?? DEFAULT_THUMBNAIL,

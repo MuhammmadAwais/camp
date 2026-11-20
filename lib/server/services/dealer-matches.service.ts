@@ -8,10 +8,7 @@ import {
 } from "@/lib/server/errors";
 import { logger } from "@/lib/server/logger";
 import {
-  type CentroidPoint,
-  computeDistanceKm,
   DEFAULT_THUMBNAIL,
-  extractFsa,
   normalizeDamageGrade,
   sortPhotos,
   toReserveStatus,
@@ -145,10 +142,11 @@ export async function listDealerActiveBids(
   }
 
   const listingIds = Array.from(new Set(bids.map((b) => b.listing_id)));
-  const { data: listingsRows, error: listingsErr } = await ctx.supabase
-    .from("listings")
-    .select(
-      `
+  const [listingsRes, distancesRes] = await Promise.all([
+    ctx.supabase
+      .from("listings")
+      .select(
+        `
       id,
       vin,
       year,
@@ -180,41 +178,37 @@ export async function listDealerActiveBids(
         sort_order
       )
     `
-    )
-    .in("id", listingIds)
-    .in("status", ["ACTIVE", "UNSEALED"]);
+      )
+      .in("id", listingIds)
+      .in("status", ["ACTIVE", "UNSEALED"]),
+    ctx.supabase.rpc("get_dealership_listing_distances", {
+      p_dealership_id: ctx.dealershipId,
+      p_listing_ids: listingIds,
+    }),
+  ]);
 
-  if (listingsErr) {
+  if (listingsRes.error) {
     throw new ExternalServiceError(
       "Unable to load auction lots for placed bids.",
       "EXTERNAL_SERVICE_ERROR",
-      listingsErr
+      listingsRes.error
     );
   }
 
-  const listings = listingsRows ?? [];
+  const listings = listingsRes.data ?? [];
   const listingById = new Map(listings.map((row) => [row.id, row]));
 
-  const fsaSet = new Set<string>();
-  const dealerFsa = extractFsa(dealership?.postal_code);
-  if (dealerFsa) fsaSet.add(dealerFsa);
-  for (const row of listings) {
-    const fsa = extractFsa(row.postal_code);
-    if (fsa) fsaSet.add(fsa);
+  if (distancesRes.error) {
+    logger.warn("PostGIS distance RPC fallback while loading active bids", {
+      actorId: ctx.userId,
+      meta: { code: distancesRes.error.code },
+    });
   }
 
-  const centroidMap = new Map<string, CentroidPoint>();
-  if (fsaSet.size > 0) {
-    const { data: centroids } = await ctx.supabase
-      .from("postal_centroids")
-      .select("postal_prefix, latitude, longitude")
-      .in("postal_prefix", Array.from(fsaSet));
-
-    for (const c of centroids ?? []) {
-      centroidMap.set(c.postal_prefix.toUpperCase(), {
-        latitude: Number(c.latitude),
-        longitude: Number(c.longitude),
-      });
+  const distanceByListingId = new Map<string, number>();
+  for (const row of distancesRes.data ?? []) {
+    if (row.distance_km !== null && row.distance_km !== undefined) {
+      distanceByListingId.set(row.listing_id, row.distance_km);
     }
   }
 
@@ -268,16 +262,7 @@ export async function listDealerActiveBids(
       province: listing.province,
       city: listing.city || listing.province,
       postalCode: listing.postal_code,
-      // TODO(senior-review): Replace centroid Haversine approximation with PostGIS ST_Distance RPC in Prompt B5.1.
-      distanceKm: computeDistanceKm({
-        dealerPostal: dealership?.postal_code,
-        listingPostal: listing.postal_code,
-        dealerCity: dealership?.city,
-        dealerProvince: dealership?.province,
-        listingCity: listing.city,
-        listingProvince: listing.province,
-        centroidMap,
-      }),
+      distanceKm: distanceByListingId.get(listing.id) ?? 25,
       damageGrade: normalizeDamageGrade(listing.damage_grade),
       damageHotspotCount: listing.damage_hotspot_count,
       thumbnailUrl: photos[0] ?? DEFAULT_THUMBNAIL,

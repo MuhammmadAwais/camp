@@ -25,8 +25,16 @@ type InventorySortOption = "closing" | "mileage" | "year" | "distance";
 
 export function DealerInventoryFeed() {
   const queryClient = useQueryClient();
+
+  // Filters state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [makeFilter, setMakeFilter] = useState("ALL");
+  const [maxMileage, setMaxMileage] = useState<number | null>(null);
+  const [maxDistanceKm, setMaxDistanceKm] = useState<number | null>(null);
+  const [sortBy, setSortBy] = useState<InventorySortOption>("closing");
+
   const { data, isLoading, isError, error, dataUpdatedAt, refetch } =
-    useDealerInventory();
+    useDealerInventory({ maxDistanceKm });
 
   const realtime = useAuctionRealtime({
     serverTime: data?.serverTime,
@@ -34,12 +42,6 @@ export function DealerInventoryFeed() {
     enabled: Boolean(data),
     portal: "dealer",
   });
-
-  // Filters state
-  const [searchQuery, setSearchQuery] = useState("");
-  const [makeFilter, setMakeFilter] = useState("ALL");
-  const [maxMileage, setMaxMileage] = useState<number | null>(null);
-  const [sortBy, setSortBy] = useState<InventorySortOption>("closing");
 
   // Selected auction for bidding slip
   const [biddingAuction, setBiddingAuction] =
@@ -99,8 +101,8 @@ export function DealerInventoryFeed() {
 
   // Handle successful bid placement
   const handleBidSuccess = (auctionId: string, amountCents: number) => {
-    queryClient.setQueryData<DealerInventoryResponse>(
-      dealerKeys.inventory(),
+    queryClient.setQueriesData<DealerInventoryResponse>(
+      { queryKey: dealerKeys.inventory() },
       (prev) => {
         if (!prev) return prev;
         let isNewBid = false;
@@ -233,7 +235,7 @@ export function DealerInventoryFeed() {
       </div>
 
       {/* 2. Streamlined Search & Filter Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 text-xs">
         {/* Search Input */}
         <div className="relative lg:col-span-2">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-portal-text-muted" />
@@ -277,6 +279,24 @@ export function DealerInventoryFeed() {
           <option value="100000">Under 100,000 km</option>
         </select>
 
+        {/* PostGIS Radius Filter */}
+        <select
+          value={maxDistanceKm || ""}
+          onChange={(e) =>
+            setMaxDistanceKm(
+              e.target.value ? parseInt(e.target.value, 10) : null
+            )
+          }
+          aria-label="Filter by radius from dealership"
+          className="px-3.5 py-2.5 rounded-xl bg-portal-surface border border-portal-border text-xs text-portal-text focus:outline-none focus:ring-1 focus:ring-portal-primary cursor-pointer shadow-2xs"
+        >
+          <option value="">Any Distance</option>
+          <option value="50">Within 50 km</option>
+          <option value="100">Within 100 km</option>
+          <option value="250">Within 250 km</option>
+          <option value="500">Within 500 km</option>
+        </select>
+
         {/* Sort Option */}
         <select
           value={sortBy}
@@ -305,13 +325,17 @@ export function DealerInventoryFeed() {
               ? "Approved seller vehicles will appear here as soon as their 24-hour bidding window opens."
               : "Try adjusting your filters or search terms to see available dealer inventory."}
           </p>
-          {(searchQuery || makeFilter !== "ALL" || maxMileage !== null) && (
+          {(searchQuery ||
+            makeFilter !== "ALL" ||
+            maxMileage !== null ||
+            maxDistanceKm !== null) && (
             <button
               type="button"
               onClick={() => {
                 setSearchQuery("");
                 setMakeFilter("ALL");
                 setMaxMileage(null);
+                setMaxDistanceKm(null);
               }}
               className="px-4 py-2 text-xs font-semibold rounded-xl bg-portal-surface-hover border border-portal-border text-portal-text hover:bg-portal-primary/10 hover:border-portal-primary/30 transition-colors cursor-pointer"
             >
