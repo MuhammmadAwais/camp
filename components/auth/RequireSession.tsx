@@ -11,25 +11,22 @@ interface Props {
   fallbackClassName?: string;
 }
 
-const FALLBACK_DEMO_USER: SessionUser = {
-  id: "demo-user-1",
-  email: "demo.seller@autonexa.ca",
-  firstName: "Jordan",
-  lastName: "Tremblay",
-  phoneMasked: "(416) •••-0142",
-  postalCode: "M5V 2T6",
-  province: "ON",
-  role: "SELLER",
-  kycStatus: "VERIFIED",
-};
-
-// Client-side half of route protection: proxy.ts catches missing cookies, this catches expired ones.
-export function RequireSession({ children, fallbackClassName = "text-on-surface-variant" }: Props) {
+// Client-side half of route protection: proxy.ts enforces cookie/JWT guards on navigation,
+// while RequireSession handles expired or cleared client sessions without exposing portal UI.
+export function RequireSession({
+  children,
+  fallbackClassName = "text-on-surface-variant",
+}: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: user, isPending, isError } = useCurrentUser();
 
-  return <>{children(user ?? FALLBACK_DEMO_USER)}</>;
+  useEffect(() => {
+    if (!isPending && !isError && !user) {
+      const next = pathname ? `?next=${encodeURIComponent(pathname)}` : "";
+      router.replace(`/login${next}`);
+    }
+  }, [isPending, isError, user, pathname, router]);
 
   if (isError) {
     return (
@@ -39,9 +36,17 @@ export function RequireSession({ children, fallbackClassName = "text-on-surface-
     );
   }
 
-  return (
-    <div className={`flex justify-center py-16 ${fallbackClassName}`} role="status" aria-label="Loading your account">
-      <Loader2 className="w-6 h-6 animate-spin" />
-    </div>
-  );
+  if (isPending || !user) {
+    return (
+      <div
+        className={`flex justify-center py-16 ${fallbackClassName}`}
+        role="status"
+        aria-label="Loading your account"
+      >
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
+
+  return <>{children(user)}</>;
 }

@@ -1,7 +1,6 @@
 import { useSessionStore } from "@/store/useSessionStore";
 
-// When NEXT_PUBLIC_API_URL is unset, requests go to the mock route handlers in app/api.
-// Set it to the Express origin to switch every hook to the real backend.
+// When NEXT_PUBLIC_API_URL is unset, requests go to same-origin Next.js Route Handlers in app/api.
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 export const IS_MOCK_API = API_BASE_URL === "";
@@ -21,7 +20,7 @@ export type ApiFailure = {
 
 export type ApiResult<T> = ApiSuccess<T> | ApiFailure;
 
-// Wire format shared with the Express API: `{ data }` on success, `{ error }` otherwise.
+// Wire format shared across all `/api/*` Route Handlers: `{ data }` on success, `{ error }` otherwise.
 type WireError = {
   code?: string;
   message?: string;
@@ -34,40 +33,6 @@ type RequestOptions = {
   headers?: Record<string, string>;
   skipAuth?: boolean;
 };
-
-let refreshPromise: Promise<string | null> | null = null;
-
-async function refreshAccessToken(): Promise<string | null> {
-  if (refreshPromise) return refreshPromise;
-
-  refreshPromise = (async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-      });
-      if (!res.ok) {
-        useSessionStore.getState().clearSession();
-        return null;
-      }
-      const json = await res.json().catch(() => null);
-      const token = json?.data?.accessToken as string | undefined;
-      if (token) {
-        useSessionStore.getState().setAccessToken(token);
-        return token;
-      }
-      useSessionStore.getState().clearSession();
-      return null;
-    } catch {
-      useSessionStore.getState().clearSession();
-      return null;
-    } finally {
-      refreshPromise = null;
-    }
-  })();
-
-  return refreshPromise;
-}
 
 async function request<T>(
   method: "GET" | "POST" | "PATCH" | "DELETE",
@@ -87,27 +52,18 @@ async function request<T>(
     headers["Content-Type"] = "application/json";
   }
 
-  const token = useSessionStore.getState().accessToken;
-  if (token && !options.skipAuth) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
   const init: RequestInit = {
     method,
     headers,
+    // Same-site @supabase/ssr HttpOnly cookies authenticate every `/api/*` request automatically.
     credentials: "include",
     body: hasBody ? (isFormData ? (options.body as FormData) : JSON.stringify(options.body)) : undefined,
   };
 
-  let res = await fetch(url, init);
+  const res = await fetch(url, init);
 
-  // If unauthorized and we had a token, attempt one transparent refresh then retry.
-  if (res.status === 401 && token && !options.skipAuth) {
-    const freshToken = await refreshAccessToken();
-    if (freshToken) {
-      headers["Authorization"] = `Bearer ${freshToken}`;
-      res = await fetch(url, { ...init, headers });
-    }
+  if (res.status === 401 && !options.skipAuth) {
+    useSessionStore.getState().clearSession();
   }
 
   let json: unknown = null;
@@ -117,12 +73,17 @@ async function request<T>(
   }
 
   if (res.ok) {
-    const data = typeof json === "object" && json !== null && "data" in json ? (json as { data: T }).data : (null as T);
+    const data =
+      typeof json === "object" && json !== null && "data" in json
+        ? (json as { data: T }).data
+        : (null as T);
     return { success: true, data };
   }
 
   const wire: WireError =
-    typeof json === "object" && json !== null && "error" in json ? ((json as { error: WireError }).error ?? {}) : {};
+    typeof json === "object" && json !== null && "error" in json
+      ? ((json as { error: WireError }).error ?? {})
+      : {};
 
   return {
     success: false,
@@ -136,8 +97,10 @@ async function request<T>(
 
 export const api = {
   get: <T>(path: string, options?: RequestOptions) => request<T>("GET", path, options),
-  post: <T>(path: string, body?: unknown, options?: RequestOptions) => request<T>("POST", path, { ...options, body }),
-  patch: <T>(path: string, body?: unknown, options?: RequestOptions) => request<T>("PATCH", path, { ...options, body }),
+  post: <T>(path: string, body?: unknown, options?: RequestOptions) =>
+    request<T>("POST", path, { ...options, body }),
+  patch: <T>(path: string, body?: unknown, options?: RequestOptions) =>
+    request<T>("PATCH", path, { ...options, body }),
   delete: <T>(path: string, options?: RequestOptions) => request<T>("DELETE", path, options),
 };
 
@@ -167,9 +130,9 @@ export const currency = {
    */
   formatCad(cents: number, includeCode = true): string {
     const dollars = cents / 100;
-    const formatted = new Intl.NumberFormat('en-CA', {
-      style: 'currency',
-      currency: 'CAD',
+    const formatted = new Intl.NumberFormat("en-CA", {
+      style: "currency",
+      currency: "CAD",
       maximumFractionDigits: 0,
     }).format(dollars);
     return includeCode ? `${formatted} CAD` : formatted;
@@ -180,7 +143,8 @@ export const currency = {
    * Example: 24500 -> 2450000
    */
   dollarsToCents(dollars: number | string): number {
-    const numeric = typeof dollars === 'string' ? parseFloat(dollars.replace(/[^0-9.-]+/g, '')) : dollars;
+    const numeric =
+      typeof dollars === "string" ? parseFloat(dollars.replace(/[^0-9.-]+/g, "")) : dollars;
     return Math.round((numeric || 0) * 100);
   },
 

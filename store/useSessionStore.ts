@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
-// The short-lived access token lives in memory only (architecture.md › User Session).
-// The refresh token is an HttpOnly cookie the browser sends to /api/auth/refresh.
+// Authoritative session transport uses same-site @supabase/ssr HttpOnly cookies
+// refreshed by proxy.ts. This lightweight client state mirrors session presence only.
 type SessionState = {
   accessToken: string | null;
-  setAccessToken: (token: string) => void;
+  setAccessToken: (token: string | null) => void;
   clearSession: () => void;
 };
 

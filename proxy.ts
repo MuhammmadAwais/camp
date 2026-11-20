@@ -1,19 +1,12 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { PROTECTED_ROUTE_PREFIXES, REFRESH_COOKIE_NAME } from "@/lib/auth-routing";
+import type { NextRequest } from "next/server";
+import { updateSession } from "@/lib/supabase/proxy";
 
-// Optimistic check only: no refresh cookie means definitely signed out, so skip rendering the portal.
-// The real authorization happens in the API (and the client guard handles expired cookies).
-export function proxy(request: NextRequest) {
-  return NextResponse.next();
+export async function proxy(request: NextRequest) {
+  return await updateSession(request);
 }
 
 export const config = {
   matcher: [
-    "/seller/:path*",
-    "/dealer/:path*",
-    "/admin/:path*",
-    "/dashboard/:path*",
-    "/verify-kyc/:path*",
-    "/list-car/:path*",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|jfif|ico)$).*)",
   ],
 };

@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B1.3 Complete — Phase B1 Done) — **Next Prompt: `Prompt B2.1`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B2.1 Complete) — **Next Prompt: `Prompt B2.2`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -30,7 +30,7 @@ Update this file after completing each page/component. Any AI agent reading this
 - [x] **05 Dual Route-Aware Scrollbar Engine** (Autumn Wine `#8C383E` for light mode vs. Honey Amber `#E59344` for dark mode, green eliminated)
 - [x] **06 In-Rail Nav Toggle & Segmented Theme Switcher** (`Sidebar.tsx`, `ThemeToggle.tsx`)
 - [x] **07 Pre-Hydration Browser Extension Shield** (`layout.tsx` DOM interception for `bis_skin_checked` attribute mutations)
-- [ ] **08 Role Route Guards & Edge Middleware** (`components/auth/RequireRole.tsx`, `proxy.ts` matchers for `/seller/*`, `/dealer/*`, `/admin/*`)
+- [x] **08 Role Route Guards & Edge Middleware** (`components/auth/RequireRole.tsx`, `proxy.ts` matchers for `/seller/*`, `/dealer/*`, `/admin/*`)
 - [ ] **09 `next-intl` Bilingual Layer** (Quebec Law 25 compliance for French `/fr` and English `/en` strings)
 
 ---
@@ -248,7 +248,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B1** | `Prompt B1.1` | Git branch `feat/supabase-backend`, deps, Zod env, server error/HTTP kernel, Supabase clients | **PM Demo (Day 1)** | 2–3 hrs | [x] |
 | **I** | **B1** | `Prompt B1.2` | Provision Supabase `ca-central-1` + Core SQL migrations (`0001`–`0003`: enums, 20 tables, constraints, PostGIS indexes) | **PM Demo (Day 1)** | 3–4 hrs | [x] |
 | **I** | **B1** | `Prompt B1.3` | Airtight RLS (`0004`), Atomic RPCs (`0005`), `pg_cron` + Realtime (`0006`), Demo seed (`0007`), generated TS types | **PM Demo (Day 1)** | 3–4 hrs | [x] |
-| **I** | **B2** | `Prompt B2.1` | Server RBAC guard (`lib/server/auth.ts`), `proxy.ts` cookie refresh + role routing, cookie-only `api-client.ts` | **PM Demo (Day 2)** | 2–3 hrs | [ ] |
+| **I** | **B2** | `Prompt B2.1` | Server RBAC guard (`lib/server/auth.ts`), `proxy.ts` cookie refresh + role routing, cookie-only `api-client.ts` | **PM Demo (Day 2)** | 2–3 hrs | [x] |
 | **I** | **B2** | `Prompt B2.2` | Real `/api/auth/*` routes + `auth.service.ts` backed by Supabase Auth, `profiles`, and PIPEDA/CASL consents | **PM Demo (Day 2)** | 3–4 hrs | [ ] |
 | **I** | **B2** | `Prompt B2.3` | Storage adapter (`ca-central-1` buckets + signed PUT URLs), real `/api/listings/media/presign`, real `/api/kyc/*` | **PM Demo (Day 2)** | 2–3 hrs | [ ] |
 | **I** | **B3** | `Prompt B3.1` | Cached NHTSA vPIC VIN adapter (`vin.adapter.ts` + 3s timeout + `vin_decode_cache`) & real `/api/vin/decode` | **PM Demo (Day 3)** | 1–2 hrs | [ ] |
@@ -325,7 +325,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 
 ### Phase B2 — Real Authentication, Route Guards, KYC & Direct Media Storage (Day 2)
 
-- [ ] **`Prompt B2.1` — Server RBAC Guard, `proxy.ts` Session Middleware & Cookie `api-client.ts`**
+- [x] **`Prompt B2.1` — Server RBAC Guard, `proxy.ts` Session Middleware & Cookie `api-client.ts`**
   - **Build From → To:** No-op `proxy.ts` + custom Bearer/refresh token client → real `@supabase/ssr` HttpOnly cookie auth, role-based route guards, and centralized server RBAC helpers.
   - **Files to Create/Modify:**
     - `lib/server/auth.ts` — `getSessionContext()`, `requireAuth()`, `requireRole(roles[])`, `requireKycVerified()`, `requireActiveDealership(seatRoles[])` (checks `profiles`, `dealerships.status = 'VERIFIED'`, and `dealership_members.seat_role`).
