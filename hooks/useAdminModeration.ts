@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, unwrap } from "@/lib/api-client";
-import { adminKeys, sellerKeys } from "@/lib/query-keys";
+import { adminKeys, dealerKeys, sellerKeys } from "@/lib/query-keys";
 import type {
   ModerationDecisionAction,
   ModerationItem,
@@ -54,6 +54,9 @@ export function useModerationDecision(id: string) {
       });
       void queryClient.invalidateQueries({
         queryKey: sellerKeys.dashboard(),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: dealerKeys.inventory(),
       });
     },
   });

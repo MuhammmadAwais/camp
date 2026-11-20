@@ -28,3 +28,12 @@ export const adminKeys = {
     [...adminKeys.all, "moderation", "detail", id] as const,
 };
 
+export const dealerKeys = {
+  all: ["dealer"] as const,
+  inventory: (filters?: Record<string, string | number | null | undefined>) =>
+    filters
+      ? ([...dealerKeys.all, "inventory", filters] as const)
+      : ([...dealerKeys.all, "inventory"] as const),
+  auction: (id: string) => [...dealerKeys.all, "auction", id] as const,
+};
+

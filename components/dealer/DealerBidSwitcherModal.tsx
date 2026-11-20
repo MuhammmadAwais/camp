@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,28 +9,24 @@ import {
   Gavel,
   X,
   CheckCircle2,
-  Clock,
   ArrowRight,
   ExternalLink,
-  Car,
   TrendingUp,
-  AlertTriangle,
   Lock,
+  RefreshCw,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
 import type { WholesaleAuctionItem } from "@/lib/types/dealer";
-import {
-  MOCK_DEALER_INVENTORY_DATABASE,
-  type DealerVehicleInspectionDetails,
-} from "@/lib/mock/dealer-inventory";
-import { apiClient } from "@/lib/api-client";
+import { useDealerInventory } from "@/hooks/useDealerInventory";
 
 interface DealerBidSwitcherModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentAuctionId: string;
-  onSelectVehicle?: (vehicle: DealerVehicleInspectionDetails) => void;
+  onSelectVehicle?: (vehicle: WholesaleAuctionItem) => void;
 }
+
+const emptySubscribe = () => () => {};
 
 export function DealerBidSwitcherModal({
   isOpen,
@@ -39,55 +35,15 @@ export function DealerBidSwitcherModal({
   onSelectVehicle,
 }: DealerBidSwitcherModalProps) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<"BIDS" | "ALL">("BIDS");
-  const [items, setItems] = useState<DealerVehicleInspectionDetails[]>(
-    Object.values(MOCK_DEALER_INVENTORY_DATABASE)
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
   );
+  const [activeTab, setActiveTab] = useState<"BIDS" | "ALL">("BIDS");
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Fetch live inventory to merge if API is active
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const loadInventory = async () => {
-      try {
-        const res = await apiClient.api.get<{ items: WholesaleAuctionItem[] }>("/api/dealer/inventory");
-        if (res.success && res.data?.items) {
-          // Merge with detailed mock database
-          const merged = res.data.items.map((apiItem) => {
-            const detailed = MOCK_DEALER_INVENTORY_DATABASE[apiItem.id];
-            return (
-              detailed || {
-                ...apiItem,
-                engineSpec: "2.0L Turbo 4-Cylinder",
-                horsepower: 250,
-                fuelType: "Gasoline",
-                carfaxReport: {
-                  ownersCount: 1,
-                  accidentFree: true,
-                  serviceRecordsCount: 4,
-                  lastReportedCity: apiItem.city,
-                  registrationProvince: apiItem.province,
-                  odometerRollbackRisk: false,
-                },
-                damageHotspots: [],
-                sellerNotes: "Inspected wholesale trade-in.",
-              }
-            );
-          });
-          setItems(merged);
-        }
-      } catch {
-        // Fallback to initial mock database
-      }
-    };
-
-    loadInventory();
-  }, [isOpen]);
+  const { data, isLoading } = useDealerInventory({ enabled: isOpen });
+  const items = data?.items ?? [];
 
   // Disable body scroll & handle Escape key
   useEffect(() => {
@@ -110,10 +66,12 @@ export function DealerBidSwitcherModal({
   if (!isOpen || !mounted) return null;
 
   // Filter items based on active tab
-  const activeBidsList = items.filter((item) => item.myCurrentBidCents && item.myCurrentBidCents > 0);
+  const activeBidsList = items.filter(
+    (item) => item.myCurrentBidCents !== null && item.myCurrentBidCents !== undefined && item.myCurrentBidCents > 0
+  );
   const displayedItems = activeTab === "BIDS" ? activeBidsList : items;
 
-  const handleSelect = (car: DealerVehicleInspectionDetails) => {
+  const handleSelect = (car: WholesaleAuctionItem) => {
     onClose();
     if (car.id === currentAuctionId) return;
 
@@ -194,12 +152,19 @@ export function DealerBidSwitcherModal({
 
         {/* Vehicles List */}
         <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
-          {displayedItems.length === 0 ? (
+          {isLoading ? (
+            <div className="py-10 text-center space-y-2">
+              <RefreshCw className="w-6 h-6 text-portal-primary mx-auto animate-spin" />
+              <p className="text-xs text-portal-text-muted">
+                Loading live trading floor...
+              </p>
+            </div>
+          ) : displayedItems.length === 0 ? (
             <div className="py-10 text-center space-y-2">
               <Gavel className="w-8 h-8 text-portal-text-muted mx-auto opacity-50" />
               <p className="text-xs text-portal-text-muted">
                 {activeTab === "BIDS"
-                  ? "You have no active bids placed on other vehicles yet."
+                  ? "You have no active bids placed on live auctions yet."
                   : "No auctions currently active."}
               </p>
               {activeTab === "BIDS" && (
@@ -215,9 +180,9 @@ export function DealerBidSwitcherModal({
           ) : (
             displayedItems.map((car) => {
               const isCurrent = car.id === currentAuctionId;
-              const hasBid = Boolean(car.myCurrentBidCents && car.myCurrentBidCents > 0);
-              const isLead = car.leadStatus === "LEAD_ESTIMATE";
-              const isOutbid = car.leadStatus === "OUTBID_ESTIMATE";
+              const hasBid = Boolean(
+                car.myCurrentBidCents && car.myCurrentBidCents > 0
+              );
 
               return (
                 <div
@@ -233,7 +198,7 @@ export function DealerBidSwitcherModal({
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border border-portal-border bg-portal-surface-hover">
                       <Image
-                        src={car.thumbnailUrl || (car.photos && car.photos[0]) || ""}
+                        src={car.thumbnailUrl || car.photos[0] || ""}
                         alt={`${car.year} ${car.make}`}
                         fill
                         className="object-cover"
@@ -254,11 +219,17 @@ export function DealerBidSwitcherModal({
                       </div>
 
                       <div className="text-[11px] text-portal-text-muted flex flex-wrap items-center gap-1.5">
-                        <span className="font-mono">{car.mileageKm.toLocaleString()} km</span>
+                        <span className="font-mono">
+                          {car.mileageKm.toLocaleString()} km
+                        </span>
                         <span>•</span>
-                        <span>{car.city}, {car.province}</span>
+                        <span>
+                          {car.city}, {car.province}
+                        </span>
                         <span>•</span>
-                        <span className="font-mono">Grade {car.damageGrade}</span>
+                        <span className="font-mono">
+                          Grade {car.damageGrade}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -272,22 +243,10 @@ export function DealerBidSwitcherModal({
                             {formatCadCents(car.myCurrentBidCents!)}
                           </div>
                           <div className="flex items-center justify-end gap-1">
-                            {isLead ? (
-                              <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-0.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                Leading
-                              </span>
-                            ) : isOutbid ? (
-                              <span className="text-[10px] font-semibold text-amber-500 font-mono flex items-center gap-0.5">
-                                <AlertTriangle className="w-3 h-3" />
-                                Outbid
-                              </span>
-                            ) : (
-                              <span className="text-[10px] text-portal-text-muted font-mono flex items-center gap-0.5">
-                                <Lock className="w-2.5 h-2.5" />
-                                Active Bid
-                              </span>
-                            )}
+                            <span className="text-[10px] text-portal-text-muted font-mono flex items-center gap-1">
+                              <Lock className="w-2.5 h-2.5 text-portal-primary" />
+                              Active Sealed Bid
+                            </span>
                           </div>
                         </>
                       ) : (
@@ -296,7 +255,8 @@ export function DealerBidSwitcherModal({
                             Floor Open
                           </div>
                           <div className="text-[10px] text-portal-text-muted font-mono">
-                            {car.totalBidsPlaced} bids placed
+                            {car.totalBidsPlaced}{" "}
+                            {car.totalBidsPlaced === 1 ? "bid" : "bids"} placed
                           </div>
                         </>
                       )}

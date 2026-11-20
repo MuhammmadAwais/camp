@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B3.3 Complete) — **Next Prompt: `Prompt B4.1`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B4.1 Complete) — **Next Prompt: `Prompt B4.2`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -254,7 +254,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B3** | `Prompt B3.1` | Cached NHTSA vPIC VIN adapter (`vin.adapter.ts` + 3s timeout + `vin_decode_cache`) & real `/api/vin/decode` | **PM Demo (Day 3)** | 1–2 hrs | [x] |
 | **I** | **B3** | `Prompt B3.2` | `listing.service.ts` + real `POST /api/listings`, `GET /api/seller/dashboard`, sealed `GET /api/listings/[id]` | **PM Demo (Day 3)** | 3–4 hrs | [x] |
 | **I** | **B3** | `Prompt B3.3` | Admin Moderation service & APIs (`/api/admin/moderation*`) + wire Moderation UI views to TanStack Query | **PM Demo (Day 3)** | 2–3 hrs | [x] |
-| **I** | **B4** | `Prompt B4.1` | Dealer Inventory & Inspection APIs (`/api/dealer/inventory*`) + wire `VehicleInspectionView` | **PM Demo (Day 4)** | 2–3 hrs | [ ] |
+| **I** | **B4** | `Prompt B4.1` | Dealer Inventory & Inspection APIs (`/api/dealer/inventory*`) + wire `VehicleInspectionView` | **PM Demo (Day 4)** | 2–3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.2` | `bidding.service.ts` + real `POST /api/dealer/bid` calling atomic `submit_dealer_bid` RPC + verify `SealedBidSlip` | **PM Demo (Day 4)** | 2–3 hrs | [ ] |
 | **I** | **B4** | `Prompt B4.3` | `hooks/useAuctionRealtime.ts` (live `bid_count` & `status` WebSocket + server-time clock) wired to Seller & Dealer UIs | **PM Demo (Day 4)** | 2–3 hrs | [ ] |
 | **I** | **B4** | `Prompt B4.4` | Post-auction unsealing, `accept_dealer_bid` RPC → Appointment Voucher, + Admin `/api/admin/auctions` overrides | **PM Demo (Day 4–5)** | 3 hrs | [ ] |
@@ -386,7 +386,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 
 ### Phase B4 — Live Sealed Bidding, Realtime Telemetry, Unsealing & PM Demo Gate (Days 3 PM–5)
 
-- [ ] **`Prompt B4.1` — Dealer Trading Floor & Inspection Dossier APIs**
+- [x] **`Prompt B4.1` — Dealer Trading Floor & Inspection Dossier APIs**
   - **Build From → To:** Hardcoded dealer inventory & `MOCK_DEALER_INVENTORY_DATABASE` → real Postgres-backed active auction feed & full vehicle inspection sheet showing ONLY the dealer's own bid.
   - **Files to Create/Modify:**
     - `lib/server/services/dealer-feed.service.ts` — `listActiveInventory(dealerCtx, filters)` & `getDealerAuctionDetail(dealerCtx, listingId)` joining `listings` + `listing_media` + `damage_hotspots` + ONLY `bids WHERE dealership_id = dealerCtx.dealershipId` (never exposing competitor bids!) + quota summary from `subscriptions`.
