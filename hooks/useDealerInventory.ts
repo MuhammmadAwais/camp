@@ -1,9 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, unwrap } from "@/lib/api-client";
 import { dealerKeys } from "@/lib/query-keys";
 import type {
+  DealerBidReceipt,
+  DealerBidSubmission,
   DealerInventoryResponse,
   VehicleInspectionDetails,
 } from "@/lib/types/dealer";
@@ -29,5 +31,33 @@ export function useDealerAuctionDetail(id: string) {
       ),
     enabled: Boolean(id),
     staleTime: 15 * 1000,
+  });
+}
+
+export function usePlaceSealedBid() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (
+      payload: DealerBidSubmission
+    ): Promise<DealerBidReceipt> =>
+      unwrap(
+        await api.post<DealerBidReceipt>("/api/dealer/bid", payload, {
+          headers: payload.idempotencyKey
+            ? { "Idempotency-Key": payload.idempotencyKey }
+            : undefined,
+        })
+      ),
+    onSuccess: (receipt) => {
+      void queryClient.invalidateQueries({
+        queryKey: dealerKeys.inventory(),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: dealerKeys.auction(receipt.auctionId),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: dealerKeys.activeBids(),
+      });
+    },
   });
 }

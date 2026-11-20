@@ -35,5 +35,6 @@ export const dealerKeys = {
       ? ([...dealerKeys.all, "inventory", filters] as const)
       : ([...dealerKeys.all, "inventory"] as const),
   auction: (id: string) => [...dealerKeys.all, "auction", id] as const,
+  activeBids: () => [...dealerKeys.all, "active-bids"] as const,
 };
 

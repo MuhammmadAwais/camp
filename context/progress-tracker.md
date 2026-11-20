@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B4.1 Complete) — **Next Prompt: `Prompt B4.2`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B4.2 Complete) — **Next Prompt: `Prompt B4.3`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -255,7 +255,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B3** | `Prompt B3.2` | `listing.service.ts` + real `POST /api/listings`, `GET /api/seller/dashboard`, sealed `GET /api/listings/[id]` | **PM Demo (Day 3)** | 3–4 hrs | [x] |
 | **I** | **B3** | `Prompt B3.3` | Admin Moderation service & APIs (`/api/admin/moderation*`) + wire Moderation UI views to TanStack Query | **PM Demo (Day 3)** | 2–3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.1` | Dealer Inventory & Inspection APIs (`/api/dealer/inventory*`) + wire `VehicleInspectionView` | **PM Demo (Day 4)** | 2–3 hrs | [x] |
-| **I** | **B4** | `Prompt B4.2` | `bidding.service.ts` + real `POST /api/dealer/bid` calling atomic `submit_dealer_bid` RPC + verify `SealedBidSlip` | **PM Demo (Day 4)** | 2–3 hrs | [ ] |
+| **I** | **B4** | `Prompt B4.2` | `bidding.service.ts` + real `POST /api/dealer/bid` calling atomic `submit_dealer_bid` RPC + verify `SealedBidSlip` | **PM Demo (Day 4)** | 2–3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.3` | `hooks/useAuctionRealtime.ts` (live `bid_count` & `status` WebSocket + server-time clock) wired to Seller & Dealer UIs | **PM Demo (Day 4)** | 2–3 hrs | [ ] |
 | **I** | **B4** | `Prompt B4.4` | Post-auction unsealing, `accept_dealer_bid` RPC → Appointment Voucher, + Admin `/api/admin/auctions` overrides | **PM Demo (Day 4–5)** | 3 hrs | [ ] |
 | **I** | **B4** | `Prompt B4.5` | Dealer Active Bids & Won Matches APIs + Outcome logging + **Vercel Preview Deploy & Full 3-Role PM Demo Gate** | **PM Demo (Day 5)** | 3–4 hrs | [ ] |
@@ -395,7 +395,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** FR-DL-06, BR-04, H1.
   - **Exit Gate:** Approved listing immediately appears on `/dealer/inventory` and `/dealer/auctions/[id]` with real uploaded photos & mapped damage hotspots; competitor bids never appear in API payload.
 
-- [ ] **`Prompt B4.2` — Atomic Upward-Only Sealed Bidding (`submit_dealer_bid` RPC)**
+- [x] **`Prompt B4.2` — Atomic Upward-Only Sealed Bidding (`submit_dealer_bid` RPC)**
   - **Build From → To:** Mock `/api/dealer/bid` → atomic Postgres-locked sealed bid submission with idempotency, upward-only validation, and active subscription/quota enforcement.
   - **Files to Create/Modify:**
     - `lib/server/services/bidding.service.ts` — Validates `DEALER_ADMIN | DEALER_BUYER` seat role (blocks `DEALER_INSPECTOR`), validates integer cents ≥ `$1,000` CAD, generates/propagates `idempotencyKey`, calls `submit_dealer_bid` Postgres RPC, translates Postgres exceptions (`AUCTION_NOT_ACTIVE`, `BID_MUST_INCREASE`, `SUBSCRIPTION_PAST_DUE`, `QUOTA_EXCEEDED`) into clean typed HTTP errors (`409` / `402` / `400`).

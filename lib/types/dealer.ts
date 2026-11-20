@@ -97,4 +97,19 @@ export type DealerBidSubmission = {
   auctionId: string;
   bidAmountCents: number; // Integer CAD cents invariant
   certifiedDeclaration: boolean;
+  idempotencyKey?: string;
+  conditions?: string;
+  notes?: string;
+};
+
+export type DealerBidReceipt = {
+  success: true;
+  idempotent: boolean;
+  bidId: string;
+  auctionId: string;
+  bidAmountCents: number;
+  version: number;
+  revisionCount: number;
+  placedAt: string;
+  message: string;
 };

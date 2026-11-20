@@ -1,23 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
   Gavel,
   Lock,
-  ShieldCheck,
   AlertCircle,
-  CheckCircle2,
   X,
-  TrendingUp,
   RefreshCw,
-  Clock,
-  Sparkles,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
 import type { WholesaleAuctionItem } from "@/lib/types/dealer";
-import { apiClient } from "@/lib/api-client";
+import { usePlaceSealedBid } from "@/hooks/useDealerInventory";
 
 interface SealedBidSlipProps {
   auction: WholesaleAuctionItem | null;
@@ -25,28 +20,42 @@ interface SealedBidSlipProps {
   onBidSuccess: (auctionId: string, amountCents: number) => void;
 }
 
+const emptySubscribe = () => () => {};
+
+const MIN_INITIAL_BID_CENTS = 100_000; // $1,000 CAD minimum wholesale bid
+
 export function SealedBidSlip({
   auction,
   onClose,
   onBidSuccess,
 }: SealedBidSlipProps) {
-  const [mounted, setMounted] = useState(false);
-  const minBidCents = auction?.myCurrentBidCents
-    ? auction.myCurrentBidCents + 25000 // Must be at least $250 higher
-    : 1500000; // $15,000 default min floor
-
-  const initialDollars = Math.round(minBidCents / 100);
-  const [displayAmount, setDisplayAmount] = useState(
-    initialDollars.toLocaleString("en-CA")
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
   );
-  const [bidCents, setBidCents] = useState(minBidCents);
+
+  const suggestedInitialCents = auction?.myCurrentBidCents
+    ? auction.myCurrentBidCents + 25000 // Suggest +$250 above current sealed bid
+    : 1500000; // $15,000 default floor suggestion
+
+  const strictMinBidCents = auction?.myCurrentBidCents
+    ? auction.myCurrentBidCents + 100 // Upward revisions must strictly exceed current bid
+    : MIN_INITIAL_BID_CENTS;
+
+  const [displayAmount, setDisplayAmount] = useState(
+    Math.round(suggestedInitialCents / 100).toLocaleString("en-CA")
+  );
+  const [bidCents, setBidCents] = useState(suggestedInitialCents);
   const [declaration, setDeclaration] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const placeBidMutation = usePlaceSealedBid();
+  const pendingKeyRef = useRef<{
+    auctionId: string;
+    amountCents: number;
+    key: string;
+  } | null>(null);
 
   // Disable body scroll & handle Escape key
   useEffect(() => {
@@ -68,9 +77,12 @@ export function SealedBidSlip({
 
   if (!auction || !mounted) return null;
 
+  const isSubmitting = placeBidMutation.isPending;
+
   // Handle manual input
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawVal = e.target.value.replace(/\D/g, "");
+    setErrorMsg(null);
     if (!rawVal) {
       setDisplayAmount("");
       setBidCents(0);
@@ -84,7 +96,8 @@ export function SealedBidSlip({
 
   // Quick increment chips
   const addIncrement = (incrementCents: number) => {
-    const nextCents = Math.max(minBidCents, bidCents + incrementCents);
+    setErrorMsg(null);
+    const nextCents = Math.max(strictMinBidCents, bidCents + incrementCents);
     setBidCents(nextCents);
     setDisplayAmount(Math.round(nextCents / 100).toLocaleString("en-CA"));
   };
@@ -94,44 +107,60 @@ export function SealedBidSlip({
     e.preventDefault();
     setErrorMsg(null);
 
-    if (bidCents < minBidCents) {
+    if (auction.myCurrentBidCents && bidCents <= auction.myCurrentBidCents) {
       setErrorMsg(
-        `Bid must be at least ${formatCadCents(minBidCents)} CAD (higher than current or minimum floor).`
+        `Revised bid must exceed your current sealed bid of ${formatCadCents(auction.myCurrentBidCents)} CAD.`
       );
       return;
     }
 
-    if (!declaration) {
-      setErrorMsg("Please accept the legally binding dealer purchase declaration.");
+    if (bidCents < MIN_INITIAL_BID_CENTS) {
+      setErrorMsg("Minimum wholesale sealed bid is $1,000 CAD.");
       return;
     }
 
-    setIsSubmitting(true);
+    if (!declaration) {
+      setErrorMsg(
+        "Please accept the legally binding dealer purchase declaration."
+      );
+      return;
+    }
+
+    // Reuse the same idempotency key for retries of the identical (auction, amount) pair
+    if (
+      !pendingKeyRef.current ||
+      pendingKeyRef.current.auctionId !== auction.id ||
+      pendingKeyRef.current.amountCents !== bidCents
+    ) {
+      pendingKeyRef.current = {
+        auctionId: auction.id,
+        amountCents: bidCents,
+        key: crypto.randomUUID(),
+      };
+    }
 
     try {
-      const res = await apiClient.api.post("/api/dealer/bid", {
+      const receipt = await placeBidMutation.mutateAsync({
         auctionId: auction.id,
         bidAmountCents: bidCents,
         certifiedDeclaration: true,
+        idempotencyKey: pendingKeyRef.current.key,
       });
 
-      if (res.success) {
-        onBidSuccess(auction.id, bidCents);
-        onClose();
-      } else {
-        setErrorMsg(res.error || "Failed to submit sealed bid");
-      }
-    } catch {
-      setErrorMsg("Network error submitting bid");
-    } finally {
-      setIsSubmitting(false);
+      pendingKeyRef.current = null;
+      onBidSuccess(receipt.auctionId, receipt.bidAmountCents);
+      onClose();
+    } catch (err: unknown) {
+      setErrorMsg(
+        err instanceof Error ? err.message : "Failed to submit sealed bid."
+      );
     }
   };
 
   const modalContent = (
     <div
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget && !isSubmitting) onClose();
       }}
       className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
     >
@@ -154,8 +183,9 @@ export function SealedBidSlip({
 
           <button
             type="button"
+            disabled={isSubmitting}
             onClick={onClose}
-            className="p-1.5 rounded-lg text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover transition-colors cursor-pointer disabled:opacity-40"
           >
             <X className="w-4 h-4" />
           </button>
@@ -191,7 +221,9 @@ export function SealedBidSlip({
         {/* Existing Bid Notice (Upward Revision Rule) */}
         {auction.myCurrentBidCents && (
           <div className="p-3 rounded-xl bg-portal-primary/10 border border-portal-primary/25 text-xs text-portal-text flex items-center justify-between">
-            <span className="text-portal-text-muted">Your Current Sealed Bid:</span>
+            <span className="text-portal-text-muted">
+              Your Current Sealed Bid:
+            </span>
             <span className="font-mono font-bold text-portal-primary">
               {formatCadCents(auction.myCurrentBidCents)}
             </span>
@@ -224,7 +256,9 @@ export function SealedBidSlip({
 
             {/* Quick Increment Chips */}
             <div className="flex flex-wrap items-center gap-1.5 pt-1">
-              <span className="text-[11px] text-portal-text-muted font-mono mr-1">Quick Add:</span>
+              <span className="text-[11px] text-portal-text-muted font-mono mr-1">
+                Quick Add:
+              </span>
               <button
                 type="button"
                 onClick={() => addIncrement(25000)}
@@ -310,7 +344,9 @@ export function SealedBidSlip({
               ) : (
                 <>
                   <Lock className="w-3.5 h-3.5" />
-                  <span>Confirm Sealed Bid ({formatCadCents(bidCents)})</span>
+                  <span>
+                    Confirm Sealed Bid ({formatCadCents(bidCents)})
+                  </span>
                 </>
               )}
             </button>
