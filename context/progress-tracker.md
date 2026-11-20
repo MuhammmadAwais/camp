@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B5.2 Complete) — **Next Prompt: `Prompt B5.3`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B5 Complete — Prompt B5.3 Complete) — **Next Prompt: `Prompt B6.1`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -261,7 +261,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B4** | `Prompt B4.5` | Dealer Active Bids & Won Matches APIs + Outcome logging + **Vercel Preview Deploy & Full 3-Role PM Demo Gate** | **PM Demo (Day 5)** | 3–4 hrs | [x] |
 | **II** | **B5** | `Prompt B5.1` | Seed Canadian postal centroids + `geo.adapter.ts` + PostGIS `ST_DWithin` RPC (`distanceKm` in feed & unsealed view) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B5** | `Prompt B5.2` | Dealer Registration (`/api/dealer/register`) & Admin License Verification (`/api/admin/dealers*` + BR-14 bid voiding) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B5** | `Prompt B5.3` | Dealership Team & Seat Management (`/api/dealer/team` — `DEALER_ADMIN` gate, buyer vs. inspector permissions) | Complete Platform | 2–3 hrs | [ ] |
+| **II** | **B5** | `Prompt B5.3` | Dealership Team & Seat Management (`/api/dealer/team` — `DEALER_ADMIN` gate, buyer vs. inspector permissions) | Complete Platform | 2–3 hrs | [x] |
 | **II** | **B6** | `Prompt B6.1` | Dispute Arbitration Engine (`/api/admin/disputes*` + hoist evidence upload + timeline + resolution) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B6** | `Prompt B6.2` | Admin Analytics SQL Views (`/api/admin/analytics`) & Paginated Immutable Audit Log + SHA-256 Chain (`/api/admin/audit-log`) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B6** | `Prompt B6.3` | Seller Relisting (FR-EU-13 cooldown), Account Settings (`/api/settings/*`), & Platform Config (`/api/admin/config`) | Complete Platform | 3 hrs | [ ] |
@@ -454,7 +454,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** FR-DL-01, FR-DL-02, FR-AD-02, BR-13, BR-14.
   - **Exit Gate:** New dealer submits OMVIC application → Admin approves on `/admin/dealers` → dealer gains bidding access; suspending dealer immediately voids their active bids and blocks new bids.
 
-- [ ] **`Prompt B5.3` — Dealership Multi-User Team & Seat Management**
+- [x] **`Prompt B5.3` — Dealership Multi-User Team & Seat Management**
   - **Build From → To:** Local-state `DealerTeamView` → real `dealership_members` invite, role assignment, and revocation protected strictly by `DEALER_ADMIN`.
   - **Files to Create/Modify:**
     - `lib/server/services/dealer-team.service.ts` — `listTeam()`, `inviteMember()` (checks plan seat limit, creates Supabase invited user or links profile, sets `dealership_members.seat_role` as `DEALER_ADMIN | DEALER_BUYER | DEALER_INSPECTOR`), `updateMemberRole()`, `removeMember()`.

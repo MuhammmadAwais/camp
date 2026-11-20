@@ -34,6 +34,7 @@ export const adminKeys = {
 export const dealerKeys = {
   all: ["dealer"] as const,
   onboarding: () => [...dealerKeys.all, "onboarding"] as const,
+  team: () => [...dealerKeys.all, "team"] as const,
   inventory: (filters?: Record<string, string | number | null | undefined>) =>
     filters
       ? ([...dealerKeys.all, "inventory", filters] as const)

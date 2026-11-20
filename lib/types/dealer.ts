@@ -288,3 +288,58 @@ export type SubmitDealershipApplicationPayload = {
   contactPhone: string;
   agreeOmvicEthics: true;
 };
+
+export type DealerSeatRole =
+  | "DEALER_ADMIN"
+  | "DEALER_BUYER"
+  | "DEALER_INSPECTOR";
+
+export type DealerTeamMember = {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  jobTitle: string | null;
+  role: DealerSeatRole;
+  isSelf: boolean;
+  joinedAt: string;
+  joinedAtIso: string;
+  lastActive: string;
+  lastActiveAtIso: string | null;
+};
+
+export type DealerTeamSummary = {
+  seatsUsed: number;
+  maxSeats: number;
+  planName: string;
+  adminsCount: number;
+  buyersCount: number;
+  inspectorsCount: number;
+};
+
+export type DealerTeamResponse = {
+  members: DealerTeamMember[];
+  summary: DealerTeamSummary;
+  dealershipName: string;
+  currentUserId: string;
+  serverTime: string;
+};
+
+export type InviteDealerMemberPayload = {
+  name: string;
+  email: string;
+  seatRole: DealerSeatRole;
+  jobTitle?: string | null;
+};
+
+export type UpdateDealerMemberRolePayload = {
+  seatRole: DealerSeatRole;
+};
+
+export type DealerTeamMutationResponse = {
+  member?: DealerTeamMember;
+  removedMemberId?: string;
+  summary: DealerTeamSummary;
+  message: string;
+  serverTime: string;
+};
