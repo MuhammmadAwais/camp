@@ -220,3 +220,71 @@ export type LogMatchOutcomeResponse = {
   message: string;
   serverTime: string;
 };
+
+export type DealerRegulatorCode = "OMVIC" | "AMVIC" | "VSA" | "OPC";
+
+export type DealershipLifecycleStatus =
+  | "PENDING"
+  | "VERIFIED"
+  | "REJECTED"
+  | "SUSPENDED"
+  | "REVOKED";
+
+export type DealerOnboardingApplication = {
+  id: string;
+  dealershipName: string;
+  legalEntityName: string;
+  regulator: DealerRegulatorCode;
+  licenseNumber: string;
+  licenseExpiry: string | null;
+  businessNumber: string | null;
+  status: DealershipLifecycleStatus;
+  streetAddress: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  serviceRadiusKm: number;
+  contactName: string;
+  contactTitle: string | null;
+  contactEmail: string;
+  contactPhone: string;
+  verificationNotes: string | null;
+  verifiedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DealerOnboardingStatusResponse = {
+  application: DealerOnboardingApplication | null;
+  prefill: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    postalCode: string;
+    province: string;
+    city: string;
+    role: string;
+  };
+  canEdit: boolean;
+  serverTime: string;
+};
+
+export type SubmitDealershipApplicationPayload = {
+  dealershipName: string;
+  legalEntityName: string;
+  regulator: DealerRegulatorCode;
+  licenseNumber: string;
+  licenseExpiry?: string | null;
+  businessNumber?: string | null;
+  streetAddress: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  serviceRadiusKm: number;
+  contactName: string;
+  contactTitle?: string | null;
+  contactEmail: string;
+  contactPhone: string;
+  agreeOmvicEthics: true;
+};

@@ -1628,6 +1628,15 @@ export type Database = {
         }
         Returns: Json
       }
+      transition_dealership_status_and_void_bids: {
+        Args: {
+          p_admin_id: string
+          p_dealership_id: string
+          p_new_status: Database["public"]["Enums"]["dealership_status"]
+          p_notes?: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       bid_status: "ACTIVE" | "WON" | "LOST" | "EXPIRED" | "WITHDRAWN" | "VOIDED"

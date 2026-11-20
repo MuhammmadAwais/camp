@@ -1,162 +1,122 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import {
-  ShieldCheck,
-  CheckCircle2,
-  XCircle,
-  Building2,
-  MapPin,
-  ExternalLink,
-  Search,
-  Filter,
   AlertTriangle,
-  Clock,
-  Phone,
-  Mail,
-  FileText,
-  Copy,
-  Check,
-  X,
   ArrowRight,
-  Shield,
+  Building2,
+  Check,
+  CheckCircle2,
+  Clock,
+  Copy,
   FileCheck2,
-  Download,
-  Share2,
+  FileText,
+  Loader2,
+  Search,
+  Shield,
+  X,
 } from "lucide-react";
+import { ApiError } from "@/lib/api-client";
+import { useAdminDealers, useDecideDealer } from "@/hooks/useAdminDealers";
 import { useTableSort } from "@/hooks/useTableSort";
 import { SortableHeader } from "@/components/ui/SortableHeader";
 import { TablePagination } from "@/components/ui/TablePagination";
+import type {
+  AdminDealerApplication,
+  AdminDealerDecisionAction,
+  AdminDealerStatus,
+} from "@/lib/types/admin";
 
-export type DealerApplication = {
-  id: string;
-  dealershipName: string;
-  legalEntityName: string;
-  regulator: "OMVIC" | "AMVIC" | "VSA" | "OPC";
-  licenseNumber: string;
-  city: string;
-  province: string;
-  address: string;
-  contactName: string;
-  contactEmail: string;
-  contactPhone: string;
-  serviceRadiusKm: number;
-  submittedAt: string;
-  status: "PENDING" | "APPROVED" | "REJECTED";
-  licenseExpiry: string;
-  notes?: string;
-};
+type FilterStatusOption = "ALL" | "PENDING" | "VERIFIED" | "DISQUALIFIED";
 
-const INITIAL_DEALERS: DealerApplication[] = [
-  {
-    id: "app-pfaff-markham",
-    dealershipName: "Pfaff Porsche Markham",
-    legalEntityName: "Pfaff Automotive Partners Inc.",
-    regulator: "OMVIC",
-    licenseNumber: "OMVIC-481920",
-    city: "Markham",
-    province: "ON",
-    address: "10500 Highway 48",
-    contactName: "Christopher Evans",
-    contactEmail: "c.evans@pfaffauto.com",
-    contactPhone: "+1 (905) 555-8291",
-    serviceRadiusKm: 100,
-    submittedAt: "2026-10-26T14:30:00Z",
-    status: "APPROVED",
-    licenseExpiry: "2027-04-15",
-    notes: "Verified against Ontario OMVIC public register. Valid dealership corporate charter.",
-  },
-  {
-    id: "app-woodbine-ford",
-    dealershipName: "Woodbine Ford Lincoln",
-    legalEntityName: "Woodbine Motors Group Ltd.",
-    regulator: "OMVIC",
-    licenseNumber: "OMVIC-312984",
-    city: "Etobicoke",
-    province: "ON",
-    address: "680 Rexdale Blvd",
-    contactName: "Liam Henderson",
-    contactEmail: "l.henderson@woodbineford.com",
-    contactPhone: "+1 (416) 555-9018",
-    serviceRadiusKm: 75,
-    submittedAt: "2026-10-26T12:15:00Z",
-    status: "PENDING",
-    licenseExpiry: "2026-12-31",
-  },
-  {
-    id: "app-stampede-toyota",
-    dealershipName: "Stampede Toyota Commercial",
-    legalEntityName: "Stampede Automotive Holdings Inc.",
-    regulator: "AMVIC",
-    licenseNumber: "AMVIC-849201",
-    city: "Calgary",
-    province: "AB",
-    address: "3800 Barlow Trail NE",
-    contactName: "Brett MacLeod",
-    contactEmail: "b.macleod@stampedetoyota.com",
-    contactPhone: "+1 (403) 555-3920",
-    serviceRadiusKm: 150,
-    submittedAt: "2026-10-25T18:40:00Z",
-    status: "PENDING",
-    licenseExpiry: "2027-02-28",
-  },
-  {
-    id: "app-vancouver-audi",
-    dealershipName: "OpenRoad Audi Vancouver",
-    legalEntityName: "OpenRoad Auto Group Ltd.",
-    regulator: "VSA",
-    licenseNumber: "VSA-192840",
-    city: "Vancouver",
-    province: "BC",
-    address: "2120 W 2nd Ave",
-    contactName: "Chloe Zhang",
-    contactEmail: "c.zhang@openroadautogroup.com",
-    contactPhone: "+1 (604) 555-7482",
-    serviceRadiusKm: 80,
-    submittedAt: "2026-10-24T09:20:00Z",
-    status: "PENDING",
-    licenseExpiry: "2026-11-30",
-  },
-  {
-    id: "app-laval-nissan",
-    dealershipName: "HGregoire Nissan Chomedey",
-    legalEntityName: "Groupe HGregoire Quebec Inc.",
-    regulator: "OPC",
-    licenseNumber: "OPC-992144",
-    city: "Laval",
-    province: "QC",
-    address: "4299 Autoroute 440",
-    contactName: "Maxime Tremblay",
-    contactEmail: "m.tremblay@hgregoire.ca",
-    contactPhone: "+1 (450) 555-1823",
-    serviceRadiusKm: 120,
-    submittedAt: "2026-10-23T11:00:00Z",
-    status: "PENDING",
-    licenseExpiry: "2027-06-30",
-  },
-];
+const subscribeNoop = () => () => {};
+const getTrueClient = () => true;
+const getFalseServer = () => false;
+
+const EMPTY_DEALERS: AdminDealerApplication[] = [];
+
+function statusBadgeConfig(status: AdminDealerStatus): {
+  label: string;
+  pillClass: string;
+  dotClass: string;
+} {
+  if (status === "VERIFIED") {
+    return {
+      label: "Verified",
+      pillClass:
+        "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
+      dotClass: "bg-emerald-500",
+    };
+  }
+  if (status === "PENDING") {
+    return {
+      label: "Under Review",
+      pillClass:
+        "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20",
+      dotClass: "bg-amber-500 animate-pulse",
+    };
+  }
+  if (status === "SUSPENDED") {
+    return {
+      label: "Suspended",
+      pillClass:
+        "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25",
+      dotClass: "bg-amber-500",
+    };
+  }
+  return {
+    label: status === "REVOKED" ? "Revoked" : "Rejected",
+    pillClass:
+      "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20",
+    dotClass: "bg-red-500",
+  };
+}
 
 export function DealerVerificationView() {
-  const [dealers, setDealers] = useState<DealerApplication[]>(INITIAL_DEALERS);
+  const mounted = useSyncExternalStore(
+    subscribeNoop,
+    getTrueClient,
+    getFalseServer
+  );
+
+  const { data, isLoading, isError, error, refetch } = useAdminDealers();
+  const decideMutation = useDecideDealer();
+
   const [search, setSearch] = useState("");
   const [filterRegulator, setFilterRegulator] = useState("ALL");
-  const [filterStatus, setFilterStatus] = useState<"ALL" | "PENDING" | "APPROVED" | "REJECTED">("ALL");
-  const [selectedDealer, setSelectedDealer] = useState<DealerApplication | null>(null);
-  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [filterStatus, setFilterStatus] = useState<FilterStatusOption>("ALL");
+  const [selectedDealerId, setSelectedDealerId] = useState<string | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
+  const [modalError, setModalError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [feedbackNotice, setFeedbackNotice] = useState<{ text: string; type: "success" | "error" } | null>(null);
-
-  // Checkbox multi-selection
+  const [feedbackNotice, setFeedbackNotice] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-
-  // Pagination state
   const [page, setPage] = useState(1);
   const pageSize = 5;
 
-  // Lock body scroll when review modal is active
+  const dealers = data?.items ?? EMPTY_DEALERS;
+  const counts = data?.counts ?? {
+    ALL: 0,
+    PENDING: 0,
+    VERIFIED: 0,
+    REJECTED: 0,
+    SUSPENDED: 0,
+    REVOKED: 0,
+  };
+  const disqualifiedCount =
+    counts.REJECTED + counts.SUSPENDED + counts.REVOKED;
+
+  const selectedDealer = useMemo(
+    () => dealers.find((d) => d.id === selectedDealerId) ?? null,
+    [dealers, selectedDealerId]
+  );
+
   useEffect(() => {
-    if (reviewModalOpen) {
+    if (selectedDealer) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -164,21 +124,23 @@ export function DealerVerificationView() {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [reviewModalOpen]);
+  }, [selectedDealer]);
 
-  // Operational metrics
-  const counts = {
-    PENDING: dealers.filter((d) => d.status === "PENDING").length,
-    APPROVED: dealers.filter((d) => d.status === "APPROVED").length,
-    REJECTED: dealers.filter((d) => d.status === "REJECTED").length,
-    TOTAL: dealers.length,
-  };
-
-  // Filtered dataset
   const filtered = useMemo(() => {
     return dealers.filter((d) => {
-      if (filterRegulator !== "ALL" && d.regulator !== filterRegulator) return false;
-      if (filterStatus !== "ALL" && d.status !== filterStatus) return false;
+      if (filterRegulator !== "ALL" && d.regulator !== filterRegulator) {
+        return false;
+      }
+      if (filterStatus === "PENDING" && d.status !== "PENDING") return false;
+      if (filterStatus === "VERIFIED" && d.status !== "VERIFIED") return false;
+      if (
+        filterStatus === "DISQUALIFIED" &&
+        d.status !== "REJECTED" &&
+        d.status !== "SUSPENDED" &&
+        d.status !== "REVOKED"
+      ) {
+        return false;
+      }
       if (search.trim()) {
         const q = search.toLowerCase();
         return (
@@ -194,19 +156,17 @@ export function DealerVerificationView() {
     });
   }, [dealers, filterRegulator, filterStatus, search]);
 
-  // Universal Table Sorting Hook
-  const { sortedData, requestSort, isSorted } = useTableSort<DealerApplication>(filtered, {
-    initialKey: "submittedAt",
-    initialDirection: "desc",
-  });
+  const { sortedData, requestSort, isSorted } =
+    useTableSort<AdminDealerApplication>(filtered, {
+      initialKey: "submittedAt",
+      initialDirection: "desc",
+    });
 
-  // Paginated slice
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize;
     return sortedData.slice(start, start + pageSize);
   }, [sortedData, page, pageSize]);
 
-  // Select all handler
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       setSelectedRows(new Set(paginatedData.map((d) => d.id)));
@@ -228,43 +188,51 @@ export function DealerVerificationView() {
   };
 
   const handleCopy = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
+    void navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleOpenReview = (dealer: DealerApplication) => {
-    setSelectedDealer(dealer);
-    setReviewNotes(dealer.notes || "");
-    setReviewModalOpen(true);
+  const handleOpenReview = (dealer: AdminDealerApplication) => {
+    setSelectedDealerId(dealer.id);
+    setReviewNotes(dealer.notes ?? "");
+    setModalError(null);
   };
 
-  const handleDecision = (newStatus: "APPROVED" | "REJECTED") => {
+  const handleDecision = async (action: AdminDealerDecisionAction) => {
     if (!selectedDealer) return;
+    setModalError(null);
 
-    setDealers((prev) =>
-      prev.map((d) =>
-        d.id === selectedDealer.id
-          ? {
-              ...d,
-              status: newStatus,
-              notes: reviewNotes.trim() || undefined,
-            }
-          : d
-      )
-    );
+    const trimmedNotes = reviewNotes.trim();
+    if (action !== "APPROVE" && trimmedNotes.length < 5) {
+      setModalError(
+        "Please enter compliance findings or rationale (at least 5 characters) before rejecting, suspending, or revoking."
+      );
+      return;
+    }
 
-    setFeedbackNotice({
-      text:
-        newStatus === "APPROVED"
-          ? `${selectedDealer.dealershipName} verified! Wholesale floor bidding access activated.`
-          : `Application for ${selectedDealer.dealershipName} set to Rejected. Notice sent to dealer.`,
-      type: newStatus === "APPROVED" ? "success" : "error",
-    });
+    try {
+      const result = await decideMutation.mutateAsync({
+        id: selectedDealer.id,
+        payload: {
+          action,
+          ...(trimmedNotes ? { notes: trimmedNotes } : {}),
+        },
+      });
 
-    setReviewModalOpen(false);
-    setSelectedDealer(null);
-    setTimeout(() => setFeedbackNotice(null), 5000);
+      setFeedbackNotice({
+        text: result.message,
+        type: action === "APPROVE" ? "success" : "error",
+      });
+      setSelectedDealerId(null);
+      setTimeout(() => setFeedbackNotice(null), 6000);
+    } catch (err) {
+      const msg =
+        err instanceof ApiError
+          ? err.failure.error
+          : "Unable to process dealership licensing decision.";
+      setModalError(msg);
+    }
   };
 
   return (
@@ -281,16 +249,19 @@ export function DealerVerificationView() {
           Dealer Licensing Verification Queue
         </h1>
         <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-3xl font-body">
-          Validate commercial dealership credentials against Canadian provincial registries (OMVIC, AMVIC, VSA, OPC) before granting sealed-bid trading floor authorization.
+          Validate commercial dealership credentials against Canadian provincial registries (OMVIC, AMVIC, VSA, OPC) and enforce BR-14 license suspensions.
         </p>
       </div>
 
-      {/* 2. Operational Metrics Ribbon (Side-by-Side Prominent Icons) */}
+      {/* 2. Operational Metrics Ribbon */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Metric 1: Pending */}
-        <div
-          onClick={() => setFilterStatus("PENDING")}
-          className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+        <button
+          type="button"
+          onClick={() => {
+            setFilterStatus("PENDING");
+            setPage(1);
+          }}
+          className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
             filterStatus === "PENDING"
               ? "bg-portal-surface border-amber-500/60 shadow-xs ring-1 ring-amber-500/20"
               : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
@@ -313,15 +284,20 @@ export function DealerVerificationView() {
             <span className="font-mono text-2xl sm:text-3xl font-black text-amber-500">
               {counts.PENDING}
             </span>
-            <span className="text-xs font-semibold text-portal-text-muted">Dealerships</span>
+            <span className="text-xs font-semibold text-portal-text-muted">
+              Dealerships
+            </span>
           </div>
-        </div>
+        </button>
 
-        {/* Metric 2: Approved */}
-        <div
-          onClick={() => setFilterStatus("APPROVED")}
-          className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
-            filterStatus === "APPROVED"
+        <button
+          type="button"
+          onClick={() => {
+            setFilterStatus("VERIFIED");
+            setPage(1);
+          }}
+          className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+            filterStatus === "VERIFIED"
               ? "bg-portal-surface border-emerald-500/60 shadow-xs ring-1 ring-emerald-500/20"
               : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
           }`}
@@ -341,17 +317,22 @@ export function DealerVerificationView() {
           </div>
           <div className="mt-3 pt-2.5 border-t border-portal-border/60 flex items-baseline gap-2">
             <span className="font-mono text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
-              {counts.APPROVED}
+              {counts.VERIFIED}
             </span>
-            <span className="text-xs font-semibold text-portal-text-muted">Verified</span>
+            <span className="text-xs font-semibold text-portal-text-muted">
+              Verified
+            </span>
           </div>
-        </div>
+        </button>
 
-        {/* Metric 3: Rejected / Flagged */}
-        <div
-          onClick={() => setFilterStatus("REJECTED")}
-          className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
-            filterStatus === "REJECTED"
+        <button
+          type="button"
+          onClick={() => {
+            setFilterStatus("DISQUALIFIED");
+            setPage(1);
+          }}
+          className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+            filterStatus === "DISQUALIFIED"
               ? "bg-portal-surface border-red-500/60 shadow-xs ring-1 ring-red-500/20"
               : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
           }`}
@@ -362,25 +343,30 @@ export function DealerVerificationView() {
             </div>
             <div className="min-w-0">
               <span className="text-xs sm:text-sm font-bold text-portal-text block truncate leading-tight">
-                License Inquiries
+                Suspended &amp; Rejected
               </span>
               <span className="text-[11px] text-portal-text-muted block truncate mt-0.5">
-                Revoked or rejected
+                BR-14 holds &amp; denials
               </span>
             </div>
           </div>
           <div className="mt-3 pt-2.5 border-t border-portal-border/60 flex items-baseline gap-2">
             <span className="font-mono text-2xl sm:text-3xl font-black text-portal-text">
-              {counts.REJECTED}
+              {disqualifiedCount}
             </span>
-            <span className="text-xs font-semibold text-portal-text-muted">Disqualified</span>
+            <span className="text-xs font-semibold text-portal-text-muted">
+              Restricted
+            </span>
           </div>
-        </div>
+        </button>
 
-        {/* Metric 4: Total Intake */}
-        <div
-          onClick={() => setFilterStatus("ALL")}
-          className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+        <button
+          type="button"
+          onClick={() => {
+            setFilterStatus("ALL");
+            setPage(1);
+          }}
+          className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
             filterStatus === "ALL"
               ? "bg-portal-surface border-portal-primary/60 shadow-xs ring-1 ring-portal-primary/20"
               : "bg-portal-surface hover:bg-portal-surface-hover border-portal-border"
@@ -401,11 +387,13 @@ export function DealerVerificationView() {
           </div>
           <div className="mt-3 pt-2.5 border-t border-portal-border/60 flex items-baseline gap-2">
             <span className="font-mono text-2xl sm:text-3xl font-black text-portal-text">
-              {counts.TOTAL}
+              {counts.ALL}
             </span>
-            <span className="text-xs font-semibold text-portal-text-muted">Applications</span>
+            <span className="text-xs font-semibold text-portal-text-muted">
+              Applications
+            </span>
           </div>
-        </div>
+        </button>
       </div>
 
       {/* Dynamic Feedback Banner */}
@@ -431,9 +419,8 @@ export function DealerVerificationView() {
         </div>
       )}
 
-      {/* 3. Modern Reference Table Card Container (Matching Image 4) */}
+      {/* 3. Roster Table Container */}
       <div className="rounded-2xl border border-portal-border bg-portal-surface shadow-xs overflow-hidden">
-        {/* Table Header Strip */}
         <div className="p-6 border-b border-portal-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5">
@@ -445,31 +432,34 @@ export function DealerVerificationView() {
               </span>
             </div>
             <p className="text-xs text-portal-text-muted mt-1 font-body">
-              Here you can inspect dealer compliance credentials, review licensing statuses, and approve wholesale floor access.
+              Inspect dealer compliance credentials, approve trading floor access, or execute BR-14 bid-voiding suspensions.
             </p>
           </div>
 
-          {/* Action Tools & Search */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* Search Input */}
             <div className="relative w-full sm:w-64">
               <Search className="w-3.5 h-3.5 text-portal-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
                 placeholder="Search dealership, license..."
                 className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-portal-border bg-portal-surface-hover/50 text-portal-text text-xs placeholder:text-portal-text-muted focus:outline-none focus:ring-2 focus:ring-portal-primary/40 font-body"
               />
             </div>
 
-            {/* Regulator Dropdown / Filter */}
             <div className="flex items-center gap-1">
               {["ALL", "OMVIC", "AMVIC", "VSA", "OPC"].map((reg) => (
                 <button
                   key={reg}
                   type="button"
-                  onClick={() => setFilterRegulator(reg)}
+                  onClick={() => {
+                    setFilterRegulator(reg);
+                    setPage(1);
+                  }}
                   className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                     filterRegulator === reg
                       ? "bg-portal-primary text-white font-bold shadow-2xs"
@@ -483,359 +473,441 @@ export function DealerVerificationView() {
           </div>
         </div>
 
-        {/* 4. Table Surface */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse font-body">
-            <thead>
-              <tr className="border-b border-portal-border/60 bg-portal-surface-hover/30">
-                {/* Select All Checkbox */}
-                <th className="py-3.5 pl-6 pr-2 w-10">
-                  <input
-                    type="checkbox"
-                    checked={
-                      paginatedData.length > 0 &&
-                      paginatedData.every((d) => selectedRows.has(d.id))
-                    }
-                    onChange={handleSelectAll}
-                    className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
-                  />
-                </th>
-                <SortableHeader
-                  label="Dealership"
-                  direction={isSorted("dealershipName")}
-                  onSort={() => requestSort("dealershipName")}
-                />
-                <SortableHeader
-                  label="License & Regulator"
-                  direction={isSorted("licenseNumber")}
-                  onSort={() => requestSort("licenseNumber")}
-                />
-                <SortableHeader
-                  label="Jurisdiction"
-                  direction={isSorted("city")}
-                  onSort={() => requestSort("city")}
-                />
-                <SortableHeader
-                  label="Purchasing Officer"
-                  direction={isSorted("contactName")}
-                  onSort={() => requestSort("contactName")}
-                />
-                <SortableHeader
-                  label="Status"
-                  direction={isSorted("status")}
-                  onSort={() => requestSort("status")}
-                />
-                <th className="py-3.5 pr-6 pl-4 text-right text-xs font-semibold text-portal-text-muted">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-portal-border/40">
-              {paginatedData.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-portal-text-muted">
-                    <Building2 className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                    <p className="text-sm font-semibold">No dealer applications match your filter</p>
-                    <p className="text-xs text-portal-text-muted mt-1">
-                      Try clearing your search query or regulator selection.
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                paginatedData.map((dealer) => {
-                  const isChecked = selectedRows.has(dealer.id);
-                  const monogram = dealer.dealershipName
-                    .split(" ")
-                    .slice(0, 2)
-                    .map((w) => w[0])
-                    .join("")
-                    .toUpperCase();
-
-                  return (
-                    <tr
-                      key={dealer.id}
-                      className={`hover:bg-portal-surface-hover/50 transition-colors group ${
-                        isChecked ? "bg-portal-primary/5" : ""
-                      }`}
-                    >
-                      {/* Row Checkbox */}
-                      <td className="py-4 pl-6 pr-2">
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => handleToggleRow(dealer.id)}
-                          className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
-                        />
-                      </td>
-
-                      {/* Dealership: Icon Badge + Name (Matching Image 4 File Icon + Name style) */}
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-portal-surface-hover border border-portal-border flex items-center justify-center shrink-0 font-bold text-xs text-portal-text">
-                            {monogram}
-                          </div>
-                          <div className="min-w-0">
-                            <span className="font-semibold text-portal-text text-sm block truncate group-hover:text-portal-primary transition-colors">
-                              {dealer.dealershipName}
-                            </span>
-                            <span className="text-xs text-portal-text-muted block truncate mt-0.5">
-                              {dealer.legalEntityName}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Regulator & License Number */}
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-portal-surface-hover border border-portal-border text-portal-text font-mono">
-                            {dealer.regulator}
-                          </span>
-                          <span className="font-mono font-medium text-portal-text">
-                            {dealer.licenseNumber}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(dealer.licenseNumber, dealer.id)}
-                            className="p-1 rounded hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text cursor-pointer transition-colors"
-                            title="Copy license number"
-                          >
-                            {copiedId === dealer.id ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-500" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5" />
-                            )}
-                          </button>
-                        </div>
-                      </td>
-
-                      {/* Jurisdiction */}
-                      <td className="py-4 px-4 text-portal-text">
-                        <span>
-                          {dealer.city}, {dealer.province}
-                        </span>
-                        <span className="text-portal-text-muted text-xs block mt-0.5">
-                          {dealer.serviceRadiusKm} km radius
-                        </span>
-                      </td>
-
-                      {/* Purchasing Officer */}
-                      <td className="py-4 px-4">
-                        <span className="font-medium text-portal-text block">
-                          {dealer.contactName}
-                        </span>
-                        <span className="text-portal-text-muted text-xs block mt-0.5">
-                          {dealer.contactEmail}
-                        </span>
-                      </td>
-
-                      {/* Status: Soft Pastel Pill Badge (Matching Image 4) */}
-                      <td className="py-4 px-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
-                            dealer.status === "APPROVED"
-                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                              : dealer.status === "PENDING"
-                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                              : "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20"
-                          }`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              dealer.status === "APPROVED"
-                                ? "bg-emerald-500"
-                                : dealer.status === "PENDING"
-                                ? "bg-amber-500 animate-pulse"
-                                : "bg-red-500"
-                            }`}
-                          />
-                          <span>
-                            {dealer.status === "APPROVED"
-                              ? "Verified"
-                              : dealer.status === "PENDING"
-                              ? "Under Review"
-                              : "Rejected"}
-                          </span>
-                        </span>
-                      </td>
-
-                      {/* Action: Clean Review Button */}
-                      <td className="py-4 pr-6 pl-4 text-right">
-                        <button
-                          type="button"
-                          onClick={() => handleOpenReview(dealer)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-primary hover:text-white text-xs font-semibold text-portal-text transition-colors cursor-pointer shadow-2xs group/btn"
-                        >
-                          <span>Review</span>
-                          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" />
-                        </button>
+        {isLoading ? (
+          <div className="py-16 text-center space-y-3 text-portal-text-muted">
+            <Loader2 className="w-7 h-7 animate-spin text-portal-primary mx-auto" />
+            <p className="text-xs">Loading Canadian dealership compliance queue...</p>
+          </div>
+        ) : isError ? (
+          <div className="py-14 px-4 text-center space-y-3">
+            <AlertTriangle className="w-8 h-8 text-red-500 mx-auto" />
+            <p className="text-sm font-semibold text-portal-text">
+              {error instanceof ApiError
+                ? error.failure.error
+                : "Unable to load dealership roster."}
+            </p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="px-4 py-2 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-xs font-bold text-portal-text cursor-pointer"
+            >
+              Retry
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse font-body">
+                <thead>
+                  <tr className="border-b border-portal-border/60 bg-portal-surface-hover/30">
+                    <th className="py-3.5 pl-6 pr-2 w-10">
+                      <input
+                        type="checkbox"
+                        checked={
+                          paginatedData.length > 0 &&
+                          paginatedData.every((d) => selectedRows.has(d.id))
+                        }
+                        onChange={handleSelectAll}
+                        className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
+                      />
+                    </th>
+                    <SortableHeader
+                      label="Dealership"
+                      direction={isSorted("dealershipName")}
+                      onSort={() => requestSort("dealershipName")}
+                    />
+                    <SortableHeader
+                      label="License & Regulator"
+                      direction={isSorted("licenseNumber")}
+                      onSort={() => requestSort("licenseNumber")}
+                    />
+                    <SortableHeader
+                      label="Jurisdiction"
+                      direction={isSorted("city")}
+                      onSort={() => requestSort("city")}
+                    />
+                    <SortableHeader
+                      label="Purchasing Officer"
+                      direction={isSorted("contactName")}
+                      onSort={() => requestSort("contactName")}
+                    />
+                    <SortableHeader
+                      label="Status"
+                      direction={isSorted("status")}
+                      onSort={() => requestSort("status")}
+                    />
+                    <th className="py-3.5 pr-6 pl-4 text-right text-xs font-semibold text-portal-text-muted">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-portal-border/40">
+                  {paginatedData.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="py-12 text-center text-portal-text-muted"
+                      >
+                        <Building2 className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                        <p className="text-sm font-semibold">
+                          No dealer applications match your filter
+                        </p>
+                        <p className="text-xs text-portal-text-muted mt-1">
+                          Try clearing your search query or regulator selection.
+                        </p>
                       </td>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                  ) : (
+                    paginatedData.map((dealer) => {
+                      const isChecked = selectedRows.has(dealer.id);
+                      const monogram = dealer.dealershipName
+                        .split(" ")
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .map((w) => w[0])
+                        .join("")
+                        .toUpperCase();
+                      const badge = statusBadgeConfig(dealer.status);
 
-        {/* 5. Enterprise Pagination Footer (Matching Image 4) */}
-        <TablePagination
-          currentPage={page}
-          totalItems={filtered.length}
-          pageSize={pageSize}
-          onPageChange={setPage}
-        />
+                      return (
+                        <tr
+                          key={dealer.id}
+                          className={`hover:bg-portal-surface-hover/50 transition-colors group ${
+                            isChecked ? "bg-portal-primary/5" : ""
+                          }`}
+                        >
+                          <td className="py-4 pl-6 pr-2">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => handleToggleRow(dealer.id)}
+                              className="w-4 h-4 rounded border-portal-border text-portal-primary focus:ring-portal-primary cursor-pointer accent-portal-primary"
+                            />
+                          </td>
+
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-portal-surface-hover border border-portal-border flex items-center justify-center shrink-0 font-bold text-xs text-portal-text">
+                                {monogram || "DL"}
+                              </div>
+                              <div className="min-w-0">
+                                <span className="font-semibold text-portal-text text-sm block truncate group-hover:text-portal-primary transition-colors">
+                                  {dealer.dealershipName}
+                                </span>
+                                <span className="text-xs text-portal-text-muted block truncate mt-0.5">
+                                  {dealer.legalEntityName}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-2">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-portal-surface-hover border border-portal-border text-portal-text font-mono">
+                                {dealer.regulator}
+                              </span>
+                              <span className="font-mono font-medium text-portal-text">
+                                {dealer.licenseNumber}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleCopy(dealer.licenseNumber, dealer.id)
+                                }
+                                className="p-1 rounded hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text cursor-pointer transition-colors"
+                                title="Copy license number"
+                              >
+                                {copiedId === dealer.id ? (
+                                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            </div>
+                          </td>
+
+                          <td className="py-4 px-4 text-portal-text">
+                            <span>
+                              {dealer.city || dealer.postalCode}, {dealer.province}
+                            </span>
+                            <span className="text-portal-text-muted text-xs block mt-0.5">
+                              {dealer.serviceRadiusKm} km radius •{" "}
+                              {dealer.activeBidsCount} active bids
+                            </span>
+                          </td>
+
+                          <td className="py-4 px-4">
+                            <span className="font-medium text-portal-text block">
+                              {dealer.contactName}
+                            </span>
+                            <span className="text-portal-text-muted text-xs block mt-0.5">
+                              {dealer.contactEmail}
+                            </span>
+                          </td>
+
+                          <td className="py-4 px-4">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${badge.pillClass}`}
+                            >
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full ${badge.dotClass}`}
+                              />
+                              <span>{badge.label}</span>
+                            </span>
+                          </td>
+
+                          <td className="py-4 pr-6 pl-4 text-right">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenReview(dealer)}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-primary hover:text-white text-xs font-semibold text-portal-text transition-colors cursor-pointer shadow-2xs group/btn"
+                            >
+                              <span>Review</span>
+                              <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <TablePagination
+              currentPage={page}
+              totalItems={filtered.length}
+              pageSize={pageSize}
+              onPageChange={setPage}
+            />
+          </>
+        )}
       </div>
 
-      {/* 6. Accessible Review & Verification Modal (Portaled) */}
-      {reviewModalOpen && selectedDealer && (
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-fadeIn"
-          onClick={() => setReviewModalOpen(false)}
-        >
+      {/* 4. Body-Portaled Review & Compliance Action Modal */}
+      {mounted &&
+        selectedDealer &&
+        createPortal(
           <div
-            className="relative w-full max-w-2xl bg-portal-surface border border-portal-border rounded-2xl shadow-2xl p-6 sm:p-7 space-y-6 animate-scaleUp overflow-y-auto max-h-[90vh]"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-fadeIn"
+            onClick={() => setSelectedDealerId(null)}
           >
-            {/* Modal Header */}
-            <div className="flex items-start justify-between pb-4 border-b border-portal-border">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-portal-primary/10 border border-portal-primary/20 text-portal-primary flex items-center justify-center shrink-0">
-                  <FileCheck2 className="w-6 h-6" />
+            <div
+              className="relative w-full max-w-2xl bg-portal-surface border border-portal-border rounded-2xl shadow-2xl p-6 sm:p-7 space-y-6 animate-scaleUp overflow-y-auto max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between pb-4 border-b border-portal-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-portal-primary/10 border border-portal-primary/20 text-portal-primary flex items-center justify-center shrink-0">
+                    <FileCheck2 className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-headline text-lg sm:text-xl font-bold text-portal-text">
+                      Dealer License Dossier
+                    </h3>
+                    <p className="text-xs text-portal-text-muted mt-0.5">
+                      Dealership ID:{" "}
+                      <span className="font-mono text-portal-text">
+                        {selectedDealer.id}
+                      </span>
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-headline text-lg sm:text-xl font-bold text-portal-text">
-                    Dealer License Dossier
-                  </h3>
-                  <p className="text-xs text-portal-text-muted mt-0.5">
-                    Application ID: <span className="font-mono text-portal-text">{selectedDealer.id}</span>
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setReviewModalOpen(false)}
-                className="p-1 rounded-lg text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Dossier Information Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-body">
-              <div className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border space-y-1">
-                <span className="text-[10px] uppercase font-bold text-portal-text-muted">
-                  Dealership Legal Entity
-                </span>
-                <p className="font-bold text-sm text-portal-text">
-                  {selectedDealer.dealershipName}
-                </p>
-                <p className="text-portal-text-muted text-[11px]">
-                  {selectedDealer.legalEntityName}
-                </p>
+                <button
+                  type="button"
+                  onClick={() => setSelectedDealerId(null)}
+                  className="p-1 rounded-lg text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border space-y-1">
-                <span className="text-[10px] uppercase font-bold text-portal-text-muted">
-                  Regulatory Registration
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-portal-primary/10 text-portal-primary font-bold">
-                    {selectedDealer.regulator}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-body">
+                <div className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-portal-text-muted">
+                    Dealership Legal Entity
                   </span>
-                  <span className="font-mono font-bold text-portal-text text-sm">
-                    {selectedDealer.licenseNumber}
+                  <p className="font-bold text-sm text-portal-text">
+                    {selectedDealer.dealershipName}
+                  </p>
+                  <p className="text-portal-text-muted text-[11px]">
+                    {selectedDealer.legalEntityName}
+                    {selectedDealer.businessNumber
+                      ? ` • BN ${selectedDealer.businessNumber}`
+                      : ""}
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-portal-text-muted">
+                    Regulatory Registration
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-portal-primary/10 text-portal-primary font-bold">
+                      {selectedDealer.regulator}
+                    </span>
+                    <span className="font-mono font-bold text-portal-text text-sm">
+                      {selectedDealer.licenseNumber}
+                    </span>
+                  </div>
+                  <p className="text-portal-text-muted text-[11px] font-mono">
+                    {selectedDealer.licenseExpiry
+                      ? `Expires: ${selectedDealer.licenseExpiry}`
+                      : "Expiry date not specified"}
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-portal-text-muted">
+                    Physical Premises &amp; Radius
+                  </span>
+                  <p className="font-bold text-portal-text">
+                    {selectedDealer.address}
+                  </p>
+                  <p className="text-portal-text-muted text-[11px]">
+                    {selectedDealer.city || "Pending city"},{" "}
+                    {selectedDealer.province} {selectedDealer.postalCode} •{" "}
+                    {selectedDealer.serviceRadiusKm} km Radius
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-portal-text-muted">
+                    Designated Purchasing Officer
+                  </span>
+                  <p className="font-bold text-portal-text">
+                    {selectedDealer.contactName}
+                    {selectedDealer.contactTitle
+                      ? ` (${selectedDealer.contactTitle})`
+                      : ""}
+                  </p>
+                  <p className="text-portal-text-muted text-[11px]">
+                    {selectedDealer.contactEmail} • {selectedDealer.contactPhone}
+                  </p>
+                </div>
+              </div>
+
+              {/* Telemetry & Compliance Record Summary */}
+              <div className="p-4 rounded-xl border border-portal-border bg-portal-surface-hover/40 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-7 h-7 text-portal-primary shrink-0" />
+                  <div>
+                    <p className="font-bold text-xs text-portal-text">
+                      Licensing Registry &amp; Floor Status
+                    </p>
+                    <p className="text-[11px] text-portal-text-muted mt-0.5 font-mono">
+                      Seats: {selectedDealer.teamMembersCount} • Active Bids:{" "}
+                      {selectedDealer.activeBidsCount} • Plan:{" "}
+                      {selectedDealer.planName ?? "None yet (Trial on approval)"}
+                    </p>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded-md bg-portal-surface border border-portal-border text-portal-text text-xs font-bold shrink-0">
+                  {selectedDealer.status}
+                </span>
+              </div>
+
+              {selectedDealer.activeBidsCount > 0 && (
+                <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs text-amber-600 dark:text-amber-400 flex items-start gap-2.5">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>
+                    BR-14 Enforcement Notice: Suspending or revoking this dealership will atomically void{" "}
+                    <strong>{selectedDealer.activeBidsCount}</strong> active sealed bid(s) and decrement affected auction bid counters.
                   </span>
                 </div>
-                <p className="text-portal-text-muted text-[11px] font-mono">
-                  Expires: {selectedDealer.licenseExpiry}
-                </p>
-              </div>
+              )}
 
-              <div className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border space-y-1">
-                <span className="text-[10px] uppercase font-bold text-portal-text-muted">
-                  Physical Premises &amp; Radius
-                </span>
-                <p className="font-bold text-portal-text">
-                  {selectedDealer.address}
-                </p>
-                <p className="text-portal-text-muted text-[11px]">
-                  {selectedDealer.city}, {selectedDealer.province} • {selectedDealer.serviceRadiusKm} km Radius
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-portal-surface-hover/70 border border-portal-border space-y-1">
-                <span className="text-[10px] uppercase font-bold text-portal-text-muted">
-                  Designated Purchasing Officer
-                </span>
-                <p className="font-bold text-portal-text">
-                  {selectedDealer.contactName}
-                </p>
-                <p className="text-portal-text-muted text-[11px]">
-                  {selectedDealer.contactEmail} • {selectedDealer.contactPhone}
-                </p>
-              </div>
-            </div>
-
-            {/* Document Certificate Verification Stage */}
-            <div className="p-4 rounded-xl border border-portal-border bg-portal-surface-hover/40 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <FileText className="w-8 h-8 text-portal-primary shrink-0" />
-                <div>
-                  <p className="font-bold text-xs text-portal-text">
-                    Official Provincial Motor Vehicle Dealer Certificate (PDF)
-                  </p>
-                  <p className="text-[11px] text-portal-text-muted mt-0.5 font-mono">
-                    SHA-256: d41d8cd98f00b204e9800998ecf8427e • Verified Clean
-                  </p>
+              {modalError && (
+                <div className="p-3 rounded-xl border border-red-500/30 bg-red-500/10 text-xs text-red-500 font-semibold">
+                  {modalError}
                 </div>
+              )}
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-portal-text block">
+                  Verification Findings &amp; Audit Rationale
+                </label>
+                <textarea
+                  value={reviewNotes}
+                  onChange={(e) => {
+                    setReviewNotes(e.target.value);
+                    setModalError(null);
+                  }}
+                  placeholder="Add registrar cross-check notes, or provide a mandatory rationale (min 5 chars) to reject, suspend, or revoke..."
+                  rows={3}
+                  className="w-full p-3 rounded-xl border border-portal-border bg-portal-surface text-portal-text text-xs focus:ring-2 focus:ring-portal-primary/40 focus:outline-none placeholder:text-portal-text-muted"
+                />
               </div>
-              <span className="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold shrink-0">
-                Seal Valid
-              </span>
-            </div>
 
-            {/* Compliance Review Notes */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-portal-text block">
-                Verification Findings &amp; Audit Rationale
-              </label>
-              <textarea
-                value={reviewNotes}
-                onChange={(e) => setReviewNotes(e.target.value)}
-                placeholder="Add verification notes, OMVIC registrar confirmation number, or reasons for requested amendment..."
-                rows={3}
-                className="w-full p-3 rounded-xl border border-portal-border bg-portal-surface text-portal-text text-xs focus:ring-2 focus:ring-portal-primary/40 focus:outline-none placeholder:text-portal-text-muted"
-              />
-            </div>
+              <div className="flex flex-col-reverse sm:flex-row flex-wrap items-center justify-end gap-2.5 pt-4 border-t border-portal-border">
+                <button
+                  type="button"
+                  disabled={decideMutation.isPending}
+                  onClick={() => setSelectedDealerId(null)}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text text-xs font-bold cursor-pointer transition-colors disabled:opacity-50"
+                >
+                  Close
+                </button>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-portal-border">
-              <button
-                type="button"
-                onClick={() => setReviewModalOpen(false)}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text text-xs font-bold cursor-pointer transition-colors"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDecision("REJECTED")}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 text-xs font-bold cursor-pointer transition-colors"
-              >
-                Reject Application
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDecision("APPROVED")}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer transition-all shadow-sm"
-              >
-                Verify &amp; Activate Trading Floor Access
-              </button>
+                {(selectedDealer.status === "PENDING" ||
+                  selectedDealer.status === "REJECTED") && (
+                  <button
+                    type="button"
+                    disabled={decideMutation.isPending}
+                    onClick={() => void handleDecision("REJECT")}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 text-xs font-bold cursor-pointer transition-colors disabled:opacity-50"
+                  >
+                    Reject Application
+                  </button>
+                )}
+
+                {(selectedDealer.status === "PENDING" ||
+                  selectedDealer.status === "VERIFIED") && (
+                  <button
+                    type="button"
+                    disabled={decideMutation.isPending}
+                    onClick={() => void handleDecision("SUSPEND")}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-amber-500/35 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 text-xs font-bold cursor-pointer transition-colors disabled:opacity-50"
+                  >
+                    Suspend &amp; Void Bids
+                  </button>
+                )}
+
+                {selectedDealer.status !== "REVOKED" && (
+                  <button
+                    type="button"
+                    disabled={decideMutation.isPending}
+                    onClick={() => void handleDecision("REVOKE")}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-red-500/35 text-red-500 hover:bg-red-500/10 text-xs font-bold cursor-pointer transition-colors disabled:opacity-50"
+                  >
+                    Revoke Licence
+                  </button>
+                )}
+
+                {(selectedDealer.status === "PENDING" ||
+                  selectedDealer.status === "REJECTED" ||
+                  selectedDealer.status === "SUSPENDED") && (
+                  <button
+                    type="button"
+                    disabled={decideMutation.isPending}
+                    onClick={() => void handleDecision("APPROVE")}
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer transition-all shadow-sm inline-flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {decideMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <span>Verify &amp; Activate Trading Floor Access</span>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

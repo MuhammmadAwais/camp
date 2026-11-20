@@ -134,3 +134,76 @@ export type AdminAuctionOverrideResult = {
   message: string;
   serverTime: string;
 };
+
+export type AdminDealerStatus =
+  | "PENDING"
+  | "VERIFIED"
+  | "REJECTED"
+  | "SUSPENDED"
+  | "REVOKED";
+
+export type AdminDealerRegulator = "OMVIC" | "AMVIC" | "VSA" | "OPC";
+
+export type AdminDealerApplication = {
+  id: string;
+  dealershipName: string;
+  legalEntityName: string;
+  businessNumber?: string | null;
+  regulator: AdminDealerRegulator;
+  licenseNumber: string;
+  licenseExpiry?: string | null;
+  licenseDocPath?: string | null;
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  contactName: string;
+  contactTitle?: string | null;
+  contactEmail: string;
+  contactPhone: string;
+  serviceRadiusKm: number;
+  submittedAt: string;
+  verifiedAt?: string | null;
+  status: AdminDealerStatus;
+  notes?: string | null;
+  activeBidsCount: number;
+  teamMembersCount: number;
+  subscriptionStatus?: string | null;
+  planName?: string | null;
+};
+
+export type AdminDealerCounts = {
+  ALL: number;
+  PENDING: number;
+  VERIFIED: number;
+  REJECTED: number;
+  SUSPENDED: number;
+  REVOKED: number;
+};
+
+export type AdminDealersResponse = {
+  items: AdminDealerApplication[];
+  counts: AdminDealerCounts;
+  serverTime: string;
+};
+
+export type AdminDealerDecisionAction =
+  | "APPROVE"
+  | "REJECT"
+  | "SUSPEND"
+  | "REVOKE";
+
+export type AdminDealerDecisionPayload = {
+  action: AdminDealerDecisionAction;
+  notes?: string;
+};
+
+export type AdminDealerDecisionResult = {
+  dealer: AdminDealerApplication;
+  action: AdminDealerDecisionAction;
+  voidedBidsCount: number;
+  affectedListingIds: string[];
+  auditAction: string;
+  message: string;
+  serverTime: string;
+};

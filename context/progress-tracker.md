@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B5.1 Complete) — **Next Prompt: `Prompt B5.2`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B5.2 Complete) — **Next Prompt: `Prompt B5.3`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -260,7 +260,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B4** | `Prompt B4.4` | Post-auction unsealing, `accept_dealer_bid` RPC → Appointment Voucher, + Admin `/api/admin/auctions` overrides | **PM Demo (Day 4–5)** | 3 hrs | [x] |
 | **I** | **B4** | `Prompt B4.5` | Dealer Active Bids & Won Matches APIs + Outcome logging + **Vercel Preview Deploy & Full 3-Role PM Demo Gate** | **PM Demo (Day 5)** | 3–4 hrs | [x] |
 | **II** | **B5** | `Prompt B5.1` | Seed Canadian postal centroids + `geo.adapter.ts` + PostGIS `ST_DWithin` RPC (`distanceKm` in feed & unsealed view) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B5** | `Prompt B5.2` | Dealer Registration (`/api/dealer/register`) & Admin License Verification (`/api/admin/dealers*` + BR-14 bid voiding) | Complete Platform | 3–4 hrs | [ ] |
+| **II** | **B5** | `Prompt B5.2` | Dealer Registration (`/api/dealer/register`) & Admin License Verification (`/api/admin/dealers*` + BR-14 bid voiding) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B5** | `Prompt B5.3` | Dealership Team & Seat Management (`/api/dealer/team` — `DEALER_ADMIN` gate, buyer vs. inspector permissions) | Complete Platform | 2–3 hrs | [ ] |
 | **II** | **B6** | `Prompt B6.1` | Dispute Arbitration Engine (`/api/admin/disputes*` + hoist evidence upload + timeline + resolution) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B6** | `Prompt B6.2` | Admin Analytics SQL Views (`/api/admin/analytics`) & Paginated Immutable Audit Log + SHA-256 Chain (`/api/admin/audit-log`) | Complete Platform | 3–4 hrs | [ ] |
@@ -445,10 +445,10 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** FR-X-03, FR-X-05, FR-DL-06, H6.
   - **Exit Gate:** Dealer feed filters accurately by 50km / 100km / 250km radius using real PostGIS `ST_DWithin`, and Seller unsealed offers sort accurately by Nearest Dealership (`distanceKm`).
 
-- [ ] **`Prompt B5.2` — Dealership Licensing Onboarding & Admin License Verification**
+- [x] **`Prompt B5.2` — Dealership Licensing Onboarding & Admin License Verification**
   - **Build From → To:** Hardcoded `DealerRegisterView` & `DealerVerificationView` → real dealership application intake + Admin OMVIC/AMVIC/VSA verification workflow with BR-14 suspension handling.
   - **Files to Create/Modify:**
-    - `lib/server/services/dealer-verification.service.ts` — `submitDealershipApplication()`, `listDealerApplications()`, `decideDealership(adminId, id, action: 'APPROVE' | 'REJECT' | 'SUSPEND' | 'REVOKE', notes)` — on `APPROVE`: grants `DEALER_ADMIN` role + syncs JWT `dealership_id`; on `SUSPEND`/`REVOKE`: atomically voids all `ACTIVE` bids from that dealership & decrements affected `listings.bid_count` (BR-14), writes `audit_logs`.
+    - `supabase/migrations/0012_dealer_verification_br14_rpc.sql` & `lib/server/services/dealer-verification.service.ts` — `submitDealershipApplication()`, `listDealerApplications()`, `decideDealership(adminId, id, action: 'APPROVE' | 'REJECT' | 'SUSPEND' | 'REVOKE', notes)` — on `APPROVE`: grants `DEALER_ADMIN` role + syncs JWT `dealership_id` + provisions trial subscription; on `SUSPEND`/`REVOKE`: atomically voids all `ACTIVE` bids from that dealership & decrements affected `listings.bid_count` (BR-14), writes `audit_logs`.
     - Create `app/api/dealer/register/route.ts`, `app/api/admin/dealers/route.ts`, `app/api/admin/dealers/[id]/route.ts`.
     - Create `hooks/useDealerOnboarding.ts` & `hooks/useAdminDealers.ts`; wire `components/dealer/DealerRegisterView.tsx` & `components/admin/DealerVerificationView.tsx`.
   - **SRS / Rules:** FR-DL-01, FR-DL-02, FR-AD-02, BR-13, BR-14.
