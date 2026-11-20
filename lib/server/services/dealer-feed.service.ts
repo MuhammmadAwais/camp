@@ -17,7 +17,7 @@ import type {
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const DEFAULT_THUMBNAIL = "/showcase-cars-with-bg/2025-Toyota-4runner.png";
+export const DEFAULT_THUMBNAIL = "/showcase-cars-with-bg/2025-Toyota-4runner.png";
 
 const PROVINCE_NAMES: Record<string, string> = {
   AB: "Alberta",
@@ -78,7 +78,7 @@ export type DealerInventoryQuery = z.output<typeof dealerInventoryQuerySchema>;
 
 type DealerContext = SessionContext & { dealershipId: string };
 
-type CentroidPoint = {
+export type CentroidPoint = {
   latitude: number;
   longitude: number;
 };
@@ -92,7 +92,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function normalizeDamageGrade(raw: string): DamageGrade {
+export function normalizeDamageGrade(raw: string): DamageGrade {
   const upper = raw.trim().toUpperCase();
   if (upper === "B" || upper === "C" || upper === "D") return upper;
   return "A";
@@ -103,7 +103,7 @@ function normalizeDamageGrade(raw: string): DamageGrade {
  * Never compute `RESERVE_MET` or reveal `reserve_price_cents` on dealer endpoints
  * so neither the seller's hidden reserve floor nor competitor bids can be inferred.
  */
-function toReserveStatus(
+export function toReserveStatus(
   reservePriceCents: number | null
 ): "NO_RESERVE" | "RESERVE_PENDING" {
   if (reservePriceCents === null || reservePriceCents <= 0) {
@@ -135,13 +135,13 @@ function haversineDistanceKm(
   return Math.max(1, Math.round(earthRadiusKm * c));
 }
 
-function extractFsa(postalCode: string | null | undefined): string | null {
+export function extractFsa(postalCode: string | null | undefined): string | null {
   if (!postalCode) return null;
   const normalized = normalizePostalCode(postalCode).replace(/\s+/g, "");
   return normalized.length >= 3 ? normalized.slice(0, 3).toUpperCase() : null;
 }
 
-function computeDistanceKm(params: {
+export function computeDistanceKm(params: {
   dealerPostal?: string | null;
   listingPostal?: string | null;
   dealerCity?: string | null;
@@ -199,7 +199,7 @@ function extractPlan(rawPlans: unknown): PlanJoin | null {
   return { name, monthly_bid_quota: quota };
 }
 
-function sortPhotos(
+export function sortPhotos(
   media: ReadonlyArray<{
     public_url: string;
     is_cover: boolean;

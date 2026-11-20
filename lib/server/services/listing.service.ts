@@ -655,7 +655,7 @@ export async function getSellerDashboard(
       .from("matches")
       .select("final_price_cents, agreed_amount_cents")
       .eq("seller_id", ctx.userId)
-      .eq("outcome", "COMPLETED"),
+      .in("outcome", ["COMPLETED", "RENEGOTIATED_LOWER"]),
     ctx.supabase
       .from("notifications")
       .select("id, title, description, created_at, type, read, listing_id")

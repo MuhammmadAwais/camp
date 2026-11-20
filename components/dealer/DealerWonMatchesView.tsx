@@ -1,42 +1,51 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Trophy,
+  AlertTriangle,
+  ArrowUpRight,
+  Building2,
   Calendar,
+  Check,
+  CheckCircle2,
+  ChevronsUpDown,
   Clock,
+  FileCheck2,
+  Mail,
   MapPin,
   Phone,
-  Mail,
-  User,
+  Printer,
   QrCode,
-  FileCheck2,
-  CheckCircle2,
-  AlertTriangle,
-  Building2,
-  ExternalLink,
-  DollarSign,
+  RefreshCw,
+  Search,
   ShieldCheck,
   TrendingUp,
-  ArrowUpRight,
+  Trophy,
   X,
-  Printer,
-  Sparkles,
   XCircle,
-  Check,
-  RotateCcw,
-  Receipt,
-  Car,
-  Info,
-  Search,
-  ChevronsUpDown,
 } from "lucide-react";
+import { useDealerWonMatches, useLogMatchOutcome } from "@/hooks/useDealerBids";
+import { getErrorMessage } from "@/lib/api-errors";
+import type {
+  LogMatchOutcomeValue,
+  WonMatchItem,
+  WonMatchStatus,
+} from "@/lib/types/dealer";
 import { formatCadCents } from "@/lib/utils";
 
-// Automaker Brand Logo Mapping
+export type { WonMatchItem, WonMatchStatus } from "@/lib/types/dealer";
+
+type MatchFilterTab = "ALL" | "SCHEDULED" | "COMPLETED" | "CLOSED";
+type MatchSortKey = "LATEST" | "PRICE_DESC" | "PRICE_ASC" | "MILEAGE";
+
 const CAR_BRAND_LOGOS: Record<string, string> = {
   toyota: "/car-company-logos/image_16 - Copy.png",
   jeep: "/car-company-logos/image_15.png",
@@ -48,130 +57,131 @@ const CAR_BRAND_LOGOS: Record<string, string> = {
   cadillac: "/car-company-logos/image_13.png",
 };
 
-export type WonMatchStatus =
-  | "APPOINTMENT_CONFIRMED"
-  | "COMPLETED"
-  | "RENEGOTIATED_LOWER"
-  | "NO_SHOW"
-  | "DECLINED_AFTER_INSPECTION";
+const emptySubscribe = () => () => {};
 
-export type WonMatchItem = {
-  id: string;
-  voucherCode: string;
-  vehicle: {
-    vin: string;
-    year: number;
-    make: string;
-    model: string;
-    trim: string;
-    mileageKm: number;
-    thumbnailUrl: string;
-    damageGrade: string;
-    auctionId?: string;
-  };
-  seller: {
-    name: string;
-    phone: string;
-    email: string;
-    address: string;
-    city: string;
-    province: string;
-    postalCode: string;
-  };
-  acceptedBidAmountCents: number; // Integer CAD cents invariant
-  wonAt: string;
-  appointmentWindowExpiresAt: string;
-  status: WonMatchStatus;
-  finalTransactionCents?: number;
-  inspectionNotes?: string;
-  appointmentLocation?: string;
-};
+function formatWonAtLabel(iso: string): string {
+  const parsed = Date.parse(iso);
+  if (!Number.isFinite(parsed)) return "Recently";
+  return new Date(parsed).toLocaleString("en-CA", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
 
-const INITIAL_WON_MATCHES: WonMatchItem[] = [
-  {
-    id: "match-porsche-macan",
-    voucherCode: "ANX-ON-948120",
-    vehicle: {
-      vin: "WP1AF2AY5NL128491",
-      year: 2022,
-      make: "Porsche",
-      model: "Macan",
-      trim: "GTS AWD",
-      mileageKm: 38450,
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
-      damageGrade: "A",
-      auctionId: "auc-porsche-macan-2022",
-    },
-    seller: {
-      name: "Marcus Sterling",
-      phone: "+1 (416) 555-0194",
-      email: "m.sterling@outlook.com",
-      address: "180 University Avenue",
-      city: "Toronto",
-      province: "ON",
-      postalCode: "M5H 0A2",
-    },
-    acceptedBidAmountCents: 3825000, // $38,250.00
-    wonAt: "Yesterday at 4:45 PM",
-    appointmentWindowExpiresAt: new Date(Date.now() + 34 * 60 * 60 * 1000).toISOString(),
-    status: "APPOINTMENT_CONFIRMED",
-    finalTransactionCents: 3825000,
-    appointmentLocation: "Pfaff Porsche Markham service bay",
-    inspectionNotes: "Confirmed appointment for tomorrow at 2:00 PM at Pfaff Porsche Markham service bay.",
-  },
-  {
-    id: "match-audi-q7",
-    voucherCode: "ANX-ON-621804",
-    vehicle: {
-      vin: "WA1VAAF74KD019283",
-      year: 2021,
-      make: "Audi",
-      model: "Q7",
-      trim: "55 Progressiv quattro",
-      mileageKm: 46200,
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=80",
-      damageGrade: "B",
-      auctionId: "auc-audi-q7-2021",
-    },
-    seller: {
-      name: "Elena Rostova",
-      phone: "+1 (905) 555-7381",
-      email: "elena.r@gmail.com",
-      address: "42 Bayview Hill",
-      city: "Richmond Hill",
-      province: "ON",
-      postalCode: "L4C 9V3",
-    },
-    acceptedBidAmountCents: 4150000, // $41,500.00
-    wonAt: "3 days ago",
-    appointmentWindowExpiresAt: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(),
-    status: "COMPLETED",
-    finalTransactionCents: 4150000,
-    appointmentLocation: "Pfaff Audi Vaughan intake desk",
-    inspectionNotes: "Physical inspection passed. Both sets of keys received. Bill of Sale signed and EFT payout issued to seller.",
-  },
-];
+function formatWindowRemaining(expiresAtIso: string, nowMs: number): string {
+  const expiresMs = Date.parse(expiresAtIso);
+  if (!Number.isFinite(expiresMs)) return "24h window";
+  const diff = expiresMs - nowMs;
+  if (diff <= 0) return "Appointment window expired";
+  const hours = Math.floor(diff / (3600 * 1000));
+  const minutes = Math.floor((diff % (3600 * 1000)) / (60 * 1000));
+  return `${hours}h ${minutes}m remaining`;
+}
+
+function renderStatusBadge(status: WonMatchStatus) {
+  switch (status) {
+    case "COMPLETED":
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/25">
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          <span>Completed &amp; Settled</span>
+        </span>
+      );
+    case "RENEGOTIATED_LOWER":
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold border border-amber-500/25">
+          <AlertTriangle className="w-3.5 h-3.5" />
+          <span>Adjusted &amp; Settled</span>
+        </span>
+      );
+    case "NO_SHOW":
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold border border-rose-500/25">
+          <XCircle className="w-3.5 h-3.5" />
+          <span>Seller No-Show</span>
+        </span>
+      );
+    case "DECLINED_AFTER_INSPECTION":
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold border border-rose-500/25">
+          <XCircle className="w-3.5 h-3.5" />
+          <span>Declined After Inspection</span>
+        </span>
+      );
+    case "EXPIRED":
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-portal-surface-hover text-portal-text-muted text-xs font-bold border border-portal-border">
+          <Clock className="w-3.5 h-3.5" />
+          <span>Window Expired</span>
+        </span>
+      );
+    default:
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-xs font-bold border border-sky-500/25">
+          <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+          <span>Appointment Confirmed</span>
+        </span>
+      );
+  }
+}
 
 export function DealerWonMatchesView() {
-  const [matches, setMatches] = useState<WonMatchItem[]>(INITIAL_WON_MATCHES);
-  const [filterTab, setFilterTab] = useState<"ALL" | "SCHEDULED" | "COMPLETED">("ALL");
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    dataUpdatedAt,
+  } = useDealerWonMatches();
+  const outcomeMutation = useLogMatchOutcome();
+
+  const matches = useMemo(() => data?.items ?? [], [data]);
+  const [filterTab, setFilterTab] = useState<MatchFilterTab>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"LATEST" | "PRICE_DESC" | "PRICE_ASC" | "MILEAGE">("LATEST");
+  const [sortBy, setSortBy] = useState<MatchSortKey>("LATEST");
   const [editingMatch, setEditingMatch] = useState<WonMatchItem | null>(null);
-  const [selectedQrMatch, setSelectedQrMatch] = useState<WonMatchItem | null>(null);
-  const [newStatus, setNewStatus] = useState<WonMatchStatus>("COMPLETED");
+  const [selectedQrMatch, setSelectedQrMatch] = useState<WonMatchItem | null>(
+    null
+  );
+  const [newStatus, setNewStatus] =
+    useState<LogMatchOutcomeValue>("COMPLETED");
   const [finalPriceInput, setFinalPriceInput] = useState<string>("");
   const [notesInput, setNotesInput] = useState<string>("");
+  const [modalError, setModalError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const [clientNowMs, setClientNowMs] = useState<number>(() => Date.now());
+
+  const hasScheduled = useMemo(
+    () => matches.some((m) => m.status === "APPOINTMENT_CONFIRMED"),
+    [matches]
+  );
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!hasScheduled) return;
+    const interval = setInterval(() => {
+      setClientNowMs(Date.now());
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, [hasScheduled]);
 
-  // Lock background scroll and listen for Escape key whenever any modal is open
+  const serverTime = data?.serverTime;
+  const serverOffsetMs = useMemo(() => {
+    if (!serverTime || !dataUpdatedAt || dataUpdatedAt <= 0) return 0;
+    const parsed = Date.parse(serverTime);
+    return Number.isFinite(parsed) ? parsed - dataUpdatedAt : 0;
+  }, [serverTime, dataUpdatedAt]);
+
+  const effectiveNowMs = clientNowMs + serverOffsetMs;
+
   useEffect(() => {
     const isAnyModalOpen = Boolean(editingMatch || selectedQrMatch);
     if (!isAnyModalOpen) return;
@@ -180,7 +190,7 @@ export function DealerWonMatchesView() {
     document.body.style.overflow = "hidden";
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && !outcomeMutation.isPending) {
         setEditingMatch(null);
         setSelectedQrMatch(null);
       }
@@ -192,12 +202,23 @@ export function DealerWonMatchesView() {
       document.body.style.overflow = originalOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [editingMatch, selectedQrMatch]);
+  }, [editingMatch, selectedQrMatch, outcomeMutation.isPending]);
 
   const filteredMatches = useMemo(() => {
     let result = matches.filter((m) => {
-      if (filterTab === "SCHEDULED") return m.status === "APPOINTMENT_CONFIRMED";
-      if (filterTab === "COMPLETED") return m.status === "COMPLETED";
+      if (filterTab === "SCHEDULED") {
+        return m.status === "APPOINTMENT_CONFIRMED";
+      }
+      if (filterTab === "COMPLETED") {
+        return m.status === "COMPLETED" || m.status === "RENEGOTIATED_LOWER";
+      }
+      if (filterTab === "CLOSED") {
+        return (
+          m.status === "DECLINED_AFTER_INSPECTION" ||
+          m.status === "NO_SHOW" ||
+          m.status === "EXPIRED"
+        );
+      }
       return true;
     });
 
@@ -218,37 +239,52 @@ export function DealerWonMatchesView() {
 
     return [...result].sort((a, b) => {
       if (sortBy === "PRICE_DESC") {
-        return (b.finalTransactionCents ?? b.acceptedBidAmountCents) - (a.finalTransactionCents ?? a.acceptedBidAmountCents);
+        return (
+          (b.finalTransactionCents ?? b.acceptedBidAmountCents) -
+          (a.finalTransactionCents ?? a.acceptedBidAmountCents)
+        );
       }
       if (sortBy === "PRICE_ASC") {
-        return (a.finalTransactionCents ?? a.acceptedBidAmountCents) - (b.finalTransactionCents ?? b.acceptedBidAmountCents);
+        return (
+          (a.finalTransactionCents ?? a.acceptedBidAmountCents) -
+          (b.finalTransactionCents ?? b.acceptedBidAmountCents)
+        );
       }
       if (sortBy === "MILEAGE") {
         return a.vehicle.mileageKm - b.vehicle.mileageKm;
       }
-      // LATEST
-      return 0;
+      return Date.parse(b.wonAt) - Date.parse(a.wonAt);
     });
   }, [matches, filterTab, searchQuery, sortBy]);
 
   const openInspectionModal = (match: WonMatchItem) => {
     setEditingMatch(match);
-    setNewStatus(match.status);
+    setNewStatus("COMPLETED");
     setFinalPriceInput(
-      match.finalTransactionCents
-        ? (match.finalTransactionCents / 100).toString()
-        : (match.acceptedBidAmountCents / 100).toString()
+      (
+        (match.finalTransactionCents ?? match.acceptedBidAmountCents) / 100
+      ).toString()
     );
     setNotesInput(match.inspectionNotes || "");
+    setModalError(null);
   };
 
-  const handleSelectStatus = (status: WonMatchStatus) => {
+  const handleSelectStatus = (status: LogMatchOutcomeValue) => {
     setNewStatus(status);
+    setModalError(null);
     if (!editingMatch) return;
 
-    if (status === "COMPLETED") {
-      setFinalPriceInput((editingMatch.acceptedBidAmountCents / 100).toString());
-    } else if (status === "DECLINED_AFTER_INSPECTION" || status === "NO_SHOW") {
+    if (status === "COMPLETED" || status === "APPOINTMENT_CONFIRMED") {
+      setFinalPriceInput(
+        (editingMatch.acceptedBidAmountCents / 100).toString()
+      );
+    } else if (status === "RENEGOTIATED_LOWER") {
+      const adjustedDollars = Math.max(
+        100,
+        Math.round(editingMatch.acceptedBidAmountCents / 100 - 500)
+      );
+      setFinalPriceInput(adjustedDollars.toString());
+    } else {
       setFinalPriceInput("0");
     }
   };
@@ -267,58 +303,115 @@ export function DealerWonMatchesView() {
     const baseDollars = editingMatch.acceptedBidAmountCents / 100;
     const newAmount = Math.max(0, baseDollars + deltaDollars);
     setFinalPriceInput(newAmount.toString());
+    setModalError(null);
   };
 
-  const handleSaveInspection = (e: React.FormEvent) => {
+  const handleSaveInspection = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingMatch) return;
+    setModalError(null);
 
-    const parsedPrice = parseFloat(finalPriceInput.replace(/[^0-9.]/g, ""));
-    const priceCents = isNaN(parsedPrice)
+    const trimmedNotes = notesInput.trim();
+    const parsedDollars = parseFloat(finalPriceInput.replace(/[^0-9.]/g, ""));
+    const parsedCents = Number.isNaN(parsedDollars)
       ? editingMatch.acceptedBidAmountCents
-      : Math.round(parsedPrice * 100);
+      : Math.round(parsedDollars * 100);
 
-    setMatches((prev) =>
-      prev.map((m) =>
-        m.id === editingMatch.id
-          ? {
-              ...m,
-              status: newStatus,
-              finalTransactionCents: priceCents,
-              inspectionNotes: notesInput,
-            }
-          : m
-      )
-    );
+    if (newStatus === "RENEGOTIATED_LOWER") {
+      if (parsedCents <= 0 || parsedCents >= editingMatch.acceptedBidAmountCents) {
+        setModalError(
+          `Adjusted settlement must be greater than $0 and below ${formatCadCents(editingMatch.acceptedBidAmountCents)}.`
+        );
+        return;
+      }
+      if (trimmedNotes.length < 5) {
+        setModalError(
+          "Please enter inspection notes (at least 5 characters) justifying the price adjustment."
+        );
+        return;
+      }
+    }
 
-    setSaveSuccess(editingMatch.voucherCode);
-    setEditingMatch(null);
-    setTimeout(() => setSaveSuccess(null), 3000);
+    if (
+      (newStatus === "DECLINED_AFTER_INSPECTION" || newStatus === "NO_SHOW") &&
+      trimmedNotes.length < 5
+    ) {
+      setModalError(
+        "Please record a brief reason (at least 5 characters) before cancelling or reporting a no-show."
+      );
+      return;
+    }
+
+    const payloadFinalCents =
+      newStatus === "DECLINED_AFTER_INSPECTION" || newStatus === "NO_SHOW"
+        ? 0
+        : newStatus === "APPOINTMENT_CONFIRMED"
+          ? undefined
+          : parsedCents;
+
+    try {
+      const result = await outcomeMutation.mutateAsync({
+        matchId: editingMatch.id,
+        payload: {
+          outcome: newStatus,
+          ...(payloadFinalCents !== undefined
+            ? { finalPriceCents: payloadFinalCents }
+            : {}),
+          notes: trimmedNotes,
+        },
+      });
+
+      setSaveSuccess(result.match.voucherCode);
+      setEditingMatch(null);
+      setTimeout(() => setSaveSuccess(null), 5000);
+    } catch (err) {
+      setModalError(getErrorMessage(err));
+    }
   };
 
-  const totalCompletedValueCents = matches
-    .filter((m) => m.status === "COMPLETED")
-    .reduce((acc, m) => acc + (m.finalTransactionCents ?? m.acceptedBidAmountCents), 0);
+  const totalCompletedValueCents =
+    data?.summary.totalSettledValueCents ??
+    matches
+      .filter(
+        (m) => m.status === "COMPLETED" || m.status === "RENEGOTIATED_LOWER"
+      )
+      .reduce(
+        (acc, m) =>
+          acc + (m.finalTransactionCents ?? m.acceptedBidAmountCents),
+        0
+      );
 
-  const totalWonValueCents = matches.reduce(
-    (acc, m) => acc + (m.acceptedBidAmountCents ?? 0),
-    0
-  );
+  const totalWonValueCents =
+    data?.summary.totalWonValueCents ??
+    matches.reduce((acc, m) => acc + m.acceptedBidAmountCents, 0);
 
-  const scheduledCount = matches.filter((m) => m.status === "APPOINTMENT_CONFIRMED").length;
-  const completedCount = matches.filter((m) => m.status === "COMPLETED").length;
+  const scheduledCount =
+    data?.summary.scheduledCount ??
+    matches.filter((m) => m.status === "APPOINTMENT_CONFIRMED").length;
+  const completedCount =
+    data?.summary.completedCount ??
+    matches.filter(
+      (m) => m.status === "COMPLETED" || m.status === "RENEGOTIATED_LOWER"
+    ).length;
+  const closedCount = matches.filter(
+    (m) =>
+      m.status === "DECLINED_AFTER_INSPECTION" ||
+      m.status === "NO_SHOW" ||
+      m.status === "EXPIRED"
+  ).length;
 
   return (
     <div className="space-y-6 pb-16 animate-in fade-in duration-300">
-      {/* 1. Clean Open Page Header (Borderless, Direct Typography, FinTech Dashboard) */}
+      {/* 1. Open Page Header */}
       <div className="space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-headline text-portal-text tracking-tight">
-              Won Matches & Handover
+              Won Matches &amp; Handover
             </h1>
             <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-2xl">
-              Coordinate physical vehicle intake, appointment verification, and offline inspection settlements.
+              Coordinate physical vehicle intake, appointment verification, and offline inspection settlements for{" "}
+              {data?.dealershipName ?? "your dealership"}.
             </p>
           </div>
 
@@ -331,10 +424,9 @@ export function DealerWonMatchesView() {
           </Link>
         </div>
 
-        {/* Single Unified Stats Overview Bar (Fluid, Zero Overlaps) */}
+        {/* Unified Stats Bar */}
         <div className="rounded-2xl border border-portal-border bg-portal-surface p-5 shadow-xs">
           <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:divide-x divide-portal-border">
-            {/* Metric 1: Total Won Value */}
             <div className="min-w-0 lg:pr-6">
               <dt className="text-xs font-semibold text-portal-text-muted uppercase tracking-wider font-mono">
                 Total Won Value
@@ -348,7 +440,6 @@ export function DealerWonMatchesView() {
               </div>
             </div>
 
-            {/* Metric 2: Total Won Lots */}
             <div className="min-w-0 sm:pl-6 lg:px-6">
               <dt className="text-xs font-semibold text-portal-text-muted uppercase tracking-wider font-mono">
                 Total Won Lots
@@ -361,7 +452,6 @@ export function DealerWonMatchesView() {
               </span>
             </div>
 
-            {/* Metric 3: Confirmed Intake */}
             <div className="min-w-0 lg:px-6">
               <dt className="text-xs font-semibold text-portal-text-muted uppercase tracking-wider font-mono">
                 Confirmed Intake
@@ -375,7 +465,6 @@ export function DealerWonMatchesView() {
               </div>
             </div>
 
-            {/* Metric 4: Settled Handovers */}
             <div className="min-w-0 sm:pl-6 lg:pl-6">
               <dt className="text-xs font-semibold text-portal-text-muted uppercase tracking-wider font-mono">
                 Settled Handovers
@@ -392,9 +481,8 @@ export function DealerWonMatchesView() {
         </div>
       </div>
 
-      {/* 2. Unified Enterprise Controls Bar (Live Search, Tabs, Sorting) */}
+      {/* 2. Filter Tabs, Search & Sort */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-2">
-        {/* Status Filter Tabs */}
         <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-portal-surface border border-portal-border shadow-2xs text-xs self-start overflow-x-auto max-w-full">
           <button
             type="button"
@@ -449,7 +537,7 @@ export function DealerWonMatchesView() {
             }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Settled & Paid</span>
+            <span>Settled &amp; Paid</span>
             <span
               className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono ${
                 filterTab === "COMPLETED"
@@ -460,11 +548,33 @@ export function DealerWonMatchesView() {
               {completedCount}
             </span>
           </button>
+
+          {closedCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setFilterTab("CLOSED")}
+              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+                filterTab === "CLOSED"
+                  ? "bg-rose-600 text-white shadow-2xs"
+                  : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover"
+              }`}
+            >
+              <XCircle className="w-3.5 h-3.5" />
+              <span>Declined / Voided</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono ${
+                  filterTab === "CLOSED"
+                    ? "bg-white/20 text-white"
+                    : "bg-portal-surface-hover text-portal-text-muted"
+                }`}
+              >
+                {closedCount}
+              </span>
+            </button>
+          )}
         </div>
 
-        {/* Live Search & Sort Controls */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1 md:max-w-md md:justify-end">
-          {/* Search Input */}
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-portal-text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
@@ -486,11 +596,10 @@ export function DealerWonMatchesView() {
             )}
           </div>
 
-          {/* Sort Dropdown */}
           <div className="relative shrink-0">
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as MatchSortKey)}
               className="w-full sm:w-auto appearance-none pl-3 pr-8 py-2 rounded-xl bg-portal-surface border border-portal-border text-xs font-semibold text-portal-text hover:bg-portal-surface-hover shadow-2xs transition-colors cursor-pointer outline-none focus:border-portal-primary"
             >
               <option value="LATEST">Sort: Latest Won</option>
@@ -501,39 +610,69 @@ export function DealerWonMatchesView() {
             <ChevronsUpDown className="w-3.5 h-3.5 text-portal-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
-
-        {saveSuccess && (
-          <div className="p-2.5 px-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-xs font-mono flex items-center gap-2 shadow-2xs">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
-            <span>Inspection log updated for voucher #{saveSuccess}.</span>
-          </div>
-        )}
       </div>
 
-      {/* 3. Modernized Won Match Cards (Clean, Direct, Non-Boxy) */}
+      {saveSuccess && (
+        <div className="p-3 px-4 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-xs font-mono flex items-center gap-2 shadow-2xs">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+          <span>Inspection outcome recorded on audit trail for voucher #{saveSuccess}.</span>
+        </div>
+      )}
+
+      {isError && (
+        <div className="p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-500 text-xs flex items-center justify-between gap-3">
+          <span>{getErrorMessage(error)}</span>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="px-3 py-1 rounded-lg bg-red-500 text-white font-semibold cursor-pointer shrink-0"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* 3. Won Match Cards */}
       <div className="space-y-4">
-        {filteredMatches.length === 0 ? (
+        {isLoading ? (
+          <div className="py-16 text-center rounded-2xl border border-portal-border bg-portal-surface p-8 space-y-3">
+            <RefreshCw className="w-8 h-8 text-portal-primary mx-auto animate-spin" />
+            <p className="text-sm font-medium text-portal-text-muted">
+              Loading won dealership handovers...
+            </p>
+          </div>
+        ) : filteredMatches.length === 0 ? (
           <div className="py-16 text-center rounded-2xl border border-portal-border bg-portal-surface p-8 space-y-3">
             <Trophy className="w-10 h-10 text-portal-text-muted mx-auto opacity-40" />
-            <h3 className="text-base font-bold text-portal-text font-headline">No Matching Won Vehicles</h3>
+            <h3 className="text-base font-bold text-portal-text font-headline">
+              No Matching Won Vehicles
+            </h3>
             <p className="text-xs text-portal-text-muted max-w-sm mx-auto">
               {searchQuery
                 ? `No won vehicles match "${searchQuery}". Try clearing your search.`
-                : "No won lots match your selected filter."}
+                : filterTab !== "ALL"
+                  ? "No won lots match your selected filter."
+                  : "Once a seller accepts your dealership's sealed offer, their verified contact details and handover voucher will appear here."}
             </p>
-            {searchQuery && (
+            {(searchQuery || filterTab !== "ALL") && (
               <button
                 type="button"
-                onClick={() => setSearchQuery("")}
+                onClick={() => {
+                  setFilterTab("ALL");
+                  setSearchQuery("");
+                }}
                 className="mt-2 px-3 py-1.5 rounded-xl border border-portal-border bg-portal-surface-hover text-xs font-medium text-portal-text hover:bg-portal-surface cursor-pointer"
               >
-                Clear Search Filter
+                Clear Filters
               </button>
             )}
           </div>
         ) : (
           filteredMatches.map((match) => {
-            const isCompleted = match.status === "COMPLETED";
+            const isSettled =
+              match.status === "COMPLETED" ||
+              match.status === "RENEGOTIATED_LOWER";
+            const isPendingIntake = match.status === "APPOINTMENT_CONFIRMED";
             const logoPath = CAR_BRAND_LOGOS[match.vehicle.make.toLowerCase()];
 
             return (
@@ -541,21 +680,10 @@ export function DealerWonMatchesView() {
                 key={match.id}
                 className="rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 transition-all shadow-2xs hover:shadow-md relative overflow-hidden group space-y-5"
               >
-                {/* Top Row: Voucher, Status, Agreed Price & Action Buttons */}
+                {/* Top Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-portal-border/60">
                   <div className="flex flex-wrap items-center gap-2.5">
-                    {/* Status Badge */}
-                    {isCompleted ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/25">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Completed & Settled</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-xs font-bold border border-sky-500/25">
-                        <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
-                        <span>Appointment Confirmed</span>
-                      </span>
-                    )}
+                    {renderStatusBadge(match.status)}
 
                     <span className="text-xs font-mono font-bold text-portal-primary">
                       Voucher #{match.voucherCode}
@@ -564,7 +692,7 @@ export function DealerWonMatchesView() {
                     <span className="text-portal-border hidden sm:inline">•</span>
 
                     <span className="text-xs text-portal-text-muted">
-                      Accepted {match.wonAt}
+                      Accepted {formatWonAtLabel(match.wonAt)}
                     </span>
                   </div>
 
@@ -578,7 +706,6 @@ export function DealerWonMatchesView() {
                       </span>
                     </div>
 
-                    {/* Clean Action Buttons */}
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
@@ -590,25 +717,31 @@ export function DealerWonMatchesView() {
                         <span>Intake Pass QR</span>
                       </button>
 
-                      <button
-                        type="button"
-                        onClick={() => openInspectionModal(match)}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-portal-primary hover:bg-portal-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer group/btn"
-                      >
-                        <FileCheck2 className="w-3.5 h-3.5" />
-                        <span>Log Outcome</span>
-                        <ArrowUpRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                      </button>
+                      {isPendingIntake ? (
+                        <button
+                          type="button"
+                          onClick={() => openInspectionModal(match)}
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-portal-primary hover:bg-portal-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer group/btn"
+                        >
+                          <FileCheck2 className="w-3.5 h-3.5" />
+                          <span>Log Outcome</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                        </button>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-portal-border bg-portal-surface-hover text-xs font-semibold text-portal-text-muted">
+                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          <span>Outcome Finalized</span>
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Main Content Area: Vehicle Dossier & Seller Intake Information */}
+                {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                  {/* Left: Vehicle Info & Photo (6 cols) */}
                   <div className="lg:col-span-6 flex items-start gap-4">
                     <Link
-                      href={`/dealer/auctions/${match.vehicle.auctionId || "auc-porsche-macan-2022"}`}
+                      href={`/dealer/auctions/${match.vehicle.auctionId}`}
                       className="relative w-32 h-22 sm:w-40 sm:h-28 rounded-xl overflow-hidden bg-portal-surface-hover shrink-0 border border-portal-border group/photo shadow-2xs block"
                     >
                       <Image
@@ -638,7 +771,9 @@ export function DealerWonMatchesView() {
 
                     <div className="space-y-1.5 min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-1.5 text-xs text-portal-text-muted">
-                        <span className="font-mono">VIN: ···{match.vehicle.vin.slice(-6)}</span>
+                        <span className="font-mono">
+                          VIN: ···{match.vehicle.vin.slice(-6)}
+                        </span>
                         <span>•</span>
                         <span className="font-mono font-medium text-portal-text">
                           {match.vehicle.mileageKm.toLocaleString()} km
@@ -646,10 +781,11 @@ export function DealerWonMatchesView() {
                       </div>
 
                       <Link
-                        href={`/dealer/auctions/${match.vehicle.auctionId || "auc-porsche-macan-2022"}`}
+                        href={`/dealer/auctions/${match.vehicle.auctionId}`}
                         className="text-base sm:text-lg font-bold font-headline text-portal-text hover:text-portal-primary transition-colors block"
                       >
-                        {match.vehicle.year} {match.vehicle.make} {match.vehicle.model}
+                        {match.vehicle.year} {match.vehicle.make}{" "}
+                        {match.vehicle.model}
                       </Link>
 
                       <p className="text-xs text-portal-text-muted">
@@ -657,7 +793,7 @@ export function DealerWonMatchesView() {
                       </p>
 
                       <Link
-                        href={`/dealer/auctions/${match.vehicle.auctionId || "auc-porsche-macan-2022"}`}
+                        href={`/dealer/auctions/${match.vehicle.auctionId}`}
                         className="inline-flex items-center gap-1 text-xs font-semibold text-portal-primary hover:underline pt-0.5"
                       >
                         <span>View Inspection Dossier</span>
@@ -666,15 +802,19 @@ export function DealerWonMatchesView() {
                     </div>
                   </div>
 
-                  {/* Right: Unsealed Seller Contact & Intake Bay Details (6 cols) */}
+                  {/* Unsealed Seller Contact Details */}
                   <div className="lg:col-span-6 space-y-3 sm:border-l border-portal-border/60 sm:pl-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-portal-text font-headline">{match.seller.name}</span>
-                        <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20">
-                          <ShieldCheck className="w-3 h-3" />
-                          ID Verified
+                        <span className="font-bold text-sm text-portal-text font-headline">
+                          {match.seller.name}
                         </span>
+                        {match.seller.kycVerified && (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20">
+                            <ShieldCheck className="w-3 h-3" />
+                            <span>ID Verified</span>
+                          </span>
+                        )}
                       </div>
                       <span className="text-[11px] text-portal-text-muted">
                         Registered Private Seller
@@ -685,7 +825,7 @@ export function DealerWonMatchesView() {
                       <div className="flex items-center gap-2 font-mono text-portal-text-muted">
                         <Phone className="w-3.5 h-3.5 text-portal-primary shrink-0" />
                         <a
-                          href={`tel:${match.seller.phone}`}
+                          href={`tel:${match.seller.phone.replace(/[^0-9+]/g, "")}`}
                           className="hover:text-portal-text hover:underline transition-colors"
                         >
                           {match.seller.phone}
@@ -705,41 +845,65 @@ export function DealerWonMatchesView() {
                       <div className="flex items-center gap-2 text-portal-text-muted">
                         <MapPin className="w-3.5 h-3.5 text-portal-primary shrink-0" />
                         <span>
-                          {match.seller.city}, {match.seller.province} ({match.seller.postalCode})
+                          {match.seller.city}, {match.seller.province}
+                          {match.seller.postalCode
+                            ? ` (${match.seller.postalCode})`
+                            : ""}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2 text-portal-text-muted">
                         <Building2 className="w-3.5 h-3.5 text-portal-primary shrink-0" />
                         <span className="truncate">
-                          {match.appointmentLocation ?? "Dealership Service Bay"}
+                          {match.appointmentLocation}
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Bottom Row: Appointment Status & Operational Notes */}
+                {/* Bottom Row: Outcome & Notes */}
                 <div className="pt-3.5 border-t border-portal-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                   <div className="flex items-start sm:items-center gap-2 text-portal-text-muted">
-                    {isCompleted ? (
+                    {isSettled ? (
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 sm:mt-0" />
-                    ) : (
+                    ) : isPendingIntake ? (
                       <Calendar className="w-4 h-4 text-sky-500 shrink-0 mt-0.5 sm:mt-0" />
+                    ) : (
+                      <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5 sm:mt-0" />
                     )}
                     <span className="leading-relaxed">
-                      {match.inspectionNotes || "Appointment confirmed for physical vehicle appraisal."}
+                      {match.inspectionNotes ||
+                        "Appointment confirmed for physical vehicle appraisal."}
                     </span>
                   </div>
 
                   <div className="text-portal-text-muted text-[11px] shrink-0 font-medium">
-                    {isCompleted ? (
+                    {isSettled ? (
                       <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                        <span>Final Payout: {formatCadCents(match.finalTransactionCents ?? match.acceptedBidAmountCents)}</span>
-                        <span>• Bill of Sale Signed</span>
+                        <span>
+                          Final Payout:{" "}
+                          {formatCadCents(
+                            match.finalTransactionCents ??
+                              match.acceptedBidAmountCents
+                          )}
+                        </span>
+                        <span>• Bill of Sale Recorded</span>
+                      </span>
+                    ) : isPendingIntake ? (
+                      <span className="text-portal-text-muted">
+                        Appointment Window:{" "}
+                        {mounted
+                          ? formatWindowRemaining(
+                              match.appointmentWindowExpiresAt,
+                              effectiveNowMs
+                            )
+                          : "24h window"}
                       </span>
                     ) : (
-                      <span className="text-portal-text-muted">Appointment Window: 34h remaining</span>
+                      <span className="text-rose-500 font-semibold">
+                        Handover Cancelled • $0 Payout
+                      </span>
                     )}
                   </div>
                 </div>
@@ -777,36 +941,51 @@ export function DealerWonMatchesView() {
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-portal-primary/10 text-portal-primary border border-portal-primary/20 uppercase tracking-wide">
                   Dealership Intake Pass
                 </span>
-                <h3 id="intake-pass-title" className="text-xl font-bold font-headline text-portal-text tracking-tight">
+                <h3
+                  id="intake-pass-title"
+                  className="text-xl font-bold font-headline text-portal-text tracking-tight"
+                >
                   Voucher #{selectedQrMatch.voucherCode}
                 </h3>
                 <p className="text-xs text-portal-text-muted font-mono">
-                  {selectedQrMatch.vehicle.year} {selectedQrMatch.vehicle.make} {selectedQrMatch.vehicle.model} • VIN {selectedQrMatch.vehicle.vin.slice(-6)}
+                  {selectedQrMatch.vehicle.year}{" "}
+                  {selectedQrMatch.vehicle.make}{" "}
+                  {selectedQrMatch.vehicle.model} • VIN{" "}
+                  {selectedQrMatch.vehicle.vin.slice(-6)}
                 </p>
               </div>
 
-              {/* QR Code Graphic Container */}
               <div className="p-6 rounded-2xl bg-white border border-portal-border shadow-sm mx-auto w-48 h-48 flex flex-col items-center justify-center space-y-2">
                 <QrCode className="w-36 h-36 text-neutral-900" />
               </div>
 
               <div className="space-y-2 text-xs text-portal-text-muted font-mono bg-portal-surface-hover/50 p-3.5 rounded-xl border border-portal-border text-left">
                 <div className="flex items-center justify-between">
-                  <span className="text-portal-text-muted">Agreed Winning Bid:</span>
-                  <span className="font-bold text-portal-text">{formatCadCents(selectedQrMatch.acceptedBidAmountCents)}</span>
+                  <span className="text-portal-text-muted">
+                    Agreed Winning Bid:
+                  </span>
+                  <span className="font-bold text-portal-text">
+                    {formatCadCents(selectedQrMatch.acceptedBidAmountCents)}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-portal-text-muted">Registered Seller:</span>
-                  <span className="font-semibold text-portal-text">{selectedQrMatch.seller.name}</span>
+                  <span className="text-portal-text-muted">
+                    Registered Seller:
+                  </span>
+                  <span className="font-semibold text-portal-text">
+                    {selectedQrMatch.seller.name}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-portal-text-muted">Phone:</span>
-                  <span className="text-portal-text">{selectedQrMatch.seller.phone}</span>
+                  <span className="text-portal-text">
+                    {selectedQrMatch.seller.phone}
+                  </span>
                 </div>
               </div>
 
               <p className="text-[11px] text-portal-text-muted leading-relaxed">
-                Scan using the Dealership Intake Scanner at the service drive desk to confirm VIN verification & initiate electronic payout.
+                Verify voucher code at the dealership intake desk before confirming electronic wire disbursement.
               </p>
 
               <div className="flex items-center gap-2 pt-2">
@@ -837,7 +1016,9 @@ export function DealerWonMatchesView() {
         createPortal(
           <div
             className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
-            onClick={() => setEditingMatch(null)}
+            onClick={() => {
+              if (!outcomeMutation.isPending) setEditingMatch(null);
+            }}
           >
             <div
               className="w-full max-w-2xl rounded-2xl border border-portal-border bg-portal-surface p-5 sm:p-6 shadow-2xl space-y-5 my-auto animate-in zoom-in-95 duration-200 text-portal-text relative max-h-[92vh] overflow-y-auto"
@@ -846,27 +1027,32 @@ export function DealerWonMatchesView() {
               aria-modal="true"
               aria-labelledby="settlement-modal-title"
             >
-              {/* Modal Header */}
               <div className="flex items-start justify-between gap-4 pb-3 border-b border-portal-border">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-portal-primary/10 text-portal-primary border border-portal-primary/20 uppercase tracking-wide">
-                      Dealership Intake & Settlement
+                      Dealership Intake &amp; Settlement
                     </span>
                     <span className="text-xs text-portal-text-muted font-mono">
                       #{editingMatch.voucherCode}
                     </span>
                   </div>
-                  <h2 id="settlement-modal-title" className="text-lg sm:text-xl font-bold font-headline text-portal-text tracking-tight">
-                    Log Inspection & Settlement Outcome
+                  <h2
+                    id="settlement-modal-title"
+                    className="text-lg sm:text-xl font-bold font-headline text-portal-text tracking-tight"
+                  >
+                    Log Inspection &amp; Settlement Outcome
                   </h2>
                   <p className="text-xs text-portal-text-muted">
-                    Record hoist inspection findings, adjust final payout for undisclosed flaws, and issue settlement approval.
+                    Record hoist inspection findings, adjust final payout if needed, and finalize settlement on the audit trail.
                   </p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setEditingMatch(null)}
+                  onClick={() => {
+                    if (!outcomeMutation.isPending) setEditingMatch(null);
+                  }}
+                  disabled={outcomeMutation.isPending}
                   className="text-portal-text-muted hover:text-portal-text w-8 h-8 rounded-xl border border-transparent hover:border-portal-border hover:bg-portal-surface-hover flex items-center justify-center transition-colors cursor-pointer shrink-0"
                   aria-label="Close modal"
                 >
@@ -874,7 +1060,6 @@ export function DealerWonMatchesView() {
                 </button>
               </div>
 
-              {/* Vehicle Context Dossier Strip */}
               <div className="rounded-xl border border-portal-border bg-portal-surface-hover/40 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="relative w-14 h-11 rounded-lg overflow-hidden border border-portal-border shrink-0 bg-portal-surface">
@@ -882,18 +1067,26 @@ export function DealerWonMatchesView() {
                       src={editingMatch.vehicle.thumbnailUrl}
                       alt={editingMatch.vehicle.model}
                       fill
+                      sizes="56px"
                       className="object-cover"
                     />
                   </div>
                   <div>
                     <div className="text-xs sm:text-sm font-bold text-portal-text flex items-center gap-2">
-                      <span>{editingMatch.vehicle.year} {editingMatch.vehicle.make} {editingMatch.vehicle.model}</span>
-                      <span className="text-[11px] font-normal text-portal-text-muted">({editingMatch.vehicle.trim})</span>
+                      <span>
+                        {editingMatch.vehicle.year} {editingMatch.vehicle.make}{" "}
+                        {editingMatch.vehicle.model}
+                      </span>
+                      <span className="text-[11px] font-normal text-portal-text-muted">
+                        ({editingMatch.vehicle.trim})
+                      </span>
                     </div>
                     <div className="text-[11px] text-portal-text-muted font-mono flex items-center gap-2 mt-0.5">
                       <span>VIN: {editingMatch.vehicle.vin}</span>
                       <span>•</span>
-                      <span>{editingMatch.vehicle.mileageKm.toLocaleString()} km</span>
+                      <span>
+                        {editingMatch.vehicle.mileageKm.toLocaleString()} km
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -909,46 +1102,60 @@ export function DealerWonMatchesView() {
               </div>
 
               <form onSubmit={handleSaveInspection} className="space-y-4">
-                {/* 1. Status Selection Grid */}
                 <div className="space-y-2">
                   <label className="block text-xs font-bold text-portal-text uppercase tracking-wider font-mono">
-                    1. Inspection & Handover Status
+                    1. Inspection &amp; Handover Status
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {[
-                      {
-                        value: "COMPLETED" as WonMatchStatus,
-                        title: "Inspection Passed (Full Payout)",
-                        desc: "Vehicle appraisal verified. Authorize full agreed CAD payout to seller.",
-                        icon: CheckCircle2,
-                        accent: "text-emerald-500",
-                        activeBorder: "border-emerald-500/80 bg-emerald-500/5 ring-1 ring-emerald-500/20",
-                      },
-                      {
-                        value: "APPOINTMENT_CONFIRMED" as WonMatchStatus,
-                        title: "Intake Scheduled / In Progress",
-                        desc: "Appointment confirmed. Vehicle currently awaiting or on the hoist.",
-                        icon: Calendar,
-                        accent: "text-sky-500",
-                        activeBorder: "border-sky-500/80 bg-sky-500/5 ring-1 ring-sky-500/20",
-                      },
-                      {
-                        value: "RENEGOTIATED_LOWER" as WonMatchStatus,
-                        title: "Price Adjusted for Undisclosed Flaws",
-                        desc: "Mechanical or body flaws found. Mutual reduced CAD price agreed.",
-                        icon: AlertTriangle,
-                        accent: "text-amber-500",
-                        activeBorder: "border-amber-500/80 bg-amber-500/5 ring-1 ring-amber-500/20",
-                      },
-                      {
-                        value: "DECLINED_AFTER_INSPECTION" as WonMatchStatus,
-                        title: "Declined Dealership Purchase",
-                        desc: "Severe structural/mechanical flaws. Transaction voided, $0 payout.",
-                        icon: XCircle,
-                        accent: "text-rose-500",
-                        activeBorder: "border-rose-500/80 bg-rose-500/5 ring-1 ring-rose-500/20",
-                      },
-                    ].map((opt) => {
+                    {(
+                      [
+                        {
+                          value: "COMPLETED",
+                          title: "Inspection Passed (Full Payout)",
+                          desc: "Vehicle appraisal verified. Authorize full agreed CAD payout to seller.",
+                          icon: CheckCircle2,
+                          accent: "text-emerald-500",
+                          activeBorder:
+                            "border-emerald-500/80 bg-emerald-500/5 ring-1 ring-emerald-500/20",
+                        },
+                        {
+                          value: "APPOINTMENT_CONFIRMED",
+                          title: "Update Intake Notes (Keep Open)",
+                          desc: "Save technician note while keeping appointment scheduled.",
+                          icon: Calendar,
+                          accent: "text-sky-500",
+                          activeBorder:
+                            "border-sky-500/80 bg-sky-500/5 ring-1 ring-sky-500/20",
+                        },
+                        {
+                          value: "RENEGOTIATED_LOWER",
+                          title: "Price Adjusted for Flaws",
+                          desc: "Undisclosed mechanical or body flaws found; mutual reduced CAD payout.",
+                          icon: AlertTriangle,
+                          accent: "text-amber-500",
+                          activeBorder:
+                            "border-amber-500/80 bg-amber-500/5 ring-1 ring-amber-500/20",
+                        },
+                        {
+                          value: "NO_SHOW",
+                          title: "Seller No-Show",
+                          desc: "Seller did not attend within the 24h handover window.",
+                          icon: Clock,
+                          accent: "text-rose-500",
+                          activeBorder:
+                            "border-rose-500/80 bg-rose-500/5 ring-1 ring-rose-500/20",
+                        },
+                        {
+                          value: "DECLINED_AFTER_INSPECTION",
+                          title: "Declined Dealership Purchase",
+                          desc: "Severe undisclosed flaws found on hoist; match voided ($0 payout).",
+                          icon: XCircle,
+                          accent: "text-rose-500",
+                          activeBorder:
+                            "border-rose-500/80 bg-rose-500/5 ring-1 ring-rose-500/20",
+                        },
+                      ] as const
+                    ).map((opt) => {
                       const isSelected = newStatus === opt.value;
                       const Icon = opt.icon;
                       return (
@@ -962,7 +1169,11 @@ export function DealerWonMatchesView() {
                               : "border-portal-border bg-portal-surface hover:bg-portal-surface-hover/70"
                           }`}
                         >
-                          <div className={`mt-0.5 p-1 rounded-md shrink-0 ${isSelected ? "bg-portal-surface" : ""}`}>
+                          <div
+                            className={`mt-0.5 p-1 rounded-md shrink-0 ${
+                              isSelected ? "bg-portal-surface" : ""
+                            }`}
+                          >
                             <Icon className={`w-4 h-4 ${opt.accent}`} />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -984,12 +1195,14 @@ export function DealerWonMatchesView() {
                   </div>
                 </div>
 
-                {/* 2. Final Settlement Price in CAD */}
-                {newStatus === "DECLINED_AFTER_INSPECTION" ? (
+                {newStatus === "DECLINED_AFTER_INSPECTION" ||
+                newStatus === "NO_SHOW" ? (
                   <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/5 text-xs text-rose-600 dark:text-rose-400 flex items-center gap-2.5">
                     <XCircle className="w-4 h-4 shrink-0" />
                     <span>
-                      Dealership purchase declined. The auction match will be voided with $0.00 CAD payout to seller.
+                      {newStatus === "NO_SHOW"
+                        ? "Handover will be closed as a Seller No-Show ($0 payout) and the listing status will transition back to UNSEALED."
+                        : "Dealership purchase declined ($0.00 CAD payout). The listing status will transition back to UNSEALED."}
                     </span>
                   </div>
                 ) : (
@@ -998,10 +1211,12 @@ export function DealerWonMatchesView() {
                       <label className="block text-xs font-bold text-portal-text uppercase tracking-wider font-mono">
                         2. Final Settlement Payout (CAD)
                       </label>
-                      {/* Price Delta Badge */}
                       {(() => {
-                        const originalOffer = editingMatch.acceptedBidAmountCents / 100;
-                        const currentVal = parseFloat(finalPriceInput.replace(/[^0-9.]/g, "")) || 0;
+                        const originalOffer =
+                          editingMatch.acceptedBidAmountCents / 100;
+                        const currentVal =
+                          parseFloat(finalPriceInput.replace(/[^0-9.]/g, "")) ||
+                          0;
                         const diff = currentVal - originalOffer;
                         if (diff === 0) {
                           return (
@@ -1009,20 +1224,24 @@ export function DealerWonMatchesView() {
                               ✓ 100% of Agreed Offer
                             </span>
                           );
-                        } else if (diff < 0) {
-                          const pct = ((Math.abs(diff) / originalOffer) * 100).toFixed(1);
+                        }
+                        if (diff < 0) {
+                          const pct = (
+                            (Math.abs(diff) / originalOffer) *
+                            100
+                          ).toFixed(1);
                           return (
                             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                              ▼ -${Math.abs(diff).toLocaleString()} CAD (-{pct}% deduction)
-                            </span>
-                          );
-                        } else {
-                          return (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
-                              ▲ +${diff.toLocaleString()} CAD premium
+                              ▼ -${Math.abs(diff).toLocaleString()} CAD (-
+                              {pct}% deduction)
                             </span>
                           );
                         }
+                        return (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+                            ▲ +${diff.toLocaleString()} CAD
+                          </span>
+                        );
                       })()}
                     </div>
 
@@ -1033,21 +1252,28 @@ export function DealerWonMatchesView() {
                       <input
                         type="text"
                         value={finalPriceInput}
+                        disabled={newStatus === "APPOINTMENT_CONFIRMED"}
                         onChange={(e) => setFinalPriceInput(e.target.value)}
-                        placeholder="38250.00"
-                        className="w-full pl-8 pr-16 py-2.5 rounded-xl border border-portal-border bg-portal-surface text-portal-text font-mono text-base font-bold focus:outline-hidden focus:ring-2 focus:ring-portal-primary"
+                        placeholder={(
+                          editingMatch.acceptedBidAmountCents / 100
+                        ).toString()}
+                        className="w-full pl-8 pr-16 py-2.5 rounded-xl border border-portal-border bg-portal-surface text-portal-text font-mono text-base font-bold focus:outline-hidden focus:ring-2 focus:ring-portal-primary disabled:opacity-60"
                       />
                       <span className="absolute right-3.5 top-1/2 -translate-y-1/2 font-mono text-portal-text-muted text-xs">
                         CAD
                       </span>
                     </div>
 
-                    {/* Quick Adjustment Chips */}
                     {newStatus === "RENEGOTIATED_LOWER" && (
                       <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                        <span className="text-[10px] text-portal-text-muted font-mono mr-1">Quick Deduction:</span>
+                        <span className="text-[10px] text-portal-text-muted font-mono mr-1">
+                          Quick Deduction:
+                        </span>
                         {[
-                          { label: "Agreed ($38,250)", delta: 0 },
+                          {
+                            label: `Agreed (${formatCadCents(editingMatch.acceptedBidAmountCents)})`,
+                            delta: 0,
+                          },
                           { label: "-$500", delta: -500 },
                           { label: "-$1,000", delta: -1000 },
                           { label: "-$1,500", delta: -1500 },
@@ -1067,27 +1293,27 @@ export function DealerWonMatchesView() {
                   </div>
                 )}
 
-                {/* 3. Hoist & Technician Inspection Notes */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-bold text-portal-text uppercase tracking-wider font-mono">
-                      3. Technician / Hoist Inspection Notes & Rationale
+                      3. Technician / Hoist Inspection Notes &amp; Rationale
                     </label>
                     <span className="text-[10px] text-portal-text-muted font-mono">
-                      Recorded on Settlement Certificate
+                      Recorded on Settlement Audit Log
                     </span>
                   </div>
                   <textarea
                     rows={3}
                     value={notesInput}
                     onChange={(e) => setNotesInput(e.target.value)}
-                    placeholder="e.g. Physical hoist inspection completed at service bay. Underbody clean, brake pads at 4mm, OBD-II scan shows 0 trouble codes. Bill of Sale signed."
+                    placeholder="e.g. Physical hoist inspection completed at service bay. Underbody clean, OBD-II scan shows 0 trouble codes. Bill of Sale signed."
                     className="w-full px-3.5 py-2.5 rounded-xl border border-portal-border bg-portal-surface text-portal-text text-xs focus:outline-hidden focus:ring-2 focus:ring-portal-primary leading-relaxed resize-none"
                   />
 
-                  {/* One-click Quick Rationale Chips */}
                   <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                    <span className="text-[10px] text-portal-text-muted font-mono mr-1">Insert findings:</span>
+                    <span className="text-[10px] text-portal-text-muted font-mono mr-1">
+                      Insert findings:
+                    </span>
                     {[
                       "Hoist check complete",
                       "OBD-II scan 0 DTCs",
@@ -1108,21 +1334,37 @@ export function DealerWonMatchesView() {
                   </div>
                 </div>
 
-                {/* Modal Actions */}
+                {modalError && (
+                  <p className="text-xs font-medium text-red-500 bg-red-500/10 border border-red-500/25 rounded-lg px-3 py-2">
+                    {modalError}
+                  </p>
+                )}
+
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-portal-border">
                   <button
                     type="button"
                     onClick={() => setEditingMatch(null)}
+                    disabled={outcomeMutation.isPending}
                     className="px-4 py-2.5 rounded-xl border border-portal-border text-xs font-semibold text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-portal-primary hover:bg-portal-primary-hover text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
+                    disabled={outcomeMutation.isPending}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-portal-primary hover:bg-portal-primary-hover text-white text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-60"
                   >
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Save Settlement Record</span>
+                    {outcomeMutation.isPending ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Saving Outcome...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Save Settlement Record</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </form>

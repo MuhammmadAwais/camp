@@ -113,3 +113,110 @@ export type DealerBidReceipt = {
   placedAt: string;
   message: string;
 };
+
+export type DealerActiveBidStanding =
+  | "SOLE_BIDDER"
+  | "COMPETING"
+  | "CLOSING_SOON"
+  | "AWAITING_SELLER";
+
+export type DealerActiveBidItem = WholesaleAuctionItem & {
+  bidId: string;
+  bidStatus: "ACTIVE" | "WON" | "LOST" | "EXPIRED" | "WITHDRAWN" | "VOIDED";
+  listingStatus: string;
+  revisionCount: number;
+  placedAt: string;
+  bidStanding: DealerActiveBidStanding;
+};
+
+export type DealerActiveBidsSummary = {
+  totalCommittedCents: number; // Integer CAD cents invariant
+  activeBidsCount: number;
+  closingSoonCount: number;
+  awaitingSellerCount: number;
+};
+
+export type DealerActiveBidsResponse = {
+  items: DealerActiveBidItem[];
+  summary: DealerActiveBidsSummary;
+  dealershipName: string;
+  serverTime: string;
+};
+
+export type WonMatchStatus =
+  | "APPOINTMENT_CONFIRMED"
+  | "COMPLETED"
+  | "RENEGOTIATED_LOWER"
+  | "NO_SHOW"
+  | "DECLINED_AFTER_INSPECTION"
+  | "EXPIRED";
+
+export type WonMatchItem = {
+  id: string;
+  listingId: string;
+  voucherCode: string;
+  vehicle: {
+    vin: string;
+    year: number;
+    make: string;
+    model: string;
+    trim: string;
+    mileageKm: number;
+    thumbnailUrl: string;
+    damageGrade: string;
+    auctionId: string;
+  };
+  seller: {
+    name: string;
+    phone: string;
+    email: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    kycVerified: boolean;
+  };
+  acceptedBidAmountCents: number; // Integer CAD cents invariant
+  wonAt: string;
+  appointmentWindowExpiresAt: string;
+  status: WonMatchStatus;
+  finalTransactionCents?: number | null;
+  inspectionNotes?: string | null;
+  outcomeLoggedAt?: string | null;
+  appointmentLocation: string;
+};
+
+export type DealerWonMatchesSummary = {
+  totalWonValueCents: number;
+  totalWonCount: number;
+  scheduledCount: number;
+  completedCount: number;
+  totalSettledValueCents: number;
+};
+
+export type DealerWonMatchesResponse = {
+  items: WonMatchItem[];
+  summary: DealerWonMatchesSummary;
+  dealershipName: string;
+  serverTime: string;
+};
+
+export type LogMatchOutcomeValue =
+  | "APPOINTMENT_CONFIRMED"
+  | "COMPLETED"
+  | "RENEGOTIATED_LOWER"
+  | "NO_SHOW"
+  | "DECLINED_AFTER_INSPECTION";
+
+export type LogMatchOutcomePayload = {
+  outcome: LogMatchOutcomeValue;
+  finalPriceCents?: number | null;
+  notes?: string;
+};
+
+export type LogMatchOutcomeResponse = {
+  match: WonMatchItem;
+  listingStatus: string;
+  auditAction: string;
+  message: string;
+  serverTime: string;
+};
