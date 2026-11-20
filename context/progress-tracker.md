@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B2.1 Complete) — **Next Prompt: `Prompt B2.2`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B2.2 Complete) — **Next Prompt: `Prompt B2.3`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -249,7 +249,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B1** | `Prompt B1.2` | Provision Supabase `ca-central-1` + Core SQL migrations (`0001`–`0003`: enums, 20 tables, constraints, PostGIS indexes) | **PM Demo (Day 1)** | 3–4 hrs | [x] |
 | **I** | **B1** | `Prompt B1.3` | Airtight RLS (`0004`), Atomic RPCs (`0005`), `pg_cron` + Realtime (`0006`), Demo seed (`0007`), generated TS types | **PM Demo (Day 1)** | 3–4 hrs | [x] |
 | **I** | **B2** | `Prompt B2.1` | Server RBAC guard (`lib/server/auth.ts`), `proxy.ts` cookie refresh + role routing, cookie-only `api-client.ts` | **PM Demo (Day 2)** | 2–3 hrs | [x] |
-| **I** | **B2** | `Prompt B2.2` | Real `/api/auth/*` routes + `auth.service.ts` backed by Supabase Auth, `profiles`, and PIPEDA/CASL consents | **PM Demo (Day 2)** | 3–4 hrs | [ ] |
+| **I** | **B2** | `Prompt B2.2` | Real `/api/auth/*` routes + `auth.service.ts` backed by Supabase Auth, `profiles`, and PIPEDA/CASL consents | **PM Demo (Day 2)** | 3–4 hrs | [x] |
 | **I** | **B2** | `Prompt B2.3` | Storage adapter (`ca-central-1` buckets + signed PUT URLs), real `/api/listings/media/presign`, real `/api/kyc/*` | **PM Demo (Day 2)** | 2–3 hrs | [ ] |
 | **I** | **B3** | `Prompt B3.1` | Cached NHTSA vPIC VIN adapter (`vin.adapter.ts` + 3s timeout + `vin_decode_cache`) & real `/api/vin/decode` | **PM Demo (Day 3)** | 1–2 hrs | [ ] |
 | **I** | **B3** | `Prompt B3.2` | `listing.service.ts` + real `POST /api/listings`, `GET /api/seller/dashboard`, sealed `GET /api/listings/[id]` | **PM Demo (Day 3)** | 3–4 hrs | [ ] |
@@ -334,7 +334,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** NFR-05, RBAC Matrix (`SELLER`, `DEALER_ADMIN`, `DEALER_AGENT`, `ADMIN`).
   - **Exit Gate:** Unauthenticated request to `/seller/dashboard` or `/admin/moderation` redirects to `/login`; `npx tsc --noEmit` passes.
 
-- [ ] **`Prompt B2.2` — Real `/api/auth/*` Routes & Auth Service**
+- [x] **`Prompt B2.2` — Real `/api/auth/*` Routes & Auth Service**
   - **Build From → To:** In-memory mock auth (`lib/mock/db.ts`) → production Supabase Auth flows with profile hydration, PIPEDA/CASL consent capture, and verified OTP/password reset flows.
   - **Files to Create/Modify:**
     - `lib/server/services/auth.service.ts` — Registration (creates Supabase user + `profiles` + `user_consents` timestamped rows), Login (sets `@supabase/ssr` cookies, hydrates `SessionUser`), Logout, `getCurrentUser()`, Password Forgot/Reset via Supabase Auth, Contact Verification bridge (handles Supabase email OTP + sandbox/Twilio phone OTP cleanly).
@@ -346,7 +346,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 - [ ] **`Prompt B2.3` — Storage Adapter (`ca-central-1`), Presigned Direct Uploads & KYC Intake**
   - **Build From → To:** Fake `/api/mock/s3-upload` + mock KYC timer → real Supabase Storage buckets (`listing-media`, `kyc-docs`, `dispute-evidence`) with signed PUT URLs and real `kyc_submissions` persistence.
   - **Files to Create/Modify:**
-    - `supabase/migrations/0008_storage_buckets.sql` — Provision buckets + Storage RLS policies (`kyc-docs` strictly private; `listing-media` authenticated upload + public read; MIME & 10MB/20MB size limits).
+    - `supabase/migrations/0009_storage_buckets.sql` — Provision buckets + Storage RLS policies (`kyc-docs` strictly private; `listing-media` authenticated upload + public read; MIME & 10MB/20MB size limits).
     - `lib/server/adapters/storage.adapter.ts` — Clean `StorageAdapter` interface + `SupabaseStorageAdapter` (`createSignedUploadUrl`, `getPublicUrl`, `createSignedReadUrl`, `deleteObject`) with `// TODO(senior-review): swap to S3StorageAdapter for dedicated AWS S3 + CloudFront`.
     - `lib/server/adapters/kyc.adapter.ts` — Provider-ready KYC adapter (`submitVerification`, `handleWebhook`) storing only metadata/status/private ref (FR-EU-02) with configurable demo auto-verify or Admin approval mode.
     - Replace `app/api/listings/media/presign/route.ts`, `app/api/kyc/submissions/route.ts`, and `app/api/kyc/status/route.ts` (verify `PhotoUploadStep.tsx` direct PUT works seamlessly with Supabase signed upload URL).

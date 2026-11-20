@@ -1,46 +1,17 @@
-import { randomUUID } from "node:crypto";
 import type { NextRequest } from "next/server";
-import { createRegistration, db, hashPassword, toPendingVerification, type MockUser } from "@/lib/mock/db";
-import { fail, mockApiDisabled, ok, parseJson, simulateLatency } from "@/lib/mock/http";
 import { registerPayloadSchema } from "@/lib/schemas/auth-schema";
+import { created, handleApiRoute, parseBody } from "@/lib/server/http";
+import { registerAccount } from "@/lib/server/services/auth.service";
 
-// FR-EU-01 — create an unverified seller account and send email + SMS codes.
-export async function POST(request: NextRequest) {
-  const disabled = mockApiDisabled();
-  if (disabled) return disabled;
-  await simulateLatency();
+export const POST = handleApiRoute(async (request: NextRequest) => {
+  const payload = await parseBody(request, registerPayloadSchema);
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  const ipAddress =
+    forwardedFor?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    null;
+  const userAgent = request.headers.get("user-agent") ?? null;
 
-  const parsed = await parseJson(request, registerPayloadSchema);
-  if ("response" in parsed) return parsed.response;
-  const payload = parsed.data;
-
-  if (db.userIdByEmail.has(payload.email.toLowerCase())) {
-    return fail(409, "EMAIL_TAKEN", "An account with this email already exists", {
-      email: "An account with this email already exists. Sign in instead.",
-    });
-  }
-
-  const user: MockUser = {
-    id: randomUUID(),
-    email: payload.email.toLowerCase(),
-    passwordHash: hashPassword(payload.password),
-    firstName: payload.firstName,
-    lastName: payload.lastName,
-    phoneE164: payload.phone,
-    postalCode: payload.postalCode,
-    province: payload.province,
-    role: payload.role === "DEALER" ? "DEALER_ADMIN" : "SELLER",
-    dealershipName: payload.dealershipName,
-    licenseNumber: payload.licenseNumber,
-    emailVerified: false,
-    phoneVerified: false,
-    marketingOptIn: payload.marketingOptIn,
-    kyc: { status: "NOT_STARTED", idDocType: null, submittedAt: null, rejectReason: null },
-    createdAt: Date.now(),
-  };
-  db.users.set(user.id, user);
-  db.userIdByEmail.set(user.email, user.id);
-
-  const registrationId = createRegistration(user.id);
-  return ok(toPendingVerification(registrationId, user), 201);
-}
+  const pending = await registerAccount(payload, { ipAddress, userAgent });
+  return created(pending);
+});

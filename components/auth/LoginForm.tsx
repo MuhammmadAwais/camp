@@ -59,7 +59,7 @@ export function LoginForm({ next, notice }: Props) {
       });
 
       if (isPendingVerification(result)) {
-        router.push(`/verify?id=${encodeURIComponent(result.registrationId)}`);
+        router.push(`/verify?rid=${encodeURIComponent(result.registrationId)}`);
         return;
       }
 
@@ -84,6 +84,20 @@ export function LoginForm({ next, notice }: Props) {
       const destination = getPostAuthRoute(result.user, next);
       router.push(destination);
     } catch (err) {
+      const errFailure = getApiFailure(err);
+      if (
+        errFailure?.code === "VERIFICATION_REQUIRED" &&
+        isPendingVerification(errFailure.details)
+      ) {
+        queryClient.setQueryData(
+          authKeys.registration(errFailure.details.registrationId),
+          errFailure.details
+        );
+        router.push(
+          `/verify?rid=${encodeURIComponent(errFailure.details.registrationId)}`
+        );
+        return;
+      }
       applyFieldErrors(err, setError, ["email", "password"]);
     }
   };

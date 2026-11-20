@@ -65,6 +65,56 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_challenges: {
+        Row: {
+          created_at: string
+          email_attempts: number
+          email_code_hash: string
+          email_last_sent_at: string
+          expires_at: string
+          id: string
+          phone_attempts: number
+          phone_code_hash: string
+          phone_last_sent_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_attempts?: number
+          email_code_hash: string
+          email_last_sent_at?: string
+          expires_at?: string
+          id?: string
+          phone_attempts?: number
+          phone_code_hash: string
+          phone_last_sent_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_attempts?: number
+          email_code_hash?: string
+          email_last_sent_at?: string
+          expires_at?: string
+          id?: string
+          phone_attempts?: number
+          phone_code_hash?: string
+          phone_last_sent_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auth_challenges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bids: {
         Row: {
           amount_cents: number

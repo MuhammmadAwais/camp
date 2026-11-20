@@ -41,6 +41,9 @@ export function useLogout() {
     mutationFn: async () => unwrap(await api.post<{ loggedOut: boolean }>("/api/auth/logout")),
     onSettled: () => {
       clearSession();
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("autonexa_active_user");
+      }
       queryClient.clear();
       router.replace("/login");
     },

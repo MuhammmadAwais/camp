@@ -1,19 +1,11 @@
 import type { NextRequest } from "next/server";
-import { getRegistration, toPendingVerification } from "@/lib/mock/db";
-import { fail, mockApiDisabled, ok } from "@/lib/mock/http";
+import { handleApiRoute, ok } from "@/lib/server/http";
+import { getPendingVerification } from "@/lib/server/services/auth.service";
 
-// Lets the verify page restore masked contact details after a reload.
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ registrationId: string }> }
-) {
-  const disabled = mockApiDisabled();
-  if (disabled) return disabled;
-
-  const { registrationId } = await params;
-  const found = getRegistration(registrationId);
-  if (!found) {
-    return fail(404, "REGISTRATION_NOT_FOUND", "This verification link has expired. Please sign in to get a new code.");
+export const GET = handleApiRoute<{ params: Promise<{ registrationId: string }> }>(
+  async (_request: NextRequest, context) => {
+    const { registrationId } = await context.params;
+    const pending = await getPendingVerification(registrationId);
+    return ok(pending);
   }
-  return ok(toPendingVerification(registrationId, found.user));
-}
+);

@@ -1,21 +1,7 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from '@/lib/session';
+import { handleApiRoute, ok } from "@/lib/server/http";
+import { getSessionSnapshot } from "@/lib/server/services/auth.service";
 
-export async function GET() {
-  try {
-    const session = await getServerSession();
-    return NextResponse.json({
-      success: true,
-      data: {
-        authenticated: !!session,
-        user: session?.user || null,
-      },
-    });
-  } catch (error) {
-    console.error('Session retrieval error:', error);
-    return NextResponse.json(
-      { success: false, error: { code: 'SESSION_ERROR', message: 'Failed to read session' } },
-      { status: 500 }
-    );
-  }
-}
+export const GET = handleApiRoute(async () => {
+  const snapshot = await getSessionSnapshot();
+  return ok(snapshot);
+});
