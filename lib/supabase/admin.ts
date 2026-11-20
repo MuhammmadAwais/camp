@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { getServerEnv } from "@/lib/server/env";
+import type { Database } from "@/lib/supabase/database.types";
 
 /**
  * Strictly server-only Supabase admin client using `SUPABASE_SECRET_KEY`.
@@ -17,7 +18,7 @@ export function createAdminSupabaseClient() {
 
   const { supabaseUrl, supabaseSecretKey } = getServerEnv();
 
-  return createClient(supabaseUrl, supabaseSecretKey, {
+  return createClient<Database>(supabaseUrl, supabaseSecretKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

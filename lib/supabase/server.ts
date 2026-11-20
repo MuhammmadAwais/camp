@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getPublicSupabaseEnv } from "@/lib/server/env";
+import type { Database } from "@/lib/supabase/database.types";
 
 /**
  * Creates a per-request, cookie-bound Supabase server client that enforces
@@ -10,7 +11,7 @@ export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
   const { url, publishableKey } = getPublicSupabaseEnv();
 
-  return createServerClient(url, publishableKey, {
+  return createServerClient<Database>(url, publishableKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();

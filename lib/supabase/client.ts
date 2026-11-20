@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
+import type { Database } from "@/lib/supabase/database.types";
 
 /**
  * Creates a Supabase client for Client Components (strictly scoped to Realtime
@@ -16,7 +17,7 @@ export function createBrowserSupabaseClient() {
     );
   }
 
-  return createBrowserClient(url, publishableKey);
+  return createBrowserClient<Database>(url, publishableKey);
 }
 
 export const createClient = createBrowserSupabaseClient;

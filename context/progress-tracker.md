@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B1.2 Complete) — **Next Prompt: `Prompt B1.3`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B1.3 Complete — Phase B1 Done) — **Next Prompt: `Prompt B2.1`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -247,7 +247,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 |---|---|---|---|---|---:|:---:|
 | **I** | **B1** | `Prompt B1.1` | Git branch `feat/supabase-backend`, deps, Zod env, server error/HTTP kernel, Supabase clients | **PM Demo (Day 1)** | 2–3 hrs | [x] |
 | **I** | **B1** | `Prompt B1.2` | Provision Supabase `ca-central-1` + Core SQL migrations (`0001`–`0003`: enums, 20 tables, constraints, PostGIS indexes) | **PM Demo (Day 1)** | 3–4 hrs | [x] |
-| **I** | **B1** | `Prompt B1.3` | Airtight RLS (`0004`), Atomic RPCs (`0005`), `pg_cron` + Realtime (`0006`), Demo seed (`0007`), generated TS types | **PM Demo (Day 1)** | 3–4 hrs | [ ] |
+| **I** | **B1** | `Prompt B1.3` | Airtight RLS (`0004`), Atomic RPCs (`0005`), `pg_cron` + Realtime (`0006`), Demo seed (`0007`), generated TS types | **PM Demo (Day 1)** | 3–4 hrs | [x] |
 | **I** | **B2** | `Prompt B2.1` | Server RBAC guard (`lib/server/auth.ts`), `proxy.ts` cookie refresh + role routing, cookie-only `api-client.ts` | **PM Demo (Day 2)** | 2–3 hrs | [ ] |
 | **I** | **B2** | `Prompt B2.2` | Real `/api/auth/*` routes + `auth.service.ts` backed by Supabase Auth, `profiles`, and PIPEDA/CASL consents | **PM Demo (Day 2)** | 3–4 hrs | [ ] |
 | **I** | **B2** | `Prompt B2.3` | Storage adapter (`ca-central-1` buckets + signed PUT URLs), real `/api/listings/media/presign`, real `/api/kyc/*` | **PM Demo (Day 2)** | 2–3 hrs | [ ] |
@@ -306,7 +306,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** BR-02, BR-05, NFR-09 (`ca-central-1`), NFR-14 (`BIGINT` cents), SRS §7.2 ERD.
   - **Exit Gate:** All 3 migrations apply cleanly to Supabase `ca-central-1`; `list_tables` confirms all tables & constraints exist with zero errors.
 
-- [ ] **`Prompt B1.3` — Airtight RLS, Atomic Postgres RPCs, `pg_cron`, Realtime & Demo Seed (`0004`–`0007`)**
+- [x] **`Prompt B1.3` — Airtight RLS, Atomic Postgres RPCs, `pg_cron`, Realtime & Demo Seed (`0004`–`0007`)**
   - **Build From → To:** Bare tables → database-enforced sealed-bid secrecy, atomic concurrency-safe bidding & matching RPCs, 1-minute expiry sweeps, demo accounts/vehicles seeded, and generated TypeScript DB types.
   - **Migrations & Files to Create/Apply:**
     - `supabase/migrations/0004_rls_policies.sql` — Enable RLS on EVERY public table. Sealed-bid invariant (H1 / BR-04): dealers read only their own `bids`; sellers read `bids` ONLY when `listings.status IN ('UNSEALED','ACCEPTED','COMPLETED','EXPIRED')`; create safe `public_auction_telemetry` view (count + status + `auction_ends_at`, zero amounts). Append-only `audit_logs` (block `UPDATE`/`DELETE` for all roles, NFR-11).
