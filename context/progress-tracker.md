@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B2.3 Complete) — **Next Prompt: `Prompt B3.1`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Prompt B3.1 Complete) — **Next Prompt: `Prompt B3.2`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -251,7 +251,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **I** | **B2** | `Prompt B2.1` | Server RBAC guard (`lib/server/auth.ts`), `proxy.ts` cookie refresh + role routing, cookie-only `api-client.ts` | **PM Demo (Day 2)** | 2–3 hrs | [x] |
 | **I** | **B2** | `Prompt B2.2` | Real `/api/auth/*` routes + `auth.service.ts` backed by Supabase Auth, `profiles`, and PIPEDA/CASL consents | **PM Demo (Day 2)** | 3–4 hrs | [x] |
 | **I** | **B2** | `Prompt B2.3` | Storage adapter (`ca-central-1` buckets + signed PUT URLs), real `/api/listings/media/presign`, real `/api/kyc/*` | **PM Demo (Day 2)** | 2–3 hrs | [x] |
-| **I** | **B3** | `Prompt B3.1` | Cached NHTSA vPIC VIN adapter (`vin.adapter.ts` + 3s timeout + `vin_decode_cache`) & real `/api/vin/decode` | **PM Demo (Day 3)** | 1–2 hrs | [ ] |
+| **I** | **B3** | `Prompt B3.1` | Cached NHTSA vPIC VIN adapter (`vin.adapter.ts` + 3s timeout + `vin_decode_cache`) & real `/api/vin/decode` | **PM Demo (Day 3)** | 1–2 hrs | [x] |
 | **I** | **B3** | `Prompt B3.2` | `listing.service.ts` + real `POST /api/listings`, `GET /api/seller/dashboard`, sealed `GET /api/listings/[id]` | **PM Demo (Day 3)** | 3–4 hrs | [ ] |
 | **I** | **B3** | `Prompt B3.3` | Admin Moderation service & APIs (`/api/admin/moderation*`) + wire Moderation UI views to TanStack Query | **PM Demo (Day 3)** | 2–3 hrs | [ ] |
 | **I** | **B4** | `Prompt B4.1` | Dealer Inventory & Inspection APIs (`/api/dealer/inventory*`) + wire `VehicleInspectionView` | **PM Demo (Day 4)** | 2–3 hrs | [ ] |
@@ -357,7 +357,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 
 ### Phase B3 — Seller Listing Pipeline, VIN Cache & Admin Moderation Launch (Day 3 AM)
 
-- [ ] **`Prompt B3.1` — Cached NHTSA vPIC VIN Decoder Adapter**
+- [x] **`Prompt B3.1` — Cached NHTSA vPIC VIN Decoder Adapter**
   - **Build From → To:** Mock VIN route → live NHTSA vPIC decoder with ISO 3779 check-digit validation, 3-second `AbortController` timeout, Postgres `vin_decode_cache`, and graceful fallback to manual entry.
   - **Files to Create/Modify:**
     - `lib/server/adapters/vin.adapter.ts` — Validate 17-char ISO 3779 check digit, check `vin_decode_cache` (30-day TTL), fetch NHTSA vPIC with 3s timeout, cache normalized specs, return `{ decoded, fallbackManual: true }` on upstream timeout (never crash).
