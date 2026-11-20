@@ -40,6 +40,10 @@ export const adminKeys = {
       ? ([...adminKeys.all, "audit-log", filters] as const)
       : ([...adminKeys.all, "audit-log"] as const),
   config: () => [...adminKeys.all, "config"] as const,
+  subscriptions: (filters?: Record<string, string | undefined>) =>
+    filters
+      ? ([...adminKeys.all, "subscriptions", filters] as const)
+      : ([...adminKeys.all, "subscriptions"] as const),
 };
 
 export const settingsKeys = {
@@ -52,6 +56,11 @@ export const dealerKeys = {
   all: ["dealer"] as const,
   onboarding: () => [...dealerKeys.all, "onboarding"] as const,
   team: () => [...dealerKeys.all, "team"] as const,
+  subscription: () => [...dealerKeys.all, "subscription"] as const,
+  invoices: (filters?: Record<string, string | undefined>) =>
+    filters
+      ? ([...dealerKeys.all, "invoices", filters] as const)
+      : ([...dealerKeys.all, "invoices"] as const),
   inventory: (filters?: Record<string, string | number | null | undefined>) =>
     filters
       ? ([...dealerKeys.all, "inventory", filters] as const)

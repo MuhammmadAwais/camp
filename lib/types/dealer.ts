@@ -358,3 +358,97 @@ export type DealerTeamMutationResponse = {
   message: string;
   serverTime: string;
 };
+
+export type SubscriptionPlanItem = {
+  id: string;
+  slug: string;
+  name: string;
+  billingInterval: "month" | "year";
+  priceCents: number; // Integer CAD cents invariant
+  currency: "CAD";
+  monthlyBidQuota: number;
+  maxRadiusKm: number;
+  maxTeamSeats: number;
+  stripePriceId: string | null;
+  features: string[];
+};
+
+export type DealerActiveSubscription = {
+  id: string;
+  planId: string;
+  planSlug: string;
+  planName: string;
+  billingInterval: "month" | "year";
+  priceCents: number; // Integer CAD cents invariant
+  status: "ACTIVE" | "TRIALING" | "PAST_DUE" | "EXPIRED" | "CANCELLED";
+  bidsUsed: number;
+  monthlyBidQuota: number;
+  maxRadiusKm: number;
+  maxTeamSeats: number;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  autoRenew: boolean;
+  cancelledAt: string | null;
+  stripeCustomerLinked: boolean;
+};
+
+export type DealerSubscriptionResponse = {
+  plans: SubscriptionPlanItem[];
+  currentSubscription: DealerActiveSubscription | null;
+  dealershipName: string;
+  dealershipStatus: DealershipLifecycleStatus;
+  canManageBilling: boolean;
+  stripeConfigured: boolean;
+  serverTime: string;
+};
+
+export type DealerCheckoutPayload = {
+  planId?: string;
+  planSlug?: string;
+};
+
+export type DealerCheckoutResponse = {
+  checkoutUrl: string;
+  sessionId: string;
+  planSlug: string;
+  serverTime: string;
+};
+
+export type DealerBillingPortalResponse = {
+  portalUrl: string;
+  serverTime: string;
+};
+
+export type DealerInvoiceStatus = "PAID" | "FAILED" | "REFUNDED" | "OPEN";
+
+export type DealerInvoiceItem = {
+  id: string;
+  invoiceNumber: string;
+  amountCents: number; // Integer CAD cents invariant
+  currency: "CAD";
+  status: DealerInvoiceStatus;
+  description: string;
+  planName: string;
+  billingDateIso: string;
+  year: string;
+  stripeInvoiceId: string | null;
+  invoicePdfUrl: string | null;
+  paidAt: string | null;
+};
+
+export type DealerBillingInvoicesSummary = {
+  totalInvoicesCount: number;
+  totalPaidCents: number; // Integer CAD cents invariant
+  bidsUsed: number;
+  bidsTotal: number;
+  remainingBids: number;
+};
+
+export type DealerBillingInvoicesResponse = {
+  items: DealerInvoiceItem[];
+  subscription: DealerActiveSubscription | null;
+  summary: DealerBillingInvoicesSummary;
+  dealershipName: string;
+  stripeConfigured: boolean;
+  serverTime: string;
+};

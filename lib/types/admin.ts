@@ -524,3 +524,49 @@ export type AdminAuditLogResponse = {
   facets: AuditLogFacets;
   serverTime: string;
 };
+
+export type AdminSubscriptionItem = {
+  subscriptionId: string;
+  dealershipId: string;
+  dealershipName: string;
+  regulator: AdminDealerRegulator;
+  licenseNumber: string;
+  province: string;
+  dealershipStatus: AdminDealerStatus;
+  planId: string;
+  planSlug: string;
+  planName: string;
+  billingInterval: "month" | "year";
+  priceCents: number; // Integer CAD cents invariant
+  monthlyEquivCents: number; // Integer CAD cents invariant
+  subscriptionStatus:
+    | "ACTIVE"
+    | "TRIALING"
+    | "PAST_DUE"
+    | "EXPIRED"
+    | "CANCELLED";
+  bidsUsed: number;
+  monthlyBidQuota: number;
+  activeSeatsCount: number;
+  maxTeamSeats: number;
+  totalPaidCents: number; // Integer CAD cents invariant
+  invoicesCount: number;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  autoRenew: boolean;
+  stripeCustomerLinked: boolean;
+};
+
+export type AdminSubscriptionsSummary = {
+  totalSubscriptionsCount: number;
+  activeCount: number;
+  pastDueCount: number;
+  mrrCents: number; // Integer CAD cents invariant
+  totalCollectedCents: number; // Integer CAD cents invariant
+};
+
+export type AdminSubscriptionsResponse = {
+  items: AdminSubscriptionItem[];
+  summary: AdminSubscriptionsSummary;
+  serverTime: string;
+};

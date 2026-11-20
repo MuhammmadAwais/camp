@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B6 Complete — Prompt B6.3 Complete) — **Next Prompt: `Prompt B7.1`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B7 — Prompt B7.1 Complete) — **Next Prompt: `Prompt B7.2`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -265,7 +265,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **II** | **B6** | `Prompt B6.1` | Dispute Arbitration Engine (`/api/admin/disputes*` + hoist evidence upload + timeline + resolution) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B6** | `Prompt B6.2` | Admin Analytics SQL Views (`/api/admin/analytics`) & Paginated Immutable Audit Log + SHA-256 Chain (`/api/admin/audit-log`) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B6** | `Prompt B6.3` | Seller Relisting (FR-EU-13 cooldown), Account Settings (`/api/settings/*`), & Platform Config (`/api/admin/config`) | Complete Platform | 3 hrs | [x] |
-| **II** | **B7** | `Prompt B7.1` | Stripe Checkout, Billing Portal & Invoices (`billing.adapter.ts`, `/api/dealer/subscription*`, `/api/dealer/billing*`) | Complete Platform | 3–4 hrs | [ ] |
+| **II** | **B7** | `Prompt B7.1` | Stripe Checkout, Billing Portal & Invoices (`billing.adapter.ts`, `/api/dealer/subscription*`, `/api/dealer/billing*`) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B7** | `Prompt B7.2` | Idempotent Stripe Webhook (`/api/webhooks/stripe` — HMAC verify, quota sync, HTTP 402 bid block on `PAST_DUE`) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B7** | `Prompt B7.3` | Persistent Notifications + Realtime Bell (`/api/notifications`) + Email/SMS CASL Adapter (radius approval fan-out) | Complete Platform | 3–4 hrs | [ ] |
 | **III** | **B8** | `Prompt B8.1` | Mandatory TOTP MFA (`supabase.auth.mfa` — NFR-06) enrollment, QR setup & AAL2 guard for `ADMIN` / `DEALER_ADMIN` | Hardening & Handoff | 3–4 hrs | [ ] |
@@ -498,7 +498,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 
 ### Phase B7 — Stripe CAD Subscriptions & Multi-Channel Notifications
 
-- [ ] **`Prompt B7.1` — Stripe Billing Adapter, Checkout, Portal & Invoices**
+- [x] **`Prompt B7.1` — Stripe Billing Adapter, Checkout, Portal & Invoices**
   - **Build From → To:** Static `DealerSubscriptionView` & `DealerBillingView` → real Stripe CAD Checkout Sessions, Customer Billing Portal, plan catalog from `plans` table, and downloadable invoice history.
   - **Files to Create/Modify:**
     - Install `stripe` (`package.json`).
