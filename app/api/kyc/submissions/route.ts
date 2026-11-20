@@ -1,67 +1,118 @@
 import type { NextRequest } from "next/server";
-import { fail, mockApiDisabled, ok, requireUser, simulateLatency } from "@/lib/mock/http";
-import type { IdDocumentType, KycStatusResponse } from "@/lib/types/auth";
+import type { KycDocumentFile } from "@/lib/server/adapters/kyc.adapter";
+import { requireAuth } from "@/lib/server/auth";
+import { BadRequestError, ValidationError } from "@/lib/server/errors";
+import { handleApiRoute, ok } from "@/lib/server/http";
+import {
+  assertKycCanSubmit,
+  submitKycVerification,
+} from "@/lib/server/services/kyc.service";
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
-const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
+const ACCEPTED_TYPES = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+]);
 
-function checkImage(value: FormDataEntryValue | null, label: string): string | null {
-  if (!(value instanceof File) || value.size === 0) return `${label} is required`;
-  if (!ACCEPTED_TYPES.includes(value.type)) return `${label} must be a JPG, PNG, WEBP or HEIC photo`;
-  if (value.size > MAX_IMAGE_BYTES) return `${label} must be 10 MB or smaller`;
-  return null;
+function checkImage(
+  value: FormDataEntryValue | null,
+  label: string
+): { file: File | null; error: string | null } {
+  if (!(value instanceof File) || value.size === 0) {
+    return { file: null, error: `${label} is required` };
+  }
+  if (!ACCEPTED_TYPES.has(value.type.toLowerCase())) {
+    return {
+      file: null,
+      error: `${label} must be a JPG, PNG, WEBP or HEIC photo`,
+    };
+  }
+  if (value.size > MAX_IMAGE_BYTES) {
+    return { file: null, error: `${label} must be 10 MB or smaller` };
+  }
+  return { file: value, error: null };
 }
 
-// FR-EU-02 — the real backend forwards these images to the KYC provider (Persona / Onfido / Trulioo)
-// and stores only status + provider reference. The mock validates them and discards the bytes.
-export async function POST(request: NextRequest) {
-  const disabled = mockApiDisabled();
-  if (disabled) return disabled;
+async function toKycFile(file: File): Promise<KycDocumentFile> {
+  return {
+    bytes: new Uint8Array(await file.arrayBuffer()),
+    mimeType: file.type.toLowerCase(),
+    fileName: file.name,
+    sizeBytes: file.size,
+  };
+}
 
-  const user = requireUser(request);
-  if (user instanceof Response) return user;
-  await simulateLatency(900);
-
-  if (user.kyc.status === "VERIFIED") return fail(409, "KYC_ALREADY_VERIFIED", "Your identity is already verified.");
-  if (user.kyc.status === "PENDING") return fail(409, "KYC_PENDING", "Your verification is already being reviewed.");
+export const POST = handleApiRoute(async (request: NextRequest) => {
+  const ctx = await requireAuth();
+  assertKycCanSubmit(ctx);
 
   let form: FormData;
   try {
     form = await request.formData();
   } catch {
-    return fail(400, "INVALID_FORM", "Upload could not be read. Please try again.");
+    throw new BadRequestError(
+      "Upload could not be read. Please try again.",
+      "INVALID_FORM"
+    );
   }
 
   const docType = form.get("idDocType");
   if (docType !== "DRIVERS_LICENCE" && docType !== "PASSPORT") {
-    return fail(422, "VALIDATION_FAILED", "Select an ID type", { idDocType: "Select an ID type" });
+    throw new ValidationError("Select an ID type", {
+      idDocType: "Select an ID type",
+    });
   }
+
   if (form.get("consent") !== "true") {
-    return fail(422, "VALIDATION_FAILED", "Consent is required", { consent: "Consent is required to verify your identity" });
+    throw new ValidationError("Consent is required", {
+      consent: "Consent is required to verify your identity",
+    });
   }
 
   const fields: Record<string, string> = {};
-  const frontError = checkImage(form.get("idFront"), "Front of ID");
-  if (frontError) fields.idFront = frontError;
+  const frontCheck = checkImage(form.get("idFront"), "Front of ID");
+  if (frontCheck.error) fields.idFront = frontCheck.error;
+
+  let backFile: File | null = null;
   if (docType === "DRIVERS_LICENCE") {
-    const backError = checkImage(form.get("idBack"), "Back of licence");
-    if (backError) fields.idBack = backError;
+    const backCheck = checkImage(form.get("idBack"), "Back of licence");
+    if (backCheck.error) fields.idBack = backCheck.error;
+    backFile = backCheck.file;
   }
-  const selfieError = checkImage(form.get("selfie"), "Selfie");
-  if (selfieError) fields.selfie = selfieError;
-  if (Object.keys(fields).length > 0) return fail(422, "VALIDATION_FAILED", "Some photos need attention", fields);
 
-  user.kyc = {
-    status: "PENDING",
-    idDocType: docType satisfies IdDocumentType,
-    submittedAt: Date.now(),
-    rejectReason: null,
-  };
+  const selfieCheck = checkImage(form.get("selfie"), "Selfie");
+  if (selfieCheck.error) fields.selfie = selfieCheck.error;
 
-  const body: KycStatusResponse = {
-    status: "PENDING",
-    rejectReason: null,
-    submittedAt: new Date(user.kyc.submittedAt ?? Date.now()).toISOString(),
-  };
-  return ok(body, 202);
-}
+  if (
+    Object.keys(fields).length > 0 ||
+    !frontCheck.file ||
+    !selfieCheck.file
+  ) {
+    throw new ValidationError("Some photos need attention", fields);
+  }
+
+  const [idFront, idBack, selfie] = await Promise.all([
+    toKycFile(frontCheck.file),
+    backFile ? toKycFile(backFile) : Promise.resolve(null),
+    toKycFile(selfieCheck.file),
+  ]);
+
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  const ipAddress =
+    forwardedFor?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    null;
+  const userAgent = request.headers.get("user-agent") ?? null;
+
+  const result = await submitKycVerification(
+    ctx,
+    { idDocType: docType, idFront, idBack, selfie },
+    { ipAddress, userAgent }
+  );
+
+  return ok(result, 202);
+});

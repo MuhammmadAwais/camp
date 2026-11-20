@@ -172,20 +172,28 @@ export function PhotoUploadStep({ onNext, onBack }: PhotoUploadStepProps) {
           throw new Error("Direct S3 upload failed");
         }
 
-        // 5. Success - mark uploaded with permanent S3 key
+        // 5. Success - update store with permanent Supabase Storage public URL & key
+        URL.revokeObjectURL(initialPreview);
+        if (compressed.previewUrl !== initialPreview) {
+          URL.revokeObjectURL(compressed.previewUrl);
+        }
         updatePhotoStatus(tempId, {
           status: "uploaded",
           progress: 100,
+          previewUrl: presigned.publicUrl,
           s3Key: presigned.s3Key,
         });
       } catch (err) {
-        console.warn("Upload pipeline failed for file, using local preview fallback", err);
-        // Fallback: mark as uploaded with mock S3 key so user is not blocked
+        console.error("Photo upload failed:", err);
         updatePhotoStatus(tempId, {
-          status: "uploaded",
-          progress: 100,
-          s3Key: `local-fallback/${rawFile.name}`,
+          status: "error",
+          progress: 0,
         });
+        setUploadError(
+          err instanceof Error
+            ? err.message
+            : "Failed to upload one or more photos. Please try again."
+        );
       }
     }
 
