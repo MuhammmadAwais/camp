@@ -48,7 +48,19 @@ export function toSessionUser(profile: ProfileRow): SessionUser {
     province: normalizeProvinceCode(profile.province),
     role: profile.role,
     kycStatus: profile.kyc_status,
+    mfaEnabled: profile.mfa_enabled,
   };
+}
+
+export function isPrivilegedMfaRole(
+  role: UserRole,
+  seatRole?: DealerSeatRole | null
+): boolean {
+  return (
+    role === "ADMIN" ||
+    role === "DEALER_ADMIN" ||
+    seatRole === "DEALER_ADMIN"
+  );
 }
 
 /**
@@ -212,5 +224,46 @@ export async function requireActiveDealership(
   return {
     ...ctx,
     dealershipId: ctx.dealershipId,
+  };
+}
+
+/**
+ * Enforces Supabase Auth AAL2 (TOTP MFA verified) for `ADMIN` and `DEALER_ADMIN`
+ * accounts on sensitive privileged mutations (NFR-06, H7).
+ */
+export async function requireAal2ForPrivilegedRoles<
+  TContext extends SessionContext,
+>(ctx: TContext): Promise<TContext> {
+  if (!isPrivilegedMfaRole(ctx.role, ctx.seatRole)) {
+    return ctx;
+  }
+
+  const { data, error } =
+    await ctx.supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+
+  const currentLevel = data?.currentLevel ?? ctx.aal ?? "aal1";
+  const nextLevel =
+    data?.nextLevel ?? (ctx.profile.mfa_enabled ? "aal2" : "aal1");
+
+  if (error || currentLevel !== "aal2") {
+    const reason =
+      nextLevel === "aal2" ? "VERIFICATION_REQUIRED" : "ENROLLMENT_REQUIRED";
+    const message =
+      reason === "ENROLLMENT_REQUIRED"
+        ? "Mandatory Two-Factor Authentication (TOTP) must be enrolled in Security Settings before performing privileged actions."
+        : "Two-Factor Authentication (AAL2) verification is required to perform this privileged action.";
+
+    throw new ForbiddenError(message, "MFA_REQUIRED", {
+      reason,
+      currentLevel,
+      nextLevel,
+      setupUrl: "/settings/security?mfa=enroll",
+      role: ctx.role,
+    });
+  }
+
+  return {
+    ...ctx,
+    aal: currentLevel,
   };
 }

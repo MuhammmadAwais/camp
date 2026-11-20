@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B7 Complete — Prompt B7.3 Complete) — **Next Prompt: `Prompt B8.1`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B8 — Prompt B8.1 Complete) — **Next Prompt: `Prompt B8.2`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -268,7 +268,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **II** | **B7** | `Prompt B7.1` | Stripe Checkout, Billing Portal & Invoices (`billing.adapter.ts`, `/api/dealer/subscription*`, `/api/dealer/billing*`) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B7** | `Prompt B7.2` | Idempotent Stripe Webhook (`/api/webhooks/stripe` — HMAC verify, quota sync, HTTP 402 bid block on `PAST_DUE`) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B7** | `Prompt B7.3` | Persistent Notifications + Realtime Bell (`/api/notifications`) + Email/SMS CASL Adapter (radius approval fan-out) | Complete Platform | 3–4 hrs | [x] |
-| **III** | **B8** | `Prompt B8.1` | Mandatory TOTP MFA (`supabase.auth.mfa` — NFR-06) enrollment, QR setup & AAL2 guard for `ADMIN` / `DEALER_ADMIN` | Hardening & Handoff | 3–4 hrs | [ ] |
+| **III** | **B8** | `Prompt B8.1` | Mandatory TOTP MFA (`supabase.auth.mfa` — NFR-06) enrollment, QR setup & AAL2 guard for `ADMIN` / `DEALER_ADMIN` | Hardening & Handoff | 3–4 hrs | [x] |
 | **III** | **B8** | `Prompt B8.2` | Rate Limiting (`lib/server/rate-limit.ts` — NFR-07), Security Headers, Supabase Security/Performance Advisor Audit | Hardening & Handoff | 3 hrs | [ ] |
 | **III** | **B8** | `Prompt B8.3` | PIPEDA / Law 25 Data Export & 30-Day Deletion Workflow + Optional Drop-In AWS S3 `ca-central-1` Storage Adapter | Hardening & Handoff | 3 hrs | [ ] |
 | **III** | **B9** | `Prompt B9.1` | Vitest Setup + ≥70% Unit Tests (auction state machine, bids, integer cents, Stripe webhooks) + Sealed-Bid RLS Leak Tests | Hardening & Handoff | 4–5 hrs | [ ] |
@@ -532,7 +532,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 
 ### Phase B8 — Security Hardening, TOTP MFA, Rate Limiting & Privacy Compliance
 
-- [ ] **`Prompt B8.1` — Mandatory TOTP MFA for `ADMIN` & `DEALER_ADMIN` (NFR-06)**
+- [x] **`Prompt B8.1` — Mandatory TOTP MFA for `ADMIN` & `DEALER_ADMIN` (NFR-06)**
   - **Build From → To:** Password-only login for privileged roles → native Supabase TOTP MFA (`supabase.auth.mfa`) enrollment, QR setup, verification challenge, and server-side AAL2 enforcement.
   - **Files to Create/Modify:**
     - `lib/server/auth.ts` — Add `requireAal2ForPrivilegedRoles()` enforcing verified MFA (`aal2`) for `ADMIN` and `DEALER_ADMIN` on sensitive routes (with clear `MFA_REQUIRED` error code & enrollment flow).

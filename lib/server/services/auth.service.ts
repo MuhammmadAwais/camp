@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { geocodeCanadianPostalCode } from "@/lib/server/adapters/geo.adapter";
 import {
   getSessionContext,
+  isPrivilegedMfaRole,
   maskPhone,
   requireAuth,
   toSessionUser,
@@ -27,6 +28,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type {
   AuthSession,
   ForgotPasswordResponse,
+  MfaFactorSummary,
   PendingVerification,
   ResendCodeResponse,
   SessionUser,
@@ -845,9 +847,46 @@ export async function loginWithPassword(
     );
   }
 
+  const [aalRes, factorsRes] = await Promise.all([
+    supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+    supabase.auth.mfa.listFactors(),
+  ]);
+
+  const rawCurrentAal = aalRes.data?.currentLevel;
+  const currentAal: "aal1" | "aal2" =
+    rawCurrentAal === "aal2" ? "aal2" : "aal1";
+  const rawNextAal = aalRes.data?.nextLevel;
+  const verifiedTotp: MfaFactorSummary[] = (factorsRes.data?.totp ?? []).map(
+    (f) => ({
+      id: f.id,
+      friendlyName: f.friendly_name?.trim() || "Authenticator App",
+      factorType: "totp",
+      status: "verified",
+      createdAt: f.created_at,
+      updatedAt: f.updated_at,
+    })
+  );
+
+  const nextAal: "aal1" | "aal2" =
+    rawNextAal === "aal2" || verifiedTotp.length > 0 ? "aal2" : "aal1";
+  const mfaRequired =
+    currentAal !== "aal2" && nextAal === "aal2" && verifiedTotp.length > 0;
+  const mfaEnrollmentRequired =
+    isPrivilegedMfaRole(profile.role) &&
+    !mfaRequired &&
+    currentAal !== "aal2";
+
   return {
     accessToken: data.session.access_token,
-    user: toSessionUser(profile),
+    user: {
+      ...toSessionUser(profile),
+      mfaEnabled: verifiedTotp.length > 0 || profile.mfa_enabled,
+    },
+    aal: currentAal,
+    nextAal,
+    mfaRequired,
+    mfaEnrollmentRequired,
+    mfaFactors: verifiedTotp,
   };
 }
 

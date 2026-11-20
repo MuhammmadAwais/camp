@@ -539,14 +539,22 @@ export async function getSecuritySettings(
   ctx: SessionContext,
   requestMeta: { ipAddress: string | null; userAgent: string | null }
 ): Promise<SecuritySettingsResponse> {
-  const {
-    data: { user },
-  } = await ctx.supabase.auth.getUser();
+  const [userRes, aalRes, factorsRes] = await Promise.all([
+    ctx.supabase.auth.getUser(),
+    ctx.supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+    ctx.supabase.auth.mfa.listFactors(),
+  ]);
+
+  const user = userRes.data.user;
+  const verifiedTotpCount = (factorsRes.data?.totp ?? []).length;
+  const liveMfaEnabled = factorsRes.error
+    ? ctx.profile.mfa_enabled
+    : verifiedTotpCount > 0;
 
   return {
     email: ctx.email,
-    mfaEnabled: ctx.profile.mfa_enabled,
-    aal: ctx.aal,
+    mfaEnabled: liveMfaEnabled,
+    aal: aalRes.data?.currentLevel ?? ctx.aal ?? "aal1",
     role: ctx.role,
     emailVerified: ctx.profile.email_verified,
     phoneVerified: ctx.profile.phone_verified,

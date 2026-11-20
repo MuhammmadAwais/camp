@@ -1,5 +1,8 @@
 import type { NextRequest } from "next/server";
-import { requireActiveDealership } from "@/lib/server/auth";
+import {
+  requireAal2ForPrivilegedRoles,
+  requireActiveDealership,
+} from "@/lib/server/auth";
 import { created, handleApiRoute, ok, parseBody } from "@/lib/server/http";
 import {
   inviteDealerMemberSchema,
@@ -14,7 +17,9 @@ export const GET = handleApiRoute(async () => {
 });
 
 export const POST = handleApiRoute(async (request: NextRequest) => {
-  const ctx = await requireActiveDealership(["DEALER_ADMIN"]);
+  const ctx = await requireAal2ForPrivilegedRoles(
+    await requireActiveDealership(["DEALER_ADMIN"])
+  );
   const payload = await parseBody(request, inviteDealerMemberSchema);
 
   const forwardedFor = request.headers.get("x-forwarded-for");

@@ -22,6 +22,7 @@ import {
 import { getDefaultPortalForRole } from "@/lib/auth-routing";
 import { ApiError } from "@/lib/api-client";
 import { PROVINCE_CODES, type ProvinceCode } from "@/lib/canada";
+import { MfaSettingsCard } from "@/components/settings/MfaSettingsCard";
 import {
   useAdminPlatformConfig,
   useProfileSettings,
@@ -78,8 +79,9 @@ const CONFIG_LABELS: Record<PlatformConfigKey, string> = {
 
 function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
   const searchParams = useSearchParams();
+  const isMfaEnrollPrompt = searchParams.get("mfa") === "enroll";
   const queryTab =
-    searchParams.get("tab") === "security"
+    isMfaEnrollPrompt || searchParams.get("tab") === "security"
       ? "SECURITY"
       : searchParams.get("tab") === "config"
       ? "CONFIG"
@@ -799,31 +801,17 @@ function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
       {/* SECURITY TAB */}
       {activeTab === "SECURITY" && (
         <div className="space-y-6 animate-fadeIn">
-          <div className="rounded-2xl border border-portal-border bg-portal-surface p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-headline font-bold text-base text-portal-text">
-                  Multi-Factor Authentication (MFA / 2FA)
-                </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-portal-primary/10 text-portal-primary border border-portal-primary/20">
-                  AAL: {security?.aal ?? "aal1"}
-                </span>
-              </div>
-              <p className="text-xs text-portal-text-muted mt-1 max-w-xl">
-                Interactive TOTP authenticator QR enrollment and mandatory AAL2 enforcement for Admin and Dealer Admins arrives in Phase B8.1.
-              </p>
-            </div>
-
-            <span
-              className={`text-xs font-mono font-semibold ${
-                security?.mfaEnabled ? "text-emerald-500" : "text-amber-500"
-              }`}
-            >
-              {security?.mfaEnabled
-                ? "TOTP Enabled"
-                : "Enrollment Pending (B8.1)"}
-            </span>
-          </div>
+          <MfaSettingsCard
+            mandatoryPrompt={isMfaEnrollPrompt}
+            onSuccess={(msg) => {
+              setBannerError(null);
+              setBannerSuccess(msg);
+            }}
+            onError={(msg) => {
+              setBannerSuccess(null);
+              setBannerError(msg);
+            }}
+          />
 
           <form
             onSubmit={handleChangePassword}

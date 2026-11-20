@@ -17,11 +17,69 @@ export type SessionUser = {
   province: ProvinceCode;
   role: UserRole;
   kycStatus: KycStatus;
+  mfaEnabled?: boolean;
+};
+
+export type MfaFactorSummary = {
+  id: string;
+  friendlyName: string;
+  factorType: "totp" | "phone" | "webauthn";
+  status: "verified" | "unverified";
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type AuthSession = {
   accessToken: string;
   user: SessionUser;
+  mfaRequired?: boolean;
+  mfaEnrollmentRequired?: boolean;
+  aal?: "aal1" | "aal2" | null;
+  nextAal?: "aal1" | "aal2" | null;
+  mfaFactors?: MfaFactorSummary[];
+};
+
+export type MfaFactorsResponse = {
+  currentLevel: "aal1" | "aal2" | null;
+  nextLevel: "aal1" | "aal2" | null;
+  mfaRequiredForRole: boolean;
+  mfaEnabled: boolean;
+  factors: MfaFactorSummary[];
+  serverTime: string;
+};
+
+export type MfaEnrollPayload = {
+  friendlyName?: string;
+};
+
+export type MfaEnrollResponse = {
+  factorId: string;
+  friendlyName: string;
+  qrCode: string;
+  secret: string;
+  uri: string;
+};
+
+export type MfaVerifyPayload = {
+  factorId: string;
+  code: string;
+};
+
+export type MfaVerifyResponse = {
+  verified: true;
+  factorId: string;
+  currentLevel: "aal2";
+  session: AuthSession;
+};
+
+export type MfaUnenrollPayload = {
+  factorId: string;
+};
+
+export type MfaUnenrollResponse = {
+  unenrolled: true;
+  factorId: string;
+  mfaEnabled: boolean;
 };
 
 // Returned by registration and by login attempts on an unverified account (FR-EU-01).

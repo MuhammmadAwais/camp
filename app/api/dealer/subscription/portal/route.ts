@@ -1,10 +1,15 @@
 import type { NextRequest } from "next/server";
-import { requireActiveDealership } from "@/lib/server/auth";
+import {
+  requireAal2ForPrivilegedRoles,
+  requireActiveDealership,
+} from "@/lib/server/auth";
 import { handleApiRoute, ok } from "@/lib/server/http";
 import { launchDealerBillingPortal } from "@/lib/server/services/billing.service";
 
 export const POST = handleApiRoute(async (request: NextRequest) => {
-  const ctx = await requireActiveDealership(["DEALER_ADMIN"]);
+  const ctx = await requireAal2ForPrivilegedRoles(
+    await requireActiveDealership(["DEALER_ADMIN"])
+  );
 
   const forwardedFor = request.headers.get("x-forwarded-for");
   const ipAddress =

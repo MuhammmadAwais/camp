@@ -1,5 +1,8 @@
 import type { NextRequest } from "next/server";
-import { requireActiveDealership } from "@/lib/server/auth";
+import {
+  requireAal2ForPrivilegedRoles,
+  requireActiveDealership,
+} from "@/lib/server/auth";
 import { handleApiRoute, ok, parseBody } from "@/lib/server/http";
 import {
   removeMember,
@@ -10,7 +13,9 @@ import {
 export const PATCH = handleApiRoute<{
   params: Promise<{ memberId: string }>;
 }>(async (request: NextRequest, context) => {
-  const ctx = await requireActiveDealership(["DEALER_ADMIN"]);
+  const ctx = await requireAal2ForPrivilegedRoles(
+    await requireActiveDealership(["DEALER_ADMIN"])
+  );
   const { memberId } = await context.params;
   const payload = await parseBody(request, updateDealerMemberRoleSchema);
 
@@ -27,7 +32,9 @@ export const PATCH = handleApiRoute<{
 export const DELETE = handleApiRoute<{
   params: Promise<{ memberId: string }>;
 }>(async (request: NextRequest, context) => {
-  const ctx = await requireActiveDealership(["DEALER_ADMIN"]);
+  const ctx = await requireAal2ForPrivilegedRoles(
+    await requireActiveDealership(["DEALER_ADMIN"])
+  );
   const { memberId } = await context.params;
 
   const forwardedFor = request.headers.get("x-forwarded-for");

@@ -1,6 +1,7 @@
 export const authKeys = {
   all: ["auth"] as const,
   me: () => [...authKeys.all, "me"] as const,
+  mfaFactors: () => [...authKeys.all, "mfa-factors"] as const,
   registration: (registrationId: string) => [...authKeys.all, "registration", registrationId] as const,
 };
 

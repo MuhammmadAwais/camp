@@ -1,5 +1,8 @@
 import type { NextRequest } from "next/server";
-import { requireRole } from "@/lib/server/auth";
+import {
+  requireAal2ForPrivilegedRoles,
+  requireRole,
+} from "@/lib/server/auth";
 import { handleApiRoute, ok, parseBody } from "@/lib/server/http";
 import {
   getPlatformConfig,
@@ -14,7 +17,7 @@ export const GET = handleApiRoute(async () => {
 });
 
 export const PATCH = handleApiRoute(async (request: NextRequest) => {
-  const ctx = await requireRole(["ADMIN"]);
+  const ctx = await requireAal2ForPrivilegedRoles(await requireRole(["ADMIN"]));
   const payload = await parseBody(request, updatePlatformConfigSchema);
 
   const forwardedFor = request.headers.get("x-forwarded-for");
