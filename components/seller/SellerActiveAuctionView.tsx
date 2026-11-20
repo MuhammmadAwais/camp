@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Clock,
   Lock,
@@ -17,11 +18,14 @@ import {
   RefreshCw,
   Award,
   ChevronsUpDown,
+  RotateCcw,
 } from "lucide-react";
 import { formatCadCents } from "@/lib/utils";
+import { ApiError } from "@/lib/api-client";
 import type { AuctionStatus } from "@/lib/types/seller";
 import { useSellerListingDetail } from "@/hooks/useSellerDashboard";
 import { useAuctionRealtime } from "@/hooks/useAuctionRealtime";
+import { useRelistVehicle } from "@/hooks/useProfileSettings";
 import { VehicleSwitcherModal } from "@/components/seller/VehicleSwitcherModal";
 
 interface SellerActiveAuctionViewProps {
@@ -44,6 +48,7 @@ const STATUS_BADGE_LABELS: Record<AuctionStatus, string> = {
 export function SellerActiveAuctionView({
   listingId,
 }: SellerActiveAuctionViewProps) {
+  const router = useRouter();
   const {
     data,
     isLoading,
@@ -52,6 +57,9 @@ export function SellerActiveAuctionView({
     dataUpdatedAt,
     refetch,
   } = useSellerListingDetail(listingId);
+
+  const relistMutation = useRelistVehicle(listingId);
+  const [relistError, setRelistError] = useState<string | null>(null);
 
   const realtime = useAuctionRealtime({
     listingId,
@@ -220,7 +228,7 @@ export function SellerActiveAuctionView({
           </div>
 
           {/* Action Button based on state */}
-          {auction.status === "UNSEALED" && (
+          {auction.status === "UNSEALED" && auction.bidCount > 0 && (
             <Link
               href={`/seller/listings/${listingId}/select-dealer`}
               id="btn-view-unsealed-bids"
@@ -229,6 +237,41 @@ export function SellerActiveAuctionView({
               <span>Review & Select Winning Dealer</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
+          )}
+
+          {(auction.status === "EXPIRED" ||
+            auction.status === "CANCELLED" ||
+            (auction.status === "UNSEALED" && auction.bidCount === 0)) && (
+            <button
+              type="button"
+              id="btn-relist-vehicle"
+              disabled={relistMutation.isPending}
+              onClick={() => {
+                setRelistError(null);
+                void relistMutation
+                  .mutateAsync({})
+                  .then((res) => {
+                    router.push(`/seller/listings/${res.listing.id}`);
+                  })
+                  .catch((err: unknown) => {
+                    setRelistError(
+                      err instanceof ApiError
+                        ? err.message
+                        : "Unable to relist this vehicle right now."
+                    );
+                  });
+              }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-portal-primary hover:bg-portal-primary-hover text-white shadow-md transition-all cursor-pointer self-start lg:self-auto disabled:opacity-60"
+            >
+              {relistMutation.isPending ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <RotateCcw className="w-4 h-4" />
+              )}
+              <span>
+                {relistMutation.isPending ? "Relisting..." : "Relist Vehicle"}
+              </span>
+            </button>
           )}
 
           {(auction.status === "ACCEPTED" ||
@@ -244,6 +287,19 @@ export function SellerActiveAuctionView({
             </Link>
           )}
         </div>
+
+        {relistError && (
+          <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold flex items-center justify-between gap-3">
+            <span>{relistError}</span>
+            <button
+              type="button"
+              onClick={() => setRelistError(null)}
+              className="text-current opacity-70 hover:opacity-100 cursor-pointer"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         {/* 4-Metric Bar */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle/60">

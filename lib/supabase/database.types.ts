@@ -1315,6 +1315,7 @@ export type Database = {
           location: unknown
           marketing_opt_in: boolean
           mfa_enabled: boolean
+          notification_preferences: Json
           phone_e164: string | null
           phone_verified: boolean
           postal_code: string | null
@@ -1341,6 +1342,7 @@ export type Database = {
           location?: unknown
           marketing_opt_in?: boolean
           mfa_enabled?: boolean
+          notification_preferences?: Json
           phone_e164?: string | null
           phone_verified?: boolean
           postal_code?: string | null
@@ -1367,6 +1369,7 @@ export type Database = {
           location?: unknown
           marketing_opt_in?: boolean
           mfa_enabled?: boolean
+          notification_preferences?: Json
           phone_e164?: string | null
           phone_verified?: boolean
           postal_code?: string | null

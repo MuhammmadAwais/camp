@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B6 — Prompt B6.2 Complete) — **Next Prompt: `Prompt B6.3`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B6 Complete — Prompt B6.3 Complete) — **Next Prompt: `Prompt B7.1`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -264,7 +264,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **II** | **B5** | `Prompt B5.3` | Dealership Team & Seat Management (`/api/dealer/team` — `DEALER_ADMIN` gate, buyer vs. inspector permissions) | Complete Platform | 2–3 hrs | [x] |
 | **II** | **B6** | `Prompt B6.1` | Dispute Arbitration Engine (`/api/admin/disputes*` + hoist evidence upload + timeline + resolution) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B6** | `Prompt B6.2` | Admin Analytics SQL Views (`/api/admin/analytics`) & Paginated Immutable Audit Log + SHA-256 Chain (`/api/admin/audit-log`) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B6** | `Prompt B6.3` | Seller Relisting (FR-EU-13 cooldown), Account Settings (`/api/settings/*`), & Platform Config (`/api/admin/config`) | Complete Platform | 3 hrs | [ ] |
+| **II** | **B6** | `Prompt B6.3` | Seller Relisting (FR-EU-13 cooldown), Account Settings (`/api/settings/*`), & Platform Config (`/api/admin/config`) | Complete Platform | 3 hrs | [x] |
 | **II** | **B7** | `Prompt B7.1` | Stripe Checkout, Billing Portal & Invoices (`billing.adapter.ts`, `/api/dealer/subscription*`, `/api/dealer/billing*`) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B7** | `Prompt B7.2` | Idempotent Stripe Webhook (`/api/webhooks/stripe` — HMAC verify, quota sync, HTTP 402 bid block on `PAST_DUE`) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B7** | `Prompt B7.3` | Persistent Notifications + Realtime Bell (`/api/notifications`) + Email/SMS CASL Adapter (radius approval fan-out) | Complete Platform | 3–4 hrs | [ ] |
@@ -485,7 +485,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** FR-AD-07, FR-AD-09, H8, NFR-11.
   - **Exit Gate:** Analytics dashboard reflects real DB totals from completed auctions; audit log displays real SHA-256 hashed entries and rejects any SQL `UPDATE`/`DELETE` attempt.
 
-- [ ] **`Prompt B6.3` — Seller Relisting, Profile Settings & Admin Platform Configuration**
+- [x] **`Prompt B6.3` — Seller Relisting, Profile Settings & Admin Platform Configuration**
   - **Build From → To:** Static `ProfileSettingsView` & unimplemented relisting/config → live profile & security settings, FR-EU-13 relisting with 24h cooldown, and FR-AD-08 dynamic platform config.
   - **Files to Create/Modify:**
     - `lib/server/services/settings.service.ts` — Update profile fields, province, `language_pref`, notification preferences, password change; `relistVehicle()` enforcing cooldown (`relist_cooldown_hours` from `platform_config`, creating child listing with `parent_listing_id` & incremented `relist_count`).

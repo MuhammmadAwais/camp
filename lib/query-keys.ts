@@ -39,6 +39,13 @@ export const adminKeys = {
     filters
       ? ([...adminKeys.all, "audit-log", filters] as const)
       : ([...adminKeys.all, "audit-log"] as const),
+  config: () => [...adminKeys.all, "config"] as const,
+};
+
+export const settingsKeys = {
+  all: ["settings"] as const,
+  profile: () => [...settingsKeys.all, "profile"] as const,
+  security: () => [...settingsKeys.all, "security"] as const,
 };
 
 export const dealerKeys = {
