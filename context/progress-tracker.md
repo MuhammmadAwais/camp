@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B8 Complete — Prompt B8.3 Complete) — **Next Prompt: `Prompt B9.1`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B9 — Prompt B9.1 Complete) — **Next Prompt: `Prompt B9.2`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -271,7 +271,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **III** | **B8** | `Prompt B8.1` | Mandatory TOTP MFA (`supabase.auth.mfa` — NFR-06) enrollment, QR setup & AAL2 guard for `ADMIN` / `DEALER_ADMIN` | Hardening & Handoff | 3–4 hrs | [x] |
 | **III** | **B8** | `Prompt B8.2` | Rate Limiting (`lib/server/rate-limit.ts` — NFR-07), Security Headers, Supabase Security/Performance Advisor Audit | Hardening & Handoff | 3 hrs | [x] |
 | **III** | **B8** | `Prompt B8.3` | PIPEDA / Law 25 Data Export & 30-Day Deletion Workflow + Optional Drop-In AWS S3 `ca-central-1` Storage Adapter | Hardening & Handoff | 3 hrs | [x] |
-| **III** | **B9** | `Prompt B9.1` | Vitest Setup + ≥70% Unit Tests (auction state machine, bids, integer cents, Stripe webhooks) + Sealed-Bid RLS Leak Tests | Hardening & Handoff | 4–5 hrs | [ ] |
+| **III** | **B9** | `Prompt B9.1` | Vitest Setup + ≥70% Unit Tests (auction state machine, bids, integer cents, Stripe webhooks) + Sealed-Bid RLS Leak Tests | Hardening & Handoff | 4–5 hrs | [x] |
 | **III** | **B9** | `Prompt B9.2` | GitHub Actions CI (`.github/workflows/ci.yml`), Full Preview E2E QA & Senior Engineer Handoff (`docs/backend-handoff.md`) | Hardening & Handoff | 3 hrs | [ ] |
 | **III** | **B10** | `Prompt B10.1` | *(Separate Track)* `next-intl` Setup, `[locale]` Routing, `messages/en.json` & `fr.json`, Language Sync | Quebec Law 25 i18n | 1–2 days | [ ] |
 | **III** | **B10** | `Prompt B10.2` | *(Separate Track)* Full Portal, Legal & Server-Side Bilingual Email/Notification Template Parity (FR-X-04 / NFR-13) | Quebec Law 25 i18n | 2 days | [ ] |
@@ -562,7 +562,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 
 ### Phase B9 — Automated Test Suite, CI Gate & Senior Engineer Handoff
 
-- [ ] **`Prompt B9.1` — Vitest Setup, ≥70% Unit Tests & Automated Sealed-Bid RLS Leak Tests**
+- [x] **`Prompt B9.1` — Vitest Setup, ≥70% Unit Tests & Automated Sealed-Bid RLS Leak Tests**
   - **Build From → To:** Manual QA only → automated Vitest test suite covering auction engine, bidding concurrency rules, integer-cents math, Stripe webhook idempotency, and real Postgres RLS isolation tests.
   - **Files to Create/Modify:**
     - Install `vitest` (`package.json`, `vitest.config.ts`, `"test": "vitest run"`, `"test:coverage": "vitest run --coverage"`).
