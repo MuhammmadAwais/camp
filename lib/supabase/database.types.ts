@@ -169,6 +169,13 @@ export type Database = {
             foreignKeyName: "bids_dealership_id_fkey"
             columns: ["dealership_id"]
             isOneToOne: false
+            referencedRelation: "admin_analytics_dealer_leaderboard"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "bids_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
             referencedRelation: "dealerships"
             referencedColumns: ["id"]
           },
@@ -287,6 +294,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "dealership_members_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "admin_analytics_dealer_leaderboard"
+            referencedColumns: ["dealership_id"]
+          },
           {
             foreignKeyName: "dealership_members_dealership_id_fkey"
             columns: ["dealership_id"]
@@ -547,6 +561,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "public_auction_telemetry"
             referencedColumns: ["listing_id"]
+          },
+          {
+            foreignKeyName: "disputes_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "admin_analytics_settlement_ledger"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "disputes_match_id_fkey"
@@ -938,6 +959,13 @@ export type Database = {
             foreignKeyName: "matches_dealership_id_fkey"
             columns: ["dealership_id"]
             isOneToOne: false
+            referencedRelation: "admin_analytics_dealer_leaderboard"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "matches_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
             referencedRelation: "dealerships"
             referencedColumns: ["id"]
           },
@@ -1147,6 +1175,13 @@ export type Database = {
             foreignKeyName: "payments_dealership_id_fkey"
             columns: ["dealership_id"]
             isOneToOne: false
+            referencedRelation: "admin_analytics_dealer_leaderboard"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "payments_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
             referencedRelation: "dealerships"
             referencedColumns: ["id"]
           },
@@ -1345,6 +1380,13 @@ export type Database = {
             foreignKeyName: "profiles_dealership_id_fkey"
             columns: ["dealership_id"]
             isOneToOne: false
+            referencedRelation: "admin_analytics_dealer_leaderboard"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "profiles_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
             referencedRelation: "dealerships"
             referencedColumns: ["id"]
           },
@@ -1418,6 +1460,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "subscriptions_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: true
+            referencedRelation: "admin_analytics_dealer_leaderboard"
+            referencedColumns: ["dealership_id"]
+          },
           {
             foreignKeyName: "subscriptions_dealership_id_fkey"
             columns: ["dealership_id"]
@@ -1528,6 +1577,104 @@ export type Database = {
       }
     }
     Views: {
+      admin_analytics_dealer_leaderboard: {
+        Row: {
+          city: string | null
+          dealership_id: string | null
+          legal_name: string | null
+          license_number: string | null
+          lots_won: number | null
+          operating_name: string | null
+          province: string | null
+          regulator: string | null
+          total_bids_placed: number | null
+          volume_cents: number | null
+        }
+        Relationships: []
+      }
+      admin_analytics_metro_velocity: {
+        Row: {
+          city: string | null
+          clearance_percent: number | null
+          cleared_lots: number | null
+          intake_lots: number | null
+          province: string | null
+        }
+        Relationships: []
+      }
+      admin_analytics_provincial_summary: {
+        Row: {
+          avg_bids_per_listing: number | null
+          avg_surplus_cents: number | null
+          cleared_lots_count: number | null
+          code: string | null
+          gmv_cents: number | null
+          province_name: string | null
+          regulator: string | null
+          total_listings_count: number | null
+          verified_dealers_count: number | null
+        }
+        Relationships: []
+      }
+      admin_analytics_settlement_ledger: {
+        Row: {
+          agreed_amount_cents: number | null
+          buyer_name: string | null
+          city: string | null
+          dealership_id: string | null
+          id: string | null
+          listing_id: string | null
+          outcome: string | null
+          province: string | null
+          regulator_ref: string | null
+          reserve_price_cents: number | null
+          seller_id: string | null
+          settled_at: string | null
+          settlement_amount_cents: number | null
+          settlement_status: string | null
+          surplus_cents: number | null
+          vehicle_title: string | null
+          vin: string | null
+          voucher_code: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "admin_analytics_dealer_leaderboard"
+            referencedColumns: ["dealership_id"]
+          },
+          {
+            foreignKeyName: "matches_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "dealerships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: true
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: true
+            referencedRelation: "public_auction_telemetry"
+            referencedColumns: ["listing_id"]
+          },
+          {
+            foreignKeyName: "matches_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       public_auction_telemetry: {
         Row: {
           auction_ends_at: string | null
@@ -1563,6 +1710,28 @@ export type Database = {
           p_listing_id: string
           p_selection_reason?: string
         }
+        Returns: Json
+      }
+      compute_audit_entry_hash: {
+        Args: {
+          p_action: string
+          p_actor_name: string
+          p_actor_role: string
+          p_after_json: Json
+          p_before_json: Json
+          p_created_at: string
+          p_details: string
+          p_entity_id: string
+          p_entity_type: string
+          p_id: number
+          p_ip_address: string
+          p_jurisdiction: string
+          p_prev_hash: string
+        }
+        Returns: string
+      }
+      get_admin_platform_analytics: {
+        Args: { p_province?: string; p_range?: string }
         Returns: Json
       }
       get_dealer_inventory_with_distance: {
@@ -1637,6 +1806,7 @@ export type Database = {
         }
         Returns: Json
       }
+      verify_audit_log_chain: { Args: never; Returns: Json }
     }
     Enums: {
       bid_status: "ACTIVE" | "WON" | "LOST" | "EXPIRED" | "WITHDRAWN" | "VOIDED"
@@ -1895,3 +2065,4 @@ export const Constants = {
     },
   },
 } as const
+

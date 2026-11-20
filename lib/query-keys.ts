@@ -31,6 +31,14 @@ export const adminKeys = {
   dealer: (id: string) => [...adminKeys.dealers(), id] as const,
   disputes: () => [...adminKeys.all, "disputes"] as const,
   dispute: (id: string) => [...adminKeys.disputes(), id] as const,
+  analytics: (filters?: { range?: string; province?: string }) =>
+    filters
+      ? ([...adminKeys.all, "analytics", filters] as const)
+      : ([...adminKeys.all, "analytics"] as const),
+  auditLog: (filters?: Record<string, string | number | undefined>) =>
+    filters
+      ? ([...adminKeys.all, "audit-log", filters] as const)
+      : ([...adminKeys.all, "audit-log"] as const),
 };
 
 export const dealerKeys = {

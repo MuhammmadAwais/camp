@@ -359,3 +359,168 @@ export type ResolveDisputeResult = {
   message: string;
   serverTime: string;
 };
+
+export type AnalyticsTimeRange = "7D" | "30D" | "90D" | "YTD";
+
+export type AnalyticsDailyTrendPoint = {
+  bucketStart: string;
+  day: string;
+  dateStr: string;
+  volumeCents: number; // Integer CAD cents invariant
+  reserveFloorCents: number; // Integer CAD cents invariant
+  bidsCount: number;
+  lotsCleared: number;
+};
+
+export type ProvincialMarketShare = {
+  province: string;
+  code: string;
+  regulator: AdminDealerRegulator | string;
+  volumeCents: number; // Integer CAD cents invariant
+  sharePercent: number;
+  dealersCount: number;
+  lotsCount: number;
+  clearedLotsCount: number;
+  avgSurplusCents: number; // Integer CAD cents invariant
+};
+
+export type MetroVelocityBar = {
+  city: string;
+  provinceCode: string;
+  intakeLots: number;
+  clearedLots: number;
+  clearancePercent: number;
+};
+
+export type LeaderboardDealer = {
+  rank: number;
+  dealershipId: string;
+  name: string;
+  entity: string;
+  regulator: AdminDealerRegulator | string;
+  licenseNumber: string;
+  province: string;
+  lotsWon: number;
+  bidsPlaced: number;
+  volumeCents: number; // Integer CAD cents invariant
+  growthPercent: number;
+  monogram: string;
+};
+
+export type WholesaleSettlementRecord = {
+  id: string;
+  listingId: string;
+  voucherCode: string;
+  vehicle: string;
+  vin: string;
+  buyer: string;
+  regulator: string;
+  province: string;
+  amountCents: number; // Integer CAD cents invariant
+  surplusCents: number; // Integer CAD cents invariant
+  completedAtIso: string;
+  status: "SETTLED" | "ESCROW_CLEARED";
+  outcome: string;
+};
+
+export type AdminAnalyticsKpis = {
+  totalVolumeCents: number; // Integer CAD cents invariant
+  previousVolumeCents: number; // Integer CAD cents invariant
+  gmvGrowthPercent: number;
+  totalTransactionsCount: number;
+  totalListingsCount: number;
+  eligibleClosedListingsCount: number;
+  clearedLotsCount: number;
+  clearanceRatePercent: number;
+  averageBidsPerLot: number;
+  averageSellerSurplusCents: number; // Integer CAD cents invariant
+  activeDealerCount: number;
+  activeAuctionsCount: number;
+  totalBidsCount: number;
+};
+
+export type AdminAnalyticsResponse = {
+  range: AnalyticsTimeRange;
+  province: string;
+  kpis: AdminAnalyticsKpis;
+  trend: AnalyticsDailyTrendPoint[];
+  provincialShare: ProvincialMarketShare[];
+  metroVelocity: MetroVelocityBar[];
+  dealerLeaderboard: LeaderboardDealer[];
+  settlements: WholesaleSettlementRecord[];
+  serverTime: string;
+};
+
+export type AuditChainIntegrity = {
+  valid: boolean;
+  totalRows: number;
+  verifiedRows: number;
+  invalidRows: number;
+  integrityPercent: number;
+  latestHash: string | null;
+  firstBrokenId: number | null;
+};
+
+export type AuditLogSummaryCounts = {
+  total: number;
+  overrides: number;
+  bids: number;
+  approvals: number;
+  disputes: number;
+};
+
+export type AuditLogFacets = {
+  actions: string[];
+  entityTypes: string[];
+  provinces: string[];
+};
+
+export type AuditLogItem = {
+  id: number;
+  timestamp: string;
+  actorId: string | null;
+  actorName: string;
+  actorRole: string;
+  action: string;
+  entityType: string;
+  entityId: string;
+  ipAddress: string;
+  provincialJurisdiction: string;
+  details: string;
+  immutableHash: string;
+  beforeJson: Record<string, unknown> | null;
+  afterJson: Record<string, unknown> | null;
+};
+
+export type AdminAuditActionGroup =
+  | "ALL"
+  | "OVERRIDES"
+  | "BIDS"
+  | "APPROVALS"
+  | "DISPUTES";
+
+export type AdminAuditLogFilters = {
+  page?: number;
+  pageSize?: number;
+  action?: string;
+  actionGroup?: AdminAuditActionGroup;
+  entityType?: string;
+  province?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  search?: string;
+};
+
+export type AdminAuditLogResponse = {
+  items: AuditLogItem[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
+  integrity: AuditChainIntegrity;
+  counts: AuditLogSummaryCounts;
+  facets: AuditLogFacets;
+  serverTime: string;
+};

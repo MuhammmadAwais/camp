@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B6 — Prompt B6.1 Complete) — **Next Prompt: `Prompt B6.2`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B6 — Prompt B6.2 Complete) — **Next Prompt: `Prompt B6.3`**
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
@@ -263,7 +263,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **II** | **B5** | `Prompt B5.2` | Dealer Registration (`/api/dealer/register`) & Admin License Verification (`/api/admin/dealers*` + BR-14 bid voiding) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B5** | `Prompt B5.3` | Dealership Team & Seat Management (`/api/dealer/team` — `DEALER_ADMIN` gate, buyer vs. inspector permissions) | Complete Platform | 2–3 hrs | [x] |
 | **II** | **B6** | `Prompt B6.1` | Dispute Arbitration Engine (`/api/admin/disputes*` + hoist evidence upload + timeline + resolution) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B6** | `Prompt B6.2` | Admin Analytics SQL Views (`/api/admin/analytics`) & Paginated Immutable Audit Log + SHA-256 Chain (`/api/admin/audit-log`) | Complete Platform | 3–4 hrs | [ ] |
+| **II** | **B6** | `Prompt B6.2` | Admin Analytics SQL Views (`/api/admin/analytics`) & Paginated Immutable Audit Log + SHA-256 Chain (`/api/admin/audit-log`) | Complete Platform | 3–4 hrs | [x] |
 | **II** | **B6** | `Prompt B6.3` | Seller Relisting (FR-EU-13 cooldown), Account Settings (`/api/settings/*`), & Platform Config (`/api/admin/config`) | Complete Platform | 3 hrs | [ ] |
 | **II** | **B7** | `Prompt B7.1` | Stripe Checkout, Billing Portal & Invoices (`billing.adapter.ts`, `/api/dealer/subscription*`, `/api/dealer/billing*`) | Complete Platform | 3–4 hrs | [ ] |
 | **II** | **B7** | `Prompt B7.2` | Idempotent Stripe Webhook (`/api/webhooks/stripe` — HMAC verify, quota sync, HTTP 402 bid block on `PAST_DUE`) | Complete Platform | 3–4 hrs | [ ] |
@@ -476,7 +476,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** FR-AD-06, BR-11, NFR-14 (integer cents adjustment math).
   - **Exit Gate:** Dealer opens dispute with hoist photos → Admin reviews full dossier & executes binding resolution → timeline and `audit_logs` update persistently.
 
-- [ ] **`Prompt B6.2` — Admin Platform Analytics SQL Views & Immutable Audit Log**
+- [x] **`Prompt B6.2` — Admin Platform Analytics SQL Views & Immutable Audit Log**
   - **Build From → To:** Hardcoded charts/tables in `AdminAnalyticsView` & `AdminAuditLogView` → live PostgreSQL aggregation views/RPCs and paginated, tamper-evident audit log with CSV export.
   - **Files to Create/Modify:**
     - `supabase/migrations/0010_analytics_views_and_audit_hash.sql` — Postgres views/RPCs for GMV (`SUM(final_price_cents)`), fill rate, avg bids/listing, provincial breakdown, metro hub intake vs. clearance, top sourcing dealerships, wholesale settlement ledger; add `BEFORE INSERT` trigger on `audit_logs` computing SHA-256 chain hash (`immutable_hash`).
