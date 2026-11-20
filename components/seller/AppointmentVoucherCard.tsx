@@ -1,47 +1,60 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
-  QrCode,
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
-  CheckCircle2,
-  Calendar,
-  FileCheck,
-  ShieldCheck,
-  Printer,
-  ExternalLink,
   Award,
-  RefreshCw,
-  Building2,
-  Car,
-  DollarSign,
-  ChevronsUpDown,
-  Navigation,
-  KeyRound,
-  FileText,
   BadgeCheck,
+  Building2,
+  Calendar,
+  Car,
   Check,
-  Sparkles,
+  ChevronsUpDown,
+  Clock,
+  DollarSign,
+  ExternalLink,
+  FileCheck,
+  Mail,
+  MapPin,
+  Navigation,
+  Phone,
+  Printer,
+  QrCode,
+  RefreshCw,
+  ShieldCheck,
 } from "lucide-react";
-import { formatCadCents } from "@/lib/utils";
-import type { ListingDetailData } from "@/lib/types/seller";
-import { apiClient } from "@/lib/api-client";
 import { VehicleSwitcherModal } from "@/components/seller/VehicleSwitcherModal";
+import { useServerSyncedCountdown } from "@/hooks/useAuctionRealtime";
+import { useSellerListingDetail } from "@/hooks/useSellerDashboard";
+import { getErrorMessage } from "@/lib/api-errors";
+import { formatCadCents } from "@/lib/utils";
 
 interface AppointmentVoucherCardProps {
   listingId: string;
 }
 
-export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProps) {
-  const [data, setData] = useState<ListingDetailData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const emptySubscribe = () => () => {};
+
+export function AppointmentVoucherCard({
+  listingId,
+}: AppointmentVoucherCardProps) {
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    dataUpdatedAt,
+  } = useSellerListingDetail(listingId);
+
   const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({
     0: true,
     1: false,
@@ -50,25 +63,13 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
   });
   const [vehicleModalOpen, setVehicleModalOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchVoucher = async () => {
-      try {
-        setIsLoading(true);
-        const res = await apiClient.api.get<ListingDetailData>(`/api/listings/${listingId}?status=ACCEPTED`);
-        if (res.success) {
-          setData(res.data);
-        } else {
-          setError(res.error || "Failed to load appointment voucher");
-        }
-      } catch {
-        setError("Unable to connect to server");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchVoucher();
-  }, [listingId]);
+  const voucherExpiresAt = data?.appointmentVoucher?.expiresAt;
+  const countdown = useServerSyncedCountdown({
+    auctionEndsAt: voucherExpiresAt,
+    serverTime: data?.serverTime,
+    dataUpdatedAt,
+    isActive: Boolean(voucherExpiresAt),
+  });
 
   const toggleCheck = (idx: number) => {
     setCheckedItems((prev) => ({ ...prev, [idx]: !prev[idx] }));
@@ -83,13 +84,43 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
       <div className="min-h-[500px] flex items-center justify-center animate-in fade-in duration-300">
         <div className="flex flex-col items-center gap-3">
           <RefreshCw className="w-8 h-8 text-portal-primary animate-spin" />
-          <p className="text-sm font-medium text-portal-text-muted">Loading dealership voucher pass...</p>
+          <p className="text-sm font-medium text-portal-text-muted">
+            Loading dealership voucher pass...
+          </p>
         </div>
       </div>
     );
   }
 
-  if (error || !data || !data.appointmentVoucher) {
+  if (isError) {
+    return (
+      <div className="max-w-2xl mx-auto py-16 px-4 text-center space-y-5">
+        <h2 className="text-xl font-bold font-headline text-portal-text">
+          Unable to Load Handover Voucher
+        </h2>
+        <p className="text-sm text-portal-text-muted">
+          {getErrorMessage(error)}
+        </p>
+        <div className="flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-portal-primary text-white cursor-pointer"
+          >
+            Retry
+          </button>
+          <Link
+            href={`/seller/listings/${listingId}`}
+            className="text-xs font-medium text-portal-text-muted hover:text-portal-text"
+          >
+            Back to Auction
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data || !data.appointmentVoucher) {
     return (
       <div className="max-w-2xl mx-auto py-16 px-4 text-center space-y-6 animate-in fade-in duration-300">
         <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto border border-amber-500/20">
@@ -100,7 +131,8 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
             Handover Voucher Pending Acceptance
           </h2>
           <p className="text-sm text-portal-text-muted max-w-md mx-auto leading-relaxed">
-            Please select and accept a certified dealer offer to generate your official escrow handover pass and inspection instructions.
+            Please select and accept a certified dealer offer to generate your
+            official escrow handover pass and inspection instructions.
           </p>
         </div>
         <div className="flex items-center justify-center gap-3">
@@ -123,9 +155,18 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
   }
 
   const { auction, appointmentVoucher: voucher, photos } = data;
-  const coverPhoto = photos?.[0]?.url || "/showcase-cars-with-bg/2025-Toyota-4runner.png";
+  const coverPhoto =
+    photos?.[0]?.url || "/showcase-cars-with-bg/2025-Toyota-4runner.png";
   const checkedCount = Object.values(checkedItems).filter(Boolean).length;
   const totalItems = voucher.checklist.length;
+  const regulatorLabel = voucher.regulator ?? "OMVIC";
+  const licenseBadge = voucher.licenseNumber ?? "VERIFIED";
+  const expiryFormatted = new Date(voucher.expiresAt).toLocaleString("en-CA", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 
   return (
     <div className="space-y-6 pb-16 animate-in fade-in duration-300 max-w-5xl mx-auto">
@@ -146,7 +187,6 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          {/* Vehicle Switcher Pill Button */}
           <button
             type="button"
             id="btn-switch-vehicle-voucher"
@@ -154,14 +194,15 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-portal-surface border border-portal-border hover:border-portal-primary/50 text-xs font-medium text-portal-text shadow-2xs hover:bg-portal-surface-hover transition-all cursor-pointer group"
           >
             <Car className="w-3.5 h-3.5 text-portal-primary" />
-            <span className="font-semibold">{auction.year} {auction.make} {auction.model}</span>
+            <span className="font-semibold">
+              {auction.year} {auction.make} {auction.model}
+            </span>
             <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-bold">
               Voucher Active
             </span>
             <ChevronsUpDown className="w-3.5 h-3.5 text-portal-text-muted group-hover:text-portal-text transition-colors" />
           </button>
 
-          {/* Print / Save PDF Button */}
           <button
             type="button"
             onClick={handlePrint}
@@ -173,8 +214,8 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
         </div>
       </div>
 
-      {/* Top Banner Card (Borderless Canvas Blend) */}
-      <div className="bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent backdrop-blur-xs rounded-2xl p-5 sm:p-6 space-y-5 border-0 shadow-none outline-none ring-0">
+      {/* Top Banner Card */}
+      <div className="bg-gradient-to-b from-portal-surface/90 via-portal-surface/40 to-transparent backdrop-blur-xs rounded-2xl p-5 sm:p-6 space-y-5 border-0 shadow-none">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
@@ -188,24 +229,38 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-bold font-headline text-portal-text tracking-tight">
-              Vehicle Handover & Payout Voucher
+              Vehicle Handover &amp; Payout Voucher
             </h1>
             <p className="text-xs sm:text-sm text-portal-text-muted mt-1">
-              Present this pass when dropping off your vehicle. The dealer will verify your vehicle in ~15 minutes and release payment.
+              Present this pass when dropping off your vehicle. The dealer will
+              verify your vehicle in ~15 minutes and release payment.
             </p>
           </div>
 
           <div className="flex items-center gap-2 self-start lg:self-auto">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-portal-surface border border-portal-border text-xs font-mono font-semibold text-portal-text shadow-2xs">
+            <span
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-portal-surface border border-portal-border text-xs font-mono font-semibold shadow-2xs ${
+                countdown.isExpired
+                  ? "text-red-500"
+                  : countdown.isUrgent
+                    ? "text-amber-500"
+                    : "text-portal-text"
+              }`}
+            >
               <Clock className="w-3.5 h-3.5 text-portal-primary" />
-              <span>Valid for 48 Hours</span>
+              <span>
+                {mounted
+                  ? countdown.isExpired
+                    ? "Window Expired"
+                    : `Valid for ${countdown.hours}h ${countdown.minutes}m`
+                  : "24-Hour Handover Pass"}
+              </span>
             </span>
           </div>
         </div>
 
-        {/* 4-Metric Summary Bar with Clean Vertical Dividers */}
+        {/* 4-Metric Summary Bar */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-portal-border-subtle/60">
-          {/* Col 1: Guaranteed Payout */}
           <div className="flex items-center justify-between pr-0 sm:pr-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
@@ -223,7 +278,6 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
             </div>
           </div>
 
-          {/* Col 2: Dealership Destination */}
           <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4 pr-0 sm:pr-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
@@ -233,7 +287,7 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
                 {voucher.dealershipName}
               </span>
               <span className="text-[11px] text-portal-text-muted mt-0.5 block">
-                OMVIC Licensed Dealer
+                {regulatorLabel} Licensed Dealer
               </span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
@@ -241,17 +295,16 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
             </div>
           </div>
 
-          {/* Col 3: Handover Window */}
           <div className="flex items-center justify-between lg:border-l border-portal-border-subtle/60 lg:pl-4 pr-0 sm:pr-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
                 Drop-off Window
               </span>
               <span className="font-headline text-sm sm:text-base font-bold text-portal-text tracking-tight mt-0.5 block">
-                Next 48 Hours
+                24-Hour Window
               </span>
               <span className="text-[11px] text-portal-text-muted mt-0.5 block">
-                Expires {new Date(voucher.expiresAt).toLocaleDateString("en-CA", { month: "short", day: "numeric" })}
+                Expires {expiryFormatted}
               </span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-portal-surface-hover flex items-center justify-center shrink-0 text-portal-primary">
@@ -259,7 +312,6 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
             </div>
           </div>
 
-          {/* Col 4: Escrow Protection */}
           <div className="flex items-center justify-between sm:border-l border-portal-border-subtle/60 sm:pl-4">
             <div>
               <span className="text-portal-text-muted block text-[11px] font-semibold uppercase tracking-wider font-mono">
@@ -281,7 +333,6 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
 
       {/* Official High-Security Voucher Pass Document */}
       <div className="bg-portal-surface border border-portal-border rounded-3xl p-6 sm:p-10 shadow-xl space-y-8 relative overflow-hidden">
-        {/* Subtle decorative radial glow */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-portal-primary/5 rounded-full blur-3xl -z-10 pointer-events-none" />
 
         {/* Voucher Pass Header Ribbon */}
@@ -296,23 +347,21 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black font-headline text-portal-text">
-              Wholesale Exchange & Handover Pass
+              Wholesale Exchange &amp; Handover Pass
             </h2>
             <p className="text-xs text-portal-text-muted flex items-center gap-2">
               <span>AutoNexa Canadian Wholesale Exchange</span>
               <span>•</span>
               <span className="text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
                 <BadgeCheck className="w-3.5 h-3.5" />
-                <span>Escrow Verified & Guaranteed</span>
+                <span>Escrow Verified &amp; Guaranteed</span>
               </span>
             </p>
           </div>
 
-          {/* Scannable Dealership QR Box */}
           <div className="p-3.5 bg-white dark:bg-neutral-900 rounded-2xl border border-portal-border shadow-md flex flex-col items-center shrink-0 self-start sm:self-auto">
             <div className="w-28 h-28 bg-neutral-950 text-white rounded-xl flex items-center justify-center p-2.5 relative group">
               <QrCode className="w-24 h-24" />
-              {/* Corner Targeting brackets */}
               <div className="absolute top-1 left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-portal-primary" />
               <div className="absolute top-1 right-1 w-2.5 h-2.5 border-t-2 border-r-2 border-portal-primary" />
               <div className="absolute bottom-1 left-1 w-2.5 h-2.5 border-b-2 border-l-2 border-portal-primary" />
@@ -326,7 +375,6 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
 
         {/* Vehicle & Guaranteed Deal Details Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          {/* Vehicle Card with Photo (5 cols) */}
           <div className="lg:col-span-5 rounded-2xl bg-portal-surface-hover/50 border border-portal-border p-4 flex flex-col justify-between space-y-4">
             <div className="relative w-full h-44 rounded-xl overflow-hidden bg-neutral-900">
               <Image
@@ -338,7 +386,9 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
               <div className="absolute bottom-2.5 left-3 text-white">
-                <span className="text-[11px] font-mono text-white/80">VIN: {auction.vin}</span>
+                <span className="text-[11px] font-mono text-white/80">
+                  VIN: {auction.vin}
+                </span>
                 <p className="font-headline font-bold text-sm tracking-tight">
                   {auction.year} {auction.make} {auction.model} {auction.trim}
                 </p>
@@ -347,13 +397,17 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
 
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="p-2.5 rounded-xl bg-portal-surface border border-portal-border/60">
-                <span className="text-[10px] text-portal-text-muted uppercase font-mono block">Odometer</span>
+                <span className="text-[10px] text-portal-text-muted uppercase font-mono block">
+                  Odometer
+                </span>
                 <span className="font-bold text-portal-text font-mono mt-0.5 block">
                   {auction.mileageKm.toLocaleString()} km
                 </span>
               </div>
               <div className="p-2.5 rounded-xl bg-portal-surface border border-portal-border/60">
-                <span className="text-[10px] text-portal-text-muted uppercase font-mono block">Location</span>
+                <span className="text-[10px] text-portal-text-muted uppercase font-mono block">
+                  Location
+                </span>
                 <span className="font-bold text-portal-text mt-0.5 block truncate">
                   {auction.city}, {auction.province}
                 </span>
@@ -361,7 +415,6 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
             </div>
           </div>
 
-          {/* Dealership Destination & Drop-off Desk (7 cols) */}
           <div className="lg:col-span-7 rounded-2xl bg-portal-surface-hover/50 border border-portal-border p-5 sm:p-6 flex flex-col justify-between space-y-5">
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-portal-border/60">
@@ -372,7 +425,7 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
                   </span>
                 </div>
                 <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-portal-surface border border-portal-border text-portal-text-muted">
-                  OMVIC-481920
+                  {licenseBadge}
                 </span>
               </div>
 
@@ -383,7 +436,10 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
                   </h3>
                   <p className="text-xs text-portal-text-muted flex items-start gap-1.5 mt-1">
                     <MapPin className="w-3.5 h-3.5 text-portal-primary shrink-0 mt-0.5" />
-                    <span>{voucher.address}, {voucher.city}, {voucher.province} {voucher.postalCode}</span>
+                    <span>
+                      {voucher.address}, {voucher.city}, {voucher.province}{" "}
+                      {voucher.postalCode}
+                    </span>
                   </p>
                 </div>
 
@@ -394,8 +450,12 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
                   >
                     <Phone className="w-4 h-4 text-portal-primary shrink-0" />
                     <div>
-                      <span className="text-[10px] text-portal-text-muted block">Direct Desk</span>
-                      <span className="font-semibold text-portal-text">{voucher.contactPhone}</span>
+                      <span className="text-[10px] text-portal-text-muted block">
+                        Direct Desk
+                      </span>
+                      <span className="font-semibold text-portal-text">
+                        {voucher.contactPhone}
+                      </span>
                     </div>
                   </a>
 
@@ -405,15 +465,21 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
                   >
                     <Mail className="w-4 h-4 text-portal-primary shrink-0" />
                     <div className="truncate">
-                      <span className="text-[10px] text-portal-text-muted block">Direct Email</span>
-                      <span className="font-semibold text-portal-text truncate block">{voucher.contactEmail}</span>
+                      <span className="text-[10px] text-portal-text-muted block">
+                        Direct Email
+                      </span>
+                      <span className="font-semibold text-portal-text truncate block">
+                        {voucher.contactEmail}
+                      </span>
                     </div>
                   </a>
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-portal-surface border border-portal-border/60 text-xs flex items-center gap-2 text-portal-text-muted">
                   <Clock className="w-4 h-4 text-portal-primary shrink-0" />
-                  <span><strong>Hours:</strong> {voucher.operatingHours}</span>
+                  <span>
+                    <strong>Hours:</strong> {voucher.operatingHours}
+                  </span>
                 </div>
               </div>
             </div>
@@ -444,7 +510,8 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
                 <span>What to Bring (Dealership Drop-Off Checklist)</span>
               </h3>
               <p className="text-xs text-portal-text-muted mt-0.5">
-                Check off each required item before driving to the dealership for your 15-minute verification.
+                Check off each required item before driving to the dealership
+                for your 15-minute verification.
               </p>
             </div>
             <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-portal-surface border border-portal-border text-portal-text self-start sm:self-auto">
@@ -456,7 +523,6 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
             {voucher.checklist.map((item, idx) => {
               const isChecked = !!checkedItems[idx];
               return (
-                
                 <div
                   key={idx}
                   onClick={() => toggleCheck(idx)}
@@ -478,7 +544,9 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
                   <div>
                     <span
                       className={`text-xs block ${
-                        isChecked ? "font-semibold text-portal-text" : "font-medium text-portal-text"
+                        isChecked
+                          ? "font-semibold text-portal-text"
+                          : "font-medium text-portal-text"
                       }`}
                     >
                       {item}
@@ -503,14 +571,20 @@ export function AppointmentVoucherCard({ listingId }: AppointmentVoucherCardProp
           </div>
           <div className="space-y-0.5">
             <h4 className="font-bold text-portal-text text-xs flex items-center gap-1.5">
-              <span>OMVIC & Canadian Regulatory Consumer Escrow Protection</span>
+              <span>
+                {regulatorLabel} &amp; Canadian Regulatory Consumer Escrow
+                Protection
+              </span>
               <span className="px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono">
-                Law 25 & PIPEDA Compliant
+                Law 25 &amp; PIPEDA Compliant
               </span>
             </h4>
             <p className="text-[11px] text-portal-text-muted leading-relaxed">
-              Your sale price of <strong>{formatCadCents(voucher.acceptedOfferCents)}</strong> is held in certified dealer escrow.
-              Once the 15-minute physical drop-off check is completed, funds are wired immediately to your verified account without fees or renegotiation.
+              Your sale price of{" "}
+              <strong>{formatCadCents(voucher.acceptedOfferCents)}</strong> is
+              held in certified dealer escrow. Once the 15-minute physical
+              drop-off check is completed, funds are wired immediately to your
+              verified account without fees or renegotiation.
             </p>
           </div>
         </div>

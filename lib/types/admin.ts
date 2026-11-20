@@ -77,3 +77,60 @@ export type ModerationQueueResponse = {
   items: ModerationItem[];
   counts: ModerationQueueCounts;
 };
+
+export type AdminAuctionStatus =
+  | "ACTIVE"
+  | "UNSEALED"
+  | "ACCEPTED"
+  | "COMPLETED"
+  | "EXPIRED"
+  | "CANCELLED";
+
+export type AdminAuctionLot = {
+  id: string;
+  vin: string;
+  year: number;
+  make: string;
+  model: string;
+  trim: string;
+  sellerName: string;
+  city: string;
+  province: string;
+  status: AdminAuctionStatus;
+  totalBidsCount: number;
+  reservePriceCents: number; // Integer CAD cents invariant
+  highestBidEstimateCents?: number;
+  endsAt: string;
+  closedAt?: string | null;
+  thumbnailUrl: string;
+};
+
+export type AdminAuctionsSummary = {
+  activeCount: number;
+  urgentCount: number;
+  unsealedCount: number;
+  acceptedCount: number;
+  totalCount: number;
+};
+
+export type AdminAuctionsResponse = {
+  items: AdminAuctionLot[];
+  summary: AdminAuctionsSummary;
+  serverTime: string;
+};
+
+export type AdminAuctionOverrideAction = "EXTEND" | "FORCE_CLOSE" | "HALT";
+
+export type AdminAuctionOverridePayload = {
+  action: AdminAuctionOverrideAction;
+  reason: string;
+  extensionHours?: number;
+};
+
+export type AdminAuctionOverrideResult = {
+  lot: AdminAuctionLot;
+  action: AdminAuctionOverrideAction;
+  auditAction: string;
+  message: string;
+  serverTime: string;
+};

@@ -24,6 +24,7 @@ export type SellerAuctionItem = {
   bidCount: number; // Sealed-bid invariant: count only, zero dollar values exposed while ACTIVE
   auctionStartedAt?: string;
   auctionEndsAt?: string;
+  closedAt?: string;
   province: string;
   city: string;
   createdAt: string;
@@ -72,8 +73,11 @@ export type UnsealedDealerBid = {
 };
 
 export type AppointmentVoucher = {
+  matchId?: string;
   voucherCode: string;
   dealershipName: string;
+  licenseNumber?: string;
+  regulator?: string;
   address: string;
   city: string;
   province: string;
@@ -84,6 +88,20 @@ export type AppointmentVoucher = {
   acceptedOfferCents: number; // Integer CAD cents invariant
   expiresAt: string;
   checklist: string[];
+};
+
+export type OfferSelectionReason = "HIGHEST" | "NEAREST" | "OTHER";
+
+export type AcceptOfferPayload = {
+  bidId: string;
+  selectionReason?: OfferSelectionReason;
+};
+
+export type AcceptOfferResponse = {
+  matchId: string;
+  listingId: string;
+  status: "ACCEPTED";
+  voucher: AppointmentVoucher;
 };
 
 export type ListingDetailData = {

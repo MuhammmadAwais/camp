@@ -13,6 +13,7 @@ import {
   NotFoundError,
   ValidationError,
 } from "@/lib/server/errors";
+import { DEFAULT_HANDOVER_CHECKLIST } from "@/lib/server/services/fulfillment.service";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import type { Database } from "@/lib/supabase/database.types";
 import type {
@@ -49,13 +50,6 @@ const UNSEALED_VISIBLE_STATUSES = new Set<AuctionStatus>([
   "COMPLETED",
   "EXPIRED",
 ]);
-
-const DEFAULT_CHECKLIST = [
-  "Original Vehicle Ownership Permit (Green Slip - Part 1 & 2)",
-  "Two original master vehicle smart keys",
-  "Government-issued photo identification (Driver's License)",
-  "Direct Deposit void cheque or wire payout instructions",
-];
 
 const hotspotInputSchema = z.object({
   id: z.string().optional(),
@@ -644,6 +638,7 @@ export async function getSellerDashboard(
         bid_count,
         auction_started_at,
         auction_ends_at,
+        closed_at,
         province,
         city,
         created_at,
@@ -699,6 +694,7 @@ export async function getSellerDashboard(
       bidCount: row.bid_count,
       auctionStartedAt: row.auction_started_at ?? undefined,
       auctionEndsAt: row.auction_ends_at ?? undefined,
+      closedAt: row.closed_at ?? undefined,
       province: row.province,
       city: row.city || row.province,
       createdAt: row.created_at,
@@ -822,6 +818,7 @@ export async function getSellerListingDetail(
       bidCount: listing.bid_count,
       auctionStartedAt: listing.auction_started_at ?? undefined,
       auctionEndsAt: listing.auction_ends_at ?? undefined,
+      closedAt: listing.closed_at ?? undefined,
       province: listing.province,
       city: listing.city || listing.province,
       createdAt: listing.created_at,
@@ -975,11 +972,14 @@ export async function getSellerListingDetail(
   const winningDealer = dealershipMap.get(matchRow.dealership_id);
 
   const appointmentVoucher: AppointmentVoucher = {
+    matchId: matchRow.id,
     voucherCode: matchRow.voucher_code,
     dealershipName:
       winningDealer?.operating_name ??
       selectedBid?.dealershipName ??
       "Licensed Dealership",
+    licenseNumber: winningDealer?.license_number ?? undefined,
+    regulator: winningDealer?.regulator ?? undefined,
     address: winningDealer?.street_address ?? "Confirmed Dealership Location",
     city: winningDealer?.city ?? selectedBid?.city ?? listing.city,
     province: winningDealer?.province ?? listing.province,
@@ -991,7 +991,7 @@ export async function getSellerListingDetail(
       "Monday - Saturday: 9:00 AM - 6:00 PM",
     acceptedOfferCents: matchRow.agreed_amount_cents,
     expiresAt: matchRow.accept_expires_at,
-    checklist: DEFAULT_CHECKLIST,
+    checklist: DEFAULT_HANDOVER_CHECKLIST,
   };
 
   return {

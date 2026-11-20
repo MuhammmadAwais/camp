@@ -26,6 +26,7 @@ export const adminKeys = {
   moderationQueue: () => [...adminKeys.all, "moderation", "queue"] as const,
   moderationDetail: (id: string) =>
     [...adminKeys.all, "moderation", "detail", id] as const,
+  auctions: () => [...adminKeys.all, "auctions"] as const,
 };
 
 export const dealerKeys = {
