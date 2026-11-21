@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   ShieldAlert,
   Gavel,
@@ -14,10 +13,13 @@ import {
   Building,
   UserCheck,
 } from "lucide-react";
+import { Link, usePathname } from "@/i18n/navigation";
+import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export function AdminHeader() {
   const pathname = usePathname();
+  const t = useTranslations("headers");
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-portal-border bg-portal-surface/90 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3 transition-colors">
@@ -34,11 +36,11 @@ export function AdminHeader() {
                   AutoNexa
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-red-600 text-white font-mono">
-                  Super Admin
+                  {t("superAdminBadge")}
                 </span>
               </div>
               <span className="text-[10px] text-portal-text-muted block font-mono">
-                Marketplace Compliance & Ops
+                {t("complianceOps")}
               </span>
             </div>
           </Link>
@@ -54,7 +56,7 @@ export function AdminHeader() {
               }`}
             >
               <CheckSquare className="w-3.5 h-3.5" />
-              <span>Moderation Queue</span>
+              <span>{t("moderationQueue")}</span>
             </Link>
             <Link
               href="/admin/auctions"
@@ -65,7 +67,7 @@ export function AdminHeader() {
               }`}
             >
               <Sliders className="w-3.5 h-3.5" />
-              <span>Auction Overrides</span>
+              <span>{t("auctionOverrides")}</span>
             </Link>
             <Link
               href="/admin/dealers"
@@ -76,7 +78,7 @@ export function AdminHeader() {
               }`}
             >
               <Building className="w-3.5 h-3.5" />
-              <span>Dealer Licenses</span>
+              <span>{t("dealerLicenses")}</span>
             </Link>
             <Link
               href="/admin/disputes"
@@ -87,7 +89,7 @@ export function AdminHeader() {
               }`}
             >
               <ShieldAlert className="w-3.5 h-3.5" />
-              <span>Disputes</span>
+              <span>{t("disputes")}</span>
             </Link>
             <Link
               href="/admin/analytics"
@@ -98,7 +100,7 @@ export function AdminHeader() {
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5" />
-              <span>Analytics</span>
+              <span>{t("analytics")}</span>
             </Link>
             <Link
               href="/admin/audit-log"
@@ -109,7 +111,7 @@ export function AdminHeader() {
               }`}
             >
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Audit Log</span>
+              <span>{t("auditLog")}</span>
             </Link>
           </nav>
         </div>
@@ -123,14 +125,14 @@ export function AdminHeader() {
               className="px-2.5 py-1 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text transition-colors flex items-center gap-1"
             >
               <Gavel className="w-3 h-3 text-portal-primary" />
-              <span>Dealer Floor</span>
+              <span>{t("dealerFloor")}</span>
             </Link>
             <Link
               href="/seller/dashboard"
               className="px-2.5 py-1 rounded-lg border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text-muted hover:text-portal-text transition-colors flex items-center gap-1"
             >
               <UserCheck className="w-3 h-3 text-portal-primary" />
-              <span>Seller App</span>
+              <span>{t("sellerApp")}</span>
             </Link>
           </div>
 
@@ -146,6 +148,8 @@ export function AdminHeader() {
               </span>
             </div>
           </div>
+
+          <LocaleSwitcher variant="compact" />
 
           {/* Theme Toggle */}
           <ThemeToggle variant="compact" />

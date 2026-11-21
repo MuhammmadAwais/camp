@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { XCircle, CheckCircle, ArrowRight } from "@phosphor-icons/react";
+import { Link } from "@/i18n/navigation";
 
 interface ComparisonCardsProps {
   id?: string;
@@ -380,13 +381,13 @@ export function ComparisonCards({ id = "why-us" }: ComparisonCardsProps) {
                     <span>Timeline: 24h Payout</span>
                   </div>
 
-                  <a
+                  <Link
                     href="/login"
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 min-h-[44px] rounded-full bg-primary hover:bg-primary-hover text-white font-body text-xs sm:text-sm font-bold tracking-wide transition-all duration-200 shadow-xs hover:scale-105 active:scale-95"
                   >
                     <span>Get Instant Valuation</span>
                     <ArrowRight weight="bold" className="w-3.5 h-3.5" />
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="lg:hidden mt-3 text-center">

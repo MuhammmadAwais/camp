@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
 import { useSidebarStore } from '@/lib/store/useSidebarStore';
 import { Sidebar } from './Sidebar';
 import { MobileMenuButton } from './MobileMenuButton';

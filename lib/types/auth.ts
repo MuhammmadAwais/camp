@@ -18,6 +18,7 @@ export type SessionUser = {
   role: UserRole;
   kycStatus: KycStatus;
   mfaEnabled?: boolean;
+  languagePref?: "en" | "fr";
 };
 
 export type MfaFactorSummary = {

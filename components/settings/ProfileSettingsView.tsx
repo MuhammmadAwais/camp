@@ -1,8 +1,9 @@
 "use client";
 
 import React, { Suspense, useMemo, useState } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import {
   AlertCircle,
   AlertTriangle,
@@ -82,7 +83,10 @@ const CONFIG_LABELS: Record<PlatformConfigKey, string> = {
 };
 
 function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
+  const currentLocale = useLocale();
+  const pathname = usePathname();
   const router = useRouter();
+  const tSettings = useTranslations("settings");
   const searchParams = useSearchParams();
   const isMfaEnrollPrompt = searchParams.get("mfa") === "enroll";
   const queryTab =
@@ -166,6 +170,9 @@ function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
         notificationPreferences: form.notificationPreferences,
       });
       setDraft(null);
+      if (form.languagePref && form.languagePref !== currentLocale) {
+        router.replace(pathname, { locale: form.languagePref });
+      }
       setBannerSuccess(
         "Profile settings, regulatory credentials, and alert preferences saved to Supabase."
       );
@@ -641,7 +648,7 @@ function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
 
                   <div>
                     <label className="block text-xs font-bold text-portal-text mb-1.5">
-                      Language Preference
+                      {tSettings("languagePreference")}
                     </label>
                     <select
                       value={form.languagePref}
@@ -653,9 +660,12 @@ function ProfileSettingsContent({ defaultTab }: ProfileSettingsContentProps) {
                       }
                       className="w-full px-3 py-2 rounded-xl border border-portal-border bg-portal-surface-hover/40 text-portal-text text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-portal-primary/30 cursor-pointer"
                     >
-                      <option value="en">English (Canada)</option>
-                      <option value="fr">Français (Loi 25)</option>
+                      <option value="en">{tSettings("englishCanada")}</option>
+                      <option value="fr">{tSettings("frenchLaw25")}</option>
                     </select>
+                    <p className="text-[11px] text-portal-text-muted mt-1">
+                      {tSettings("languageSyncNote")}
+                    </p>
                   </div>
                 </div>
               </div>

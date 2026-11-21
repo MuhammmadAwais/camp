@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
 import {
   House,
   Gavel,
@@ -27,6 +27,7 @@ import { useSidebarStore } from '@/lib/store/useSidebarStore';
 import { SidebarFlyout, type SubNavItem } from './SidebarFlyout';
 import { UserProfileCard } from './UserProfileCard';
 import { useAuth } from '@/lib/auth-context';
+import { LocaleSwitcher } from '@/components/i18n/LocaleSwitcher';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 interface NavGroup {
@@ -41,6 +42,7 @@ interface NavGroup {
 export function Sidebar() {
   const pathname = usePathname();
   const { role } = useAuth();
+  const tSidebar = useTranslations('sidebar');
   const { isCollapsed, isMobileOpen, closeMobile, toggleSidebar, expandedGroups, toggleGroup } =
     useSidebarStore();
 
@@ -71,35 +73,35 @@ export function Sidebar() {
     NAV_ITEMS = [
       {
         id: 'admin-moderation',
-        title: 'Approvals',
+        title: tSidebar('groups.admin-moderation'),
         href: '/admin/moderation',
         icon: ShieldCheck,
         section: 'MODERATION',
         items: [
-          { title: 'Vehicle Queue', href: '/admin/moderation' },
-          { title: 'Dealer Licenses', href: '/admin/dealers' },
+          { title: tSidebar('items.Vehicle Queue'), href: '/admin/moderation' },
+          { title: tSidebar('items.Dealer Licenses'), href: '/admin/dealers' },
         ],
       },
       {
         id: 'admin-auctions',
-        title: 'Marketplace',
+        title: tSidebar('groups.admin-auctions'),
         href: '/admin/auctions',
         icon: Gavel,
         section: 'MODERATION',
         items: [
-          { title: 'Live Auctions', href: '/admin/auctions' },
-          { title: 'Disputes', href: '/admin/disputes' },
+          { title: tSidebar('items.Live Auctions'), href: '/admin/auctions' },
+          { title: tSidebar('items.Disputes'), href: '/admin/disputes' },
         ],
       },
       {
         id: 'admin-analytics',
-        title: 'Analytics & Logs',
+        title: tSidebar('groups.admin-analytics'),
         href: '/admin/analytics',
         icon: ChartPolar,
         section: 'GOVERNANCE',
         items: [
-          { title: 'Market Analytics', href: '/admin/analytics' },
-          { title: 'Audit Trail', href: '/admin/audit-log' },
+          { title: tSidebar('items.Market Analytics'), href: '/admin/analytics' },
+          { title: tSidebar('items.Audit Trail'), href: '/admin/audit-log' },
         ],
       },
     ];
@@ -107,48 +109,48 @@ export function Sidebar() {
     NAV_ITEMS = [
       {
         id: 'dealer-floor',
-        title: 'Live Inventory',
+        title: tSidebar('groups.dealer-floor'),
         href: '/dealer/inventory',
         icon: House,
         section: 'TRADING FLOOR',
         items: [
-          { title: 'Wholesale Floor', href: '/dealer/inventory' },
-          { title: 'Vehicle Inspection', href: '/dealer/auctions/auc-porsche-macan-2022' },
+          { title: tSidebar('items.Wholesale Floor'), href: '/dealer/inventory' },
+          { title: tSidebar('items.Vehicle Inspection'), href: '/dealer/auctions/auc-porsche-macan-2022' },
         ],
       },
       {
         id: 'dealer-trading',
-        title: 'My Bids',
+        title: tSidebar('groups.dealer-trading'),
         href: '/dealer/active-bids',
         icon: Gavel,
         section: 'TRADING FLOOR',
         items: [
-          { title: 'Active Bids', href: '/dealer/active-bids' },
-          { title: 'Won Matches', href: '/dealer/won-matches' },
+          { title: tSidebar('items.Active Bids'), href: '/dealer/active-bids' },
+          { title: tSidebar('items.Won Matches'), href: '/dealer/won-matches' },
         ],
       },
       {
         id: 'dealer-account',
-        title: 'Dealership',
+        title: tSidebar('groups.dealer-account'),
         href: '/dealer/subscription',
         icon: CreditCard,
         section: 'MANAGEMENT',
         items: [
-          { title: 'Subscription Plan', href: '/dealer/subscription' },
-          { title: 'Invoices & Billing', href: '/dealer/billing' },
-          { title: 'Team Members', href: '/dealer/team' },
+          { title: tSidebar('items.Subscription Plan'), href: '/dealer/subscription' },
+          { title: tSidebar('items.Invoices & Billing'), href: '/dealer/billing' },
+          { title: tSidebar('items.Team Members'), href: '/dealer/team' },
         ],
       },
       {
         id: 'dealer-compliance',
-        title: 'Legal & Trust',
+        title: tSidebar('groups.dealer-compliance'),
         href: '/legal/terms',
         icon: ShieldCheck,
         section: 'MANAGEMENT',
         items: [
-          { title: 'Dealer License', href: '/dealer/register' },
-          { title: 'Terms of Service', href: '/legal/terms' },
-          { title: 'Privacy Policy', href: '/legal/privacy' },
+          { title: tSidebar('items.Dealer License'), href: '/dealer/register' },
+          { title: tSidebar('items.Terms of Service'), href: '/legal/terms' },
+          { title: tSidebar('items.Privacy Policy'), href: '/legal/privacy' },
         ],
       },
     ];
@@ -157,41 +159,50 @@ export function Sidebar() {
     NAV_ITEMS = [
       {
         id: 'seller-dashboard',
-        title: 'Dashboard',
+        title: tSidebar('groups.seller-dashboard'),
         href: '/seller/dashboard',
         icon: House,
         section: 'VEHICLES',
         items: [
-          { title: 'Overview', href: '/seller/dashboard' },
-          { title: 'Sell a Car', href: '/seller/list-car' },
+          { title: tSidebar('items.Overview'), href: '/seller/dashboard' },
+          { title: tSidebar('items.Sell a Car'), href: '/seller/list-car' },
         ],
       },
       {
         id: 'seller-auctions',
-        title: 'Auctions',
+        title: tSidebar('groups.seller-auctions'),
         href: '/seller/listings/auc-porsche-macan-2022',
         icon: Gavel,
         section: 'VEHICLES',
         items: [
-          { title: 'Live Auction', href: '/seller/listings/auc-porsche-macan-2022' },
-          { title: 'Dealer Offers', href: '/seller/listings/auc-porsche-macan-2022/select-dealer' },
-          { title: 'Inspection Voucher', href: '/seller/listings/auc-porsche-macan-2022/appointment' },
+          { title: tSidebar('items.Live Auction'), href: '/seller/listings/auc-porsche-macan-2022' },
+          { title: tSidebar('items.Dealer Offers'), href: '/seller/listings/auc-porsche-macan-2022/select-dealer' },
+          { title: tSidebar('items.Inspection Voucher'), href: '/seller/listings/auc-porsche-macan-2022/appointment' },
         ],
       },
       {
         id: 'seller-trust',
-        title: 'Account',
+        title: tSidebar('groups.seller-trust'),
         href: '/verify-kyc',
         icon: ShieldCheck,
         section: 'VERIFICATION',
         items: [
-          { title: 'ID Verification', href: '/verify-kyc' },
-          { title: 'Privacy Policy', href: '/legal/privacy' },
-          { title: 'Terms of Service', href: '/legal/terms' },
+          { title: tSidebar('items.ID Verification'), href: '/verify-kyc' },
+          { title: tSidebar('items.Privacy Policy'), href: '/legal/privacy' },
+          { title: tSidebar('items.Terms of Service'), href: '/legal/terms' },
         ],
       },
     ];
   }
+
+  const sectionLabels: Record<string, string> = {
+    MODERATION: tSidebar('sections.MODERATION'),
+    GOVERNANCE: tSidebar('sections.GOVERNANCE'),
+    'TRADING FLOOR': tSidebar('sections.TRADING FLOOR'),
+    MANAGEMENT: tSidebar('sections.MANAGEMENT'),
+    VEHICLES: tSidebar('sections.VEHICLES'),
+    VERIFICATION: tSidebar('sections.VERIFICATION'),
+  };
 
   return (
     <>
@@ -333,7 +344,7 @@ export function Sidebar() {
                 {/* Section Header (Expanded Mode Only) */}
                 {!isCollapsed && (
                   <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-gray-400 dark:text-neutral-400 font-semibold select-none">
-                    {sectionKey}
+                    {sectionLabels[sectionKey] ?? sectionKey}
                   </div>
                 )}
 
@@ -475,10 +486,14 @@ export function Sidebar() {
           })}
         </div>
 
-        {/* Theme Toggle section: positioned just above profile divider */}
-        <div className={`px-3 py-2 border-t border-gray-200 dark:border-white/10 flex items-center shrink-0 justify-center`}>
-         
+        {/* Theme & Locale Switcher controls: positioned just above profile divider */}
+        <div
+          className={`px-3 py-2 border-t border-gray-200 dark:border-white/10 flex shrink-0 justify-center ${
+            isCollapsed ? 'flex-col items-center gap-2' : 'items-center gap-2'
+          }`}
+        >
           <ThemeToggle variant={isCollapsed ? 'compact' : 'segmented'} />
+          <LocaleSwitcher variant="compact" />
         </div>
 
         {/* Bottom User Profile Section */}

@@ -1,12 +1,19 @@
+import createMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { routing } from "@/i18n/routing";
 import {
+  type AppLocale,
   getDefaultPortalForRole,
   isProtectedRoute,
   isRoleAllowedForPath,
+  stripLocalePrefix,
+  withLocalePrefix,
 } from "@/lib/auth-routing";
 import type { Database } from "@/lib/supabase/database.types";
 import type { UserRole } from "@/lib/types/auth";
+
+const handleI18nRouting = createMiddleware(routing);
 
 const VALID_ROLES: readonly UserRole[] = [
   "SELLER",
@@ -33,13 +40,38 @@ function redirectWithCookies(
   return redirectResponse;
 }
 
+function preserveIntlState(
+  targetResponse: NextResponse,
+  intlResponse: NextResponse | null
+): void {
+  if (!intlResponse) return;
+  intlResponse.headers.forEach((value, key) => {
+    const lower = key.toLowerCase();
+    if (lower !== "set-cookie" && lower !== "x-middleware-request-cookie") {
+      targetResponse.headers.set(key, value);
+    }
+  });
+  intlResponse.cookies.getAll().forEach((cookie) => {
+    targetResponse.cookies.set(cookie);
+  });
+}
+
 /**
- * Refreshes Supabase Auth session cookies via `getClaims()` (verified JWT signature)
- * and enforces portal-level authentication and RBAC redirects.
+ * Composes `next-intl` locale routing with Supabase Auth session cookie refresh (`getClaims()`)
+ * and enforces portal-level authentication and RBAC redirects under `/[locale]`.
  */
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
-  if (request.nextUrl.pathname.startsWith("/api/webhooks/")) {
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname.startsWith("/api/webhooks/")) {
     return NextResponse.next({ request });
+  }
+
+  const isApiRoute = pathname === "/api" || pathname.startsWith("/api/");
+  const intlResponse = isApiRoute ? null : handleI18nRouting(request);
+
+  if (intlResponse?.headers.get("location")) {
+    return intlResponse;
   }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -48,10 +80,10 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !publishableKey) {
-    return NextResponse.next({ request });
+    return intlResponse ?? NextResponse.next({ request });
   }
 
-  let supabaseResponse = NextResponse.next({ request });
+  let supabaseResponse = intlResponse ?? NextResponse.next({ request });
 
   const supabase = createServerClient<Database>(url, publishableKey, {
     cookies: {
@@ -62,13 +94,15 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
         cookiesToSet.forEach(({ name, value }) =>
           request.cookies.set(name, value)
         );
-        supabaseResponse = NextResponse.next({ request });
+        const nextResponse = NextResponse.next({ request });
+        preserveIntlState(nextResponse, intlResponse);
         cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
+          nextResponse.cookies.set(name, value, options)
         );
         Object.entries(headers).forEach(([key, value]) =>
-          supabaseResponse.headers.set(key, value)
+          nextResponse.headers.set(key, value)
         );
+        supabaseResponse = nextResponse;
       },
     },
   });
@@ -77,26 +111,33 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   const isAuthenticated = Boolean(claims?.sub);
-  const pathname = request.nextUrl.pathname;
 
-  if (isProtectedRoute(pathname)) {
-    if (!isAuthenticated) {
-      const loginUrl = request.nextUrl.clone();
-      loginUrl.pathname = "/login";
-      loginUrl.search = "";
-      loginUrl.searchParams.set(
-        "next",
-        `${pathname}${request.nextUrl.search}`
-      );
-      return redirectWithCookies(loginUrl, supabaseResponse);
-    }
+  if (!isApiRoute) {
+    const { locale: urlLocale, pathname: strippedPath } = stripLocalePrefix(pathname);
+    const activeLocale: AppLocale = urlLocale ?? "en";
 
-    const role = extractRoleFromAppMetadata(claims?.app_metadata);
-    if (role && !isRoleAllowedForPath(pathname, role)) {
-      const portalUrl = request.nextUrl.clone();
-      portalUrl.pathname = getDefaultPortalForRole(role);
-      portalUrl.search = "";
-      return redirectWithCookies(portalUrl, supabaseResponse);
+    if (isProtectedRoute(strippedPath)) {
+      if (!isAuthenticated) {
+        const loginUrl = request.nextUrl.clone();
+        loginUrl.pathname = withLocalePrefix("/login", activeLocale);
+        loginUrl.search = "";
+        loginUrl.searchParams.set(
+          "next",
+          `${strippedPath}${request.nextUrl.search}`
+        );
+        return redirectWithCookies(loginUrl, supabaseResponse);
+      }
+
+      const role = extractRoleFromAppMetadata(claims?.app_metadata);
+      if (role && !isRoleAllowedForPath(strippedPath, role)) {
+        const portalUrl = request.nextUrl.clone();
+        portalUrl.pathname = withLocalePrefix(
+          getDefaultPortalForRole(role),
+          activeLocale
+        );
+        portalUrl.search = "";
+        return redirectWithCookies(portalUrl, supabaseResponse);
+      }
     }
   }
 

@@ -1,13 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Building2 } from "lucide-react";
+import { Link, usePathname } from "@/i18n/navigation";
+import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export function DealerHeader() {
   const pathname = usePathname();
+  const t = useTranslations("headers");
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-portal-border bg-portal-surface/90 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3 transition-colors">
@@ -21,7 +23,7 @@ export function DealerHeader() {
             <div className="flex items-center gap-2">
               <span className="font-headline text-base font-bold text-portal-text tracking-tight">AutoNexa</span>
               <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-portal-primary/10 text-portal-primary border border-portal-primary/20">
-                Dealer
+                {t("dealerBadge")}
               </span>
             </div>
           </Link>
@@ -36,7 +38,7 @@ export function DealerHeader() {
                   : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover/60"
               }`}
             >
-              Inventory
+              {t("inventory")}
             </Link>
             <Link
               href="/dealer/active-bids"
@@ -46,7 +48,7 @@ export function DealerHeader() {
                   : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover/60"
               }`}
             >
-              Active Bids
+              {t("activeBids")}
             </Link>
             <Link
               href="/dealer/won-matches"
@@ -56,7 +58,7 @@ export function DealerHeader() {
                   : "text-portal-text-muted hover:text-portal-text hover:bg-portal-surface-hover/60"
               }`}
             >
-              Won Auctions
+              {t("wonAuctions")}
             </Link>
           </nav>
         </div>
@@ -75,6 +77,8 @@ export function DealerHeader() {
               </span>
             </div>
           </div>
+
+          <LocaleSwitcher variant="compact" />
 
           {/* Theme Toggle */}
           <ThemeToggle variant="compact" />

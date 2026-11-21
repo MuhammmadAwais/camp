@@ -3,6 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import { Check, X, ArrowRight } from "@phosphor-icons/react";
+import { Link } from "@/i18n/navigation";
 
 interface ComparisonMatrixProps {
   id?: string;
@@ -282,13 +283,13 @@ export function ComparisonMatrix({ id = "matrix" }: ComparisonMatrixProps) {
 
           {/* Bottom Action Trigger (Completely outside table and clean of any overlap) */}
           <div className="pt-10 text-center flex flex-col items-center justify-center gap-3 relative z-10">
-            <a
+            <Link
               href="/login"
               className="inline-flex items-center justify-center gap-2 px-8 py-3.5 min-h-[48px] rounded-full bg-primary hover:bg-primary-hover text-white font-body text-sm font-bold shadow-xs transition-all hover:scale-105 active:scale-95"
             >
               <span>Start 24h Auction</span>
               <ArrowRight weight="bold" className="w-4 h-4" />
-            </a>
+            </Link>
             <p className="font-mono text-xs text-on-surface-variant/70">
               100% Free for Private Sellers • No Obligation to Accept
             </p>

@@ -27,5 +27,13 @@ export const PATCH = handleApiRoute(async (request: NextRequest) => {
     ipAddress,
     userAgent: request.headers.get("user-agent"),
   });
-  return ok(updated);
+  const response = ok(updated);
+  if (updated.languagePref === "en" || updated.languagePref === "fr") {
+    response.cookies.set("NEXT_LOCALE", updated.languagePref, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+  }
+  return response;
 });

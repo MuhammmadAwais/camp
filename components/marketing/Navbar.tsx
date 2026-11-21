@@ -2,14 +2,17 @@
 
 import * as React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import gsap from "gsap";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import { Menu, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const t = useTranslations("nav");
 
   // Animation Refs
   const navbarPillRef = React.useRef<HTMLDivElement>(null);
@@ -52,11 +55,11 @@ export function Navbar() {
   }, []);
 
   const navLinks = [
-    { label: "Home", href: "/" },
-    { label: "About", href: "#about" },
-    { label: "Auctions", href: "#explore" },
-    { label: "How It Works", href: "#how-it-works" },
-    { label: "Valuation", href: "#valuation" },
+    { label: t("home"), href: "/" },
+    { label: t("about"), href: "#about" },
+    { label: t("auctions"), href: "#explore" },
+    { label: t("howItWorks"), href: "#how-it-works" },
+    { label: t("valuation"), href: "#valuation" },
   ];
 
   // 1. Left Emblem Hover: Professional 3D Gyroscope Tumbling Flip (Clean, No Glow)
@@ -360,11 +363,12 @@ export function Navbar() {
         {/* 3. Right Action Pill Button: Color Palette + Arrow Tilt (No Glow)         */}
         {/* ========================================================================= */}
         <div className="flex items-center gap-2">
+          <LocaleSwitcher variant="pill" className="hidden sm:inline-flex" />
           <Link
             href="/login"
             className="hidden md:inline-flex px-3 py-2 rounded-full font-body text-sm font-semibold text-surface/85 hover:text-white hover:bg-white/10 transition-colors whitespace-nowrap"
           >
-            Sign in
+            {t("signIn")}
           </Link>
           <a
             href="#valuation"
@@ -379,9 +383,9 @@ export function Navbar() {
               style={{ perspective: "400px" }}
             >
               <span className="cta-text-top block text-on-surface whitespace-nowrap font-bold">
-                <span className="hidden sm:inline">Get Free Appraisal</span>
+                <span className="hidden sm:inline">{t("getAppraisal")}</span>
                 <span className="sm:inline hidden" aria-hidden="true" />
-                <span className="sm:hidden">Appraisal</span>
+                <span className="sm:hidden">{t("appraisalShort")}</span>
               </span>
               <span
                 className="cta-text-bottom absolute inset-0 flex items-center justify-center text-primary font-extrabold whitespace-nowrap"
@@ -391,8 +395,8 @@ export function Navbar() {
                   opacity: 0,
                 }}
               >
-                <span className="hidden sm:inline">Instant 48h Offer ✦</span>
-                <span className="sm:hidden">48h Offer ✦</span>
+                <span className="hidden sm:inline">{t("instantOffer")}</span>
+                <span className="sm:hidden">{t("instantOfferShort")}</span>
               </span>
             </div>
 
@@ -410,7 +414,7 @@ export function Navbar() {
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center p-2 rounded-full text-surface/85 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-            aria-label="Toggle Navigation Menu"
+            aria-label={t("toggleMenu")}
             aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? (
@@ -446,19 +450,22 @@ export function Navbar() {
             </nav>
 
             <div className="pt-4 mt-3 border-t border-white/10 flex flex-col gap-2.5">
+              <div className="flex justify-center pb-1">
+                <LocaleSwitcher variant="pill" />
+              </div>
               <a
                 href="#valuation"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center w-full min-h-[44px] py-3 rounded-full bg-surface text-on-surface font-bold text-xs uppercase tracking-wider shadow-xs hover:bg-primary hover:text-white transition-colors"
               >
-                Get Free Appraisal ↗
+                {t("getAppraisal")} ↗
               </a>
               <Link
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center w-full min-h-[44px] py-3 rounded-full border border-white/15 text-surface font-bold text-xs uppercase tracking-wider hover:bg-white/10 transition-colors"
               >
-                Seller sign in
+                {t("sellerSignIn")}
               </Link>
             </div>
           </div>

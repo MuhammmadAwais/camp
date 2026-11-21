@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
 
 export interface SubNavItem {
   title: string;
@@ -25,6 +25,7 @@ export function SidebarFlyout({
   onClose,
 }: SidebarFlyoutProps) {
   const pathname = usePathname();
+  const tCommon = useTranslations('common');
 
   if (!isOpen) return null;
 
@@ -42,7 +43,7 @@ export function SidebarFlyout({
         >
           <span>{title}</span>
           <span className="text-[10px] text-gray-400 dark:text-neutral-400 group-hover:text-[#8C383E] dark:group-hover:text-[#E59344] font-normal">
-            View All →
+            {tCommon('viewAll')} →
           </span>
         </Link>
       </div>

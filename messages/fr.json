@@ -1,0 +1,111 @@
+{
+  "common": {
+    "appName": "AutoNexa",
+    "switchLanguage": "Changer de langue",
+    "english": "EN",
+    "french": "FR",
+    "signIn": "Connexion",
+    "signOut": "Déconnexion",
+    "loading": "Chargement",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "viewAll": "Tout voir",
+    "backHome": "Retour à l'accueil"
+  },
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "auctions": "Enchères",
+    "howItWorks": "Fonctionnement",
+    "valuation": "Évaluation",
+    "signIn": "Connexion",
+    "getAppraisal": "Évaluation gratuite",
+    "appraisalShort": "Évaluation",
+    "instantOffer": "Offre 48h garantie ✦",
+    "instantOfferShort": "Offre 48h ✦",
+    "sellerSignIn": "Espace vendeur",
+    "toggleMenu": "Ouvrir le menu"
+  },
+  "sidebar": {
+    "sections": {
+      "MODERATION": "Modération",
+      "GOVERNANCE": "Gouvernance",
+      "TRADING FLOOR": "Salle des marchés",
+      "MANAGEMENT": "Gestion",
+      "VEHICLES": "Véhicules",
+      "VERIFICATION": "Vérification"
+    },
+    "groups": {
+      "admin-moderation": "Approbations",
+      "admin-auctions": "Marché",
+      "admin-analytics": "Analytique & Journaux",
+      "dealer-floor": "Inventaire actif",
+      "dealer-trading": "Mes offres",
+      "dealer-account": "Concessionnaire",
+      "dealer-compliance": "Légal & Confiance",
+      "seller-dashboard": "Tableau de bord",
+      "seller-auctions": "Enchères",
+      "seller-trust": "Compte"
+    },
+    "items": {
+      "Vehicle Queue": "File d'approbation",
+      "Dealer Licenses": "Permis concessionnaires",
+      "Live Auctions": "Enchères actives",
+      "Disputes": "Litiges",
+      "Market Analytics": "Analytique de marché",
+      "Audit Trail": "Journal d'audit",
+      "Wholesale Floor": "Plancher de gros",
+      "Vehicle Inspection": "Inspection véhicule",
+      "Active Bids": "Offres actives",
+      "Won Matches": "Lots remportés",
+      "Subscription Plan": "Abonnement",
+      "Invoices & Billing": "Factures & Paiements",
+      "Team Members": "Équipe",
+      "Dealer License": "Licence concessionnaire",
+      "Terms of Service": "Conditions d'utilisation",
+      "Privacy Policy": "Confidentialité",
+      "Overview": "Vue d'ensemble",
+      "Sell a Car": "Vendre un véhicule",
+      "Live Auction": "Enchère en cours",
+      "Dealer Offers": "Offres reçues",
+      "Inspection Voucher": "Bon d'inspection",
+      "ID Verification": "Vérification d'identité"
+    }
+  },
+  "headers": {
+    "sellerBadge": "Vendeur",
+    "dealerBadge": "Concessionnaire",
+    "superAdminBadge": "Super Admin",
+    "complianceOps": "Conformité & Opérations",
+    "inventory": "Inventaire",
+    "activeBids": "Offres actives",
+    "wonAuctions": "Lots remportés",
+    "moderationQueue": "File de modération",
+    "auctionOverrides": "Contrôle enchères",
+    "dealerLicenses": "Permis concessionnaires",
+    "disputes": "Litiges",
+    "analytics": "Analytique",
+    "auditLog": "Journal d'audit",
+    "dealerFloor": "Plancher Pro",
+    "sellerApp": "Espace Vendeur"
+  },
+  "auth": {
+    "signInTitle": "Connexion",
+    "signInDescription": "Entrez votre courriel et votre mot de passe pour accéder à votre compte AutoNexa.",
+    "notRegistered": "Pas encore inscrit ?",
+    "createAccount": "Créer un compte",
+    "passwordResetNotice": "Votre mot de passe a été mis à jour. Connectez-vous avec votre nouveau mot de passe.",
+    "sessionExpiredNotice": "Votre session a expiré. Veuillez vous reconnecter."
+  },
+  "settings": {
+    "languagePreference": "Préférence de langue",
+    "englishCanada": "English (Canada)",
+    "frenchLaw25": "Français (Loi 25)",
+    "languageSyncNote": "Synchronisé automatiquement avec votre route bilingue (/en ou /fr) et vos notifications."
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "La page demandée n'existe pas ou a été déplacée vers une route localisée.",
+    "returnHome": "Retour à AutoNexa"
+  }
+}

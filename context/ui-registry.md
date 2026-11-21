@@ -1493,3 +1493,20 @@ Mode: Dual-Theme (Porcelain Light / Obsidian Dark)
 - **Live Search:** Instant filtering across member names and work email addresses.
 - **Interactive Invite Modal:** Replaced primitive dropdown with 3 interactive role selection cards detailing actual permissions (`Wholesale Buyer`, `Service Inspector`, `Dealership Admin`). Background scroll lock enabled during modal open.
 
+---
+
+### `LocaleSwitcher` (Quebec Law 25 EN/FR Bilingual Switcher)
+
+File: `components/i18n/LocaleSwitcher.tsx`  
+Last updated: 2026-11-21  
+Mode: Dual-Theme Tokenized (`Navbar` pill / Portal `compact` / Sidebar `segmented`)
+
+| Property | Class / Implementation Pattern |
+| --- | --- |
+| Props | `{ variant?: "segmented" \| "compact" \| "pill"; className?: string }` |
+| `pill` (Marketing `Navbar`) | `inline-flex items-center p-0.5 rounded-full border border-white/15 bg-white/5 backdrop-blur-md`; Active: `bg-surface text-on-surface shadow-xs`; Inactive: `text-surface/75 hover:text-white` |
+| `compact` (Portal Headers / Collapsed Sidebar) | `inline-flex items-center gap-1.5 h-9 px-2.5 rounded-full border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text text-xs font-mono font-bold` |
+| `segmented` (Expanded Sidebar) | `inline-flex items-center p-1 rounded-full border border-portal-border bg-portal-surface-hover/70`; Active: `bg-portal-surface text-portal-primary shadow-xs border border-portal-border`; Inactive: `text-portal-text-muted hover:text-portal-text` |
+| Persistence & Sync | Writes `NEXT_LOCALE` cookie (`path=/; max-age=31536000; SameSite=Lax`), fires best-effort `PATCH /api/settings/profile` (`{ languagePref }`) when authenticated (`useCurrentUser()`), invalidates TanStack `settingsKeys.profile()` + `authKeys.me()`, and preserves current `search` + `hash` via `router.replace(..., { locale })`. |
+
+

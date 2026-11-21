@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { LogOut } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { useLogout } from "@/hooks/useSession";
 import type { SessionUser } from "@/lib/types/auth";
 
@@ -12,6 +14,8 @@ interface Props {
 
 export function SellerHeader({ user }: Props) {
   const logout = useLogout();
+  const tHeaders = useTranslations("headers");
+  const tCommon = useTranslations("common");
   const initials = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
 
   return (
@@ -23,11 +27,12 @@ export function SellerHeader({ user }: Props) {
           </span>
           <span className="font-headline text-base font-bold tracking-tight text-portal-text">AutoNexa</span>
           <span className="hidden sm:inline rounded-full bg-portal-primary-tint px-2 py-0.5 font-body text-[10px] font-bold uppercase tracking-wider text-portal-primary">
-            Seller
+            {tHeaders("sellerBadge")}
           </span>
         </Link>
 
         <div className="flex items-center gap-3">
+          <LocaleSwitcher variant="compact" />
           <div className="hidden sm:block text-right">
             <p className="font-body text-sm font-semibold text-portal-text leading-tight">
               {user.firstName} {user.lastName}
@@ -44,7 +49,7 @@ export function SellerHeader({ user }: Props) {
             className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 font-body text-sm font-medium text-portal-text-muted hover:bg-portal-surface-hover hover:text-portal-text transition-colors cursor-pointer disabled:opacity-50"
           >
             <LogOut className="w-4 h-4" aria-hidden />
-            <span className="hidden sm:inline">Sign out</span>
+            <span className="hidden sm:inline">{tCommon("signOut")}</span>
           </button>
         </div>
       </div>

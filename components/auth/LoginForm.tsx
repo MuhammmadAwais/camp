@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { ArrowRight, Mail, ShieldCheck } from "lucide-react";
+import { Link, useRouter } from "@/i18n/navigation";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { AuthField } from "@/components/auth/AuthField";
 import { FormAlert } from "@/components/auth/FormAlert";
@@ -78,13 +77,15 @@ export function LoginForm({ next, notice }: Props) {
       localStorage.setItem("autonexa_active_user", JSON.stringify(storedUser));
     }
 
+    const targetLocale = session.user.languagePref ?? "en";
+
     if (session.mfaEnrollmentRequired) {
-      router.push("/settings/security?mfa=enroll");
+      router.push("/settings/security?mfa=enroll", { locale: targetLocale });
       return;
     }
 
     const destination = getPostAuthRoute(session.user, next);
-    router.push(destination);
+    router.push(destination, { locale: targetLocale });
   };
 
   const onSubmit = async (values: LoginPayload) => {

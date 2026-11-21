@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Epilogue, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
-import { Providers } from "./providers";
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { getMessages, setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
+import "@/app/globals.css";
+import { Providers } from "@/app/providers";
+import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/lib/auth-context";
 import { AppShell } from "@/components/layout/AppShell";
 
@@ -36,14 +40,29 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export default async function LocaleLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  const { locale } = await params;
+
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  setRequestLocale(locale);
+  const messages = await getMessages();
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`scroll-smooth antialiased dark ${epilogue.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
@@ -73,13 +92,13 @@ export default function RootLayout({
         className="min-h-screen bg-white dark:bg-[#121212] font-body text-[#201B11] dark:text-white flex flex-col selection:bg-[#8C383E] selection:text-white dark:selection:bg-[#E59344] dark:selection:text-[#121212]"
         suppressHydrationWarning
       >
-        <Providers>
-          <AuthProvider>
-            <AppShell>
-              {children}
-            </AppShell>
-          </AuthProvider>
-        </Providers>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Providers>
+            <AuthProvider>
+              <AppShell>{children}</AppShell>
+            </AuthProvider>
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

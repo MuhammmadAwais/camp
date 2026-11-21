@@ -49,6 +49,7 @@ export function toSessionUser(profile: ProfileRow): SessionUser {
     role: profile.role,
     kycStatus: profile.kyc_status,
     mfaEnabled: profile.mfa_enabled,
+    languagePref: profile.language_pref === "fr" ? "fr" : "en",
   };
 }
 
