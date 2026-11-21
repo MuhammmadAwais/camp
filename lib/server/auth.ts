@@ -231,6 +231,8 @@ export async function requireActiveDealership(
 /**
  * Enforces Supabase Auth AAL2 (TOTP MFA verified) for `ADMIN` and `DEALER_ADMIN`
  * accounts on sensitive privileged mutations (NFR-06, H7).
+ * When an account has enrolled a TOTP factor (`nextLevel === "aal2"` or `mfa_enabled === true`)
+ * or `ENFORCE_MANDATORY_MFA === "true"`, AAL2 is strictly required.
  */
 export async function requireAal2ForPrivilegedRoles<
   TContext extends SessionContext,
@@ -245,6 +247,18 @@ export async function requireAal2ForPrivilegedRoles<
   const currentLevel = data?.currentLevel ?? ctx.aal ?? "aal1";
   const nextLevel =
     data?.nextLevel ?? (ctx.profile.mfa_enabled ? "aal2" : "aal1");
+
+  const hasEnrolledFactor =
+    nextLevel === "aal2" || ctx.profile.mfa_enabled === true;
+  const strictEnrollmentRequired =
+    process.env.ENFORCE_MANDATORY_MFA === "true";
+
+  if (!hasEnrolledFactor && !strictEnrollmentRequired) {
+    return {
+      ...ctx,
+      aal: currentLevel,
+    };
+  }
 
   if (error || currentLevel !== "aal2") {
     const reason =

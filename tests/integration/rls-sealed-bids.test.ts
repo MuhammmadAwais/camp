@@ -44,9 +44,7 @@ const HAS_SUPABASE_ENV = Boolean(
   SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_SECRET_KEY
 );
 
-const UNSEALED_F150_LISTING_ID = "22222222-2222-4222-8222-222222222204";
 const PFAFF_DEALERSHIP_ID = "11111111-1111-4111-8111-111111111101";
-const OAKVILLE_DEALERSHIP_ID = "11111111-1111-4111-8111-111111111102";
 
 async function createAuthenticatedUserClient(
   admin: SupabaseClient<Database>,
@@ -103,7 +101,10 @@ describe.skipIf(!HAS_SUPABASE_ENV)(
     let dealerAClient: SupabaseClient<Database>;
     let dealerBClient: SupabaseClient<Database>;
     let syntheticActiveListingId: string | null = null;
-    let dealerBUserId = "";
+    let syntheticUnsealedListingId: string | null = null;
+    let tempCompetingDealershipId: string | null = null;
+    let tempDealerBUserId = "";
+    const tempDealerBEmail = `rls-dealer-b-${Date.now()}@autonexa.ca`;
 
     beforeAll(async () => {
       adminClient = createClient<Database>(SUPABASE_URL, SUPABASE_SECRET_KEY, {
@@ -113,14 +114,10 @@ describe.skipIf(!HAS_SUPABASE_ENV)(
       const { data: profiles, error: profilesErr } = await adminClient
         .from("profiles")
         .select("id, email")
-        .in("email", [
-          "seller@autonexa.ca",
-          "dealer@autonexa.ca",
-          "dealer2@autonexa.ca",
-        ]);
+        .in("email", ["seller@autonexa.ca", "dealer@autonexa.ca"]);
 
       if (profilesErr) {
-        throw new Error(`Failed loading seeded profiles: ${profilesErr.message}`);
+        throw new Error(`Failed loading demo profiles: ${profilesErr.message}`);
       }
 
       const idByEmail = new Map(
@@ -128,19 +125,86 @@ describe.skipIf(!HAS_SUPABASE_ENV)(
       );
       const sellerUserId = idByEmail.get("seller@autonexa.ca");
       const dealerAUserId = idByEmail.get("dealer@autonexa.ca");
-      dealerBUserId = idByEmail.get("dealer2@autonexa.ca") ?? "";
 
-      if (!sellerUserId || !dealerAUserId || !dealerBUserId) {
+      if (!sellerUserId || !dealerAUserId) {
         throw new Error(
-          "Missing one or more seeded accounts (seller@autonexa.ca, dealer@autonexa.ca, dealer2@autonexa.ca)."
+          "Missing core accounts (seller@autonexa.ca or dealer@autonexa.ca)."
         );
       }
 
-      const syntheticVin = `RLS${Date.now()
-        .toString(36)
-        .toUpperCase()
-        .padStart(14, "0")
-        .slice(-14)}`;
+      // Create an isolated temporary competing dealership + user for RLS cross-dealer isolation testing
+      const { data: tempDealership, error: tempDealerErr } = await adminClient
+        .from("dealerships")
+        .insert({
+          operating_name: "RLS Test Competing Motors",
+          legal_name: "RLS Test Competing Motors Ltd.",
+          regulator: "OMVIC",
+          license_number: `OMVIC-RLS-${Date.now().toString(36).toUpperCase()}`,
+          status: "VERIFIED",
+          street_address: "100 Test Way",
+          city: "Oakville",
+          province: "ON",
+          postal_code: "L6M 4W9",
+          contact_name: "RLS Competing Buyer",
+          contact_email: tempDealerBEmail,
+          contact_phone: "+19055550199",
+        })
+        .select("id")
+        .single();
+
+      if (tempDealerErr || !tempDealership) {
+        throw new Error(
+          `Failed creating temporary competing dealership: ${tempDealerErr?.message}`
+        );
+      }
+      tempCompetingDealershipId = tempDealership.id;
+
+      const { data: createdAuthUser, error: createAuthErr } =
+        await adminClient.auth.admin.createUser({
+          email: tempDealerBEmail,
+          password: "Password123!",
+          email_confirm: true,
+          user_metadata: {
+            first_name: "Competing",
+            last_name: "Dealer",
+            role: "DEALER_ADMIN",
+          },
+          app_metadata: {
+            role: "DEALER_ADMIN",
+            dealership_id: tempCompetingDealershipId,
+          },
+        });
+
+      if (createAuthErr || !createdAuthUser.user) {
+        throw new Error(
+          `Failed creating temporary competing dealer user: ${createAuthErr?.message}`
+        );
+      }
+      tempDealerBUserId = createdAuthUser.user.id;
+
+      await adminClient.from("profiles").upsert({
+        id: tempDealerBUserId,
+        email: tempDealerBEmail,
+        first_name: "Competing",
+        last_name: "Dealer",
+        role: "DEALER_ADMIN",
+        dealership_id: tempCompetingDealershipId,
+        email_verified: true,
+        phone_verified: true,
+        kyc_status: "VERIFIED",
+        account_status: "ACTIVE",
+      });
+
+      await adminClient.from("dealership_members").upsert({
+        dealership_id: tempCompetingDealershipId,
+        user_id: tempDealerBUserId,
+        seat_role: "DEALER_ADMIN",
+        is_active: true,
+      });
+
+      const baseVinSeed = Date.now().toString(36).toUpperCase();
+      const syntheticVinActive = `RLA${baseVinSeed.padStart(14, "0").slice(-14)}`;
+      const syntheticVinUnsealed = `RLU${baseVinSeed.padStart(14, "0").slice(-14)}`;
       const startedAt = new Date();
       const endsAt = new Date(startedAt.getTime() + 2 * 60 * 60 * 1000);
 
@@ -148,11 +212,11 @@ describe.skipIf(!HAS_SUPABASE_ENV)(
         .from("listings")
         .insert({
           seller_id: sellerUserId,
-          vin: syntheticVin,
+          vin: syntheticVinActive,
           year: 2024,
           make: "Porsche",
           model: "Macan",
-          trim: "RLS Test",
+          trim: "RLS Active Test",
           mileage_km: 12000,
           postal_code: "M5V 2T6",
           city: "Toronto",
@@ -173,32 +237,92 @@ describe.skipIf(!HAS_SUPABASE_ENV)(
       }
       syntheticActiveListingId = createdListing.id;
 
-      const { error: bidErr } = await adminClient.from("bids").insert({
-        listing_id: syntheticActiveListingId,
-        dealership_id: PFAFF_DEALERSHIP_ID,
-        placed_by_user_id: dealerAUserId,
-        amount_cents: 4_650_000,
-        status: "ACTIVE",
-        idempotency_key: `rls-suite-${syntheticActiveListingId}`,
-      });
+      const { data: createdUnsealed, error: unsealedErr } = await adminClient
+        .from("listings")
+        .insert({
+          seller_id: sellerUserId,
+          vin: syntheticVinUnsealed,
+          year: 2023,
+          make: "Ford",
+          model: "F-150",
+          trim: "RLS Unsealed Test",
+          mileage_km: 18000,
+          postal_code: "M5V 2T6",
+          city: "Toronto",
+          province: "ON",
+          reserve_price_cents: 4_800_000,
+          status: "UNSEALED",
+          bid_count: 1,
+          auction_started_at: new Date(
+            startedAt.getTime() - 25 * 3600 * 1000
+          ).toISOString(),
+          auction_ends_at: new Date(
+            startedAt.getTime() - 3600 * 1000
+          ).toISOString(),
+          closed_at: startedAt.toISOString(),
+        })
+        .select("id")
+        .single();
+
+      if (unsealedErr || !createdUnsealed) {
+        throw new Error(
+          `Failed creating synthetic UNSEALED listing: ${unsealedErr?.message}`
+        );
+      }
+      syntheticUnsealedListingId = createdUnsealed.id;
+
+      const { error: bidErr } = await adminClient.from("bids").insert([
+        {
+          listing_id: syntheticActiveListingId,
+          dealership_id: PFAFF_DEALERSHIP_ID,
+          placed_by_user_id: dealerAUserId,
+          amount_cents: 4_650_000,
+          status: "ACTIVE",
+          idempotency_key: `rls-active-${syntheticActiveListingId}`,
+        },
+        {
+          listing_id: syntheticUnsealedListingId,
+          dealership_id: PFAFF_DEALERSHIP_ID,
+          placed_by_user_id: dealerAUserId,
+          amount_cents: 4_950_000,
+          status: "ACTIVE",
+          idempotency_key: `rls-unsealed-${syntheticUnsealedListingId}`,
+        },
+      ]);
 
       if (bidErr) {
-        throw new Error(`Failed creating synthetic ACTIVE bid: ${bidErr.message}`);
+        throw new Error(`Failed creating synthetic bids: ${bidErr.message}`);
       }
 
       [sellerClient, dealerAClient, dealerBClient] = await Promise.all([
         createAuthenticatedUserClient(adminClient, "seller@autonexa.ca"),
         createAuthenticatedUserClient(adminClient, "dealer@autonexa.ca"),
-        createAuthenticatedUserClient(adminClient, "dealer2@autonexa.ca"),
+        createAuthenticatedUserClient(adminClient, tempDealerBEmail),
       ]);
     });
 
     afterAll(async () => {
-      if (syntheticActiveListingId && adminClient) {
+      if (!adminClient) return;
+      if (syntheticActiveListingId) {
         await adminClient
           .from("listings")
           .delete()
           .eq("id", syntheticActiveListingId);
+      }
+      if (syntheticUnsealedListingId) {
+        await adminClient
+          .from("listings")
+          .delete()
+          .eq("id", syntheticUnsealedListingId);
+      }
+      if (tempDealerBUserId) {
+        await adminClient.auth.admin.deleteUser(tempDealerBUserId);
+      }
+      if (tempCompetingDealershipId) {
+        await adminClient
+          .from("dealerships")
+          .delete()
+          .eq("id", tempCompetingDealershipId);
       }
     });
 
@@ -244,10 +368,6 @@ describe.skipIf(!HAS_SUPABASE_ENV)(
         .eq("listing_id", syntheticActiveListingId!);
 
       expect(error).toBeNull();
-      for (const bid of dealerBSeenBids ?? []) {
-        expect(bid.dealership_id).toBe(OAKVILLE_DEALERSHIP_ID);
-        expect(bid.dealership_id).not.toBe(PFAFF_DEALERSHIP_ID);
-      }
       expect(dealerBSeenBids).toEqual([]);
     });
 
@@ -269,7 +389,7 @@ describe.skipIf(!HAS_SUPABASE_ENV)(
       const { data: unsealedBids, error } = await sellerClient
         .from("bids")
         .select("id, dealership_id, amount_cents, status")
-        .eq("listing_id", UNSEALED_F150_LISTING_ID);
+        .eq("listing_id", syntheticUnsealedListingId!);
 
       expect(error).toBeNull();
       expect(unsealedBids?.length).toBeGreaterThanOrEqual(1);
@@ -281,8 +401,8 @@ describe.skipIf(!HAS_SUPABASE_ENV)(
     it("rejects direct client INSERT into bids and DELETE on immutable audit_logs", async () => {
       const { error: directBidErr } = await dealerBClient.from("bids").insert({
         listing_id: syntheticActiveListingId!,
-        dealership_id: OAKVILLE_DEALERSHIP_ID,
-        placed_by_user_id: dealerBUserId,
+        dealership_id: tempCompetingDealershipId!,
+        placed_by_user_id: tempDealerBUserId,
         amount_cents: 4_900_000,
         idempotency_key: `rls-bypass-test-${Date.now()}`,
       });

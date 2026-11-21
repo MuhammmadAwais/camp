@@ -2,11 +2,10 @@
 
 import React, { useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { Car, X, Plus, CheckCircle2, Gavel, Clock, ArrowRight, ShieldCheck } from "lucide-react";
 import { useSellerDashboard } from "@/hooks/useSellerDashboard";
-import type { AuctionStatus, SellerAuctionItem } from "@/lib/types/seller";
+import type { SellerAuctionItem } from "@/lib/types/seller";
 
 const emptySubscribe = () => () => {};
 
@@ -28,7 +27,6 @@ export function VehicleSwitcherModal({
   isOpen,
   onClose,
   currentListingId,
-  currentListingFallback,
 }: VehicleSwitcherModalProps) {
   const router = useRouter();
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
@@ -54,31 +52,7 @@ export function VehicleSwitcherModal({
 
   if (!isOpen || !mounted) return null;
 
-  const dashboardAuctions = dashboardData?.auctions ?? [];
-
-  // Combine dashboard auctions with current listing if not already present
-  const vehiclesMap = new Map<string, SellerAuctionItem>();
-  dashboardAuctions.forEach((a) => vehiclesMap.set(a.id, a));
-
-  if (!vehiclesMap.has(currentListingId) && currentListingFallback) {
-    vehiclesMap.set(currentListingId, {
-      id: currentListingId,
-      vin: currentListingFallback.vin,
-      year: currentListingFallback.year,
-      make: currentListingFallback.make,
-      model: currentListingFallback.model,
-      mileageKm: 38450,
-      status: currentListingFallback.status as AuctionStatus,
-      thumbnailUrl: currentListingFallback.thumbnailUrl || "/showcase-cars-with-bg/2025-Toyota-4runner.png",
-      reservePriceCents: 3800000,
-      bidCount: 4,
-      province: "ON",
-      city: "Toronto",
-      createdAt: new Date().toISOString(),
-    });
-  }
-
-  const allVehicles = Array.from(vehiclesMap.values());
+  const allVehicles = dashboardData?.auctions ?? [];
 
   const handleSelectVehicle = (car: SellerAuctionItem) => {
     onClose();

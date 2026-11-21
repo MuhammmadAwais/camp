@@ -56,13 +56,6 @@ const REGULATOR_CODES: readonly RegulatorCode[] = [
   "OPC",
 ];
 
-const DEMO_ACCOUNTS_BY_ROLE: Record<UserRole, string> = {
-  SELLER: "seller@autonexa.ca",
-  DEALER_ADMIN: "dealer@autonexa.ca",
-  DEALER_AGENT: "agent@autonexa.ca",
-  ADMIN: "admin@autonexa.ca",
-};
-
 function maskEmail(email: string): string {
   const atIndex = email.indexOf("@");
   if (atIndex <= 0) return "••••";
@@ -1041,33 +1034,4 @@ export async function resetPasswordWithToken(
   await supabase.auth.signOut();
 
   return { passwordReset: true };
-}
-
-/**
- * Development/demo-only quick role switcher backed by real seeded Supabase demo accounts.
- */
-export async function devSwitchDemoRole(
-  role?: UserRole | "LOGOUT"
-): Promise<{ user: SessionUser | null }> {
-  const enabled =
-    process.env.NODE_ENV !== "production" ||
-    process.env.ENABLE_DEMO_SWITCH === "true";
-
-  if (!enabled) {
-    throw new NotFoundError("Not found.");
-  }
-
-  if (!role || role === "LOGOUT") {
-    await logoutCurrentUser();
-    return { user: null };
-  }
-
-  const demoEmail = DEMO_ACCOUNTS_BY_ROLE[role];
-  const demoPassword = process.env.DEMO_ACCOUNT_PASSWORD ?? "password123";
-  const session = await loginWithPassword({
-    email: demoEmail,
-    password: demoPassword,
-  });
-
-  return { user: session.user };
 }

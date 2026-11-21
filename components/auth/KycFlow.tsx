@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { ArrowLeft, ArrowRight, BadgeCheck, IdCard, Loader2, Lock, ScanFace, ShieldCheck } from "lucide-react";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { AuthCheckbox } from "@/components/auth/AuthCheckbox";

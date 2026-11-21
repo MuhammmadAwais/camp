@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ArrowRight, BadgeCheck, Loader2, ShieldAlert } from "lucide-react";
 import { useKycStatus } from "@/hooks/useKyc";
 import type { KycStatus } from "@/lib/types/auth";

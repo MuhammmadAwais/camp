@@ -36,49 +36,6 @@ const RECOMMENDED_ANGLES = [
 const MIN_PHOTOS = 8;
 const MAX_PHOTOS = 30;
 
-const SAMPLE_GALLERY_PHOTOS: Array<{ name: string; url: string; size: number }> = [
-  {
-    name: "front_three_quarter.webp",
-    url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
-    size: 1420000,
-  },
-  {
-    name: "rear_three_quarter.webp",
-    url: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80",
-    size: 1350000,
-  },
-  {
-    name: "driver_cockpit.webp",
-    url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80",
-    size: 1200000,
-  },
-  {
-    name: "odometer_cluster.webp",
-    url: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=1200&q=80",
-    size: 980000,
-  },
-  {
-    name: "rear_passenger_seats.webp",
-    url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80",
-    size: 1110000,
-  },
-  {
-    name: "engine_bay_v6.webp",
-    url: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=1200&q=80",
-    size: 1540000,
-  },
-  {
-    name: "alloy_wheel_tread.webp",
-    url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1200&q=80",
-    size: 890000,
-  },
-  {
-    name: "cargo_trunk_open.webp",
-    url: "https://images.unsplash.com/photo-1550355291-bbee04a92027?auto=format&fit=crop&w=1200&q=80",
-    size: 1040000,
-  },
-];
-
 interface PhotoUploadStepProps {
   onNext: () => void;
   onBack: () => void;
@@ -217,21 +174,6 @@ export function PhotoUploadStep({ onNext, onBack }: PhotoUploadStepProps) {
     setIsDragging(false);
   };
 
-  const handleLoadSamplePhotos = () => {
-    const newPhotos: ListingPhoto[] = SAMPLE_GALLERY_PHOTOS.map((item, idx) => ({
-      id: `sample-${idx}-${Date.now()}`,
-      previewUrl: item.url,
-      s3Key: `listings/mock/${item.name}`,
-      fileName: item.name,
-      fileSizeBytes: item.size,
-      isCover: idx === 0,
-      status: "uploaded",
-      progress: 100,
-    }));
-    useListingWizardStore.setState({ photos: newPhotos });
-    setUploadError(null);
-  };
-
   const handleProceed = () => {
     if (photos.length < MIN_PHOTOS) {
       setUploadError(
@@ -318,17 +260,6 @@ export function PhotoUploadStep({ onNext, onBack }: PhotoUploadStepProps) {
           <ShieldCheck className="w-3.5 h-3.5 text-portal-primary shrink-0" />
           <span>Photos are securely protected. Location data is removed for your privacy.</span>
         </div>
-        {photos.length < MIN_PHOTOS && (
-          <button
-            type="button"
-            id="load-sample-photos-btn"
-            onClick={handleLoadSamplePhotos}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-portal-primary bg-portal-primary/10 hover:bg-portal-primary/20 border border-portal-primary/30 transition-colors cursor-pointer shrink-0"
-          >
-            <Camera className="w-3.5 h-3.5" />
-            <span>Load Sample Photos</span>
-          </button>
-        )}
       </div>
 
       {/* Error Banner */}

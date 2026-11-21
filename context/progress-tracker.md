@@ -665,18 +665,20 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - Updated Seller & Dealer sidebar links from legacy mock slug `auc-porsche-macan-2022` to real Supabase listing UUIDs (`22222222-2222-4222-8222-222222222201` for active 2022 Porsche Macan auction and `22222222-2222-4222-8222-222222222204` for unsealed 2023 Ford F-150 offers/voucher).
 - [x] **`F-WIRE.5` — Connect Hero `MarketValuationWidget` to `useSellIntentStore` & Registration Funnel (`components/marketing/MarketValuationWidget.tsx`)**
   - Submitting a VIN and/or Canadian postal code in the landing page hero widget now persists the sanitized VIN and normalized postal code into `useSellIntentStore` and navigates directly to `/register?vin=...&postal=...` (or `/sell`).
+- [x] **`F-PROD.1` — Production Clean-Slate Database Baseline & Zero-Mockup Purge**
+  - Purged all pre-seeded demo listings, bids, matches, disputes, notifications, invoices, and extra accounts from Supabase (`ca-central-1`), leaving strictly the 3 verified demo accounts (`admin@autonexa.ca`, `seller@autonexa.ca`, `dealer@autonexa.ca` + verified dealership `Pfaff Porsche Markham` with active subscription `0 / 250` bids used) and core lookup tables (`plans`, `platform_config`, `postal_centroids`).
+  - Removed `"Load Sample Photos"` (`SAMPLE_GALLERY_PHOTOS`) from `PhotoUploadStep.tsx`, removed synthetic fallback vehicle card from `VehicleSwitcherModal.tsx`, deleted `/api/auth/dev-switch`, `/api/mock/s3-upload`, `DevRoleBar.tsx`, and `lib/mock-auth.ts`.
+  - Replaced all remaining `next/link` and `next/navigation` `useRouter` imports across 26 portal/auth components with locale-aware `@/i18n/navigation` (`Link`, `useRouter`) and made `Sidebar.tsx` dynamically resolve Seller and Dealer auction links from live TanStack Query state.
 
 ---
 
-#### 3. Verified Live Supabase Database Test Credentials (`ca-central-1`)
+#### 3. Verified Live Supabase Database Test Credentials (`ca-central-1` — Clean Baseline)
 
 | Role | Email | Password | Profile / Organization | Default Landing Route |
 | :--- | :--- | :--- | :--- | :--- |
 | **Admin (`ADMIN`)** | `admin@autonexa.ca` | `Password123!` | Sarah Tremblay (Platform Admin) | `/en/admin/moderation` |
 | **Seller (`SELLER`)** | `seller@autonexa.ca` | `Password123!` | Jordan Tremblay (Verified Seller) | `/en/seller/dashboard` |
 | **Dealer (`DEALER_ADMIN`)** | `dealer@autonexa.ca` | `Password123!` | Christopher Evans (Pfaff Porsche Markham • `OMVIC-481920`) | `/en/dealer/inventory` |
-| **Dealer Buyer (`DEALER_AGENT`)** | `agent@autonexa.ca` | `Password123!` | Tyler Richardson (Pfaff Porsche Buyer Seat) | `/en/dealer/inventory` |
-| **Competing Dealer (`DEALER_ADMIN`)** | `dealer2@autonexa.ca` | `Password123!` | Marcus Chen (Oakville Luxury Motor Group • `OMVIC-391204`) | `/en/dealer/inventory` |
 
 ## Agent Directives & Production Invariants
 

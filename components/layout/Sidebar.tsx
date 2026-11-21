@@ -26,7 +26,9 @@ import {
 import { useSidebarStore } from '@/lib/store/useSidebarStore';
 import { SidebarFlyout, type SubNavItem } from './SidebarFlyout';
 import { UserProfileCard } from './UserProfileCard';
-import { useAuth } from '@/lib/auth-context';
+import { useCurrentUser } from '@/hooks/useSession';
+import { useSellerDashboard } from '@/hooks/useSellerDashboard';
+import { useDealerInventory } from '@/hooks/useDealerInventory';
 import { LocaleSwitcher } from '@/components/i18n/LocaleSwitcher';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
@@ -41,7 +43,8 @@ interface NavGroup {
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { role } = useAuth();
+  const { data: sessionUser } = useCurrentUser();
+  const role = sessionUser?.role ?? null;
   const tSidebar = useTranslations('sidebar');
   const { isCollapsed, isMobileOpen, closeMobile, toggleSidebar, expandedGroups, toggleGroup } =
     useSidebarStore();
@@ -66,6 +69,25 @@ export function Sidebar() {
 
   const isDealer = role === 'DEALER_ADMIN' || role === 'DEALER_AGENT';
   const isAdmin = role === 'ADMIN';
+  const isSeller = role === 'SELLER';
+
+  const sellerDashboardQuery = useSellerDashboard('default');
+  const dealerInventoryQuery = useDealerInventory({
+    enabled: Boolean(sessionUser && (isDealerRoute || isDealer)),
+  });
+
+  const sellerAuctions = isSeller || isSellerRoute ? (sellerDashboardQuery.data?.auctions ?? []) : [];
+  const activeSellerListing =
+    sellerAuctions.find((a) => a.status === 'ACTIVE') ?? sellerAuctions[0] ?? null;
+  const unsealedSellerListing =
+    sellerAuctions.find((a) => a.status === 'UNSEALED' || a.status === 'ACCEPTED') ??
+    activeSellerListing;
+  const acceptedSellerListing =
+    sellerAuctions.find((a) => a.status === 'ACCEPTED' || a.status === 'COMPLETED') ??
+    unsealedSellerListing;
+
+  const dealerLots = dealerInventoryQuery.data?.items ?? [];
+  const firstDealerLot = dealerLots[0] ?? null;
 
   let NAV_ITEMS: NavGroup[] = [];
 
@@ -106,6 +128,16 @@ export function Sidebar() {
       },
     ];
   } else if (isDealerRoute || (isDealer && !isSellerRoute)) {
+    const dealerFloorItems: SubNavItem[] = [
+      { title: tSidebar('items.Wholesale Floor'), href: '/dealer/inventory' },
+    ];
+    if (firstDealerLot) {
+      dealerFloorItems.push({
+        title: tSidebar('items.Vehicle Inspection'),
+        href: `/dealer/auctions/${firstDealerLot.id}`,
+      });
+    }
+
     NAV_ITEMS = [
       {
         id: 'dealer-floor',
@@ -113,10 +145,7 @@ export function Sidebar() {
         href: '/dealer/inventory',
         icon: House,
         section: 'TRADING FLOOR',
-        items: [
-          { title: tSidebar('items.Wholesale Floor'), href: '/dealer/inventory' },
-          { title: tSidebar('items.Vehicle Inspection'), href: '/dealer/auctions/22222222-2222-4222-8222-222222222201' },
-        ],
+        items: dealerFloorItems,
       },
       {
         id: 'dealer-trading',
@@ -156,6 +185,26 @@ export function Sidebar() {
     ];
   } else {
     // Default: Private Seller
+    const sellerAuctionItems: SubNavItem[] = [];
+    if (activeSellerListing) {
+      sellerAuctionItems.push({
+        title: tSidebar('items.Live Auction'),
+        href: `/seller/listings/${activeSellerListing.id}`,
+      });
+    }
+    if (unsealedSellerListing) {
+      sellerAuctionItems.push({
+        title: tSidebar('items.Dealer Offers'),
+        href: `/seller/listings/${unsealedSellerListing.id}/select-dealer`,
+      });
+    }
+    if (acceptedSellerListing) {
+      sellerAuctionItems.push({
+        title: tSidebar('items.Inspection Voucher'),
+        href: `/seller/listings/${acceptedSellerListing.id}/appointment`,
+      });
+    }
+
     NAV_ITEMS = [
       {
         id: 'seller-dashboard',
@@ -168,18 +217,18 @@ export function Sidebar() {
           { title: tSidebar('items.Sell a Car'), href: '/seller/list-car' },
         ],
       },
-      {
-        id: 'seller-auctions',
-        title: tSidebar('groups.seller-auctions'),
-        href: '/seller/listings/22222222-2222-4222-8222-222222222201',
-        icon: Gavel,
-        section: 'VEHICLES',
-        items: [
-          { title: tSidebar('items.Live Auction'), href: '/seller/listings/22222222-2222-4222-8222-222222222201' },
-          { title: tSidebar('items.Dealer Offers'), href: '/seller/listings/22222222-2222-4222-8222-222222222204/select-dealer' },
-          { title: tSidebar('items.Inspection Voucher'), href: '/seller/listings/22222222-2222-4222-8222-222222222204/appointment' },
-        ],
-      },
+      ...(sellerAuctionItems.length > 0 && activeSellerListing
+        ? [
+            {
+              id: 'seller-auctions',
+              title: tSidebar('groups.seller-auctions'),
+              href: `/seller/listings/${activeSellerListing.id}`,
+              icon: Gavel,
+              section: 'VEHICLES',
+              items: sellerAuctionItems,
+            },
+          ]
+        : []),
       {
         id: 'seller-trust',
         title: tSidebar('groups.seller-trust'),

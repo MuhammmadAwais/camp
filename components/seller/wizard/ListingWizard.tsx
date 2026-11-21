@@ -1,7 +1,8 @@
 "use client";
 
 import React, { Suspense, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { ListingWizardShell } from "./ListingWizardShell";
 import { VinDecodeStep } from "./VinDecodeStep";
 import { VehicleSpecsStep } from "./VehicleSpecsStep";

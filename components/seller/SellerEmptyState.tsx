@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ArrowRight, CarFront, CheckCircle2, Lock, ShieldCheck, Sparkles } from "lucide-react";
 import { KycStatus } from "@/lib/types/auth";
 

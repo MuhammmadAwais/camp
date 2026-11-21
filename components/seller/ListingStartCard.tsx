@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { CarFront, Lock } from "lucide-react";
 import { useKycStatus } from "@/hooks/useKyc";
 import { useVinDecode } from "@/hooks/useVinDecode";
