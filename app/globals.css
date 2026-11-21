@@ -7,9 +7,9 @@
   /* ========================================================
      TYPOGRAPHY FONTS
      ======================================================== */
-  --font-headline: var(--font-headline), "Epilogue", serif;
-  --font-body: var(--font-body), "Plus Jakarta Sans", sans-serif;
-  --font-mono: var(--font-mono), "JetBrains Mono", monospace;
+  --font-headline: "Epilogue", serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 
   /* ========================================================
      AUTUMN EDITORIAL PALETTE (AutoNexa Landing & Marketing)

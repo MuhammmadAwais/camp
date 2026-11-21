@@ -16,10 +16,15 @@ import {
 import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { useCurrentUser } from "@/hooks/useSession";
 
 export function AdminHeader() {
   const pathname = usePathname();
   const t = useTranslations("headers");
+  const { data: sessionUser } = useCurrentUser();
+  const adminDisplayName = sessionUser
+    ? `${sessionUser.firstName} ${sessionUser.lastName}`.trim() || sessionUser.email
+    : "";
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-portal-border bg-portal-surface/90 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3 transition-colors">
@@ -137,17 +142,19 @@ export function AdminHeader() {
           </div>
 
           {/* Admin Officer Badge */}
-          <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-portal-surface-hover border border-portal-border text-xs">
-            <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-            <div className="hidden sm:block text-left">
-              <span className="font-semibold text-portal-text block text-[11px] leading-tight">
-                Sarah Tremblay
-              </span>
-              <span className="text-[10px] text-portal-text-muted font-mono block">
-                Lead Compliance Officer
-              </span>
+          {adminDisplayName && (
+            <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-portal-surface-hover border border-portal-border text-xs">
+              <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+              <div className="hidden sm:block text-left">
+                <span className="font-semibold text-portal-text block text-[11px] leading-tight">
+                  {adminDisplayName}
+                </span>
+                <span className="text-[10px] text-portal-text-muted font-mono block">
+                  {sessionUser?.email}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           <LocaleSwitcher variant="compact" />
 

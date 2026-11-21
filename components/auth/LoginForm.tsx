@@ -60,30 +60,7 @@ export function LoginForm({ next, notice }: Props) {
 
   const finalizeLoginSuccess = (session: AuthSession) => {
     applySession(session);
-
-    // Sync with localStorage authService so client components like Header/Sidebar know the user immediately
-    if (typeof window !== "undefined") {
-      const storedUser = {
-        id: session.user.id,
-        email: session.user.email,
-        name: `${session.user.firstName} ${session.user.lastName}`.trim(),
-        phone: session.user.phoneMasked,
-        postalCode: session.user.postalCode,
-        province: session.user.province,
-        role: session.user.role,
-        kycStatus: session.user.kycStatus,
-        createdAt: new Date().toISOString(),
-      };
-      localStorage.setItem("autonexa_active_user", JSON.stringify(storedUser));
-    }
-
     const targetLocale = session.user.languagePref ?? "en";
-
-    if (session.mfaEnrollmentRequired) {
-      router.push("/settings/security?mfa=enroll", { locale: targetLocale });
-      return;
-    }
-
     const destination = getPostAuthRoute(session.user, next);
     router.push(destination, { locale: targetLocale });
   };

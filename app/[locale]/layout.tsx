@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Epilogue, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -9,27 +8,6 @@ import { Providers } from "@/app/providers";
 import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/lib/auth-context";
 import { AppShell } from "@/components/layout/AppShell";
-
-const epilogue = Epilogue({
-  subsets: ["latin"],
-  variable: "--font-headline",
-  weight: ["600", "700", "800"],
-  display: "swap",
-});
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-body",
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "AutoNexa | Canada's 24h Wholesale Vehicle Exchange",
@@ -63,7 +41,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`scroll-smooth antialiased dark ${epilogue.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable}`}
+      className="scroll-smooth antialiased dark"
       suppressHydrationWarning
     >
       <head>

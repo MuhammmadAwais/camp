@@ -1,7 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { createContext, useContext, useMemo } from 'react';
+import { useRouter } from '@/i18n/navigation';
+import { useCurrentUser, useLogout } from '@/hooks/useSession';
 import { authService } from '@/features/auth/services/authService';
 import type {
   User,
@@ -26,102 +27,54 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: sessionUser, isPending } = useCurrentUser();
+  const logoutMutation = useLogout();
   const router = useRouter();
 
-  const refreshSession = useCallback(() => {
-    try {
-      const active = authService.getCurrentUser();
-      setUser(active);
-    } catch {
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    queueMicrotask(() => {
-      if (!cancelled) {
-        refreshSession();
-      }
-    });
-    return () => {
-      cancelled = true;
+  const user = useMemo<User | null>(() => {
+    if (!sessionUser) return null;
+    return {
+      id: sessionUser.id,
+      email: sessionUser.email,
+      name: `${sessionUser.firstName} ${sessionUser.lastName}`.trim() || sessionUser.email,
+      phone: sessionUser.phoneMasked,
+      postalCode: sessionUser.postalCode,
+      province: sessionUser.province,
+      role: sessionUser.role,
+      kycStatus:
+        sessionUser.kycStatus === 'NOT_STARTED'
+          ? 'PENDING'
+          : sessionUser.kycStatus,
+      createdAt: '',
     };
-  }, [refreshSession]);
+  }, [sessionUser]);
 
   const login = async (credentials: LoginCredentials): Promise<User> => {
-    setIsLoading(true);
-    try {
-      const loggedIn = await authService.login(credentials);
-      setUser(loggedIn);
-
-      // Smart routing by role
-      if (loggedIn.role === 'SELLER') router.push('/seller/dashboard');
-      else if (loggedIn.role === 'ADMIN') router.push('/admin/moderation');
-      else router.push('/dealer/inventory');
-
-      return loggedIn;
-    } finally {
-      setIsLoading(false);
-    }
+    const loggedIn = await authService.login(credentials);
+    if (loggedIn.role === 'SELLER') router.push('/seller/dashboard');
+    else if (loggedIn.role === 'ADMIN') router.push('/admin/moderation');
+    else router.push('/dealer/inventory');
+    return loggedIn;
   };
 
   const registerSeller = async (payload: RegisterSellerPayload): Promise<User> => {
-    setIsLoading(true);
-    try {
-      const newUser = await authService.registerSeller(payload);
-      setUser(newUser);
-      router.push('/seller/dashboard');
-      return newUser;
-    } finally {
-      setIsLoading(false);
-    }
+    const newUser = await authService.registerSeller(payload);
+    router.push('/seller/dashboard');
+    return newUser;
   };
 
   const registerDealer = async (payload: RegisterDealerPayload): Promise<User> => {
-    setIsLoading(true);
-    try {
-      const newUser = await authService.registerDealer(payload);
-      setUser(newUser);
-      router.push('/dealer/inventory');
-      return newUser;
-    } finally {
-      setIsLoading(false);
-    }
+    const newUser = await authService.registerDealer(payload);
+    router.push('/dealer/inventory');
+    return newUser;
   };
 
   const logout = async () => {
-    setIsLoading(true);
-    try {
-      await authService.logout();
-      setUser(null);
-      router.push('/login');
-    } finally {
-      setIsLoading(false);
-    }
+    await logoutMutation.mutateAsync();
   };
 
-  const devSwitchRole = async (role: UserRole | 'LOGOUT') => {
-    setIsLoading(true);
-    try {
-      const switched = authService.switchRole(role);
-      setUser(switched);
-      if (!switched) {
-        router.push('/login');
-      } else if (switched.role === 'SELLER') {
-        router.push('/seller/dashboard');
-      } else if (switched.role === 'ADMIN') {
-        router.push('/admin/moderation');
-      } else {
-        router.push('/dealer/inventory');
-      }
-    } finally {
-      setIsLoading(false);
-    }
+  const devSwitchRole = async () => {
+    router.push('/login');
   };
 
   return (
@@ -130,7 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         role: user?.role || null,
         isAuthenticated: !!user,
-        isLoading,
+        isLoading: isPending,
         login,
         registerSeller,
         registerDealer,

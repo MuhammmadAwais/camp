@@ -7,11 +7,11 @@ import {
   CaretUpDown,
   User as UserIcon,
   SignOut,
-  Swap,
   FileText,
   LockKey,
+  SignIn,
 } from '@phosphor-icons/react';
-import { useAuth } from '@/lib/auth-context';
+import { useCurrentUser, useLogout } from '@/hooks/useSession';
 
 interface UserProfileCardProps {
   isCollapsed: boolean;
@@ -19,28 +19,21 @@ interface UserProfileCardProps {
 
 export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
   const t = useTranslations('userMenu');
+  const tCommon = useTranslations('common');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { user, role, logout, devSwitchRole } = useAuth();
+  const { data: sessionUser, isPending } = useCurrentUser();
+  const logoutMutation = useLogout();
 
+  const role = sessionUser?.role ?? null;
   const isDealer = role === 'DEALER_ADMIN' || role === 'DEALER_AGENT';
   const isAdmin = role === 'ADMIN';
 
-  const displayName =
-    user?.name ||
-    (isAdmin
-      ? 'Sarah Tremblay'
-      : isDealer
-      ? 'Pfaff Automotive Partner'
-      : 'Michael Vance');
+  const displayName = sessionUser
+    ? `${sessionUser.firstName} ${sessionUser.lastName}`.trim() || sessionUser.email
+    : '';
 
-  const userEmail =
-    user?.email ||
-    (isAdmin
-      ? 'admin@autonexa.ca'
-      : isDealer
-      ? 'trading@pfaffauto.ca'
-      : 'm.vance@rogers.ca');
+  const userEmail = sessionUser?.email ?? '';
 
   const roleTitle = isAdmin
     ? t('adminRole')
@@ -48,10 +41,8 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
     ? t('dealerRole')
     : t('sellerRole');
 
-  const roleBadgeLabel =
-    isAdmin ? 'ADMIN' : isDealer ? 'DEALER' : 'SELLER';
+  const roleBadgeLabel = isAdmin ? 'ADMIN' : isDealer ? 'DEALER' : 'SELLER';
 
-  // Close popup menu when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -65,9 +56,30 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  if (isPending) {
+    return (
+      <div className="w-full h-11 rounded-xl bg-portal-surface-hover/50 animate-pulse border border-portal-border" />
+    );
+  }
+
+  if (!sessionUser) {
+    return (
+      <Link
+        href="/login"
+        className={`w-full flex items-center rounded-xl transition-all cursor-pointer border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text text-xs font-bold shadow-2xs ${
+          isCollapsed
+            ? 'size-10 mx-auto justify-center'
+            : 'px-3 py-2.5 justify-center gap-2'
+        }`}
+      >
+        <SignIn className="size-4 text-portal-primary shrink-0" weight="bold" />
+        {!isCollapsed && <span>{tCommon('signIn')}</span>}
+      </Link>
+    );
+  }
+
   return (
     <div ref={containerRef} className="relative w-full font-body select-none">
-      {/* Popover Dropdown Menu (Classic Professional SaaS Architecture) */}
       {isOpen && (
         <div
           className={`absolute z-50 rounded-2xl p-3 bg-portal-surface/98 backdrop-blur-2xl border border-portal-border shadow-xl animate-in fade-in zoom-in-95 duration-150 ${
@@ -79,8 +91,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
           {/* 1. Header Profile Card */}
           <div className="pb-3 border-b border-portal-border/60">
             <div className="flex items-center gap-3">
-              {/* Avatar Monogram */}
-              <div className="relative size-10 rounded-xl bg-gradient-to-br from-[#8C383E]/20 to-[#E59344]/30 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-portal-text text-sm shadow-xs">
+              <div className="relative size-10 rounded-xl bg-portal-primary/15 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-portal-text text-sm shadow-xs">
                 {displayName.charAt(0).toUpperCase()}
                 <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-500 border-2 border-portal-surface" />
               </div>
@@ -88,7 +99,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1.5">
                   <span className="font-headline font-bold text-xs text-portal-text truncate">
-                    {displayName.replace(/\s*\(.*?\)\s*/g, '')}
+                    {displayName}
                   </span>
                   <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-portal-primary/10 text-portal-primary border border-portal-primary/20 shrink-0">
                     {roleBadgeLabel}
@@ -105,7 +116,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
           </div>
 
           {/* 2. Structured Action Links */}
-          <div className="py-2 space-y-0.5 border-b border-portal-border/60">
+          <div className="py-2 space-y-0.5">
             <Link
               href="/settings/profile"
               onClick={() => setIsOpen(false)}
@@ -121,7 +132,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
             </Link>
 
             <Link
-              href="/settings/profile?tab=security"
+              href="/settings/security"
               onClick={() => setIsOpen(false)}
               className="flex items-center justify-between px-2.5 py-2 text-xs text-portal-text hover:bg-portal-surface-hover rounded-xl transition-colors cursor-pointer group"
             >
@@ -143,71 +154,16 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
             </Link>
           </div>
 
-          {/* 3. Refined Workspace Simulation Switcher (Dev Mode) */}
-          <div className="pt-2 pb-1">
-            <div className="px-2.5 py-1 text-[10px] font-mono text-portal-text-muted uppercase tracking-wider flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <Swap className="size-3" weight="bold" />
-                <span>{t('simulateWorkspace')}</span>
-              </span>
-              <span className="text-[9px] opacity-60">TEST HARNESS</span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-1 p-1 bg-portal-surface-hover/60 border border-portal-border/60 rounded-xl mt-1">
-              <button
-                type="button"
-                onClick={async () => {
-                  await devSwitchRole('SELLER');
-                  setIsOpen(false);
-                }}
-                className={`text-[11px] py-1.5 rounded-lg transition-all cursor-pointer font-semibold ${
-                  role === 'SELLER'
-                    ? 'bg-portal-surface text-portal-primary shadow-2xs font-bold'
-                    : 'text-portal-text-muted hover:text-portal-text'
-                }`}
-              >
-                Seller
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  await devSwitchRole('DEALER_ADMIN');
-                  setIsOpen(false);
-                }}
-                className={`text-[11px] py-1.5 rounded-lg transition-all cursor-pointer font-semibold ${
-                  isDealer
-                    ? 'bg-portal-surface text-portal-primary shadow-2xs font-bold'
-                    : 'text-portal-text-muted hover:text-portal-text'
-                }`}
-              >
-                Dealer
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  await devSwitchRole('ADMIN');
-                  setIsOpen(false);
-                }}
-                className={`text-[11px] py-1.5 rounded-lg transition-all cursor-pointer font-semibold ${
-                  role === 'ADMIN'
-                    ? 'bg-portal-surface text-portal-primary shadow-2xs font-bold'
-                    : 'text-portal-text-muted hover:text-portal-text'
-                }`}
-              >
-                Admin
-              </button>
-            </div>
-          </div>
-
-          {/* 4. Footer & Logout */}
+          {/* 3. Footer & Logout */}
           <div className="pt-2 mt-1 border-t border-portal-border/60">
             <button
               type="button"
-              onClick={async () => {
+              disabled={logoutMutation.isPending}
+              onClick={() => {
                 setIsOpen(false);
-                await logout();
+                logoutMutation.mutate();
               }}
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl transition-colors cursor-pointer font-semibold"
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl transition-colors cursor-pointer font-semibold disabled:opacity-50"
             >
               <SignOut className="size-4" weight="bold" />
               <span>{t('signOutPlatform')}</span>
@@ -216,7 +172,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
         </div>
       )}
 
-      {/* Main Trigger Pill: Completely Unclipped and Centered */}
+      {/* Main Trigger Pill */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -228,16 +184,14 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
         aria-label="User account menu"
       >
         {isCollapsed ? (
-          /* Collapsed Mode: Clean centered unclipped circular avatar with status dot */
-          <div className="relative size-9 rounded-full bg-gradient-to-br from-[#8C383E]/20 to-[#E59344]/30 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-xs text-portal-text shadow-2xs">
+          <div className="relative size-9 rounded-full bg-portal-primary/15 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-xs text-portal-text shadow-2xs">
             {displayName.charAt(0).toUpperCase()}
-            <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-[#121212]" />
+            <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 border-2 border-portal-surface" />
           </div>
         ) : (
-          /* Expanded Mode: Full name, role, and caret */
           <>
             <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
-              <div className="relative size-9 rounded-xl bg-gradient-to-br from-[#8C383E]/20 to-[#E59344]/30 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-xs text-portal-text shadow-2xs">
+              <div className="relative size-9 rounded-xl bg-portal-primary/15 border border-portal-border flex items-center justify-center shrink-0 font-headline font-bold text-xs text-portal-text shadow-2xs">
                 {displayName.charAt(0).toUpperCase()}
                 <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-500 border-2 border-portal-surface" />
               </div>
