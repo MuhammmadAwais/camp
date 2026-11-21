@@ -6,10 +6,23 @@ import { Building2 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { useDealerOnboardingStatus } from "@/hooks/useDealerOnboarding";
+import { useCurrentUser } from "@/hooks/useSession";
 
 export function DealerHeader() {
   const pathname = usePathname();
   const t = useTranslations("headers");
+  const { data: sessionUser } = useCurrentUser();
+  const { data: onboardingRes } = useDealerOnboardingStatus();
+  const application = onboardingRes?.data?.application ?? null;
+  const dealershipTitle =
+    application?.dealershipName ||
+    (sessionUser
+      ? `${sessionUser.firstName} ${sessionUser.lastName}`.trim()
+      : "");
+  const licenseBadge = application
+    ? `${application.regulator}-${application.licenseNumber.replace(/^[A-Z]+-?/i, "")}`
+    : sessionUser?.email ?? "";
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-portal-border bg-portal-surface/90 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3 transition-colors">
@@ -66,17 +79,21 @@ export function DealerHeader() {
         {/* Right Dealership Profile & Theme Toggle */}
         <div className="flex items-center gap-3">
           {/* Dealership Badge */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-portal-surface-hover border border-portal-border text-xs shadow-2xs">
-            <Building2 className="w-4 h-4 text-portal-primary shrink-0" />
-            <div className="text-left">
-              <span className="font-semibold text-portal-text block text-[11px] leading-tight">
-                Pfaff Porsche
-              </span>
-              <span className="text-[10px] text-portal-text-muted font-mono block">
-                OMVIC-481920
-              </span>
+          {dealershipTitle && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-portal-surface-hover border border-portal-border text-xs shadow-2xs">
+              <Building2 className="w-4 h-4 text-portal-primary shrink-0" />
+              <div className="text-left">
+                <span className="font-semibold text-portal-text block text-[11px] leading-tight">
+                  {dealershipTitle}
+                </span>
+                {licenseBadge && (
+                  <span className="text-[10px] text-portal-text-muted font-mono block">
+                    {licenseBadge}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <LocaleSwitcher variant="compact" />
 

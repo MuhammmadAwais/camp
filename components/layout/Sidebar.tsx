@@ -115,7 +115,7 @@ export function Sidebar() {
         section: 'TRADING FLOOR',
         items: [
           { title: tSidebar('items.Wholesale Floor'), href: '/dealer/inventory' },
-          { title: tSidebar('items.Vehicle Inspection'), href: '/dealer/auctions/auc-porsche-macan-2022' },
+          { title: tSidebar('items.Vehicle Inspection'), href: '/dealer/auctions/22222222-2222-4222-8222-222222222201' },
         ],
       },
       {
@@ -171,13 +171,13 @@ export function Sidebar() {
       {
         id: 'seller-auctions',
         title: tSidebar('groups.seller-auctions'),
-        href: '/seller/listings/auc-porsche-macan-2022',
+        href: '/seller/listings/22222222-2222-4222-8222-222222222201',
         icon: Gavel,
         section: 'VEHICLES',
         items: [
-          { title: tSidebar('items.Live Auction'), href: '/seller/listings/auc-porsche-macan-2022' },
-          { title: tSidebar('items.Dealer Offers'), href: '/seller/listings/auc-porsche-macan-2022/select-dealer' },
-          { title: tSidebar('items.Inspection Voucher'), href: '/seller/listings/auc-porsche-macan-2022/appointment' },
+          { title: tSidebar('items.Live Auction'), href: '/seller/listings/22222222-2222-4222-8222-222222222201' },
+          { title: tSidebar('items.Dealer Offers'), href: '/seller/listings/22222222-2222-4222-8222-222222222204/select-dealer' },
+          { title: tSidebar('items.Inspection Voucher'), href: '/seller/listings/22222222-2222-4222-8222-222222222204/appointment' },
         ],
       },
       {

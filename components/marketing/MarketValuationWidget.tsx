@@ -1,14 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { BodyTypeSelector } from "@/components/marketing/BodyTypeSelector";
 import { Search, MapPin, ArrowRight } from "lucide-react";
 import { normalizePostalCode } from "@/lib/canada";
 import { isValidVin, sanitizeVinInput } from "@/lib/vin";
+import { useSellIntentStore } from "@/store/useSellIntentStore";
 
 export function MarketValuationWidget() {
   const router = useRouter();
+  const setIntent = useSellIntentStore((s) => s.setIntent);
   const [activeTab, setActiveTab] = React.useState("cars");
   const [query, setQuery] = React.useState("");
   const [postalCode, setPostalCode] = React.useState("");
@@ -62,7 +64,18 @@ export function MarketValuationWidget() {
 
   const handleValuationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/login");
+    const cleanedVin = sanitizeVinInput(query);
+    const cleanedPostal = normalizePostalCode(postalCode);
+    const validVin = isValidVin(cleanedVin) ? cleanedVin : null;
+    setIntent({
+      vin: validVin,
+      postalCode: cleanedPostal || null,
+    });
+    const params = new URLSearchParams();
+    if (validVin) params.set("vin", validVin);
+    if (cleanedPostal) params.set("postal", cleanedPostal);
+    const qs = params.toString();
+    router.push(qs ? `/register?${qs}` : "/sell");
   };
 
   return (

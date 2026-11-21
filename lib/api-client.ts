@@ -3,7 +3,8 @@ import { useSessionStore } from "@/store/useSessionStore";
 // When NEXT_PUBLIC_API_URL is unset, requests go to same-origin Next.js Route Handlers in app/api.
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
-export const IS_MOCK_API = API_BASE_URL === "";
+export const IS_MOCK_API =
+  process.env.NEXT_PUBLIC_ENABLE_MOCK_API === "true";
 
 export type ApiFieldErrors = Record<string, string>;
 

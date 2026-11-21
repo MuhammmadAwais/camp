@@ -612,6 +612,72 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 
 ---
 
+### Phase F-WIRE — Frontend-to-Backend API Wiring Audit Report & Fast-Track Remediation
+
+#### 1. Route-by-Route Backend API Wiring Audit Matrix (All 26 Routes)
+
+| # | Portal / Domain | Localized Route (`/[locale]/...`) | UI Component(s) | TanStack Query Hook / Store | Real Backend BFF Endpoint(s) (`app/api/**`) | Wiring Status |
+| :- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | **Marketing** | `/` | `HeroSection`, `MarketValuationWidget` | `useSellIntentStore` | Prefills `/sell` & `/register?vin=&postal=` → `POST /api/vin/decode` | **100% Wired** |
+| 2 | **Marketing** | `/sell` | `SellStartForm` | `useSellIntentStore` | Routes VIN + Postal into `/register` & `/seller/list-car` | **100% Wired** |
+| 3 | **Auth** | `/login` | `LoginForm` | `useLogin`, `useVerifyTotp`, `useApplySession` | `POST /api/auth/login`, `POST /api/auth/mfa/verify`, `GET /api/auth/me` | **100% Wired** |
+| 4 | **Auth** | `/register` | `RegisterForm` | `useRegister` | `POST /api/auth/register` (Supabase Auth + PostGIS FSA + PIPEDA/Law 25 consents) | **100% Wired** |
+| 5 | **Auth** | `/verify` | `VerifyContactFlow` | `usePendingVerification`, `useVerifyContact`, `useResendCode` | `GET /api/auth/registrations/[id]`, `POST /api/auth/verify/[channel]`, `POST /api/auth/verify/resend` | **100% Wired** |
+| 6 | **Auth / KYC** | `/verify-kyc` | `KycGate`, `KycFlow` | `useKycStatus`, `useSubmitKyc` | `GET /api/kyc/status`, `POST /api/kyc/submissions` (private `kyc-documents` bucket) | **100% Wired** |
+| 7 | **Auth** | `/forgot-password` | `ForgotPasswordForm` | `useForgotPassword` | `POST /api/auth/password/forgot` | **100% Wired** |
+| 8 | **Auth** | `/reset-password` | `ResetPasswordForm` | `useResetPassword` | `POST /api/auth/password/reset` | **100% Wired** |
+| 9 | **Legal** | `/legal/privacy` | `PrivacyPolicyPage`, `LegalViewLayout` | `next-intl` (`en` / `fr`) | Bilingual PIPEDA & Quebec Law 25 statutory disclosures | **100% Wired** |
+| 10 | **Legal** | `/legal/terms` | `TermsOfServicePage`, `LegalViewLayout` | `next-intl` (`en` / `fr`) | Bilingual OMVIC / AMVIC / VSA / OPC commercial terms | **100% Wired** |
+| 11 | **Settings** | `/settings/profile` | `ProfileSettingsView` | `useProfileSettings`, `useUpdateProfileSettings`, `useExportPersonalData`, `useRequestAccountDeletion` | `GET/PATCH /api/settings/profile`, `GET /api/settings/privacy/export`, `POST /api/settings/privacy/delete` | **100% Wired** |
+| 12 | **Settings** | `/settings/security` | `ProfileSettingsView` (`SECURITY` tab), `MfaSettingsCard` | `useSecuritySettings`, `useUpdateSecuritySettings`, `useMfaFactors`, `useEnrollTotp`, `useVerifyTotp`, `useUnenrollTotp` | `GET/PATCH /api/settings/security`, `GET/DELETE /api/auth/mfa/factors`, `POST /api/auth/mfa/enroll`, `POST /api/auth/mfa/verify` | **100% Wired** |
+| 13 | **Seller** | `/seller/dashboard` | `SellerDashboard`, `SellerNotificationDropdown` | `useSellerDashboard`, `useNotifications` | `GET /api/seller/dashboard`, `GET/PATCH/DELETE /api/notifications` + Realtime | **100% Wired** |
+| 14 | **Seller** | `/seller/list-car` | `ListingWizard` (5 steps: `VinDecodeStep`, `VehicleSpecsStep`, `DamageMapperStep`, `PhotoUploadStep`, `PriceReviewStep`) | `useListingWizardStore` + `apiClient` | `POST /api/vin/decode` (NHTSA vPIC + cache), `POST /api/listings/media/presign`, `POST /api/listings` | **100% Wired** |
+| 15 | **Seller** | `/seller/listings/[id]` | `SellerActiveAuctionView` | `useSellerListingDetail`, `useAuctionRealtime`, `useRelistVehicle` | `GET /api/listings/[id]` (sealed-bid zero-leakage projection), `POST /api/listings/[id]/relist` | **100% Wired** |
+| 16 | **Seller** | `/seller/listings/[id]/select-dealer` | `DealerSelectionView` | `useSellerListingDetail`, `useAcceptDealerBid` | `GET /api/listings/[id]` (Top-5 unsealed bids), `POST /api/listings/[id]` (`accept_dealer_bid` RPC) | **100% Wired** |
+| 17 | **Seller** | `/seller/listings/[id]/appointment` | `AppointmentVoucherCard` | `useSellerListingDetail`, `useServerSyncedCountdown` | `GET /api/listings/[id]` (hydrated `ANX-XXXX` appointment voucher) | **100% Wired** |
+| 18 | **Seller** | `/seller/notifications` | `SellerNotificationsPage` | `useNotifications`, `useMarkNotificationsRead`, `useClearNotifications` | `GET/PATCH/DELETE /api/notifications` + Supabase Realtime `notifications` channel | **100% Wired** |
+| 19 | **Dealer** | `/dealer/inventory` | `DealerInventoryFeed`, `SealedBidSlip` | `useDealerInventory`, `usePlaceSealedBid`, `useAuctionRealtime` | `GET /api/dealer/inventory` (PostGIS `ST_DWithin` feed), `POST /api/dealer/bid` (`place_sealed_bid` RPC) | **100% Wired** |
+| 20 | **Dealer** | `/dealer/auctions/[id]` | `VehicleInspectionView`, `SealedBidSlip` | `useDealerAuctionDetail`, `usePlaceSealedBid`, `useAuctionRealtime` | `GET /api/dealer/inventory/[id]`, `POST /api/dealer/bid` | **100% Wired** |
+| 21 | **Dealer** | `/dealer/active-bids` | `DealerActiveBidsView`, `SealedBidSlip` | `useDealerActiveBids`, `usePlaceSealedBid` | `GET /api/dealer/active-bids` (own dealership bids only), `POST /api/dealer/bid` | **100% Wired** |
+| 22 | **Dealer** | `/dealer/won-matches` | `DealerWonMatchesView` | `useDealerWonMatches`, `useLogMatchOutcome` | `GET /api/dealer/won-matches`, `POST /api/dealer/won-matches/[id]/outcome` (`log_match_outcome` RPC + `POST /api/disputes`) | **100% Wired** |
+| 23 | **Dealer** | `/dealer/register` | `DealerRegisterView` | `useDealerOnboardingStatus`, `useSubmitDealershipApplication` | `GET/POST /api/dealer/register` | **100% Wired** |
+| 24 | **Dealer** | `/dealer/subscription` | `DealerSubscriptionView` | `useDealerSubscription`, `useLaunchDealerCheckout` | `GET /api/dealer/subscription`, `POST /api/dealer/subscription/checkout` (Stripe CAD Checkout) | **100% Wired** |
+| 25 | **Dealer** | `/dealer/billing` | `DealerBillingView` | `useDealerInvoices`, `useLaunchDealerBillingPortal` | `GET /api/dealer/billing/invoices` (JSON + CSV), `POST /api/dealer/subscription/portal` | **100% Wired** |
+| 26 | **Dealer** | `/dealer/team` | `DealerTeamView` | `useDealerTeam`, `useInviteDealerMember`, `useUpdateDealerMemberRole`, `useRemoveDealerMember` | `GET/POST /api/dealer/team`, `PATCH/DELETE /api/dealer/team/[memberId]` | **100% Wired** |
+| 27 | **Admin** | `/admin/moderation` & `/admin/moderation/[id]` | `ListingModerationView`, `ListingModerationDetailView` | `useAdminModerationQueue`, `useAdminModerationDossier`, `useModerationDecision` | `GET /api/admin/moderation`, `GET/PATCH /api/admin/moderation/[id]` (`admin_moderate_listing` RPC) | **100% Wired** |
+| 28 | **Admin** | `/admin/dealers` | `DealerVerificationView` | `useAdminDealers`, `useDecideDealer` | `GET /api/admin/dealers`, `PATCH /api/admin/dealers/[id]` (`admin_decide_dealership` RPC + BR-14 bid voiding) | **100% Wired** |
+| 29 | **Admin** | `/admin/auctions` | `AdminAuctionsView` | `useAdminAuctions`, `useAdminAuctionOverride` | `GET /api/admin/auctions`, `POST /api/admin/auctions/[id]/override` (`EXTEND`, `FORCE_UNSEAL`, `HALT`) | **100% Wired** |
+| 30 | **Admin** | `/admin/disputes` & `/admin/disputes/[id]` | `DisputeManagementView`, `DisputeDetailView` | `useAdminDisputes`, `useAdminDisputeDetail`, `useResolveDispute` | `GET /api/admin/disputes`, `GET/PATCH /api/admin/disputes/[id]` (`resolve_dispute` RPC) | **100% Wired** |
+| 31 | **Admin** | `/admin/analytics` | `AdminAnalyticsView` | `useAdminAnalytics`, `getAdminAnalyticsCsvUrl` | `GET /api/admin/analytics` (Postgres views + JSON/CSV export) | **100% Wired** |
+| 32 | **Admin** | `/admin/audit-log` | `AdminAuditLogView` | `useAdminAuditLog`, `getAdminAuditLogCsvUrl` | `GET /api/admin/audit-log` (`verify_audit_log_chain()` SHA-256 verification + CSV export) | **100% Wired** |
+
+---
+
+#### 2. Fast-Track Remediation Items Identified & Completed (`[x]`)
+
+- [x] **`F-WIRE.1` — Remove Hardcoded Auto-Pass User & Dev Role Switcher (`components/layout/UserProfileCard.tsx`, `components/admin/AdminHeader.tsx`, `lib/auth-context.tsx`)**
+  - Replaced `localStorage` mock `authService` and hardcoded fallback names (`Sarah Tremblay`, `Pfaff Automotive Partner`, `Michael Vance`) with live `useCurrentUser()` (`/api/auth/me`) and `useLogout()` (`POST /api/auth/logout`). Removed `"Simulate Workspace / TEST HARNESS"` block; unauthenticated visitors see a clean **Sign in** link to `/login`.
+- [x] **`F-WIRE.2` — Disable False-Positive `IS_MOCK_API` Banner Flag (`lib/api-client.ts`)**
+  - Changed `IS_MOCK_API` from `API_BASE_URL === ""` (which evaluated to `true` on same-origin Next.js App Router BFF `/api/*` routes) to `process.env.NEXT_PUBLIC_ENABLE_MOCK_API === "true"` (default `false`), eliminating `<MockModeHint>` (`"Mock API: ..."`) banners across `/verify`, `/verify-kyc`, and `/forgot-password`.
+- [x] **`F-WIRE.3` — Wire Dynamic Dealership Header Badge (`components/dealer/DealerHeader.tsx`)**
+  - Replaced hardcoded `"Pfaff Porsche"` / `"OMVIC-481920"` badge in `DealerHeader.tsx` with live data from `useDealerOnboardingStatus()` (`/api/dealer/register`) and `useCurrentUser()` (`/api/auth/me`).
+- [x] **`F-WIRE.4` — Replace Legacy Mock Slugs in Sidebar Navigation (`components/layout/Sidebar.tsx`)**
+  - Updated Seller & Dealer sidebar links from legacy mock slug `auc-porsche-macan-2022` to real Supabase listing UUIDs (`22222222-2222-4222-8222-222222222201` for active 2022 Porsche Macan auction and `22222222-2222-4222-8222-222222222204` for unsealed 2023 Ford F-150 offers/voucher).
+- [x] **`F-WIRE.5` — Connect Hero `MarketValuationWidget` to `useSellIntentStore` & Registration Funnel (`components/marketing/MarketValuationWidget.tsx`)**
+  - Submitting a VIN and/or Canadian postal code in the landing page hero widget now persists the sanitized VIN and normalized postal code into `useSellIntentStore` and navigates directly to `/register?vin=...&postal=...` (or `/sell`).
+
+---
+
+#### 3. Verified Live Supabase Database Test Credentials (`ca-central-1`)
+
+| Role | Email | Password | Profile / Organization | Default Landing Route |
+| :--- | :--- | :--- | :--- | :--- |
+| **Admin (`ADMIN`)** | `admin@autonexa.ca` | `Password123!` | Sarah Tremblay (Platform Admin) | `/en/admin/moderation` |
+| **Seller (`SELLER`)** | `seller@autonexa.ca` | `Password123!` | Jordan Tremblay (Verified Seller) | `/en/seller/dashboard` |
+| **Dealer (`DEALER_ADMIN`)** | `dealer@autonexa.ca` | `Password123!` | Christopher Evans (Pfaff Porsche Markham • `OMVIC-481920`) | `/en/dealer/inventory` |
+| **Dealer Buyer (`DEALER_AGENT`)** | `agent@autonexa.ca` | `Password123!` | Tyler Richardson (Pfaff Porsche Buyer Seat) | `/en/dealer/inventory` |
+| **Competing Dealer (`DEALER_ADMIN`)** | `dealer2@autonexa.ca` | `Password123!` | Marcus Chen (Oakville Luxury Motor Group • `OMVIC-391204`) | `/en/dealer/inventory` |
+
 ## Agent Directives & Production Invariants
 
 1. **Strict Sealed-Bid Invariant (H1 / BR-04):** The backend and UI must NEVER expose live bid CAD amounts or bidder identities to sellers or competing dealers while an auction is `ACTIVE`. Enforced in **both** Postgres RLS and `lib/server/services/listing.service.ts`. Only `bidCount` is returned.
