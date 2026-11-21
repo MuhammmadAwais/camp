@@ -7,22 +7,24 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** In Progress (Phase B9 — Prompt B9.1 Complete) — **Next Prompt: `Prompt B9.2`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** Complete (Phases B1–B9 Complete — Prompt B9.2 Complete, CI Green & Senior Handoff Ready; Optional Phase B10 Quebec Law 25 i18n Track Available)
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
+
 - Phase 1: Security, Auth & RBAC Foundation (UI Shell Complete; Route Guards & `next-intl` tracked in Backend Roadmap Phases B2.1 & B10)
 - Phase 2: Public Marketing Funnel & Legal Pages (100% Complete)
 - Phase 3: Unified Authentication & Canadian KYC Suite (100% Complete)
 - Phase 4: Full Seller Portal & 5-Step Listing Wizard (100% Complete)
 - Phase 5: Dealership Wholesale Trading Terminal (100% Complete: Trading Floor, Inspection Sheet, Bids, Won Matches, Registration, Subscriptions, Invoices, Team — All modernized with direct-canvas architecture, fluid zero-truncation KPIs, live search, sorting, and body-portaled accessible modal overlays)
 - Phase 6: Platform Administrator Backoffice (100% Complete: Moderation Queue, Dealer Verification, Auction Overrides, Dispute Management, Market Analytics, Immutable Audit Log)
-**Workspace State:** 26/26 routes passing HTTP 200 OK. TypeScript compiler 0 errors (`npx tsc --noEmit` clean). Sealed-bid secrecy & Integer CAD cents strictly enforced. Full responsive parity across mobile & desktop with simplified sidebar navigations and default open list view.
+  **Workspace State:** 26/26 routes passing HTTP 200 OK. TypeScript compiler 0 errors (`npx tsc --noEmit` clean). Sealed-bid secrecy & Integer CAD cents strictly enforced. Full responsive parity across mobile & desktop with simplified sidebar navigations and default open list view.
 
 ---
 
 ## Master Implementation Plan by Phases & Pages
 
 ### Phase 1 — Foundation, RBAC Security Infrastructure & Workspace
+
 - [x] **01 Next.js 16 Scaffold & Route Groups** (`app/(marketing)`, `app/(auth)`, `app/(seller)`, `app/(dealer)`, `app/(admin)`)
 - [x] **02 Tailwind CSS v4 & Dual-Theme Tokens** (`globals.css` @theme config with Autumn Editorial & FinTech Obsidian/Porcelain)
 - [x] **03 TanStack Query v5 & Zustand Store Initialization** (`app/providers.tsx`, `lib/query-keys.ts`, `store/`)
@@ -36,7 +38,8 @@ Update this file after completing each page/component. Any AI agent reading this
 ---
 
 ### Phase 2 — Public Marketing Funnel & Appraisal Engine (Completed)
-*Design Language: Autumn Editorial (Terracotta Wine `#8C383E`, Honey Amber `#E59344`, Cream Canvas `#FFF8F2`). Full responsive parity.*
+
+_Design Language: Autumn Editorial (Terracotta Wine `#8C383E`, Honey Amber `#E59344`, Cream Canvas `#FFF8F2`). Full responsive parity._
 
 - [x] **10-A Navigation Header** (`Navbar.tsx` — brand identity, portal deep links, and sticky scroll transitions)
 - [x] **10-B Hero Section & Appraisal Card** (`HeroSection.tsx` & `MarketValuationWidget.tsx` with 3D tilt & glare micro-interactions)
@@ -54,7 +57,8 @@ Update this file after completing each page/component. Any AI agent reading this
 ---
 
 ### Phase 3 — Unified Authentication & Canadian KYC Suite
-*Design Mode: Porcelain Light / Obsidian Dark Glassmorphism (`.glass-card`, `.glow-teal`). Both Mobile & Desktop responsive.*
+
+_Design Mode: Porcelain Light / Obsidian Dark Glassmorphism (`.glass-card`, `.glow-teal`). Both Mobile & Desktop responsive._
 
 - [x] **12 Login Page** (`/login` — `LoginForm.tsx` email/password, demo role switcher, redirect sanitization)
 - [x] **13 Seller Registration** (`/register` — `RegisterForm.tsx` FR-EU-01 fields, CASL opt-in, PIPEDA consent, postal auto-lookup)
@@ -65,9 +69,11 @@ Update this file after completing each page/component. Any AI agent reading this
 ---
 
 ### Phase 4 — Seller Portal & 5-Step Listing Wizard (Mobile-First Priority)
-*Primary Canvas: Mobile Viewport (`375px` to `640px`) scalable to Desktop. Light porcelain theme (`#FAFBFC`).*
+
+_Primary Canvas: Mobile Viewport (`375px` to `640px`) scalable to Desktop. Light porcelain theme (`#FAFBFC`)._
 
 #### Milestone 4.1: Seller Dashboard
+
 - [x] **Page 4.1: Seller Dashboard Shell**
   - **Route:** `/seller/dashboard`
   - **Component:** `SellerDashboard.tsx`
@@ -75,6 +81,7 @@ Update this file after completing each page/component. Any AI agent reading this
   - **API Contract:** `GET /api/seller/dashboard`, `GET /api/kyc/status`.
 
 #### Milestone 4.2: 5-Step Listing Wizard (`/seller/list-car`)
+
 - [x] **Page 4.2.1: Step 1 — VIN Auto-Decode**
   - **Route:** `/seller/list-car` (Step 1 in `ListingWizard.tsx`)
   - **Component:** `VinDecodeStep.tsx`
@@ -102,10 +109,11 @@ Update this file after completing each page/component. Any AI agent reading this
   - **API Contract:** `POST /api/listings`.
 
 #### Milestone 4.3: Auction Telemetry & Fulfillment
+
 - [x] **Page 4.3: Active Auction Live Tracker**
   - **Route:** `/seller/listings/[id]`
   - **Component:** `SellerActiveAuctionView.tsx`
-  - **Features:** Dashboard-style horizontal 4-metric bar (Reserve Price, Dealer Activity, Live Countdown, Dealer Protection) with vertical dividers & side icons, 24h digital countdown timer clock, real-time sealed-bid count telemetry *(Strict invariant: zero dollar amounts exposed while ACTIVE)*, photo strip with cover showcase, condition disclosure sheet, specs recap, plain-language non-technical copy, and seamless header canvas continuity.
+  - **Features:** Dashboard-style horizontal 4-metric bar (Reserve Price, Dealer Activity, Live Countdown, Dealer Protection) with vertical dividers & side icons, 24h digital countdown timer clock, real-time sealed-bid count telemetry _(Strict invariant: zero dollar amounts exposed while ACTIVE)_, photo strip with cover showcase, condition disclosure sheet, specs recap, plain-language non-technical copy, and seamless header canvas continuity.
 - [x] **Page 4.4: Post-Auction Unsealed Dealer Selection**
   - **Route:** `/seller/listings/[id]/select-dealer`
   - **Component:** `DealerSelectionView.tsx` & `VehicleSwitcherModal.tsx`
@@ -118,9 +126,11 @@ Update this file after completing each page/component. Any AI agent reading this
 ---
 
 ### Phase 5 — Dealership Trading Terminal (Desktop-First Priority)
-*Primary Canvas: Desktop Monitor (`1280px` to `1920px`). High-density FinTech Obsidian Dark theme (`#0C0A09`, `#131215`, `#E59344` amber, `#8C383E` wine, `#10B981` emerald checkmarks).*
+
+_Primary Canvas: Desktop Monitor (`1280px` to `1920px`). High-density FinTech Obsidian Dark theme (`#0C0A09`, `#131215`, `#E59344` amber, `#8C383E` wine, `#10B981` emerald checkmarks)._
 
 #### Milestone 5.1: Dealer Onboarding & Subscription
+
 - [x] **Page 5.1: Dealership Registration & Licensing**
   - **Route:** `/dealer/register`
   - **Component:** `DealerRegisterView.tsx`
@@ -131,6 +141,7 @@ Update this file after completing each page/component. Any AI agent reading this
   - **Features:** 3D concave tilt pricing architecture with dual-theme contrast, S-curve notched cards, balanced 2-line pricing numerals (`Plus Jakarta Sans`), and minimal 1-line status bar with direct billing link.
 
 #### Milestone 5.2: Trading Floor & Bidding Engine
+
 - [x] **Page 5.3: Live Wholesale Auction Exchange (Trading Floor)**
   - **Route:** `/dealer/inventory`
   - **Component:** `DealerInventoryFeed.tsx`, `DealerAuctionCard.tsx`, `DealerHeader.tsx`
@@ -148,6 +159,7 @@ Update this file after completing each page/component. Any AI agent reading this
   - **Features:** All placed bids across open auctions, status indicators (`ACTIVE`, `OUTBID_ESTIMATE`, `CLOSING_SOON`), 1-click upward revision modal.
 
 #### Milestone 5.3: Match Fulfillment & Administration
+
 - [x] **Page 5.7: Won Matches & Offline Inspection Logger**
   - **Route:** `/dealer/won-matches`
   - **Component:** `DealerWonMatchesView.tsx`
@@ -164,7 +176,8 @@ Update this file after completing each page/component. Any AI agent reading this
 ---
 
 ### Phase 6 — Platform Administrator Backoffice (Desktop-First Priority)
-*Primary Canvas: Desktop Workstation (`1440px`+). Clean institutional data density.*
+
+_Primary Canvas: Desktop Workstation (`1440px`+). Clean institutional data density._
 
 - [x] **Page 6.1: Seller Listing Moderation Queue**
   - **Route:** `/admin/moderation`
@@ -223,6 +236,7 @@ Update this file after completing each page/component. Any AI agent reading this
 To maximize quality, prevent context drift, and guarantee zero regressions across sessions, execute **strictly ONE Prompt Unit (`Prompt B#.#`) per AI prompt/turn** (or at most two adjacent tiny prompts only when explicitly noted).
 
 ### Copy-Paste Prompt Template for Antigravity IDE
+
 ```text
 Execute **Prompt B#.#** from `context/progress-tracker.md`.
 1. Read `context/architecture.md`, `context/code-standards.md`, and ONLY the files listed in Prompt B#.#.
@@ -232,6 +246,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 ```
 
 ### AI Engineering Rules for This Roadmap
+
 - **One Vertical Slice at a Time:** Never ask the agent to build multiple phases in one prompt. Each Prompt Unit below is sized to ~3–6 files or 1 cohesive SQL migration + service + route + UI hook.
 - **Auto-Commit & Push Per Verified Prompt:** After every Prompt Unit passes its Exit Gate and is checked off in `context/progress-tracker.md`, always create a clean conventional commit on `feat/supabase-backend` (e.g., `feat(backend): complete Prompt B1.2 core schema migrations`) and push to `origin feat/supabase-backend`. Never commit `.env` or secret values; never push to `main` (which remains the live Vercel production branch).
 - **No Unversioned DB Edits:** Every schema, RLS, index, RPC, or `pg_cron` change MUST be saved under `supabase/migrations/00XX_*.sql` AND applied to Supabase (via Supabase MCP `apply_migration` or CLI).
@@ -243,38 +258,38 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 
 ## Master Backend Prompt Index (30 Atomic AI Prompt Units)
 
-| Part | Phase | Prompt ID | Deliverable (Build From → To) | Milestone Tier | Est. Time | Status |
-|---|---|---|---|---|---:|:---:|
-| **I** | **B1** | `Prompt B1.1` | Git branch `feat/supabase-backend`, deps, Zod env, server error/HTTP kernel, Supabase clients | **PM Demo (Day 1)** | 2–3 hrs | [x] |
-| **I** | **B1** | `Prompt B1.2` | Provision Supabase `ca-central-1` + Core SQL migrations (`0001`–`0003`: enums, 20 tables, constraints, PostGIS indexes) | **PM Demo (Day 1)** | 3–4 hrs | [x] |
-| **I** | **B1** | `Prompt B1.3` | Airtight RLS (`0004`), Atomic RPCs (`0005`), `pg_cron` + Realtime (`0006`), Demo seed (`0007`), generated TS types | **PM Demo (Day 1)** | 3–4 hrs | [x] |
-| **I** | **B2** | `Prompt B2.1` | Server RBAC guard (`lib/server/auth.ts`), `proxy.ts` cookie refresh + role routing, cookie-only `api-client.ts` | **PM Demo (Day 2)** | 2–3 hrs | [x] |
-| **I** | **B2** | `Prompt B2.2` | Real `/api/auth/*` routes + `auth.service.ts` backed by Supabase Auth, `profiles`, and PIPEDA/CASL consents | **PM Demo (Day 2)** | 3–4 hrs | [x] |
-| **I** | **B2** | `Prompt B2.3` | Storage adapter (`ca-central-1` buckets + signed PUT URLs), real `/api/listings/media/presign`, real `/api/kyc/*` | **PM Demo (Day 2)** | 2–3 hrs | [x] |
-| **I** | **B3** | `Prompt B3.1` | Cached NHTSA vPIC VIN adapter (`vin.adapter.ts` + 3s timeout + `vin_decode_cache`) & real `/api/vin/decode` | **PM Demo (Day 3)** | 1–2 hrs | [x] |
-| **I** | **B3** | `Prompt B3.2` | `listing.service.ts` + real `POST /api/listings`, `GET /api/seller/dashboard`, sealed `GET /api/listings/[id]` | **PM Demo (Day 3)** | 3–4 hrs | [x] |
-| **I** | **B3** | `Prompt B3.3` | Admin Moderation service & APIs (`/api/admin/moderation*`) + wire Moderation UI views to TanStack Query | **PM Demo (Day 3)** | 2–3 hrs | [x] |
-| **I** | **B4** | `Prompt B4.1` | Dealer Inventory & Inspection APIs (`/api/dealer/inventory*`) + wire `VehicleInspectionView` | **PM Demo (Day 4)** | 2–3 hrs | [x] |
-| **I** | **B4** | `Prompt B4.2` | `bidding.service.ts` + real `POST /api/dealer/bid` calling atomic `submit_dealer_bid` RPC + verify `SealedBidSlip` | **PM Demo (Day 4)** | 2–3 hrs | [x] |
-| **I** | **B4** | `Prompt B4.3` | `hooks/useAuctionRealtime.ts` (live `bid_count` & `status` WebSocket + server-time clock) wired to Seller & Dealer UIs | **PM Demo (Day 4)** | 2–3 hrs | [x] |
-| **I** | **B4** | `Prompt B4.4` | Post-auction unsealing, `accept_dealer_bid` RPC → Appointment Voucher, + Admin `/api/admin/auctions` overrides | **PM Demo (Day 4–5)** | 3 hrs | [x] |
-| **I** | **B4** | `Prompt B4.5` | Dealer Active Bids & Won Matches APIs + Outcome logging + **Vercel Preview Deploy & Full 3-Role PM Demo Gate** | **PM Demo (Day 5)** | 3–4 hrs | [x] |
-| **II** | **B5** | `Prompt B5.1` | Seed Canadian postal centroids + `geo.adapter.ts` + PostGIS `ST_DWithin` RPC (`distanceKm` in feed & unsealed view) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B5** | `Prompt B5.2` | Dealer Registration (`/api/dealer/register`) & Admin License Verification (`/api/admin/dealers*` + BR-14 bid voiding) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B5** | `Prompt B5.3` | Dealership Team & Seat Management (`/api/dealer/team` — `DEALER_ADMIN` gate, buyer vs. inspector permissions) | Complete Platform | 2–3 hrs | [x] |
-| **II** | **B6** | `Prompt B6.1` | Dispute Arbitration Engine (`/api/admin/disputes*` + hoist evidence upload + timeline + resolution) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B6** | `Prompt B6.2` | Admin Analytics SQL Views (`/api/admin/analytics`) & Paginated Immutable Audit Log + SHA-256 Chain (`/api/admin/audit-log`) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B6** | `Prompt B6.3` | Seller Relisting (FR-EU-13 cooldown), Account Settings (`/api/settings/*`), & Platform Config (`/api/admin/config`) | Complete Platform | 3 hrs | [x] |
-| **II** | **B7** | `Prompt B7.1` | Stripe Checkout, Billing Portal & Invoices (`billing.adapter.ts`, `/api/dealer/subscription*`, `/api/dealer/billing*`) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B7** | `Prompt B7.2` | Idempotent Stripe Webhook (`/api/webhooks/stripe` — HMAC verify, quota sync, HTTP 402 bid block on `PAST_DUE`) | Complete Platform | 3–4 hrs | [x] |
-| **II** | **B7** | `Prompt B7.3` | Persistent Notifications + Realtime Bell (`/api/notifications`) + Email/SMS CASL Adapter (radius approval fan-out) | Complete Platform | 3–4 hrs | [x] |
-| **III** | **B8** | `Prompt B8.1` | Mandatory TOTP MFA (`supabase.auth.mfa` — NFR-06) enrollment, QR setup & AAL2 guard for `ADMIN` / `DEALER_ADMIN` | Hardening & Handoff | 3–4 hrs | [x] |
-| **III** | **B8** | `Prompt B8.2` | Rate Limiting (`lib/server/rate-limit.ts` — NFR-07), Security Headers, Supabase Security/Performance Advisor Audit | Hardening & Handoff | 3 hrs | [x] |
-| **III** | **B8** | `Prompt B8.3` | PIPEDA / Law 25 Data Export & 30-Day Deletion Workflow + Optional Drop-In AWS S3 `ca-central-1` Storage Adapter | Hardening & Handoff | 3 hrs | [x] |
-| **III** | **B9** | `Prompt B9.1` | Vitest Setup + ≥70% Unit Tests (auction state machine, bids, integer cents, Stripe webhooks) + Sealed-Bid RLS Leak Tests | Hardening & Handoff | 4–5 hrs | [x] |
-| **III** | **B9** | `Prompt B9.2` | GitHub Actions CI (`.github/workflows/ci.yml`), Full Preview E2E QA & Senior Engineer Handoff (`docs/backend-handoff.md`) | Hardening & Handoff | 3 hrs | [ ] |
-| **III** | **B10** | `Prompt B10.1` | *(Separate Track)* `next-intl` Setup, `[locale]` Routing, `messages/en.json` & `fr.json`, Language Sync | Quebec Law 25 i18n | 1–2 days | [ ] |
-| **III** | **B10** | `Prompt B10.2` | *(Separate Track)* Full Portal, Legal & Server-Side Bilingual Email/Notification Template Parity (FR-X-04 / NFR-13) | Quebec Law 25 i18n | 2 days | [ ] |
+| Part    | Phase   | Prompt ID      | Deliverable (Build From → To)                                                                                               | Milestone Tier        | Est. Time | Status |
+| ------- | ------- | -------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------- | --------: | :----: |
+| **I**   | **B1**  | `Prompt B1.1`  | Git branch `feat/supabase-backend`, deps, Zod env, server error/HTTP kernel, Supabase clients                               | **PM Demo (Day 1)**   |   2–3 hrs |  [x]   |
+| **I**   | **B1**  | `Prompt B1.2`  | Provision Supabase `ca-central-1` + Core SQL migrations (`0001`–`0003`: enums, 20 tables, constraints, PostGIS indexes)     | **PM Demo (Day 1)**   |   3–4 hrs |  [x]   |
+| **I**   | **B1**  | `Prompt B1.3`  | Airtight RLS (`0004`), Atomic RPCs (`0005`), `pg_cron` + Realtime (`0006`), Demo seed (`0007`), generated TS types          | **PM Demo (Day 1)**   |   3–4 hrs |  [x]   |
+| **I**   | **B2**  | `Prompt B2.1`  | Server RBAC guard (`lib/server/auth.ts`), `proxy.ts` cookie refresh + role routing, cookie-only `api-client.ts`             | **PM Demo (Day 2)**   |   2–3 hrs |  [x]   |
+| **I**   | **B2**  | `Prompt B2.2`  | Real `/api/auth/*` routes + `auth.service.ts` backed by Supabase Auth, `profiles`, and PIPEDA/CASL consents                 | **PM Demo (Day 2)**   |   3–4 hrs |  [x]   |
+| **I**   | **B2**  | `Prompt B2.3`  | Storage adapter (`ca-central-1` buckets + signed PUT URLs), real `/api/listings/media/presign`, real `/api/kyc/*`           | **PM Demo (Day 2)**   |   2–3 hrs |  [x]   |
+| **I**   | **B3**  | `Prompt B3.1`  | Cached NHTSA vPIC VIN adapter (`vin.adapter.ts` + 3s timeout + `vin_decode_cache`) & real `/api/vin/decode`                 | **PM Demo (Day 3)**   |   1–2 hrs |  [x]   |
+| **I**   | **B3**  | `Prompt B3.2`  | `listing.service.ts` + real `POST /api/listings`, `GET /api/seller/dashboard`, sealed `GET /api/listings/[id]`              | **PM Demo (Day 3)**   |   3–4 hrs |  [x]   |
+| **I**   | **B3**  | `Prompt B3.3`  | Admin Moderation service & APIs (`/api/admin/moderation*`) + wire Moderation UI views to TanStack Query                     | **PM Demo (Day 3)**   |   2–3 hrs |  [x]   |
+| **I**   | **B4**  | `Prompt B4.1`  | Dealer Inventory & Inspection APIs (`/api/dealer/inventory*`) + wire `VehicleInspectionView`                                | **PM Demo (Day 4)**   |   2–3 hrs |  [x]   |
+| **I**   | **B4**  | `Prompt B4.2`  | `bidding.service.ts` + real `POST /api/dealer/bid` calling atomic `submit_dealer_bid` RPC + verify `SealedBidSlip`          | **PM Demo (Day 4)**   |   2–3 hrs |  [x]   |
+| **I**   | **B4**  | `Prompt B4.3`  | `hooks/useAuctionRealtime.ts` (live `bid_count` & `status` WebSocket + server-time clock) wired to Seller & Dealer UIs      | **PM Demo (Day 4)**   |   2–3 hrs |  [x]   |
+| **I**   | **B4**  | `Prompt B4.4`  | Post-auction unsealing, `accept_dealer_bid` RPC → Appointment Voucher, + Admin `/api/admin/auctions` overrides              | **PM Demo (Day 4–5)** |     3 hrs |  [x]   |
+| **I**   | **B4**  | `Prompt B4.5`  | Dealer Active Bids & Won Matches APIs + Outcome logging + **Vercel Preview Deploy & Full 3-Role PM Demo Gate**              | **PM Demo (Day 5)**   |   3–4 hrs |  [x]   |
+| **II**  | **B5**  | `Prompt B5.1`  | Seed Canadian postal centroids + `geo.adapter.ts` + PostGIS `ST_DWithin` RPC (`distanceKm` in feed & unsealed view)         | Complete Platform     |   3–4 hrs |  [x]   |
+| **II**  | **B5**  | `Prompt B5.2`  | Dealer Registration (`/api/dealer/register`) & Admin License Verification (`/api/admin/dealers*` + BR-14 bid voiding)       | Complete Platform     |   3–4 hrs |  [x]   |
+| **II**  | **B5**  | `Prompt B5.3`  | Dealership Team & Seat Management (`/api/dealer/team` — `DEALER_ADMIN` gate, buyer vs. inspector permissions)               | Complete Platform     |   2–3 hrs |  [x]   |
+| **II**  | **B6**  | `Prompt B6.1`  | Dispute Arbitration Engine (`/api/admin/disputes*` + hoist evidence upload + timeline + resolution)                         | Complete Platform     |   3–4 hrs |  [x]   |
+| **II**  | **B6**  | `Prompt B6.2`  | Admin Analytics SQL Views (`/api/admin/analytics`) & Paginated Immutable Audit Log + SHA-256 Chain (`/api/admin/audit-log`) | Complete Platform     |   3–4 hrs |  [x]   |
+| **II**  | **B6**  | `Prompt B6.3`  | Seller Relisting (FR-EU-13 cooldown), Account Settings (`/api/settings/*`), & Platform Config (`/api/admin/config`)         | Complete Platform     |     3 hrs |  [x]   |
+| **II**  | **B7**  | `Prompt B7.1`  | Stripe Checkout, Billing Portal & Invoices (`billing.adapter.ts`, `/api/dealer/subscription*`, `/api/dealer/billing*`)      | Complete Platform     |   3–4 hrs |  [x]   |
+| **II**  | **B7**  | `Prompt B7.2`  | Idempotent Stripe Webhook (`/api/webhooks/stripe` — HMAC verify, quota sync, HTTP 402 bid block on `PAST_DUE`)              | Complete Platform     |   3–4 hrs |  [x]   |
+| **II**  | **B7**  | `Prompt B7.3`  | Persistent Notifications + Realtime Bell (`/api/notifications`) + Email/SMS CASL Adapter (radius approval fan-out)          | Complete Platform     |   3–4 hrs |  [x]   |
+| **III** | **B8**  | `Prompt B8.1`  | Mandatory TOTP MFA (`supabase.auth.mfa` — NFR-06) enrollment, QR setup & AAL2 guard for `ADMIN` / `DEALER_ADMIN`            | Hardening & Handoff   |   3–4 hrs |  [x]   |
+| **III** | **B8**  | `Prompt B8.2`  | Rate Limiting (`lib/server/rate-limit.ts` — NFR-07), Security Headers, Supabase Security/Performance Advisor Audit          | Hardening & Handoff   |     3 hrs |  [x]   |
+| **III** | **B8**  | `Prompt B8.3`  | PIPEDA / Law 25 Data Export & 30-Day Deletion Workflow + Optional Drop-In AWS S3 `ca-central-1` Storage Adapter             | Hardening & Handoff   |     3 hrs |  [x]   |
+| **III** | **B9**  | `Prompt B9.1`  | Vitest Setup + ≥70% Unit Tests (auction state machine, bids, integer cents, Stripe webhooks) + Sealed-Bid RLS Leak Tests    | Hardening & Handoff   |   4–5 hrs |  [x]   |
+| **III** | **B9**  | `Prompt B9.2`  | GitHub Actions CI (`.github/workflows/ci.yml`), Full Preview E2E QA & Senior Engineer Handoff (`docs/backend-handoff.md`)   | Hardening & Handoff   |     3 hrs |  [x]   |
+| **III** | **B10** | `Prompt B10.1` | _(Separate Track)_ `next-intl` Setup, `[locale]` Routing, `messages/en.json` & `fr.json`, Language Sync                     | Quebec Law 25 i18n    |  1–2 days |  [ ]   |
+| **III** | **B10** | `Prompt B10.2` | _(Separate Track)_ Full Portal, Legal & Server-Side Bilingual Email/Notification Template Parity (FR-X-04 / NFR-13)         | Quebec Law 25 i18n    |    2 days |  [ ]   |
 
 ---
 
@@ -574,7 +589,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **SRS / Rules:** NFR-16 (≥70% unit-test coverage on auction engine & billing), H12, AC-01..AC-06.
   - **Exit Gate:** `npm run test:coverage` passes 100% with ≥70% coverage on `lib/server/services/*` & billing logic.
 
-- [ ] **`Prompt B9.2` — GitHub Actions CI & Senior Engineer Handoff Package**
+- [x] **`Prompt B9.2` — GitHub Actions CI & Senior Engineer Handoff Package**
   - **Build From → To:** Local checks only → automated GitHub Actions PR CI gate + complete architecture & production-promotion handoff manual for your Senior Backend Engineer.
   - **Files to Create/Modify:**
     - `.github/workflows/ci.yml` — Runs `npm ci`, `npx tsc --noEmit`, `npm run lint`, `npm run test`, `npm run build` on every push/PR to `feat/supabase-backend` & `main`.

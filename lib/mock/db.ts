@@ -86,7 +86,7 @@ function syncDemoUser(
     lastName: seed.lastName,
     phoneE164: seed.phone,
     postalCode: seed.postalCode,
-    province: seed.province as any,
+    province: seed.province as ProvinceCode,
     emailVerified: true,
     phoneVerified: true,
     marketingOptIn: false,

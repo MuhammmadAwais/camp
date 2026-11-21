@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Car, X, Plus, CheckCircle2, Gavel, Clock, ArrowRight, ShieldCheck } from "lucide-react";
 import { useSellerDashboard } from "@/hooks/useSellerDashboard";
-import type { SellerAuctionItem } from "@/lib/types/seller";
+import type { AuctionStatus, SellerAuctionItem } from "@/lib/types/seller";
+
+const emptySubscribe = () => () => {};
 
 interface VehicleSwitcherModalProps {
   isOpen: boolean;
@@ -29,12 +31,8 @@ export function VehicleSwitcherModal({
   currentListingFallback,
 }: VehicleSwitcherModalProps) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const { data: dashboardData, isLoading } = useSellerDashboard("default");
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Disable behind-screen overflow while modal is open & add Escape key listener
   useEffect(() => {
@@ -70,7 +68,7 @@ export function VehicleSwitcherModal({
       make: currentListingFallback.make,
       model: currentListingFallback.model,
       mileageKm: 38450,
-      status: currentListingFallback.status as any,
+      status: currentListingFallback.status as AuctionStatus,
       thumbnailUrl: currentListingFallback.thumbnailUrl || "/showcase-cars-with-bg/2025-Toyota-4runner.png",
       reservePriceCents: 3800000,
       bidCount: 4,

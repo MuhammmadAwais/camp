@@ -42,7 +42,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    refreshSession();
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) {
+        refreshSession();
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [refreshSession]);
 
   const login = async (credentials: LoginCredentials): Promise<User> => {

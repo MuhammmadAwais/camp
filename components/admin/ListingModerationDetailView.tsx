@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
@@ -37,6 +37,8 @@ interface ListingModerationDetailViewProps {
   id: string;
 }
 
+const emptySubscribe = () => () => {};
+
 const PRESET_CORRECTION_NOTES = [
   "Odometer photo is blurry or obscured. Please upload a clear photo of the cluster with ignition on.",
   "Vehicle registration / ownership document missing or name on ownership does not match seller.",
@@ -57,11 +59,7 @@ export function ListingModerationDetailView({ id }: ListingModerationDetailViewP
   const [feedbackNotice, setFeedbackNotice] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [copiedVin, setCopiedVin] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   // Lightbox keyboard controls
   useEffect(() => {

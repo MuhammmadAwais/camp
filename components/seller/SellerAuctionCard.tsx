@@ -13,6 +13,8 @@ import type { SellerAuctionItem } from "@/lib/types/seller";
 import { cn, formatCadCents } from "@/lib/utils";
 
 // Exact Automaker Logo Mapping to local assets in public/car-company-logos
+const emptySubscribe = () => () => {};
+
 const CAR_BRAND_LOGOS: Record<string, string> = {
   toyota: "/car-company-logos/image_16 - Copy.png",
   jeep: "/car-company-logos/image_15.png",
@@ -30,31 +32,42 @@ interface Props {
 }
 
 export function SellerAuctionCard({ auction, layout = "grid" }: Props) {
-  const [timeLeft, setTimeLeft] = React.useState<{ hours: number; minutes: number; seconds: number } | null>(null);
-  const [isClient, setIsClient] = React.useState(false);
+  const isClient = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+  const [nowMs, setNowMs] = React.useState<number | null>(null);
 
   React.useEffect(() => {
-    setIsClient(true);
     if (!auction.auctionEndsAt || auction.status !== "ACTIVE") return;
-
-    const calculateRemaining = () => {
-      const diff = new Date(auction.auctionEndsAt!).getTime() - Date.now();
-      if (diff <= 0) {
-        return { hours: 0, minutes: 0, seconds: 0 };
-      }
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      return { hours, minutes, seconds };
+    const tick = () => setNowMs(Date.now());
+    const immediate = setTimeout(tick, 0);
+    const interval = setInterval(tick, 1000);
+    return () => {
+      clearTimeout(immediate);
+      clearInterval(interval);
     };
-
-    setTimeLeft(calculateRemaining());
-    const interval = setInterval(() => {
-      setTimeLeft(calculateRemaining());
-    }, 1000);
-
-    return () => clearInterval(interval);
   }, [auction.auctionEndsAt, auction.status]);
+
+  const timeLeft = React.useMemo(() => {
+    if (
+      !isClient ||
+      nowMs === null ||
+      !auction.auctionEndsAt ||
+      auction.status !== "ACTIVE"
+    ) {
+      return null;
+    }
+    const diff = new Date(auction.auctionEndsAt).getTime() - nowMs;
+    if (diff <= 0) {
+      return { hours: 0, minutes: 0, seconds: 0 };
+    }
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    return { hours, minutes, seconds };
+  }, [isClient, nowMs, auction.auctionEndsAt, auction.status]);
 
   // Telemetry configuration for the frosted top-left badge
   const badgeConfig = React.useMemo(() => {

@@ -63,7 +63,7 @@ export function VehicleSpecsStep({ onNext, onBack }: VehicleSpecsStepProps) {
     resolver: zodResolver(vehicleSpecsFormSchema),
     mode: "onChange",
     defaultValues: {
-      mileageKm: specs.mileageKm ?? ("" as any),
+      mileageKm: specs.mileageKm ?? ("" as unknown as VehicleSpecsFormInput["mileageKm"]),
       transmission: specs.transmission || decodedVehicle?.transmission || "Automatic",
       drivetrain: specs.drivetrain || decodedVehicle?.drivetrain || "AWD",
       exteriorColor: specs.exteriorColor || "Black",

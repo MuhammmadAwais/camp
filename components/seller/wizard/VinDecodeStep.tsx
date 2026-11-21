@@ -43,22 +43,25 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
   const sellIntent = useSellIntentStore();
 
   // Local form state
-  const [inputVin, setInputVin] = useState(vin);
-  const [inputPostal, setInputPostal] = useState(postalCode);
+  const [inputVin, setInputVin] = useState(() => vin || sellIntent.vin || "");
+  const [inputPostal, setInputPostal] = useState(
+    () => postalCode || sellIntent.postalCode || ""
+  );
   const [showVinHelp, setShowVinHelp] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const syncedIntentRef = React.useRef(false);
 
   // Sync with landing page sell intent if wizard is fresh
   useEffect(() => {
+    if (syncedIntentRef.current) return;
+    syncedIntentRef.current = true;
     if (!vin && sellIntent.vin) {
-      setInputVin(sellIntent.vin);
       setVin(sellIntent.vin);
     }
     if (!postalCode && sellIntent.postalCode) {
-      setInputPostal(sellIntent.postalCode);
       setPostalCode(sellIntent.postalCode);
     }
-  }, [vin, postalCode, sellIntent, setVin, setPostalCode]);
+  }, [vin, postalCode, sellIntent.vin, sellIntent.postalCode, setVin, setPostalCode]);
 
   // Real-time VIN checks
   const sanitizedVin = sanitizeVinInput(inputVin);
@@ -148,7 +151,7 @@ export function VinDecodeStep({ onNext }: VinDecodeStepProps) {
           Vehicle Details
         </h2>
         <p className="text-sm text-portal-text-muted mt-1">
-          Enter your 17-character VIN. We’ll find your vehicle's make, model,
+          Enter your 17-character VIN. We’ll find your vehicle&apos;s make, model,
           and factory specifications to build your 24-hour auction listing.
         </p>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -74,11 +74,11 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
   const pathname = usePathname();
   const panel = PANELS[pathname] ?? DEFAULT_PANEL;
   const isFull = variant === "full";
-  const [imgSrc, setImgSrc] = useState(panel.image);
-
-  useEffect(() => {
-    setImgSrc(panel.image);
-  }, [panel.image]);
+  const [failedWebp, setFailedWebp] = useState<Record<string, boolean>>({});
+  const imgSrc =
+    failedWebp[panel.image] && panel.image.endsWith(".webp")
+      ? panel.image.replace(".webp", ".jpg")
+      : panel.image;
 
   if (!isFull) {
     return (
@@ -91,9 +91,9 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
           sizes="(max-width: 1024px) 100vw, 0px"
           className="object-cover object-center"
           onError={() => {
-            if (imgSrc.endsWith(".webp")) {
-              setImgSrc(imgSrc.replace(".webp", ".jpg"));
-            }
+            setFailedWebp((prev) =>
+              prev[panel.image] ? prev : { ...prev, [panel.image]: true }
+            );
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/55 to-black/25" aria-hidden />
@@ -119,9 +119,9 @@ export function AuthVisualPanel({ variant = "full" }: Props) {
         sizes="(min-width: 1024px) 58vw, 0px"
         className="object-cover object-center"
         onError={() => {
-          if (imgSrc.endsWith(".webp")) {
-            setImgSrc(imgSrc.replace(".webp", ".jpg"));
-          }
+          setFailedWebp((prev) =>
+            prev[panel.image] ? prev : { ...prev, [panel.image]: true }
+          );
         }}
       />
       {/* Dark multi-stop gradient overlay with warm obsidian espresso undertone */}
