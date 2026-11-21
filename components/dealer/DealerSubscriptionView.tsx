@@ -1,7 +1,8 @@
 "use client";
 
 import React, { Suspense, useMemo, useState, useSyncExternalStore } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import {
   AlertTriangle,
@@ -51,6 +52,7 @@ function getPlanFeatures(plan: SubscriptionPlanItem): Array<{
 }
 
 function DealerSubscriptionContent() {
+  const t = useTranslations("dealer");
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -168,10 +170,10 @@ function DealerSubscriptionContent() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-portal-text font-headline">
-            Pricing
+            {t("subscriptionTitle")}
           </h1>
           <p className="text-xs sm:text-sm text-portal-text-muted mt-1">
-            All subscription fees are billed in CAD via Stripe with zero per-vehicle buyer premiums.
+            {t("subscriptionSubtitle")}
           </p>
         </div>
 
@@ -187,7 +189,7 @@ function DealerSubscriptionContent() {
                   : "text-portal-text-muted hover:text-portal-text font-medium"
               }`}
             >
-              Annual
+              {t("billingCycleAnnual")}
             </button>
             <button
               type="button"
@@ -198,7 +200,7 @@ function DealerSubscriptionContent() {
                   : "text-portal-text-muted hover:text-portal-text font-medium"
               }`}
             >
-              Monthly
+              {t("billingCycleMonthly")}
             </button>
           </div>
         </div>

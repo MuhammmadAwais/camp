@@ -7,7 +7,8 @@ import React, {
   useSyncExternalStore,
 } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   ArrowUpRight,
   Clock,
@@ -65,6 +66,7 @@ function formatPlacedAtLabel(iso: string): string {
 }
 
 export function DealerActiveBidsView() {
+  const t = useTranslations("dealer");
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -211,7 +213,7 @@ export function DealerActiveBidsView() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white font-headline">
-            Active Placed Bids
+            {t("activeBidsTitle")}
           </h1>
           <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-1 max-w-2xl">
             Live telemetry on open wholesale auctions and pending unsealed offers where{" "}
@@ -223,7 +225,7 @@ export function DealerActiveBidsView() {
           href="/dealer/inventory"
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-100 text-xs font-semibold transition-colors shadow-2xs self-start sm:self-auto cursor-pointer"
         >
-          <span>Explore Wholesale Floor</span>
+          <span>{t("exploreFloorCta")}</span>
           <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400" />
         </Link>
       </div>

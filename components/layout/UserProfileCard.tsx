@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import {
   CaretUpDown,
   User as UserIcon,
-  GearSix,
   SignOut,
-  ShieldCheck,
   Swap,
-  CheckCircle,
   FileText,
   LockKey,
 } from '@phosphor-icons/react';
@@ -20,6 +18,7 @@ interface UserProfileCardProps {
 }
 
 export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
+  const t = useTranslations('userMenu');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { user, role, logout, devSwitchRole } = useAuth();
@@ -43,12 +42,11 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
       ? 'trading@pfaffauto.ca'
       : 'm.vance@rogers.ca');
 
-  const roleTitle =
-    isAdmin
-      ? 'Lead Compliance Officer'
-      : isDealer
-      ? 'OMVIC Verified Dealer'
-      : 'Verified Private Seller';
+  const roleTitle = isAdmin
+    ? t('adminRole')
+    : isDealer
+    ? t('dealerRole')
+    : t('sellerRole');
 
   const roleBadgeLabel =
     isAdmin ? 'ADMIN' : isDealer ? 'DEALER' : 'SELLER';
@@ -115,10 +113,10 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
             >
               <div className="flex items-center gap-2.5">
                 <UserIcon className="size-4 text-portal-text-muted group-hover:text-portal-primary transition-colors" weight="bold" />
-                <span className="font-medium">Profile & Account</span>
+                <span className="font-medium">{t('profileAccount')}</span>
               </div>
               <span className="text-[10px] text-portal-text-muted font-mono opacity-0 group-hover:opacity-100 transition-opacity">
-                Settings →
+                →
               </span>
             </Link>
 
@@ -129,7 +127,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
             >
               <div className="flex items-center gap-2.5">
                 <LockKey className="size-4 text-portal-text-muted group-hover:text-portal-primary transition-colors" weight="bold" />
-                <span className="font-medium">Security & Two-Factor (2FA)</span>
+                <span className="font-medium">{t('securityMfa')}</span>
               </div>
             </Link>
 
@@ -140,7 +138,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
             >
               <div className="flex items-center gap-2.5">
                 <FileText className="size-4 text-portal-text-muted group-hover:text-portal-primary transition-colors" weight="bold" />
-                <span className="font-medium">Regulatory Disclosures</span>
+                <span className="font-medium">{t('regulatoryDisclosures')}</span>
               </div>
             </Link>
           </div>
@@ -150,7 +148,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
             <div className="px-2.5 py-1 text-[10px] font-mono text-portal-text-muted uppercase tracking-wider flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <Swap className="size-3" weight="bold" />
-                <span>Simulate Workspace</span>
+                <span>{t('simulateWorkspace')}</span>
               </span>
               <span className="text-[9px] opacity-60">TEST HARNESS</span>
             </div>
@@ -212,7 +210,7 @@ export function UserProfileCard({ isCollapsed }: UserProfileCardProps) {
               className="w-full flex items-center gap-2.5 px-2.5 py-2 text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl transition-colors cursor-pointer font-semibold"
             >
               <SignOut className="size-4" weight="bold" />
-              <span>Sign Out of Platform</span>
+              <span>{t('signOutPlatform')}</span>
             </button>
           </div>
         </div>

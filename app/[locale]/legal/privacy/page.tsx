@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { LegalViewLayout, type LegalSection } from "@/components/legal/LegalViewLayout";
 
 export const metadata: Metadata = {
@@ -242,14 +242,196 @@ const PRIVACY_SECTIONS: LegalSection[] = [
   },
 ];
 
-export default function PrivacyPolicyPage() {
+const PRIVACY_SECTIONS_FR: LegalSection[] = [
+  {
+    id: "data-controller",
+    number: 1,
+    title: "1. Responsable du traitement & Gouvernance canadienne",
+    content: (
+      <>
+        <p>
+          Le responsable légal du traitement des renseignements personnels pour la bourse numérique AutoNexa, le terminal de gros concessionnaire et les services associés est :
+        </p>
+        <div className="py-2 pl-4 border-l-2 border-portal-border/60 space-y-1 text-sm text-portal-text/90 font-body">
+          <p className="font-bold text-portal-text">AutoNexa Canada Inc.</p>
+          <p>100 King Street West, Bureau 5600</p>
+          <p>Toronto, Ontario M5X 1C9, Canada</p>
+          <p>
+            Responsable de la protection des renseignements personnels (Loi 25) :{" "}
+            <a
+              href="mailto:privacy@autonexa.ca"
+              className="text-portal-primary underline underline-offset-4 decoration-portal-primary/40 hover:decoration-portal-primary transition-colors font-medium"
+            >
+              privacy@autonexa.ca
+            </a>
+          </p>
+          <p>Ligne sans frais : 1 (800) 555-NEXA (6392)</p>
+        </div>
+        <p>
+          AutoNexa exerce ses activités en stricte conformité avec la{" "}
+          <mark className="bg-portal-primary/10 text-portal-primary px-1.5 py-0.5 rounded font-medium">
+            Loi sur la protection des renseignements personnels et les documents électroniques (LPRPDE / PIPEDA)
+          </mark>
+          , la{" "}
+          <mark className="bg-portal-primary/10 text-portal-primary px-1.5 py-0.5 rounded font-medium">
+            Loi 25 du Québec
+          </mark>{" "}
+          (Loi modernisant des dispositions législatives en matière de protection des renseignements personnels) ainsi que les lois provinciales encadrant le commerce automobile (OMVIC, AMVIC, VSA, OPC).
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "data-collection",
+    number: 2,
+    title: "2. Collecte des données & Renseignements sur le véhicule",
+    content: (
+      <>
+        <p>
+          Nous recueillons uniquement les renseignements personnels, techniques et transactionnels strictement nécessaires à la tenue des enchères scellées, à la vérification des privilèges et au transfert de propriété :
+        </p>
+        <ul className="space-y-2.5 pt-1 text-portal-text/90">
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-portal-primary shrink-0 mt-2.5" />
+            <span>
+              <strong className="text-portal-text">Spécifications du véhicule :</strong> NIV à 17 caractères, kilométrage vérifié, déclarations d&apos;état mécanique, historique d&apos;entretien et cartographie 2D des dommages.
+            </span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-portal-primary shrink-0 mt-2.5" />
+            <span>
+              <strong className="text-portal-text">Identité &amp; Propriété (KYC) :</strong> Pièce d&apos;identité officielle avec photo utilisée exclusivement pour la prévention de la fraude et la validation du certificat d&apos;immatriculation.
+            </span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-portal-primary shrink-0 mt-2.5" />
+            <span>
+              <strong className="text-portal-text">Coordonnées :</strong> Numéro de téléphone mobile canadien vérifié, adresse courriel et municipalité générale.
+            </span>
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "exif-scrubbing",
+    number: 3,
+    title: "3. Suppression EXIF côté client & Confidentialité photo",
+    content: (
+      <>
+        <p>
+          Lorsque vous téléversez des photographies de votre véhicule, notre{" "}
+          <mark className="bg-portal-primary/10 text-portal-primary px-1.5 py-0.5 rounded font-medium">
+            moteur de confidentialité côté client
+          </mark>{" "}
+          supprime automatiquement les métadonnées EXIF directement dans votre navigateur avant toute transmission réseau.
+        </p>
+        <p>
+          Toutes les coordonnées GPS, numéros de série d&apos;appareil et balises de localisation résidentielle sont définitivement effacés et les images sont réencodées en format WebP sécurisé.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "sealed-bid-confidentiality",
+    number: 4,
+    title: "4. Secret des offres scellées & Cloisonnement des données",
+    content: (
+      <>
+        <p>
+          Pendant les enchères de gros de 24 heures, l&apos;identité du vendeur demeure chiffrée et confidentielle en vertu de notre{" "}
+          <mark className="bg-portal-primary/10 text-portal-primary px-1.5 py-0.5 rounded font-medium">
+            Invariant d&apos;offres scellées
+          </mark>{" "}
+          :
+        </p>
+        <ul className="space-y-2.5 pt-1 text-portal-text/90">
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-portal-primary shrink-0 mt-2.5" />
+            <span>Les concessionnaires soumissionnaires ne voient que la municipalité générale et la distance calculée.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-portal-primary shrink-0 mt-2.5" />
+            <span>Aucun concessionnaire ne peut consulter les montants en dollars des offres concurrentes ni le prix de réserve du vendeur.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-portal-primary shrink-0 mt-2.5" />
+            <span>Les coordonnées du vendeur ne sont dévoilées qu&apos;au seul concessionnaire gagnant sélectionné par le vendeur.</span>
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "your-rights",
+    number: 5,
+    title: "5. Vos droits en vertu de la LPRPDE et de la Loi 25 du Québec",
+    content: (
+      <>
+        <p>
+          Conformément à la LPRPDE et à la Loi 25 du Québec, vous disposez des droits légaux suivants sur vos renseignements personnels :
+        </p>
+        <ul className="space-y-2.5 pt-1 text-portal-text/90">
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-emerald-500 shrink-0 mt-2.5" />
+            <span><strong className="text-portal-text">Droit d&apos;accès et de portabilité :</strong> Exporter vos dossiers personnels informatisés en format JSON structuré directement depuis vos paramètres de profil.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-emerald-500 shrink-0 mt-2.5" />
+            <span><strong className="text-portal-text">Droit à l&apos;effacement (désindexation) :</strong> Demander l&apos;anonymisation et la suppression de votre compte sous 30 jours.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-emerald-500 shrink-0 mt-2.5" />
+            <span><strong className="text-portal-text">Retrait du consentement LCAP :</strong> Révoquer à tout moment votre consentement aux communications électroniques commerciales en un clic.</span>
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "data-security",
+    number: 6,
+    title: "6. Sécurité des données & Hébergement souverain au Canada",
+    content: (
+      <>
+        <p>
+          Toutes les bases de données et tous les dépôts de fichiers résident exclusivement dans des centres de données canadiens (
+          <mark className="bg-portal-primary/10 text-portal-primary px-1.5 py-0.5 rounded font-mono text-xs font-semibold">
+            AWS ca-central-1, Montréal
+          </mark>
+          ) avec chiffrement TLS 1.3 en transit et AES-256 au repos.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "data-retention",
+    number: 7,
+    title: "7. Conservation des données & Journaux d'audit cryptographiques",
+    content: (
+      <>
+        <p>
+          Les contrats de transaction complétés et les registres d&apos;arbitrage sont conservés pendant sept (7) ans conformément aux exigences fiscales de l&apos;Agence du revenu du Canada (ARC) et aux lois provinciales sur le commerce des véhicules routiers.
+        </p>
+      </>
+    ),
+  },
+];
+
+export default async function PrivacyPolicyPage() {
+  const [locale, t] = await Promise.all([
+    getLocale(),
+    getTranslations("legal"),
+  ]);
+  const sections = locale === "fr" ? PRIVACY_SECTIONS_FR : PRIVACY_SECTIONS;
+
   return (
     <LegalViewLayout
       activeDocument="privacy"
-      title="Privacy Policy"
-      effectiveDate="October 2026"
-      introText="This Privacy Policy outlines how AutoNexa Canada collects, uses, protects, and manages your personal vehicle data in strict compliance with the Personal Information Protection and Electronic Documents Act (PIPEDA), Quebec Law 25, and provincial motor vehicle regulatory councils."
-      sections={PRIVACY_SECTIONS}
+      title={t("privacyTitle")}
+      effectiveDate={t("privacyEffectiveDate")}
+      introText={t("privacyIntro")}
+      sections={sections}
     />
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 
@@ -7,14 +8,15 @@ export const metadata: Metadata = {
   title: "Reset your password | AutoNexa",
 };
 
-export default function ForgotPasswordPage() {
+export default async function ForgotPasswordPage() {
+  const t = await getTranslations("auth");
   return (
     <AuthCard
-      title="Reset your password"
-      description="Enter the email you registered with and we'll send you a secure reset link."
+      title={t("forgotTitle")}
+      description={t("forgotDescription")}
       footer={
         <Link href="/login" className="font-semibold text-primary hover:underline underline-offset-4">
-          Back to sign in
+          {t("backToSignIn")}
         </Link>
       }
     >

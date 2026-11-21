@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import {
   AlertOctagon,
   Check,
@@ -111,6 +112,7 @@ export function AdminAuctionsView() {
   const [clientNowMs, setClientNowMs] = useState<number>(() => Date.now());
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<AuctionStatusFilter>("ALL");
+  const t = useTranslations("admin");
   const [selectedLot, setSelectedLot] = useState<AdminAuctionLot | null>(null);
   const [overrideModalType, setOverrideModalType] =
     useState<AdminAuctionOverrideAction | null>(null);
@@ -354,10 +356,10 @@ export function AdminAuctionsView() {
             <span>Market Operations Center</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline tracking-tight">
-            Auction Master Operations &amp; Overrides
+            {t("auctionsTitle")}
           </h1>
           <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-3xl font-body">
-            Real-time wholesale exchange supervision, countdown extensions, instant unsealing overrides, statutory compliance halts, and sealed-bid surveillance.
+            {t("auctionsSubtitle")}
           </p>
         </div>
 
@@ -372,7 +374,7 @@ export function AdminAuctionsView() {
               isFetching ? "animate-spin" : ""
             }`}
           />
-          <span>Sync Floor</span>
+          <span>{t("syncFloorCta")}</span>
         </button>
       </div>
 

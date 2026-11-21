@@ -4,6 +4,7 @@ import {
   BadRequestError,
   RateLimitError,
   ValidationError,
+  getLocalizedErrorCodeMessage,
   isAppError,
   type ErrorCode,
 } from "@/lib/server/errors";
@@ -12,6 +13,32 @@ import { logger } from "@/lib/server/logger";
 export type RouteMeta = {
   requestId: string;
 };
+
+export function resolveRequestLocale(request?: NextRequest | Request): "en" | "fr" {
+  if (!request) return "en";
+  const explicitHeader = request.headers.get("x-autonexa-locale")?.trim().toLowerCase();
+  if (explicitHeader === "fr" || explicitHeader?.startsWith("fr-")) {
+    return "fr";
+  }
+  if (explicitHeader === "en" || explicitHeader?.startsWith("en-")) {
+    return "en";
+  }
+
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const match = /(?:^|;\s*)NEXT_LOCALE=(en|fr)(?:;|$)/i.exec(cookieHeader);
+  if (match?.[1]?.toLowerCase() === "fr") {
+    return "fr";
+  }
+  if (match?.[1]?.toLowerCase() === "en") {
+    return "en";
+  }
+
+  const acceptLang = request.headers.get("accept-language")?.trim().toLowerCase() ?? "";
+  if (acceptLang.startsWith("fr")) {
+    return "fr";
+  }
+  return "en";
+}
 
 type FailOptions = {
   fields?: Record<string, string>;
@@ -137,6 +164,7 @@ export function handleApiRoute<TContext = unknown>(
       return response;
     } catch (error: unknown) {
       const durationMs = Date.now() - startedAt;
+      const locale = resolveRequestLocale(request);
 
       if (isAppError(error)) {
         const logFn = error.status >= 500 ? logger.error : logger.warn;
@@ -156,7 +184,13 @@ export function handleApiRoute<TContext = unknown>(
           headers.set("Retry-After", String(error.retryAfterSeconds));
         }
 
-        return fail(error.status, error.code, error.message, {
+        const localizedMessage = getLocalizedErrorCodeMessage(
+          error.code,
+          locale,
+          error.message
+        );
+
+        return fail(error.status, error.code, localizedMessage, {
           fields: error.fields,
           details: error.details,
           requestId,
@@ -171,10 +205,15 @@ export function handleApiRoute<TContext = unknown>(
           durationMs,
           meta: { issueCount: error.issues.length },
         });
-        const response = fail(422, "VALIDATION_FAILED", "Some fields need attention.", {
-          fields: mapZodIssuesToFields(error.issues),
-          requestId,
-        });
+        const response = fail(
+          422,
+          "VALIDATION_FAILED",
+          getLocalizedErrorCodeMessage("VALIDATION_FAILED", locale),
+          {
+            fields: mapZodIssuesToFields(error.issues),
+            requestId,
+          }
+        );
         response.headers.set("X-Request-Id", requestId);
         return response;
       }
@@ -189,7 +228,7 @@ export function handleApiRoute<TContext = unknown>(
       const response = fail(
         500,
         "INTERNAL_ERROR",
-        "An unexpected error occurred. Please try again.",
+        getLocalizedErrorCodeMessage("INTERNAL_ERROR", locale),
         { requestId }
       );
       response.headers.set("X-Request-Id", requestId);

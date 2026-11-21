@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   MagnifyingGlass,
   SquaresFour,
@@ -26,6 +27,7 @@ interface Props {
 type TabFilter = "ALL" | "ACTIVE" | "PENDING_MODERATION" | "COMPLETED";
 
 export function SellerDashboard({ user }: Props) {
+  const t = useTranslations("seller");
   const [activeTab, setActiveTab] = React.useState<TabFilter>("ALL");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [layoutMode, setLayoutMode] = React.useState<"grid" | "list">("grid");
@@ -71,10 +73,10 @@ export function SellerDashboard({ user }: Props) {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
         <div>
           <h1 className="font-headline text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-portal-text">
-            Welcome back, {user.firstName}
+            {t("welcomeBack")}, {user.firstName}
           </h1>
           <p className="mt-1.5 font-body text-xs sm:text-sm text-portal-text-muted max-w-2xl font-normal">
-            Private vehicle inventory & real-time sealed dealer auction telemetry across vetted Canadian dealer networks.
+            {t("dashboardSubtitle")}
           </p>
         </div>
 
@@ -86,10 +88,10 @@ export function SellerDashboard({ user }: Props) {
           {/* Primary High-Value Action Button */}
           <Link
             href="/seller/list-car"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#8C383E] dark:bg-[#E59344] hover:bg-[#752B30] dark:hover:bg-[#D9822F] text-white font-body text-xs sm:text-sm font-bold tracking-wide transition-all shadow-sm hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-portal-primary hover:bg-portal-primary-hover text-white font-body text-xs sm:text-sm font-bold tracking-wide transition-all shadow-sm hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
           >
             <Plus className="w-4 h-4" weight="bold" />
-            <span>List New Vehicle</span>
+            <span>{t("listNewVehicle")}</span>
           </Link>
         </div>
       </div>
@@ -115,8 +117,8 @@ export function SellerDashboard({ user }: Props) {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search your listings by VIN, make, model or location..."
-            className="w-full pl-11 pr-4 py-3 rounded-xl border border-portal-border bg-portal-surface text-portal-text placeholder:text-portal-text-muted text-xs sm:text-sm font-body transition-colors focus:outline-none focus:border-[#8C383E] dark:focus:border-[#E59344] shadow-xs"
+            placeholder={t("searchPlaceholder")}
+            className="w-full pl-11 pr-4 py-3 rounded-xl border border-portal-border bg-portal-surface text-portal-text placeholder:text-portal-text-muted text-xs sm:text-sm font-body transition-colors focus:outline-none focus:border-portal-primary shadow-xs"
           />
         </div>
 
@@ -125,10 +127,10 @@ export function SellerDashboard({ user }: Props) {
           {/* Category Tabs */}
           <div className="flex flex-wrap items-center gap-2">
             {[
-              { id: "ALL", label: "All Listings", count: auctions.length },
-              { id: "ACTIVE", label: "Live 24h Floor", count: activeCount },
-              { id: "PENDING_MODERATION", label: "Under Review", count: reviewCount },
-              { id: "COMPLETED", label: "Sold & Finalized", count: completedCount },
+              { id: "ALL", label: t("tabAll"), count: auctions.length },
+              { id: "ACTIVE", label: t("tabActive"), count: activeCount },
+              { id: "PENDING_MODERATION", label: t("tabPending"), count: reviewCount },
+              { id: "COMPLETED", label: t("tabCompleted"), count: completedCount },
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (

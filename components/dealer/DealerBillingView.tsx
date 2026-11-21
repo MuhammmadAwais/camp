@@ -1,7 +1,8 @@
 "use client";
 
 import React, { Suspense, useMemo, useState, useSyncExternalStore } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import {
   AlertTriangle,
@@ -64,6 +65,7 @@ function triggerReceiptDownload(
 }
 
 function DealerBillingContent() {
+  const t = useTranslations("dealer");
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -189,10 +191,10 @@ function DealerBillingContent() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-portal-text font-headline">
-            Invoices &amp; Billing
+            {t("billingTitle")}
           </h1>
           <p className="text-xs sm:text-sm text-portal-text-muted mt-1">
-            Manage your monthly sealed-bid quota, inspect subscription status, and download persisted CAD invoices.
+            {t("billingSubtitle")}
           </p>
         </div>
 
@@ -201,7 +203,7 @@ function DealerBillingContent() {
             href="/dealer/subscription"
             className="px-4 py-2.5 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text font-semibold text-xs shadow-xs transition-colors cursor-pointer"
           >
-            Change Plan
+            {t("changePlanCta")}
           </Link>
           <button
             type="button"
@@ -214,7 +216,7 @@ function DealerBillingContent() {
             ) : (
               <CreditCard className="w-4 h-4" />
             )}
-            <span>Open Stripe Portal</span>
+            <span>{t("openStripePortalCta")}</span>
             <ExternalLink className="w-3.5 h-3.5 opacity-80" />
           </button>
         </div>

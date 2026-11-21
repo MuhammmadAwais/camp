@@ -1,14 +1,10 @@
 import { Check, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
-const ALL_STEPS = [
-  { id: "vehicle", label: "Vehicle" },
-  { id: "account", label: "Account" },
-  { id: "verify", label: "Verify" },
-  { id: "identity", label: "Identity" },
-] as const;
+const ALL_STEP_IDS = ["vehicle", "account", "verify", "identity"] as const;
 
-export type FunnelStepId = (typeof ALL_STEPS)[number]["id"];
+export type FunnelStepId = (typeof ALL_STEP_IDS)[number];
 
 interface Props {
   current: FunnelStepId;
@@ -17,11 +13,14 @@ interface Props {
 
 // Onboarding breadcrumb: adapts dynamically based on whether a VIN was entered first.
 export function FunnelSteps({ current, hasVehicle = false }: Props) {
+  const t = useTranslations("auth.funnelSteps");
+  const allSteps = ALL_STEP_IDS.map((id) => ({ id, label: t(id) }));
+
   // If the user didn't enter a vehicle first (or is registering directly/as dealer),
   // omit the "Vehicle" step so it isn't falsely shown as completed.
   const steps = hasVehicle
-    ? ALL_STEPS
-    : ALL_STEPS.filter((s) => s.id !== "vehicle");
+    ? allSteps
+    : allSteps.filter((s) => s.id !== "vehicle");
 
   const currentIndex = steps.findIndex((s) => s.id === current);
 

@@ -2,10 +2,13 @@
 
 import * as React from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { MarketValuationWidget } from "@/components/marketing/MarketValuationWidget";
 import { BrandCarousel } from "@/components/marketing/BrandCarousel";
 
 export function HeroSection() {
+  const t = useTranslations("marketing");
+
   return (
     <div
       className="relative w-full bg-[#120F0D] text-white overflow-hidden"
@@ -43,16 +46,16 @@ export function HeroSection() {
         >
           {/* Main Headline (Epilogue) with consistent font styling */}
           <h1 className="font-headline text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] leading-[1.14] sm:leading-[1.12] max-w-4xl">
-            The{" "}
+            {t("heroHeadingPrefix")}{" "}
             <span className=" text-secondary underline decoration-secondary/60 underline-offset-8">
-              Best
+              {t("heroHeadingAccent")}
             </span>{" "}
-            Way To Sell Your Car.
+            {t("heroHeadingSuffix")}
           </h1>
 
           {/* Subheading (Plus Jakarta Sans) */}
           <p className="mt-3.5 sm:mt-5 font-body text-base sm:text-lg md:text-xl text-white/90 max-w-2xl font-normal leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
-            Unlock your best price with AutoNexa
+            {t("heroSubheading")}
           </p>
 
           {/* Interactive Valuation Widget */}

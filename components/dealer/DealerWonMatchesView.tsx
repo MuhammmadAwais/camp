@@ -8,7 +8,8 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   AlertTriangle,
   ArrowUpRight,
@@ -128,6 +129,7 @@ function renderStatusBadge(status: WonMatchStatus) {
 }
 
 export function DealerWonMatchesView() {
+  const t = useTranslations("dealer");
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -407,7 +409,7 @@ export function DealerWonMatchesView() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-headline text-portal-text tracking-tight">
-              Won Matches &amp; Handover
+              {t("wonMatchesTitle")}
             </h1>
             <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-2xl">
               Coordinate physical vehicle intake, appointment verification, and offline inspection settlements for{" "}
@@ -419,7 +421,7 @@ export function DealerWonMatchesView() {
             href="/dealer/inventory"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-portal-text text-xs font-bold transition-all shadow-2xs self-start lg:self-auto cursor-pointer group"
           >
-            <span>Explore Wholesale Floor</span>
+            <span>{t("exploreFloorCta")}</span>
             <ArrowUpRight className="w-4 h-4 text-portal-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>
         </div>

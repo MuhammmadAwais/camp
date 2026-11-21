@@ -2,7 +2,8 @@
 
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   AlertTriangle,
   ArrowRight,
@@ -42,6 +43,7 @@ const CAR_BRAND_LOGOS: Record<string, string> = {
 };
 
 export function DisputeManagementView() {
+  const t = useTranslations("admin");
   const { data, isLoading, isError, error, refetch } = useAdminDisputes();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -113,10 +115,10 @@ export function DisputeManagementView() {
           <span>Post-Inspection Settlement Cases</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline tracking-tight">
-          Post-Inspection Dispute Management Queue
+          {t("disputesTitle")}
         </h1>
         <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-3xl font-body">
-          Review condition discrepancies, hoist inspection damage claims, and integer-cent settlement adjustments between Canadian sellers and verified dealerships.
+          {t("disputesSubtitle")}
         </p>
       </div>
 

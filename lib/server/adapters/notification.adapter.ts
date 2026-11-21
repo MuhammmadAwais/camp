@@ -15,23 +15,31 @@ export type PreferenceCategory =
   | "escrowDisbursement"
   | "complianceReview";
 
+export const ALL_NOTIFICATION_TEMPLATE_KEYS = [
+  "LISTING_APPROVED_SELLER",
+  "LISTING_APPROVED_DEALER_RADIUS",
+  "LISTING_EDITS_REQUESTED",
+  "LISTING_REJECTED",
+  "AUCTION_CLOSED_SELLER",
+  "AUCTION_CLOSED_DEALER",
+  "AUCTION_EXTENDED_SELLER",
+  "AUCTION_EXTENDED_DEALER",
+  "AUCTION_HALTED_SELLER",
+  "AUCTION_HALTED_DEALER",
+  "MATCH_CREATED_SELLER",
+  "MATCH_CREATED_WINNING_DEALER",
+  "MATCH_NOT_SELECTED_DEALER",
+  "MATCH_ACCEPTANCE_EXPIRED_SELLER",
+  "MATCH_ACCEPTANCE_EXPIRED_DEALER",
+  "AUTH_OTP_CHALLENGE",
+  "AUTH_PASSWORD_RESET",
+  "DEALER_TEAM_INVITE",
+  "MATCH_SETTLEMENT_CONFIRMED",
+  "CUSTOM",
+] as const;
+
 export type NotificationTemplateKey =
-  | "LISTING_APPROVED_SELLER"
-  | "LISTING_APPROVED_DEALER_RADIUS"
-  | "LISTING_EDITS_REQUESTED"
-  | "LISTING_REJECTED"
-  | "AUCTION_CLOSED_SELLER"
-  | "AUCTION_CLOSED_DEALER"
-  | "AUCTION_EXTENDED_SELLER"
-  | "AUCTION_EXTENDED_DEALER"
-  | "AUCTION_HALTED_SELLER"
-  | "AUCTION_HALTED_DEALER"
-  | "MATCH_CREATED_SELLER"
-  | "MATCH_CREATED_WINNING_DEALER"
-  | "MATCH_NOT_SELECTED_DEALER"
-  | "MATCH_ACCEPTANCE_EXPIRED_SELLER"
-  | "MATCH_ACCEPTANCE_EXPIRED_DEALER"
-  | "CUSTOM";
+  (typeof ALL_NOTIFICATION_TEMPLATE_KEYS)[number];
 
 export type NotificationTemplateVars = {
   vehicleLabel?: string;
@@ -43,6 +51,8 @@ export type NotificationTemplateVars = {
   agreedAmountCents?: number;
   reason?: string;
   actionUrl?: string;
+  otpCode?: string;
+  inviteRoleLabel?: string;
   customTitle?: string;
   customDescription?: string;
 };
@@ -481,10 +491,68 @@ export function renderNotificationTemplate(
       smsBody = title;
       break;
     }
+    case "AUTH_OTP_CHALLENGE": {
+      const otp = vars.otpCode || "000000";
+      title = isFr
+        ? "Code de vérification AutoNexa"
+        : "AutoNexa verification code";
+      description = isFr
+        ? `Votre code de vérification à usage unique AutoNexa est ${otp}. Il expire dans 10 minutes.`
+        : `Your one-time AutoNexa verification code is ${otp}. It expires in 10 minutes.`;
+      smsBody = isFr
+        ? `AutoNexa : Votre code de vérification est ${otp} (valide 10 min).`
+        : `AutoNexa: Your verification code is ${otp} (valid 10 min).`;
+      break;
+    }
+    case "AUTH_PASSWORD_RESET": {
+      title = isFr
+        ? "Réinitialisation de votre mot de passe AutoNexa"
+        : "Reset your AutoNexa password";
+      description = isFr
+        ? "Une demande de réinitialisation de mot de passe a été reçue pour votre compte AutoNexa. Utilisez le lien sécurisé pour choisir un nouveau mot de passe."
+        : "A password reset was requested for your AutoNexa account. Use the secure link to choose a new password.";
+      smsBody = title;
+      break;
+    }
+    case "DEALER_TEAM_INVITE": {
+      const dealer = vars.dealershipName || (isFr ? "votre concession" : "your dealership");
+      const roleLabel = vars.inviteRoleLabel || (isFr ? "Acheteur de gros" : "Wholesale Buyer");
+      title = isFr
+        ? `Invitation d'équipe — ${dealer}`
+        : `Dealership team invitation — ${dealer}`;
+      description = isFr
+        ? `Vous avez été invité à rejoindre ${dealer} sur AutoNexa avec le rôle « ${roleLabel} ».`
+        : `You have been invited to join ${dealer} on AutoNexa with the "${roleLabel}" seat role.`;
+      smsBody = title;
+      break;
+    }
+    case "MATCH_SETTLEMENT_CONFIRMED": {
+      const code = vars.voucherCode || "ANX";
+      const amount =
+        typeof vars.agreedAmountCents === "number"
+          ? formatCadWhole(vars.agreedAmountCents, locale)
+          : isFr
+            ? "le montant convenu"
+            : "the agreed amount";
+      title = isFr
+        ? `Règlement confirmé — ${vehicle}`
+        : `Settlement confirmed — ${vehicle}`;
+      description = isFr
+        ? `L'inspection physique et le règlement final de ${amount} pour ${vehicle} (bon ${code}) ont été confirmés.`
+        : `The physical inspection and final settlement of ${amount} for ${vehicle} (voucher ${code}) have been confirmed.`;
+      smsBody = title;
+      break;
+    }
     case "CUSTOM":
     default: {
-      title = vars.customTitle?.trim() || "AutoNexa Update";
-      description = vars.customDescription?.trim() || "";
+      title =
+        vars.customTitle?.trim() ||
+        (isFr ? "Mise à jour AutoNexa" : "AutoNexa Update");
+      description =
+        vars.customDescription?.trim() ||
+        (isFr
+          ? "Une mise à jour est disponible dans votre portail AutoNexa."
+          : "A new update is available in your AutoNexa portal.");
       smsBody = title;
       break;
     }

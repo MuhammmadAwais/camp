@@ -1,5 +1,6 @@
 import type { FieldValues, Path, UseFormSetError } from "react-hook-form";
 import { ApiError, type ApiFailure } from "@/lib/api-client";
+import { getLocalizedErrorCodeMessage } from "@/lib/server/errors";
 
 export function getApiFailure(error: unknown): ApiFailure | null {
   return error instanceof ApiError ? error.failure : null;
@@ -10,6 +11,24 @@ export function getErrorMessage(error: unknown): string {
   if (failure) return failure.error;
   console.error("[ui] Unexpected error", error);
   return "Something went wrong. Please try again.";
+}
+
+export function getLocalizedErrorMessage(
+  error: unknown,
+  locale: "en" | "fr" = "en",
+  fallback?: string
+): string {
+  const failure = getApiFailure(error);
+  if (failure) {
+    if (failure.code && locale === "fr") {
+      return getLocalizedErrorCodeMessage(failure.code, "fr", failure.error);
+    }
+    return failure.error;
+  }
+  if (fallback) return fallback;
+  return locale === "fr"
+    ? "Une erreur inattendue s'est produite. Veuillez réessayer."
+    : "Something went wrong. Please try again.";
 }
 
 // Binds API validation errors to the matching inputs (code-standards › Error Handling).

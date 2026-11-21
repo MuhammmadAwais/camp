@@ -6,6 +6,7 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
+import { useTranslations } from "next-intl";
 import {
   AlertTriangle,
   Check,
@@ -83,6 +84,7 @@ function getActionConfig(action: string): { label: string; pill: string } {
 }
 
 export function AdminAuditLogView() {
+  const t = useTranslations("admin");
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -247,10 +249,10 @@ export function AdminAuditLogView() {
             <span>PIPEDA &amp; Quebec Law 25 Ledger</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline tracking-tight">
-            Immutable Platform Audit Trail
+            {t("auditTitle")}
           </h1>
           <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-3xl font-body">
-            Tamper-evident, cryptographically chained chronological ledger verified via PostgreSQL SHA-256 trigger hashing and append-only mutation protection.
+            {t("auditSubtitle")}
           </p>
         </div>
 
@@ -266,7 +268,7 @@ export function AdminAuditLogView() {
                 isFetching ? "animate-spin" : ""
               }`}
             />
-            <span>Verify Chain</span>
+            <span>{t("verifyChainCta")}</span>
           </button>
           <button
             type="button"
@@ -275,7 +277,7 @@ export function AdminAuditLogView() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-portal-border bg-portal-surface hover:bg-portal-surface-hover text-xs font-bold text-portal-text cursor-pointer disabled:opacity-50 shadow-2xs"
           >
             <Download className="w-3.5 h-3.5 text-portal-text-muted" />
-            <span>Export CSV</span>
+            <span>{t("exportCsvCta")}</span>
           </button>
         </div>
       </div>

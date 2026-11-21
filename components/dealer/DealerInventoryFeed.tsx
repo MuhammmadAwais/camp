@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Gavel,
@@ -24,6 +25,7 @@ import { useDealerInventory } from "@/hooks/useDealerInventory";
 type InventorySortOption = "closing" | "mileage" | "year" | "distance";
 
 export function DealerInventoryFeed() {
+  const t = useTranslations("dealer");
   const queryClient = useQueryClient();
 
   // Filters state
@@ -194,10 +196,10 @@ export function DealerInventoryFeed() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
         <div>
           <h1 className="font-headline text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-portal-text">
-            Dealer Inventory
+            {t("inventoryTitle")}
           </h1>
           <p className="mt-1.5 font-body text-xs sm:text-sm text-portal-text-muted max-w-2xl font-normal">
-            Active 24-hour sealed auctions from verified private sellers across Ontario & Quebec.
+            {t("inventorySubtitle")}
           </p>
         </div>
 

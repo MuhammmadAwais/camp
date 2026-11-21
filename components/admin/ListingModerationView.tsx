@@ -2,7 +2,8 @@
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   Clock,
   Car,
@@ -42,6 +43,7 @@ const CAR_BRAND_LOGOS: Record<string, string> = {
 type SortMode = "NEWEST" | "RESERVE_DESC" | "MILEAGE_ASC";
 
 export function ListingModerationView() {
+  const t = useTranslations("admin");
   const { data, isLoading, isError, refetch, isFetching } =
     useAdminModerationQueue();
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,10 +110,10 @@ export function ListingModerationView() {
       {/* 1. Header (Clean, Institutional) */}
       <div className="border-b border-portal-border pb-5">
         <h1 className="text-2xl sm:text-3xl font-bold font-headline text-portal-text tracking-tight">
-          Listing Moderation Queue
+          {t("moderationTitle")}
         </h1>
         <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-3xl">
-          Review vehicle odometer clarity, NHTSA decoded specs, title liens, and condition disclosures before launching 24h dealer auctions.
+          {t("moderationSubtitle")}
         </p>
       </div>
 

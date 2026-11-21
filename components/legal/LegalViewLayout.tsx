@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Shield, FileText } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export interface LegalSection {
   id: string;
@@ -25,6 +26,8 @@ export function LegalViewLayout({
   introText,
   sections,
 }: LegalViewLayoutProps) {
+  const t = useTranslations("legal");
+
   return (
     <div className="max-w-4xl mx-auto pb-28 pt-2 sm:pt-6 font-body text-portal-text">
       <main className="space-y-8">
@@ -42,7 +45,7 @@ export function LegalViewLayout({
               {title}
             </h1>
             <p className="text-xs text-portal-text-muted mt-1 font-mono">
-              Last updated: {effectiveDate}
+              {t("lastUpdatedLabel")} {effectiveDate}
             </p>
           </div>
         </div>
@@ -77,8 +80,8 @@ export function LegalViewLayout({
 
         {/* Jurisdictional Governance Footer */}
         <div className="pt-10 border-t border-portal-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono text-portal-text-muted">
-          <span>AutoNexa Canada Inc. • National Wholesale Platform</span>
-          <span>PIPEDA & Quebec Law 25 Certified</span>
+          <span>{t("governanceLeft")}</span>
+          <span>{t("governanceRight")}</span>
         </div>
       </main>
     </div>

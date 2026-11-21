@@ -7,7 +7,7 @@ Update this file after completing each page/component. Any AI agent reading this
 ## Current Status
 
 **Frontend Status (`main` branch — Live on Vercel `camp-amber.vercel.app`):** 100% Operational (26/26 routes passing HTTP 200 OK, `npx tsc --noEmit` clean, mock API enabled via `ENABLE_MOCK_API=true`)
-**Backend Status (`feat/supabase-backend` branch — Reference Backend):** Complete through Prompt B10.1 (Phases B1–B9 + Prompt B10.1 `next-intl` `[locale]` Routing & Preference Sync Complete) — **Next Prompt: `Prompt B10.2`**
+**Backend Status (`feat/supabase-backend` branch — Reference Backend):** 100% Complete across all 26 Backend Prompts (Phases B1–B10 including `next-intl` `[locale]` routing, Quebec Law 25 bilingual EN/FR portal/legal/API error/notification parity, RLS, atomic RPCs, Vitest ≥70% coverage, and CI/CD handoff)
 **Target Architecture:** Next.js 16 App Router BFF (`app/api/**`) + Pure Service Layer (`lib/server/services/*`) + External Adapters (`lib/server/adapters/*`) + Managed Supabase Cloud (`ca-central-1` Montreal: Postgres 16, PostGIS, `@supabase/ssr` Auth + TOTP MFA, RLS, Atomic RPCs, Realtime, Storage, `pg_cron`)
 **Completed Frontend Phases:**
 
@@ -289,7 +289,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
 | **III** | **B9**  | `Prompt B9.1`  | Vitest Setup + ≥70% Unit Tests (auction state machine, bids, integer cents, Stripe webhooks) + Sealed-Bid RLS Leak Tests    | Hardening & Handoff   |   4–5 hrs |  [x]   |
 | **III** | **B9**  | `Prompt B9.2`  | GitHub Actions CI (`.github/workflows/ci.yml`), Full Preview E2E QA & Senior Engineer Handoff (`docs/backend-handoff.md`)   | Hardening & Handoff   |     3 hrs |  [x]   |
 | **III** | **B10** | `Prompt B10.1` | _(Separate Track)_ `next-intl` Setup, `[locale]` Routing, `messages/en.json` & `fr.json`, Language Sync                     | Quebec Law 25 i18n    |  1–2 days |  [x]   |
-| **III** | **B10** | `Prompt B10.2` | _(Separate Track)_ Full Portal, Legal & Server-Side Bilingual Email/Notification Template Parity (FR-X-04 / NFR-13)         | Quebec Law 25 i18n    |    2 days |  [ ]   |
+| **III** | **B10** | `Prompt B10.2` | _(Separate Track)_ Full Portal, Legal & Server-Side Bilingual Email/Notification Template Parity (FR-X-04 / NFR-13)         | Quebec Law 25 i18n    |    2 days |  [x]   |
 
 ---
 
@@ -605,7 +605,7 @@ Execute **Prompt B#.#** from `context/progress-tracker.md`.
   - **Build From → To:** English-only routing → `next-intl` configured with `/en` and `/fr` routes, `messages/en.json` & `messages/fr.json` scaffolding, and locale switcher synced with `profiles.language_pref`.
   - **Exit Gate:** `/en` and `/fr` load cleanly with zero hydration mismatch and preserve authenticated sessions across `proxy.ts`.
 
-- [ ] **`Prompt B10.2` — Full Portal, Legal & Server-Side Bilingual Parity**
+- [x] **`Prompt B10.2` — Full Portal, Legal & Server-Side Bilingual Parity**
   - **Build From → To:** Scaffolded dictionaries → 100% English/French string coverage across marketing, auth, seller, dealer, admin, legal pages, API error codes, and notification/email templates.
   - **SRS / Rules:** FR-X-04, NFR-13, Quebec Law 25.
   - **Exit Gate:** Zero missing translation keys in EN/FR across all 26 routes and bilingual notification payloads verified.

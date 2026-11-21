@@ -1,11 +1,14 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { AutoNexaPhysicsCanvas } from "./AutoNexaPhysicsCanvas";
 import { ArrowUpRight, ShieldCheck } from "@phosphor-icons/react";
 
 export function Footer() {
+  const t = useTranslations("marketing");
+
   return (
     <footer className="relative w-full bg-surface text-on-surface pt-20 sm:pt-28 pb-8 px-4 sm:px-6 lg:px-8 border-t border-border-card/60 overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
@@ -14,7 +17,7 @@ export function Footer() {
         {/* ========================================================================= */}
         <div className="text-center max-w-4xl mx-auto mb-16 sm:mb-24">
           <h2 className="font-headline text-4xl sm:text-6xl md:text-8xl lg:text-[104px] font-black tracking-tight text-on-surface leading-none">
-            READY TO SELL?
+            {t("footerReadyToSell")}
           </h2>
 
           <div className="mt-8 sm:mt-10 flex justify-center px-4">
@@ -22,7 +25,7 @@ export function Footer() {
               href="#valuation"
               className="w-full sm:w-auto inline-flex items-center justify-center rounded-full bg-primary px-8 sm:px-11 py-3.5 sm:py-4 min-h-[48px] font-body font-bold text-white shadow-md hover:shadow-lg transition-all duration-300 hover:bg-primary-hover hover:scale-105 active:scale-95 text-base sm:text-lg"
             >
-              Get Your Free Appraisal
+              {t("footerCta")}
             </a>
           </div>
         </div>
@@ -34,7 +37,7 @@ export function Footer() {
           {/* Column 1: Contact */}
           <div>
             <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-5">
-              Contact
+              {t("footerContactCol")}
             </h3>
             <ul className="space-y-3 font-body text-sm text-on-surface/85">
               <li>
@@ -63,27 +66,27 @@ export function Footer() {
           {/* Column 2: Platform */}
           <div>
             <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-5">
-              Platform
+              {t("footerPlatformCol")}
             </h3>
             <ul className="space-y-3 font-body text-sm text-on-surface/85">
               <li>
                 <a href="#how-it-works" className="hover:text-primary transition-colors">
-                  How It Works
+                  {t("footerHowItWorks")}
                 </a>
               </li>
               <li>
                 <a href="#features" className="hover:text-primary transition-colors">
-                  Sealed Bidding Engine
+                  {t("footerSealedEngine")}
                 </a>
               </li>
               <li>
                 <a href="#valuation" className="hover:text-primary transition-colors">
-                  Instant VIN Valuation
+                  {t("footerVinValuation")}
                 </a>
               </li>
               <li>
                 <a href="#why-us" className="hover:text-primary transition-colors">
-                  Why AutoNexa
+                  {t("footerWhyUs")}
                 </a>
               </li>
             </ul>
@@ -92,33 +95,33 @@ export function Footer() {
           {/* Column 3: Company */}
           <div>
             <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-5">
-              Company
+              {t("footerCompanyCol")}
             </h3>
             <ul className="space-y-3 font-body text-sm text-on-surface/85">
               <li>
                 <a href="#about" className="hover:text-primary transition-colors">
-                  About Us
+                  {t("footerAboutUs")}
                 </a>
               </li>
               <li>
                 <a href="#dealer-terminal" className="hover:text-primary transition-colors inline-flex items-center gap-1">
-                  <span>Dealer Network</span>
+                  <span>{t("footerDealerNetwork")}</span>
                   <ArrowUpRight weight="bold" className="w-3.5 h-3.5 text-on-surface-variant" />
                 </a>
               </li>
               <li>
                 <Link href="/login" className="hover:text-primary transition-colors">
-                  Seller Sign In
+                  {t("footerSellerSignIn")}
                 </Link>
               </li>
               <li>
                 <a href="#testimonials" className="hover:text-primary transition-colors">
-                  Seller Stories
+                  {t("footerSellerStories")}
                 </a>
               </li>
               <li>
                 <a href="#faq" className="hover:text-primary transition-colors">
-                  Support &amp; FAQ
+                  {t("footerSupportFaq")}
                 </a>
               </li>
             </ul>
@@ -127,27 +130,27 @@ export function Footer() {
           {/* Column 4: Legal & Compliance */}
           <div>
             <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-5">
-              Legal &amp; Trust
+              {t("footerLegalCol")}
             </h3>
             <ul className="space-y-3 font-body text-sm text-on-surface/85">
               <li>
                 <Link href="/legal/privacy" className="hover:text-primary transition-colors">
-                  Privacy Policy (PIPEDA)
+                  {t("footerPrivacyLink")}
                 </Link>
               </li>
               <li>
                 <Link href="/legal/terms" className="hover:text-primary transition-colors">
-                  Terms of Service
+                  {t("footerTermsLink")}
                 </Link>
               </li>
               <li>
                 <span className="text-on-surface-variant text-xs leading-relaxed block">
-                  OMVIC (ON) • AMVIC (AB) • VSA (BC) Certified
+                  {t("footerRegulatorsBadge")}
                 </span>
               </li>
               <li className="flex items-center gap-1.5 text-success text-xs font-mono">
                 <ShieldCheck weight="fill" className="w-4 h-4 shrink-0" />
-                <span>Quebec Law 25 Compliant</span>
+                <span>{t("footerLaw25Badge")}</span>
               </li>
             </ul>
           </div>
@@ -169,7 +172,7 @@ export function Footer() {
         {/* 4. Bottom Copyright & Regulatory Footnote                                 */}
         {/* ========================================================================= */}
         <div className="pt-6 border-t border-border-card/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-body text-on-surface-variant">
-          <p>© 2026 AutoNexa Technologies Inc. All rights reserved. Registered Canadian Marketplace.</p>
+          <p>{t("footerCopyright")}</p>
           <p className="font-mono text-[11px]">Autumn Editorial design system</p>
         </div>
       </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   ArrowLeft,
   Bell,
@@ -70,6 +71,7 @@ function getNotificationIcon(type: NotificationType) {
 }
 
 export default function SellerNotificationsPage() {
+  const t = useTranslations("seller");
   const mounted = React.useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -119,7 +121,7 @@ export default function SellerNotificationsPage() {
           className="inline-flex items-center gap-2 text-xs font-semibold text-portal-text-muted hover:text-portal-text transition-colors"
         >
           <ArrowLeft className="w-4 h-4" weight="bold" />
-          <span>Back to Dashboard</span>
+          <span>{t("backToDashboard")}</span>
         </Link>
       </div>
 
@@ -128,11 +130,11 @@ export default function SellerNotificationsPage() {
         <div>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="font-headline text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-portal-text">
-              Notifications
+              {t("notificationsTitle")}
             </h1>
             {unreadCount > 0 && (
               <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full bg-portal-primary/10 text-portal-primary border border-portal-primary/25">
-                {unreadCount} unread
+                {unreadCount} {t("unreadSuffix")}
               </span>
             )}
             <span
@@ -153,8 +155,7 @@ export default function SellerNotificationsPage() {
             </span>
           </div>
           <p className="mt-1 font-body text-xs sm:text-sm text-portal-text-muted">
-            Live updates on dealer bids, moderation approvals, identity checks,
-            and vehicle settlements.
+            {t("notificationsSubtitle")}
           </p>
         </div>
 

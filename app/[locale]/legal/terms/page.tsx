@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { LegalViewLayout, type LegalSection } from "@/components/legal/LegalViewLayout";
 
 export const metadata: Metadata = {
@@ -176,14 +177,165 @@ const TERMS_SECTIONS: LegalSection[] = [
   },
 ];
 
-export default function TermsOfServicePage() {
+const TERMS_SECTIONS_FR: LegalSection[] = [
+  {
+    id: "introduction",
+    number: 1,
+    title: "1. Introduction & Modèle de marché",
+    content: (
+      <>
+        <p>
+          Ces Conditions d&apos;utilisation régissent votre accès et votre utilisation du site Web AutoNexa Canada, du terminal d&apos;enchères de gros et des services connexes de découverte de véhicules.
+        </p>
+        <p>
+          En créant un compte, en inscrivant un véhicule ou en accédant au terminal concessionnaire, vous acceptez d&apos;être lié par les présentes Conditions et notre{" "}
+          <Link
+            href="/legal/privacy"
+            className="text-portal-primary underline underline-offset-4 decoration-portal-primary/40 hover:decoration-portal-primary transition-colors font-medium"
+          >
+            Politique de confidentialité
+          </Link>
+          .
+        </p>
+        <p>
+          AutoNexa exploite une plateforme technologique automatisée facilitant les transactions automobiles de gros entre les propriétaires particuliers inscrits (« Vendeurs ») et les concessionnaires automobiles titulaires d&apos;un permis provincial (« Concessionnaires »). Le titre de propriété passe directement du Vendeur au Concessionnaire acheteur lors de la remise physique et de la signature de l&apos;acte de vente provincial.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "seller-warranties",
+    number: 2,
+    title: "2. Déclarations du vendeur & Divulgation obligatoire",
+    content: (
+      <>
+        <p>
+          Les vendeurs déclarent et garantissent en vertu des lois provinciales sur la protection du consommateur :
+        </p>
+        <ul className="space-y-2.5 pt-1 text-portal-text/90">
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-portal-primary shrink-0 mt-2.5" />
+            <span>
+              <strong className="text-portal-text">Autorité de propriété :</strong> Vous êtes l&apos;unique propriétaire légal inscrit du véhicule.
+            </span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-portal-primary shrink-0 mt-2.5" />
+            <span>
+              <strong className="text-portal-text">Odomètre authentique :</strong> Le kilométrage indiqué est exact et exempt de toute altération.
+            </span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-portal-primary shrink-0 mt-2.5" />
+            <span>
+              <strong className="text-portal-text">Divulgation des collisions et dommages :</strong> Tout sinistre connu dépassant 2 000 $ CAD, dommage structurel ou défaut mécanique a été fidèlement déclaré sur la carte 2D des dommages.
+            </span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="size-1.5 rounded-full bg-portal-primary shrink-0 mt-2.5" />
+            <span>
+              <strong className="text-portal-text">Transparence des privilèges :</strong> Tout lien financier, prêt ou bail existant au Canada a été intégralement déclaré.
+            </span>
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "dealer-commitments",
+    number: 3,
+    title: "3. Engagements fermes des offres scellées concessionnaires",
+    content: (
+      <>
+        <p>
+          Toutes les offres scellées soumises par les concessionnaires vérifiés constituent des engagements commerciaux d&apos;achat irrévocables et juridiquement contraignants régis par les réglementations provinciales (OMVIC, AMVIC, VSA, OPC).
+        </p>
+        <p>
+          Il est strictement interdit à un concessionnaire de réduire, renégocier ou retirer une offre scellée active pendant ou après une enchère, sous réserve uniquement de la vérification physique de l&apos;état déclaré par le vendeur.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "inspection-handover",
+    number: 4,
+    title: "4. Inspection physique & Remise sous 48 heures",
+    content: (
+      <>
+        <p>
+          Dès l&apos;acceptation par le vendeur d&apos;une offre gagnante, AutoNexa émet un{" "}
+          <mark className="bg-portal-primary/10 text-portal-primary px-1.5 py-0.5 rounded font-mono text-xs font-semibold">
+            Bon de rendez-vous concessionnaire
+          </mark>{" "}
+          muni d&apos;un code QR de vérification. Le vendeur s&apos;engage à présenter le véhicule dans un délai de{" "}
+          <mark className="bg-portal-primary/10 text-portal-primary px-1.5 py-0.5 rounded font-semibold">
+            48 heures
+          </mark>
+          .
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "currency-escrow",
+    number: 5,
+    title: "5. Devise canadienne & Règlements en cents entiers",
+    content: (
+      <>
+        <p>
+          Tous les montants monétaires sur AutoNexa sont libellés, calculés et réglés exclusivement en{" "}
+          <mark className="bg-portal-primary/10 text-portal-primary px-1.5 py-0.5 rounded font-semibold">
+            dollars canadiens (CAD)
+          </mark>{" "}
+          sous forme de cents entiers afin de garantir zéro erreur d&apos;arrondi en virgule flottante.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "dispute-resolution",
+    number: 6,
+    title: "6. Arbitrage des litiges sur la plateforme (Seuil de 500 $ CAD)",
+    content: (
+      <>
+        <p>
+          Si un défaut mécanique ou structurel non divulgué est découvert lors de l&apos;inspection sur pont élévateur, toute réclamation nécessite un seuil minimal de réparation certifiée de{" "}
+          <mark className="bg-portal-primary/10 text-portal-primary px-1.5 py-0.5 rounded font-semibold">
+            500,00 $ CAD
+          </mark>{" "}
+          et est tranchée par un arbitre de conformité AutoNexa.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "governing-law",
+    number: 7,
+    title: "7. Limitation de responsabilité & Droit applicable",
+    content: (
+      <>
+        <p>
+          Les présentes Conditions d&apos;utilisation sont régies par les lois de la province de l&apos;Ontario et les lois fédérales du Canada qui s&apos;y appliquent, sous réserve des dispositions impératives d&apos;ordre public applicables au Québec (Loi sur la protection du consommateur / OPC), en Alberta (AMVIC) et en Colombie-Britannique (VSA).
+        </p>
+      </>
+    ),
+  },
+];
+
+export default async function TermsOfServicePage() {
+  const [locale, t] = await Promise.all([
+    getLocale(),
+    getTranslations("legal"),
+  ]);
+  const sections = locale === "fr" ? TERMS_SECTIONS_FR : TERMS_SECTIONS;
+
   return (
     <LegalViewLayout
       activeDocument="terms"
-      title="Terms of Use"
-      effectiveDate="October 2026"
-      introText="These Terms of Use govern your access to and use of the AutoNexa Canada digital marketplace, auction terminal, and related vehicle wholesale trade-in services."
-      sections={TERMS_SECTIONS}
+      title={t("termsTitle")}
+      effectiveDate={t("termsEffectiveDate")}
+      introText={t("termsIntro")}
+      sections={sections}
     />
   );
 }

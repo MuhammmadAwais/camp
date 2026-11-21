@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { useTranslations } from "next-intl";
 import {
   AlertTriangle,
   Check,
@@ -79,6 +80,7 @@ function getInitials(name: string): string {
 }
 
 export function DealerTeamView() {
+  const t = useTranslations("dealer");
   const isMounted = useSyncExternalStore(
     subscribeNoop,
     getTrueClient,
@@ -230,7 +232,7 @@ export function DealerTeamView() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-portal-text font-headline">
-            Team &amp; Permissions
+            {t("teamTitle")}
           </h1>
           <p className="text-xs sm:text-sm text-portal-text-muted mt-1">
             Grant authorized rooftop buyers and inspectors role-scoped access for{" "}
@@ -255,7 +257,7 @@ export function DealerTeamView() {
           >
             <UserPlus className="w-4 h-4" />
             <span>
-              {seatsAtCapacity ? "Seat Limit Reached" : "Invite Team Member"}
+              {seatsAtCapacity ? t("seatLimitReached") : t("inviteMemberCta")}
             </span>
           </button>
         </div>

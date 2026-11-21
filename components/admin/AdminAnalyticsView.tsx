@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState, useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import {
   AlertTriangle,
   Car,
@@ -54,6 +55,7 @@ function getProvinceThemeColor(code: string): string {
 }
 
 export function AdminAnalyticsView() {
+  const t = useTranslations("admin");
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -359,10 +361,10 @@ export function AdminAnalyticsView() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline tracking-tight">
-            Platform Analytics &amp; Wholesale Volume
+            {t("analyticsTitle")}
           </h1>
           <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-3xl">
-            Live Gross Merchandise Value (GMV), sealed-bid velocity, regional quota distribution, and verifiable PostgreSQL settlement feeds.
+            {t("analyticsSubtitle")}
           </p>
         </div>
 

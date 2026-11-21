@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   AlertCircle,
   ArrowLeft,
@@ -75,6 +76,7 @@ function defaultRegulatorForProvince(province: string): DealerRegulatorCode {
 }
 
 export function DealerRegisterView() {
+  const t = useTranslations("dealer");
   const onboardingQuery = useDealerOnboardingStatus();
   const submitMutation = useSubmitDealershipApplication();
 
@@ -435,10 +437,10 @@ export function DealerRegisterView() {
     <div className="max-w-2xl mx-auto py-2 sm:py-6 space-y-6 font-body animate-in fade-in duration-300">
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-portal-text font-headline">
-          Dealership Account Setup
+          {t("registerTitle")}
         </h1>
         <p className="text-xs sm:text-sm text-portal-text-muted mt-1">
-          Verify provincial dealership licensing to participate in live sealed-bid wholesale auctions.
+          {t("registerSubtitle")}
         </p>
       </div>
 

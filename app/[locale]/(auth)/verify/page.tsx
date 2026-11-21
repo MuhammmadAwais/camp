@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { FunnelSteps } from "@/components/auth/FunnelSteps";
 import { VerifyContactFlow } from "@/components/auth/VerifyContactFlow";
@@ -9,12 +10,15 @@ export const metadata: Metadata = {
 };
 
 export default async function VerifyPage({ searchParams }: { searchParams: SearchParams }) {
-  const params = await searchParams;
+  const [params, t] = await Promise.all([
+    searchParams,
+    getTranslations("auth"),
+  ]);
   return (
     <AuthCard
       eyebrow={<FunnelSteps current="verify" />}
-      title="Confirm it's you"
-      description="We sent 6-digit codes to your email and mobile. Both are required before you can sign in."
+      title={t("verifyTitle")}
+      description={t("verifyDescription")}
     >
       <VerifyContactFlow registrationId={firstParam(params.rid)} />
     </AuthCard>

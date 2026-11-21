@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { useTranslations } from "next-intl";
 import {
   AlertTriangle,
   ArrowRight,
@@ -74,6 +75,7 @@ function statusBadgeConfig(status: AdminDealerStatus): {
 }
 
 export function DealerVerificationView() {
+  const t = useTranslations("admin");
   const mounted = useSyncExternalStore(
     subscribeNoop,
     getTrueClient,
@@ -246,10 +248,10 @@ export function DealerVerificationView() {
           <span>Registrar Cross-Verification</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-portal-text font-headline tracking-tight">
-          Dealer Licensing Verification Queue
+          {t("dealersTitle")}
         </h1>
         <p className="text-xs sm:text-sm text-portal-text-muted mt-1 max-w-3xl font-body">
-          Validate commercial dealership credentials against Canadian provincial registries (OMVIC, AMVIC, VSA, OPC) and enforce BR-14 license suspensions.
+          {t("dealersSubtitle")}
         </p>
       </div>
 

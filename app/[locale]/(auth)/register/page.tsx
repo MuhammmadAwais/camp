@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { FunnelSteps } from "@/components/auth/FunnelSteps";
 import { RegisterForm } from "@/components/auth/RegisterForm";
@@ -11,20 +12,23 @@ export const metadata: Metadata = {
 };
 
 export default async function RegisterPage({ searchParams }: { searchParams: SearchParams }) {
-  const params = await searchParams;
+  const [params, t] = await Promise.all([
+    searchParams,
+    getTranslations("auth"),
+  ]);
   const vin = sanitizeVinInput(firstParam(params.vin) ?? "");
   const hasVehicle = isValidVin(vin);
 
   return (
     <AuthCard
       eyebrow={<FunnelSteps current="account" hasVehicle={hasVehicle} />}
-      title="Create your account"
-      description=""
+      title={t("registerTitle")}
+      description={t("registerDescription")}
       footer={
         <>
-          Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-[#8C383E] hover:underline underline-offset-4">
-            Sign in
+          {t("alreadyHaveAccount")}{" "}
+          <Link href="/login" className="font-semibold text-primary hover:underline underline-offset-4">
+            {t("signInLink")}
           </Link>
         </>
       }
